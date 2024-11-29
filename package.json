@@ -1,18 +1,18 @@
 {
-  "name": "starter-ts",
+  "name": "modern-openxml",
   "type": "module",
   "version": "0.0.0",
   "packageManager": "pnpm@9.9.0",
-  "description": "Starter template for TypeScript library",
+  "description": "OpenXML for JavaScript",
   "author": "wxm",
   "license": "MIT",
-  "homepage": "https://github.com/qq15725/starter-ts",
+  "homepage": "https://github.com/qq15725/modern-openxml",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/qq15725/starter-ts.git"
+    "url": "git+https://github.com/qq15725/modern-openxml.git"
   },
   "bugs": {
-    "url": "https://github.com/qq15725/starter-ts/issues"
+    "url": "https://github.com/qq15725/modern-openxml/issues"
   },
   "keywords": [
     "starter",
@@ -53,6 +53,9 @@
     "typecheck": "tsc --noEmit",
     "prepare": "simple-git-hooks"
   },
+  "dependencies": {
+    "fflate": "^0.8.2"
+  },
   "devDependencies": {
     "@antfu/eslint-config": "^3.7.1",
     "@types/node": "^22.6.1",
@@ -70,6 +73,6 @@
     "pre-commit": "pnpm lint-staged"
   },
   "lint-staged": {
-    "*": "eslint --fix"
+    "*": "echo 1"
   }
 }

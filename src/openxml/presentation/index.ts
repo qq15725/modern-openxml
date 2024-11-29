@@ -1,0 +1,7 @@
+export * from './Picture'
+export * from './Presentation'
+export * from './PresentationProperties'
+export * from './Slide'
+export * from './SlideLayout'
+export * from './SlideMaster'
+export * from './ViewProperties'
