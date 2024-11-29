@@ -1,14 +1,7 @@
+import type { TextWrappingValues } from './TextWrappingValues'
 import { defineProperty } from '../../core'
 import { _Namespace } from './_Namespace'
-
-const anchorMap = {
-  ctr: 'middle',
-  b: 'bottom',
-  t: 'top',
-}
-
-export type TextAnchoringTypeValues = 'middle' | 'bottom' | 'top'
-export type TextWrappingValues = 'none' | 'square'
+import { TextAnchoringTypeValues } from './TextAnchoringTypeValues'
 
 /**
  * @link https://learn.microsoft.com/dotnet/api/documentformat.openxml.drawing.bodyproperties
@@ -16,7 +9,7 @@ export type TextWrappingValues = 'none' | 'square'
 export class BodyProperties extends _Namespace {
   readonly tag = 'bodyPr'
 
-  @defineProperty('anchor', anchorMap) anchor?: TextAnchoringTypeValues
+  @defineProperty('anchor', TextAnchoringTypeValues) anchor?: TextAnchoringTypeValues
   @defineProperty('anchorCtr', 'boolean') anchorCtr?: boolean
   @defineProperty('spcFirstLastPara', 'boolean') spcFirstLastPara?: boolean
   @defineProperty('lIns', 'emu') lIns?: number

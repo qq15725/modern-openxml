@@ -26,7 +26,7 @@ export class Shape extends _Namespace {
   get top(): number { return this.spPr.xfrm.off.y }
   get width(): number { return this.spPr.xfrm.ext.cx }
   get height(): number { return this.spPr.xfrm.ext.cy }
-  get verticalAlign(): TextAnchoringTypeValues { return this.txBody.bodyPr.anchor ?? 'middle' }
+  get verticalAlign(): TextAnchoringTypeValues { return this.txBody.bodyPr.anchor ?? TextAnchoringTypeValues.ctr }
   get textAlign(): string | undefined { return this.txBody.bodyPr.anchorCtr ? 'center' : undefined }
   get useParagraphSpacing(): boolean { return !!this.txBody.bodyPr.spcFirstLastPara }
   get paddingLeft(): number { return this.txBody.bodyPr.lIns ?? 0 }
@@ -34,7 +34,7 @@ export class Shape extends _Namespace {
   get paddingRight(): number { return this.txBody.bodyPr.rIns ?? 0 }
   get paddingBottom(): number { return this.txBody.bodyPr.bIns ?? 0 }
   get textRotation(): number { return this.txBody.bodyPr.rot ?? 0 }
-  get textWrapping(): TextWrappingValues { return this.txBody.bodyPr.wrap ?? 'none' }
+  get textWrapping(): TextWrappingValues { return this.txBody.bodyPr.wrap ?? TextWrappingValues.none }
   get writingMode(): 'vertical-lr' | 'horizontal-tb' { return this.txBody.bodyPr.upright ? 'vertical-lr' : 'horizontal-tb' }
   get paragraphs(): Paragraph[] { return this.txBody.pList }
   get placeholderShape(): PlaceholderShape | undefined { return this.nvSpPr.nvPr.ph }

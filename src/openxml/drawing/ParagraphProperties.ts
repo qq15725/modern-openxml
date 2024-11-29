@@ -1,17 +1,6 @@
 import { defineProperty } from '../../core'
 import { _Namespace } from './_Namespace'
-
-const alignmentMap = {
-  ctr: 'center',
-  dist: 'distributed',
-  just: 'justified',
-  justLow: 'justified-low',
-  l: 'left',
-  r: 'right',
-  thaiDist: 'thai-distributed',
-}
-
-export type Alignment = 'center' | 'distributed' | 'justified' | 'justified-low' | 'left' | 'right' | 'thai-distributed'
+import { TextAlignmentTypeValues } from './TextAlignmentTypeValues'
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.drawing.paragraphproperties
@@ -23,7 +12,7 @@ export class ParagraphProperties extends _Namespace {
   @defineProperty('marL', 'emu') marL?: number
   @defineProperty('marR', 'emu') marR?: number
   @defineProperty('indent', 'emu') indent?: number
-  @defineProperty('algn', alignmentMap) algn?: Alignment
+  @defineProperty('algn', TextAlignmentTypeValues) algn?: TextAlignmentTypeValues
   @defineProperty('fontAlgn', 'string') fontAlgn?: string
   @defineProperty('rtl', 'string') rtl?: string
 }

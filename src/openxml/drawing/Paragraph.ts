@@ -1,4 +1,4 @@
-import type { Alignment } from '../utils'
+import type { TextAlignmentTypeValues } from './TextAlignmentTypeValues'
 import { defineChild } from '../../core'
 import { _Namespace } from './_Namespace'
 import { ParagraphProperties } from './ParagraphProperties'
@@ -17,7 +17,7 @@ export class Paragraph extends _Namespace {
   get marginLeft(): number { return this.pPr.marL ?? 0 }
   get marginRight(): number { return this.pPr.marR ?? 0 }
   get textIndent(): number | undefined { return this.pPr.indent }
-  get textAlign(): Alignment | undefined { return this.pPr.algn }
+  get textAlign(): TextAlignmentTypeValues | undefined { return this.pPr.algn }
   get fontAlign(): string | undefined { return this.pPr.fontAlgn }
   get rightToLeft(): string | undefined { return this.pPr.rtl }
 }
