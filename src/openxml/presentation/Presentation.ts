@@ -1,5 +1,7 @@
 import { defineChild } from '../../core'
 import { _Namespace } from './_Namespace'
+import { DefaultTextStyle } from './DefaultTextStyle'
+import { NotesSize } from './NotesSize'
 import { SlideIdList } from './SlideIdList'
 import { SlideMasterIdList } from './SlideMasterIdList'
 import { SlideSize } from './SlideSize'
@@ -23,4 +25,6 @@ export class Presentation extends _Namespace {
   @defineChild('p:sldMasterIdLst', SlideMasterIdList) declare sldMasterIdLst: SlideMasterIdList
   @defineChild('p:sldIdLst', SlideIdList) declare sldIdLst: SlideIdList
   @defineChild('p:sldSz', SlideSize) declare sldSz: SlideSize
+  @defineChild('p:notesSz', NotesSize) declare notesSz: NotesSize
+  @defineChild('p:defaultTextStyle', DefaultTextStyle) declare defaultTextStyle: DefaultTextStyle
 }

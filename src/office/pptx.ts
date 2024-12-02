@@ -1,9 +1,8 @@
 import type { Zippable } from 'fflate'
-import type { PresentationProperties, ViewProperties } from '../openxml'
-import type { CoreProperties, Properties } from './doc'
-import { zipSync } from 'fflate'
-import { Picture, Presentation, Slide, SlideLayout, SlideMaster, Theme } from '../openxml'
-import { ContentTypes, Relationships } from './doc'
+import type { SlideLayout, Theme } from '../openxml'
+import { unzipSync, zipSync } from 'fflate'
+import { Picture, Presentation, PresentationProperties, Slide, SlideMaster, ViewProperties } from '../openxml'
+import { CoreProperties, Properties, Relationships, Types } from './doc'
 
 interface PptxProps {
   width?: number
@@ -14,146 +13,120 @@ interface PptxProps {
 export class Pptx {
   declare app: Properties
   declare core: CoreProperties
-  declare themes: Theme[]
-  declare slideMasters: SlideMaster[]
-  declare slideLayouts: SlideLayout[]
-  declare slides: Slide[]
+  themes: Theme[] = []
+  slideMasters: SlideMaster[] = []
+  slideLayouts: SlideLayout[] = []
+  slides: Slide[] = []
   declare presentation: Presentation
   declare presProps: PresentationProperties
   declare viewProps: ViewProperties
 
-  get width() { this.presentation.sldSz.cx }
-  get height() { this.presentation.sldSz.cy }
+  get width(): number { return this.presentation.sldSz.cx }
+  get height(): number { return this.presentation.sldSz.cy }
 
-  constructor() {
+  static parse(source: Uint8Array) {
+    const unzipped = unzipSync(source)
 
-  }
-
-  async decode(source: Source) {
-    const jszip = new Jszip()
-    const zip = await jszip.loadAsync(source)
-
-    const read = async (path: string, type: 'base64' | 'string' = 'string') => {
-      if (path.startsWith('/'))
-        path = path.substring(1)
-      return zip.files[path]?.async(type)
-    }
-
+    const readXml = (path: string) => new TextDecoder().decode(unzipped[path])
     const getRelsPath = (path = '') => {
       const paths = path.split('/')
-      const last = paths.length - 1
-      return [...paths.slice(0, last), '_rels', `${paths[last]}.rels`].join('/')
+      const name = paths.pop()
+      return {
+        base: paths.join('/'),
+        path: [...paths, '_rels', `${name}.rels`].join('/'),
+      }
     }
+
+    const pptx = new Pptx()
 
     // [Content_Types].xml
-    const contentTypes_ = await read('[Content_Types].xml')
-    const contentTypes = ContentTypes.parse(createVNode(contentTypes_?.replace(/xmlns=".+?"/g, '')))
+    const types = new Types().parse(readXml('[Content_Types].xml'))
+    console.log(types.value)
 
     // _rels/.rels
-    const relationshipsPath = getRelsPath()
-    const relationships_ = await read(relationshipsPath)
-    const relationships = Relationship.parse(
-      createVNode(relationships_?.replace(/xmlns=".+?"/g, '')),
-      relationshipsPath,
-      contentTypes,
-    )
+    const { path: relsPath } = getRelsPath()
+    const rels = new Relationships().parse(readXml(relsPath)).value
 
-    // ppt/presentation.xml
-    const presentationPath = relationships.find(v => v.type === 'presentation')?.path
-    if (!presentationPath)
-      return undefined
-    const presentation_ = await read(presentationPath)
-    const presentationNode = createVNode(presentation_)
-    const presentation = Presentation.parse(presentationNode)
+    let presentationPath
+    rels.forEach((rel) => {
+      switch (rel.type) {
+        // ppt/presentation.xml
+        case Relationships.types.presentation:
+          presentationPath = rel.target
+          pptx.presentation = new Presentation().parse(readXml(presentationPath))
+          break
+        // doc/app.xml
+        case Relationships.types.app:
+          pptx.app = new Properties().parse(readXml(rel.target))
+          break
+        // doc/core.xml
+        case Relationships.types.core:
+          pptx.core = new CoreProperties().parse(readXml(rel.target))
+          break
+        // doc/custom.xml
+        case Relationships.types.custom:
+          break
+      }
+    })
 
     // ppt/_rels/presentation.xml.rels
-    const presentationRelsPath = getRelsPath(presentationPath)
-    const presentationRels_ = await read(presentationRelsPath)
-    const presentationRels = Relationship.parse(
-      createVNode(presentationRels_?.replace(/xmlns=".+?"/g, '')),
-      presentationRelsPath,
-      contentTypes,
+    const { base: presentationRelsBase, path: presentationRelsPath } = getRelsPath(presentationPath)
+    const presentationRels = new Relationships().parse(readXml(presentationRelsPath)).value
+    console.log(presentationRels)
+
+    presentationRels.forEach((rel) => {
+      const target = `${presentationRelsBase}/${rel.target}`
+      switch (rel.type) {
+        // ppt/presProps.xml
+        case Relationships.types.presProps:
+          pptx.presProps = new PresentationProperties().parse(readXml(target))
+          break
+        // ppt/viewProps.xml
+        case Relationships.types.viewProps:
+          pptx.viewProps = new ViewProperties().parse(readXml(target))
+          break
+      }
+    })
+
+    const ridToTarget = Object.fromEntries(
+      presentationRels.map(v => [v.id, `${presentationRelsBase}/${v.target}`]),
     )
 
-    // slides
-    const slides = presentationRels.filter(v => v.type === 'slide').map(v => v.path)
+    pptx.presentation.sldIdLst.children.forEach((v) => {
+      // ppt/slides/slide1.xml
+      const slidePath = ridToTarget[v.rId]
+      const slide = new Slide().parse(readXml(slidePath))
 
-    const props: PptxProps = {
-      width: presentation?.width,
-      height: presentation?.height,
-      slides: [],
-    }
-
-    for (const slidePath of slides) {
-      // slide rels
-      const slideRelsPath = getRelsPath(slidePath)
-      const slideRels_ = await read(slideRelsPath)
-      const slideRels = Relationship.parse(
-        createVNode(slideRels_?.replace(/xmlns=".+?"/g, '')),
-        slideRelsPath,
-        contentTypes,
-      )
-
-      // slideLayout rels
-      const layoutPath = slideRels.find(v => v.type === 'slideLayout')?.path
-      const layoutRelsPath = getRelsPath(layoutPath)
-      const layoutRels_ = await read(layoutRelsPath)
-      const layoutRels = Relationship.parse(
-        createVNode(layoutRels_?.replace(/xmlns=".+?"/g, '')),
-        layoutRelsPath,
-        contentTypes,
-      )
-
-      // slideMaster rels
-      const masterPath = layoutRels.find(v => v.type === 'slideMaster')?.path
-      const masterRelsPath = getRelsPath(masterPath)
-      const masterRels_ = await read(masterRelsPath)
-      const masterRels = Relationship.parse(
-        createVNode(masterRels_?.replace(/xmlns=".+?"/g, '')),
-        masterRelsPath,
-        contentTypes,
-      )
-
-      // theme
-      const themePath = masterRels.find(v => v.type === 'theme')?.path
-
-      const theme = themePath ? createVNode(await read(themePath)) : undefined
-      const layout = layoutPath ? createVNode(await read(layoutPath)) : undefined
-      const master = masterPath ? createVNode(await read(masterPath)) : undefined
-      const slide = createVNode(await read(slidePath))
-
-      const context = {
-        theme: {
-          node: theme,
-          ...Theme.parse(theme),
-        },
-        layout: {
-          node: layout,
-          ...SlideLayout.parse(layout),
-        },
-        master: {
-          node: master,
-          ...SlideMaster.parse(master),
-        },
-        presentation: {
-          node: presentationNode,
-          ...presentation,
-        },
-        rels: slideRels,
-      }
-
-      const slideProps = Slide.parse(slide, context)
-
-      for (const element of slideProps.elements) {
-        if (element.type === 'picture') {
-          (element as any).content = await read((element as any).content, 'base64')
+      // ppt/slides/_rels/slide1.xml.rels
+      const { base: slideRelsBase, path: slideRelsPath } = getRelsPath(slidePath)
+      const slideRels = new Relationships().parse(readXml(slideRelsPath)).value
+      slideRels.forEach((rel) => {
+        switch (rel.type) {
+          // ppt/slideLayout/slideLayout1.xml
+          case Relationships.types.slideLayout: {
+            // const slideLayout = new SlideLayout().parse(readXml(rel.target))
+            // pptx.slides.push(slideLayout)
+            break
+          }
         }
-      }
+      })
 
-      props.slides.push(slideProps)
-    }
+      pptx.slides.push(slide)
+    })
 
-    return clearUndefProp(props)
+    pptx.presentation.sldMasterIdLst.children.forEach((v) => {
+      // slideMasters/slideMaster1.xml
+      const slideMasterPath = ridToTarget[v.rId]
+      const slideMaster = new SlideMaster().parse(readXml(slideMasterPath))
+      pptx.slideMasters.push(slideMaster)
+
+      // ppt/slides/_rels/slide1.xml.rels
+      const { base: slideMasterRelsBase, path: slideMasterRelsPath } = getRelsPath(slideMasterPath)
+      const slideMasterRels = new Relationships().parse(readXml(slideMasterRelsPath)).value
+      console.log(slideMasterRels)
+    })
+
+    return pptx
   }
 
   toZippable(): Zippable {

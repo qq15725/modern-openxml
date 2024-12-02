@@ -23,5 +23,5 @@ export class Run extends _Namespace {
   get fontEastasian(): string | undefined { return this.rPr.ea?.typeface }
   get fontLatin(): string | undefined { return this.rPr.latin?.typeface }
   get fontSymbol(): string | undefined { return this.rPr.sym?.typeface }
-  override get textContent(): string { return this.t.textContent }
+  get textContent(): string { return this.t.node.textContent ?? '' }
 }

@@ -1,3 +1,4 @@
+export * from './NotesSize'
 export * from './Picture'
 export * from './Presentation'
 export * from './PresentationProperties'

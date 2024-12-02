@@ -15,6 +15,6 @@ export class Transform2D extends _Namespace {
 
   @defineChild('a:off', Offset) declare off: Offset
   @defineChild('a:ext', Extents) declare ext: Extents
-  @defineChild('a:chOff', Offset) declare chOff?: Offset
-  @defineChild('a:chExt', Extents) declare chExt?: Extents
+  @defineChild('a:chOff', Offset) chOff?: Offset
+  @defineChild('a:chExt', Extents) chExt?: Extents
 }

@@ -8,5 +8,5 @@ import { SlideMasterId } from './SlideMasterId'
 export class SlideMasterIdList extends _Namespace {
   readonly tag = 'sldMasterIdLst'
 
-  @defineChild('p:sldMasterId', SlideMasterId) declare sldMasterIdList: SlideMasterId[]
+  @defineChild('p:sldMasterId', SlideMasterId, true) declare children: SlideMasterId[]
 }
