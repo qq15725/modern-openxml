@@ -4,7 +4,7 @@ import { GroupShapeProperties } from './GroupShapeProperties'
 import { NonVisualGroupShapeProperties } from './NonVisualGroupShapeProperties'
 
 /**
- * https://learn.microsoft.com/dotnet/api/documentformat.openxml.presentation.nonvisualdrawingproperties
+ * https://learn.microsoft.com/dotnet/api/documentformat.openxml.presentation.groupshape
  */
 export class GroupShape extends _Namespace {
   readonly tag = 'grpSp'

@@ -4,6 +4,7 @@ import { defineChild } from '../../core'
 import { _Namespace } from './_Namespace'
 import { NonVisualShapeProperties } from './NonVisualShapeProperties'
 import { ShapeProperties } from './ShapeProperties'
+import { ShapeStyle } from './ShapeStyle'
 import { TextBody } from './TextBody'
 
 /**
@@ -15,6 +16,7 @@ export class Shape extends _Namespace {
   @defineChild('p:nvSpPr', NonVisualShapeProperties) declare nvSpPr: NonVisualShapeProperties
   @defineChild('p:spPr', ShapeProperties) declare spPr: ShapeProperties
   @defineChild('p:txBody', TextBody) declare txBody: TextBody
+  @defineChild('p:style', ShapeStyle) declare style: ShapeStyle
 
   get id(): string { return this.nvSpPr.cNvPr.id }
   get name(): string { return this.nvSpPr.cNvPr.name }
