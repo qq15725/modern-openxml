@@ -1,13 +1,11 @@
-import { defineChild } from '../../core'
-import { _Namespace } from './_Namespace'
+import { defineChild, defineNode, XmlObject } from '../../core'
 import { ColorMap } from './ColorMap'
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.presentation.slidelayout
  */
-export class SlideLayout extends _Namespace {
-  readonly tag = 'sldLayout'
-
+@defineNode('sldLayout', 'p')
+export class SlideLayout extends XmlObject {
   @defineChild('p:clrMap', ColorMap) declare clrMap: ColorMap
 
   override toXmlString(): string {

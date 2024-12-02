@@ -1,8 +1,7 @@
-import { defineChild, XmlObject } from '../../core'
+import { defineChild, defineNode, XmlObject } from '../../core'
 
+@defineNode('Properties')
 export class Properties extends XmlObject {
-  readonly tag = 'Properties'
-
   attrs = {
     'xmlns': 'http://schemas.openxmlformats.org/officeDocument/2006/extended-properties',
     'xmlns:vt': 'http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes',

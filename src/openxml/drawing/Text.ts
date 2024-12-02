@@ -1,8 +1,9 @@
-import { _Namespace } from './_Namespace'
+import { defineNode, XmlObject } from '../../core'
 
 /**
  * @link https://learn.microsoft.com/dotnet/api/documentformat.openxml.drawing.text
  */
-export class Text extends _Namespace {
-  readonly tag = 't'
+@defineNode('t', 'a')
+export class Text extends XmlObject {
+  //
 }

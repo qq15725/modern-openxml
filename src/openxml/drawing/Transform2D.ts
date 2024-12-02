@@ -1,14 +1,12 @@
-import { defineChild, defineProperty } from '../../core'
-import { _Namespace } from './_Namespace'
+import { defineChild, defineNode, defineProperty, XmlObject } from '../../core'
 import { Extents } from './Extents'
 import { Offset } from './Offset'
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.drawing.transform2d
  */
-export class Transform2D extends _Namespace {
-  readonly tag = 'xfrm'
-
+@defineNode('xfrm', 'a')
+export class Transform2D extends XmlObject {
   @defineProperty('rot', 'degree') declare rot: number
   @defineProperty('flipV', 'boolean') declare flipV: boolean
   @defineProperty('flipH', 'boolean') declare flipH: boolean

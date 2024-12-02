@@ -1,5 +1,4 @@
-import { defineChild } from '../../core'
-import { _Namespace } from './_Namespace'
+import { defineChild, defineNode, XmlObject } from '../../core'
 import { BlipFill } from './BlipFill'
 import { NonVisualPictureProperties } from './NonVisualPictureProperties'
 import { ShapeProperties } from './ShapeProperties'
@@ -8,9 +7,8 @@ import { ShapeStyle } from './ShapeStyle'
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.presentation.picture
  */
-export class Picture extends _Namespace {
-  readonly tag = 'pic'
-
+@defineNode('pic', 'p')
+export class Picture extends XmlObject {
   @defineChild('p:blipFill', BlipFill) declare blipFill: BlipFill
   @defineChild('p:nvPicPr', NonVisualPictureProperties) declare nvPicPr: NonVisualPictureProperties
   @defineChild('p:spPr', ShapeProperties) declare spPr: ShapeProperties

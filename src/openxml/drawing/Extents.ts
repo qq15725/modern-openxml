@@ -1,12 +1,10 @@
-import { defineProperty } from '../../core'
-import { _Namespace } from './_Namespace'
+import { defineNode, defineProperty, XmlObject } from '../../core'
 
 /**
  * @link https://learn.microsoft.com/dotnet/api/documentformat.openxml.drawing.extents
  */
-export class Extents extends _Namespace {
-  readonly tag = 'off'
-
+@defineNode('off', 'a')
+export class Extents extends XmlObject {
   @defineProperty('cx', 'emu') declare cx: number
   @defineProperty('cy', 'emu') declare cy: number
 }

@@ -1,8 +1,9 @@
-import { _Namespace } from './_Namespace'
+import { defineNode, XmlObject } from '../../core'
 
 /**
  * @link https://learn.microsoft.com/dotnet/api/documentformat.openxml.drawing.effectlist
  */
-export class EffectList extends _Namespace {
-  readonly tag = 'effectLst'
+@defineNode('effectLst', 'a')
+export class EffectList extends XmlObject {
+  //
 }

@@ -1,15 +1,13 @@
-import { defineChild } from '../../core'
-import { _Namespace } from './_Namespace'
+import { defineChild, defineNode, XmlObject } from '../../core'
 import { ApplicationNonVisualDrawingProperties } from './ApplicationNonVisualDrawingProperties'
 import { NonVisualDrawingProperties } from './NonVisualDrawingProperties'
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.presentation.nonvisualgroupshapeproperties
  */
-export class NonVisualGroupShapeProperties extends _Namespace {
-  readonly tag = 'nvGrpSpPr'
-
+@defineNode('nvGrpSpPr', 'p')
+export class NonVisualGroupShapeProperties extends XmlObject {
   @defineChild('p:cNvPr', NonVisualDrawingProperties) declare cNvPr: NonVisualDrawingProperties
-  @defineChild('p:cNvGrpSpPr', _Namespace) declare cNvGrpSpPr: _Namespace
+  @defineChild('p:cNvGrpSpPr', XmlObject) declare cNvGrpSpPr: XmlObject
   @defineChild('p:nvPr', ApplicationNonVisualDrawingProperties) declare nvPr: ApplicationNonVisualDrawingProperties
 }

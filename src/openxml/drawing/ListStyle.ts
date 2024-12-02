@@ -1,8 +1,9 @@
-import { _Namespace } from './_Namespace'
+import { defineNode, XmlObject } from '../../core'
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.drawing.liststyle
  */
-export class ListStyle extends _Namespace {
-  readonly tag = 'lstStyle'
+@defineNode('lstStyle', 'a')
+export class ListStyle extends XmlObject {
+  //
 }

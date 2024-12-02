@@ -1,11 +1,10 @@
-import { _Namespace } from './_Namespace'
+import { defineNode, XmlObject } from '../../core'
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.presentation.defaulttextstyle
  */
-export class DefaultTextStyle extends _Namespace {
-  readonly tag = 'defaultTextStyle'
-
+@defineNode('defaultTextStyle', 'p')
+export class DefaultTextStyle extends XmlObject {
   // TODO
   // a:lvl1pPr - a:lvl9pPr
 }

@@ -1,7 +1,6 @@
 import type { Paragraph, TextAnchoringTypeValues, TextWrappingValues } from '../drawing'
 import type { PlaceholderShape } from './PlaceholderShape'
-import { defineChild } from '../../core'
-import { _Namespace } from './_Namespace'
+import { defineChild, defineNode, XmlObject } from '../../core'
 import { NonVisualShapeProperties } from './NonVisualShapeProperties'
 import { ShapeProperties } from './ShapeProperties'
 import { ShapeStyle } from './ShapeStyle'
@@ -10,9 +9,8 @@ import { TextBody } from './TextBody'
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.presentation.shape
  */
-export class Shape extends _Namespace {
-  readonly tag = 'sp'
-
+@defineNode('sp', 'p')
+export class Shape extends XmlObject {
   @defineChild('p:nvSpPr', NonVisualShapeProperties) declare nvSpPr: NonVisualShapeProperties
   @defineChild('p:spPr', ShapeProperties) declare spPr: ShapeProperties
   @defineChild('p:txBody', TextBody) declare txBody: TextBody

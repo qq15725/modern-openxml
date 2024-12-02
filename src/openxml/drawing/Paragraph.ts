@@ -1,15 +1,13 @@
 import type { TextAlignmentTypeValues } from './TextAlignmentTypeValues'
-import { defineChild } from '../../core'
-import { _Namespace } from './_Namespace'
+import { defineChild, defineNode, XmlObject } from '../../core'
 import { ParagraphProperties } from './ParagraphProperties'
 import { Run } from './Run'
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.drawing.paragraph
  */
-export class Paragraph extends _Namespace {
-  readonly tag = 'p'
-
+@defineNode('p', 'a')
+export class Paragraph extends XmlObject {
   @defineChild('pPr', ParagraphProperties) declare pPr: ParagraphProperties
   @defineChild('r', Run) declare rList: Run[]
 

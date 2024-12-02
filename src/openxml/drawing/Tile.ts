@@ -1,12 +1,10 @@
-import { defineProperty } from '../../core'
-import { _Namespace } from './_Namespace'
+import { defineNode, defineProperty, XmlObject } from '../../core'
 
 /**
  * @link https://learn.microsoft.com/dotnet/api/documentformat.openxml.drawing.tile
  */
-export class Tile extends _Namespace {
-  readonly tag = 'tile'
-
+@defineNode('tile', 'a')
+export class Tile extends XmlObject {
   @defineProperty('sx', 'rate') declare sx: number
   @defineProperty('sy', 'rate') declare sy: number
   @defineProperty('tx', 'rate') declare tx: number

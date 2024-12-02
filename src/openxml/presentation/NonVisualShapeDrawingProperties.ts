@@ -1,11 +1,9 @@
-import { defineProperty } from '../../core'
-import { _Namespace } from './_Namespace'
+import { defineNode, defineProperty, XmlObject } from '../../core'
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.presentation.nonvisualshapedrawingproperties
  */
-export class NonVisualShapeDrawingProperties extends _Namespace {
-  readonly tag = 'cNvSpPr'
-
+@defineNode('cNvSpPr', 'p')
+export class NonVisualShapeDrawingProperties extends XmlObject {
   @defineProperty('txBox', 'boolean') txBox?: boolean
 }

@@ -1,11 +1,9 @@
-import { defineProperty } from '../../core'
-import { _Namespace } from './_Namespace'
+import { defineNode, defineProperty, XmlObject } from '../../core'
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.presentation.presetgeometry
  */
-export class PresetGeometry extends _Namespace {
-  readonly tag = 'prstGeom'
-
+@defineNode('prstGeom', 'a')
+export class PresetGeometry extends XmlObject {
   @defineProperty('prst', 'string') declare prst: string
 }

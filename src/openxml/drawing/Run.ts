@@ -1,14 +1,12 @@
-import { defineChild } from '../../core'
-import { _Namespace } from './_Namespace'
+import { defineChild, defineNode, XmlObject } from '../../core'
 import { RunProperties } from './RunProperties'
 import { Text } from './Text'
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.drawing.run
  */
-export class Run extends _Namespace {
-  readonly tag = 'r'
-
+@defineNode('r', 'a')
+export class Run extends XmlObject {
   @defineChild('rPr', RunProperties) declare rPr: RunProperties
   @defineChild('t', Text) declare t: Text
 

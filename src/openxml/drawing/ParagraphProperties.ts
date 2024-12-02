@@ -1,13 +1,11 @@
-import { defineProperty } from '../../core'
-import { _Namespace } from './_Namespace'
+import { defineNode, defineProperty, XmlObject } from '../../core'
 import { TextAlignmentTypeValues } from './TextAlignmentTypeValues'
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.drawing.paragraphproperties
  */
-export class ParagraphProperties extends _Namespace {
-  readonly tag = 'pPr'
-
+@defineNode('pPr', 'a')
+export class ParagraphProperties extends XmlObject {
   @defineProperty('lvl', 'number') lvl?: number
   @defineProperty('marL', 'emu') marL?: number
   @defineProperty('marR', 'emu') marR?: number

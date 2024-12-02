@@ -1,4 +1,4 @@
-import { defineChild } from '../../core'
+import { defineChild, defineNode, XmlObject } from '../../core'
 import {
   CustomGeometry,
   EffectList,
@@ -10,27 +10,25 @@ import {
   SolidFill,
   Transform2D,
 } from '../drawing'
-import { _Namespace } from './_Namespace'
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.presentation.shapeproperties
  */
-export class ShapeProperties extends _Namespace {
-  readonly tag = 'spPr'
-
-  @defineChild('a:blipFill', _Namespace) blipFill?: _Namespace
+@defineNode('spPr', 'p')
+export class ShapeProperties extends XmlObject {
+  @defineChild('a:blipFill', XmlObject) blipFill?: XmlObject
   @defineChild('a:custGeom', CustomGeometry) custGeom?: CustomGeometry
-  @defineChild('a:effectDag', _Namespace) effectDag?: _Namespace
+  @defineChild('a:effectDag', XmlObject) effectDag?: XmlObject
   @defineChild('a:effectLst', EffectList) effectLst?: EffectList
-  @defineChild('a:extLst', _Namespace) extLst?: _Namespace
+  @defineChild('a:extLst', XmlObject) extLst?: XmlObject
   @defineChild('a:gradFill', GradientFill) gradFill?: GradientFill
-  @defineChild('a:grpFill', _Namespace) grpFill?: _Namespace
+  @defineChild('a:grpFill', XmlObject) grpFill?: XmlObject
   @defineChild('a:ln', Outline) ln?: Outline
   @defineChild('a:noFill', NoFill) noFill?: NoFill
   @defineChild('a:pattFill', PatternFill) pattFill?: PatternFill
   @defineChild('a:prstGeom', PresetGeometry) prstGeom?: PresetGeometry
-  @defineChild('a:scene3d', _Namespace) scene3d?: _Namespace
+  @defineChild('a:scene3d', XmlObject) scene3d?: XmlObject
   @defineChild('a:solidFill', SolidFill) solidFill?: SolidFill
-  @defineChild('a:sp3d', _Namespace) sp3d?: _Namespace
+  @defineChild('a:sp3d', XmlObject) sp3d?: XmlObject
   @defineChild('a:xfrm', Transform2D) declare xfrm: Transform2D
 }

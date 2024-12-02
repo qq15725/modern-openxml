@@ -1,12 +1,10 @@
-import { defineChild } from '../../core'
-import { _Namespace } from './_Namespace'
+import { defineChild, defineNode, XmlObject } from '../../core'
 import { SlideMasterId } from './SlideMasterId'
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.presentation.slidemasteridlist
  */
-export class SlideMasterIdList extends _Namespace {
-  readonly tag = 'sldMasterIdLst'
-
+@defineNode('sldMasterIdLst', 'p')
+export class SlideMasterIdList extends XmlObject {
   @defineChild('p:sldMasterId', SlideMasterId, true) declare children: SlideMasterId[]
 }

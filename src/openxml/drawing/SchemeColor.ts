@@ -1,11 +1,9 @@
-import { defineProperty } from '../../core'
-import { _Namespace } from './_Namespace'
+import { defineNode, defineProperty, XmlObject } from '../../core'
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.drawing.schemecolor
  */
-export class SchemeColor extends _Namespace {
-  readonly tag = 'schemeClr'
-
+@defineNode('schemeClr', 'a')
+export class SchemeColor extends XmlObject {
   @defineProperty('val', 'string') declare val: string
 }

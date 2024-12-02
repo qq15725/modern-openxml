@@ -1,12 +1,10 @@
-import { defineChild } from '../../core'
+import { defineChild, defineNode, XmlObject } from '../../core'
 import { MasterColorMapping } from '../drawing'
-import { _Namespace } from './_Namespace'
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.presentation.colormapoverride
  */
-export class ColorMapOverride extends _Namespace {
-  readonly tag = 'clrMapOvr'
-
+@defineNode('clrMapOvr', 'p')
+export class ColorMapOverride extends XmlObject {
   @defineChild('a:masterClrMapping', MasterColorMapping) declare masterClrMapping: MasterColorMapping
 }

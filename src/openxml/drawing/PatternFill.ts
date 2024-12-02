@@ -1,12 +1,10 @@
-import { defineChild } from '../../core'
-import { _Namespace } from './_Namespace'
+import { defineChild, defineNode, XmlObject } from '../../core'
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.drawing.patternfill
  */
-export class PatternFill extends _Namespace {
-  readonly tag = 'pattFill'
-
-  @defineChild('a:bgClr', _Namespace) bgClr?: _Namespace
-  @defineChild('a:fgClr', _Namespace) fgClr?: _Namespace
+@defineNode('pattFill', 'a')
+export class PatternFill extends XmlObject {
+  @defineChild('a:bgClr', XmlObject) bgClr?: XmlObject
+  @defineChild('a:fgClr', XmlObject) fgClr?: XmlObject
 }

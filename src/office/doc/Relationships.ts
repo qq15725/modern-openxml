@@ -1,6 +1,7 @@
-import { defineChild, XmlObject } from '../../core'
+import { defineChild, defineNode, XmlObject } from '../../core'
 import { Relationship } from './Relationship'
 
+@defineNode('Relationships')
 export class Relationships extends XmlObject {
   static officeDocument = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships'
   static package = 'http://schemas.openxmlformats.org/package/2006/relationships'
@@ -21,8 +22,6 @@ export class Relationships extends XmlObject {
     handoutMaster: `${this.officeDocument}/handoutMaster`,
     commentAuthors: `${this.officeDocument}/commentAuthors`,
   }
-
-  readonly tag = 'Relationships'
 
   attrs = {
     xmlns: 'http://schemas.openxmlformats.org/package/2006/relationships',

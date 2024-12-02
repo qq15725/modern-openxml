@@ -1,7 +1,8 @@
-import { defineChild, XmlObject } from '../../core'
+import { defineChild, defineNode, XmlObject } from '../../core'
 import { Default } from './Default'
 import { Override } from './Override'
 
+@defineNode('Types')
 export class Types extends XmlObject {
   static package = 'application/vnd.openxmlformats-package'
   static officedocument = 'application/vnd.openxmlformats-officedocument'
@@ -32,8 +33,6 @@ export class Types extends XmlObject {
     workbook: `${this.spreadsheetml}.sheet.main+xml`,
     worksheet: `${this.spreadsheetml}.worksheet+xml`,
   } as const
-
-  readonly tag = 'Types'
 
   attrs = {
     xmlns: 'http://schemas.openxmlformats.org/package/2006/content-types',

@@ -1,5 +1,4 @@
-import { defineChild } from '../../core'
-import { _Namespace } from './_Namespace'
+import { defineChild, defineNode, XmlObject } from '../../core'
 import { DefaultTextStyle } from './DefaultTextStyle'
 import { NotesSize } from './NotesSize'
 import { SlideIdList } from './SlideIdList'
@@ -9,9 +8,8 @@ import { SlideSize } from './SlideSize'
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.presentation.presentation
  */
-export class Presentation extends _Namespace {
-  readonly tag = 'presentation'
-
+@defineNode('presentation', 'p')
+export class Presentation extends XmlObject {
   attrs = {
     'xmlns': 'http://schemas.openxmlformats.org/presentationml/2006/main',
     'xmlns:a': 'http://schemas.openxmlformats.org/drawingml/2006/main',

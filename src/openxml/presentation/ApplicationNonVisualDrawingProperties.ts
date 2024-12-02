@@ -1,12 +1,10 @@
-import { defineChild } from '../../core'
-import { _Namespace } from './_Namespace'
+import { defineChild, defineNode, XmlObject } from '../../core'
 import { PlaceholderShape } from './PlaceholderShape'
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.presentation.applicationnonvisualdrawingproperties
  */
-export class ApplicationNonVisualDrawingProperties extends _Namespace {
-  readonly tag = 'nvPr'
-
+@defineNode('nvPr', 'p')
+export class ApplicationNonVisualDrawingProperties extends XmlObject {
   @defineChild('p:ph', PlaceholderShape) declare ph: PlaceholderShape
 }

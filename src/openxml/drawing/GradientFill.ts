@@ -1,14 +1,12 @@
-import { defineChild } from '../../core'
-import { _Namespace } from './_Namespace'
+import { defineChild, defineNode, XmlObject } from '../../core'
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.drawing.gradientfill
  */
-export class GradientFill extends _Namespace {
-  readonly tag = 'gradFill'
-
-  @defineChild('a:gsLst', _Namespace) gsLst?: _Namespace
-  @defineChild('a:lin', _Namespace) lin?: _Namespace
-  @defineChild('a:path', _Namespace) path?: _Namespace
-  @defineChild('a:tileRect', _Namespace) tileRect?: _Namespace
+@defineNode('gradFill', 'a')
+export class GradientFill extends XmlObject {
+  @defineChild('a:gsLst', XmlObject) gsLst?: XmlObject
+  @defineChild('a:lin', XmlObject) lin?: XmlObject
+  @defineChild('a:path', XmlObject) path?: XmlObject
+  @defineChild('a:tileRect', XmlObject) tileRect?: XmlObject
 }

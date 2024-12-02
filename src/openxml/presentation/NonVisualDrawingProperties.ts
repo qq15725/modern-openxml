@@ -1,12 +1,10 @@
-import { defineProperty } from '../../core'
-import { _Namespace } from './_Namespace'
+import { defineNode, defineProperty, XmlObject } from '../../core'
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.presentation.nonvisualdrawingproperties
  */
-export class NonVisualDrawingProperties extends _Namespace {
-  readonly tag = 'cNvPr'
-
+@defineNode('cNvPr', 'p')
+export class NonVisualDrawingProperties extends XmlObject {
   @defineProperty('id', 'string') declare id: string
   @defineProperty('name', 'string') declare name: string
 }

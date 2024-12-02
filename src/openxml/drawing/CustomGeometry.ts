@@ -1,8 +1,9 @@
-import { _Namespace } from './_Namespace'
+import { defineNode, XmlObject } from '../../core'
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.presentation.customgeometry
  */
-export class CustomGeometry extends _Namespace {
-  readonly tag = 'custGeom'
+@defineNode('custGeom', 'a')
+export class CustomGeometry extends XmlObject {
+  //
 }

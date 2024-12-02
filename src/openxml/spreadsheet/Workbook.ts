@@ -1,13 +1,12 @@
 import type { VNode } from '../vnode'
-import { XmlObject } from '../../core'
+import { defineNode, XmlObject } from '../../core'
 import { Pixel, withAttr, withAttrs, withIndents } from '../utils'
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.spreadsheet.workbook
  */
+@defineNode('workbook')
 export class Workbook extends XmlObject {
-  override readonly tag = 'workbook'
-
   parse(node: VNode) {
     return {
       width: Pixel.decode(node.attr('workbook/bookViews/workbookView/@windowWidth'), 'dxa'),
@@ -39,10 +38,10 @@ export class Workbook extends XmlObject {
   <workbookPr/>
   <bookViews>
     <workbookView${withAttrs([
-      withAttr('windowWidth', Pixel.encode(props.width ?? 1875, 'dxa')),
-      withAttr('windowHeight', Pixel.encode(props.height ?? 836, 'dxa')),
-      withAttr('activeTab', props.activeTab ?? 1),
-    ])}/>
+    withAttr('windowWidth', Pixel.encode(props.width ?? 1875, 'dxa')),
+    withAttr('windowHeight', Pixel.encode(props.height ?? 836, 'dxa')),
+    withAttr('activeTab', props.activeTab ?? 1),
+  ])}/>
   </bookViews>
   <sheets>
     ${withIndents(sheets, 2)}

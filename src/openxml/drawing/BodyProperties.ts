@@ -1,14 +1,12 @@
 import type { TextWrappingValues } from './TextWrappingValues'
-import { defineProperty } from '../../core'
-import { _Namespace } from './_Namespace'
+import { defineNode, defineProperty, XmlObject } from '../../core'
 import { TextAnchoringTypeValues } from './TextAnchoringTypeValues'
 
 /**
  * @link https://learn.microsoft.com/dotnet/api/documentformat.openxml.drawing.bodyproperties
  */
-export class BodyProperties extends _Namespace {
-  readonly tag = 'bodyPr'
-
+@defineNode('bodyPr', 'a')
+export class BodyProperties extends XmlObject {
   @defineProperty('anchor', TextAnchoringTypeValues) anchor?: TextAnchoringTypeValues
   @defineProperty('anchorCtr', 'boolean') anchorCtr?: boolean
   @defineProperty('spcFirstLastPara', 'boolean') spcFirstLastPara?: boolean

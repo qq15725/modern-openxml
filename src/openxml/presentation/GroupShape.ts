@@ -1,14 +1,12 @@
-import { defineChild } from '../../core'
-import { _Namespace } from './_Namespace'
+import { defineChild, defineNode, XmlObject } from '../../core'
 import { GroupShapeProperties } from './GroupShapeProperties'
 import { NonVisualGroupShapeProperties } from './NonVisualGroupShapeProperties'
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.presentation.groupshape
  */
-export class GroupShape extends _Namespace {
-  readonly tag = 'grpSp'
-
+@defineNode('grpSp', 'p')
+export class GroupShape extends XmlObject {
   @defineChild('p:nvGrpSpPr', NonVisualGroupShapeProperties) declare nvGrpSpPr: NonVisualGroupShapeProperties
   @defineChild('p:grpSpPr', GroupShapeProperties) declare grpSpPr: GroupShapeProperties
 }

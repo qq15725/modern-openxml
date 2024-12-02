@@ -1,6 +1,4 @@
-import type { XmlObject } from '../../core'
-import { defineChild } from '../../core'
-import { _Namespace } from './_Namespace'
+import { defineChild, defineNode, XmlObject } from '../../core'
 import { ColorMapOverride } from './ColorMapOverride'
 import { CommonSlideData } from './CommonSlideData'
 import { GroupShape } from './GroupShape'
@@ -11,9 +9,8 @@ import { Timing } from './Timing'
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.presentation.slide
  */
-export class Slide extends _Namespace {
-  readonly tag = 'sld'
-
+@defineNode('sld', 'p')
+export class Slide extends XmlObject {
   attrs = {
     'xmlns': 'http://schemas.openxmlformats.org/presentationml/2006/main',
     'xmlns:a': 'http://schemas.openxmlformats.org/drawingml/2006/main',

@@ -1,3 +1,9 @@
+export function defineNode(tag: string, namespace?: string) {
+  return (constructor: any) => {
+    XmlObject.definitions.set(tag, { tag, namespace, class: constructor })
+  }
+}
+
 export function defineChild(tag: string, Klass: new () => XmlObject, isArray = false) {
   return function (proto: any, name: any) {
     Object.defineProperty(proto, name, {
@@ -27,9 +33,9 @@ export function defineProperty(tag: string, type: any) {
   }
 }
 
-export abstract class XmlObject {
-  readonly namespace?: string
-  abstract readonly tag: string
+export class XmlObject {
+  static definitions = new Map<string, any>()
+
   declare node: HTMLElement
   properties: Record<string, any> = {}
 

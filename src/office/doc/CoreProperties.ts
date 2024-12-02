@@ -1,8 +1,7 @@
-import { XmlObject } from '../../core'
+import { defineNode, XmlObject } from '../../core'
 
+@defineNode('coreProperties', 'cp')
 export class CoreProperties extends XmlObject {
-  readonly tag = 'cp:coreProperties'
-
   attrs = {
     'xmlns': 'http://schemas.openxmlformats.org/package/2006/metadata/core-properties',
     'xmlns:cp': 'http://schemas.openxmlformats.org/package/2006/metadata/core-properties',

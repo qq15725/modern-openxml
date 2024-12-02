@@ -1,13 +1,11 @@
-import { defineChild, defineProperty } from '../../core'
+import { defineChild, defineNode, defineProperty, XmlObject } from '../../core'
 import { Blip, SourceRectangle, Stretch, Tile } from '../drawing'
-import { _Namespace } from './_Namespace'
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.presentation.blipfill
  */
-export class BlipFill extends _Namespace {
-  readonly tag = 'blipFill'
-
+@defineNode('blipFill', 'p')
+export class BlipFill extends XmlObject {
   @defineChild('a:blip', Blip) declare blip: Blip
   @defineChild('a:srcRect', SourceRectangle) declare srcRect: SourceRectangle
   @defineChild('a:stretch', Stretch) declare stretch: Stretch

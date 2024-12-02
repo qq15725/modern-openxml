@@ -1,11 +1,9 @@
-import { defineProperty } from '../../core'
-import { _Namespace } from './_Namespace'
+import { defineNode, defineProperty, XmlObject } from '../../core'
 
 /**
  * @link https://learn.microsoft.com/dotnet/api/documentformat.openxml.drawing.blip
  */
-export class Blip extends _Namespace {
-  readonly tag = 'blip'
-
+@defineNode('blip', 'a')
+export class Blip extends XmlObject {
   @defineProperty('r:embed', 'string') declare rEmbed: string
 }

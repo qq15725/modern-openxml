@@ -1,11 +1,10 @@
-import { _Namespace } from './_Namespace'
+import { defineNode, XmlObject } from '../../core'
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.presentation.presentationproperties
  */
-export class PresentationProperties extends _Namespace {
-  readonly tag = 'presentationPr'
-
+@defineNode('presentationPr', 'p')
+export class PresentationProperties extends XmlObject {
   attrs = {
     'xmlns': 'http://schemas.openxmlformats.org/presentationml/2006/main',
     'xmlns:a': 'http://schemas.openxmlformats.org/drawingml/2006/main',

@@ -1,12 +1,10 @@
-import { defineProperty } from '../../core'
-import { _Namespace } from './_Namespace'
+import { defineNode, defineProperty, XmlObject } from '../../core'
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.presentation.slidemasterid
  */
-export class SlideMasterId extends _Namespace {
-  readonly tag = 'sldMasterId'
-
+@defineNode('sldMasterId', 'p')
+export class SlideMasterId extends XmlObject {
   @defineProperty('id', 'string') declare id: string
   @defineProperty('r:id', 'string') declare rId: string
 }

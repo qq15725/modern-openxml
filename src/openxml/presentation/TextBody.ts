@@ -1,13 +1,11 @@
-import { defineChild } from '../../core'
+import { defineChild, defineNode, XmlObject } from '../../core'
 import { BodyProperties, ListStyle, Paragraph } from '../drawing'
-import { _Namespace } from './_Namespace'
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.presentation.textbody
  */
-export class TextBody extends _Namespace {
-  readonly tag = 'txBody'
-
+@defineNode('txBody', 'p')
+export class TextBody extends XmlObject {
   @defineChild('a:bodyPr', BodyProperties) declare bodyPr: BodyProperties
   @defineChild('a:lstStyle', ListStyle) lstStyle?: ListStyle
   @defineChild('a:p', Paragraph) declare pList: Paragraph[]

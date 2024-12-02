@@ -1,11 +1,10 @@
-import { _Namespace } from './_Namespace'
+import { defineNode, XmlObject } from '../../core'
 
 /**
  * @link https://learn.microsoft.com/dotnet/api/documentformat.openxml.drawing.theme
  */
-export class Theme extends _Namespace {
-  readonly tag = 'theme'
-
+@defineNode('theme', 'a')
+export class Theme extends XmlObject {
   override toXmlString(): string {
     return `<a:theme
   xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"

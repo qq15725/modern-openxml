@@ -1,13 +1,12 @@
 import type { VNode } from '../vnode'
-import { XmlObject } from '../../core'
+import { defineNode, XmlObject } from '../../core'
 import { withIndents } from '../utils'
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.spreadsheet.sharedstringtable
  */
+@defineNode('sst')
 export class SharedStringTable extends XmlObject {
-  override readonly tag = 'sst'
-
   parse(node: VNode) {
     return node.get('sst/si').map(v => v.findEl<Node>('t')?.textContent || '')
   }
