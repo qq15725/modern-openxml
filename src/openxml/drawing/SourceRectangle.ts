@@ -2,10 +2,10 @@ import { defineProperty } from '../../core'
 import { _Namespace } from './_Namespace'
 
 /**
- * @link https://learn.microsoft.com/dotnet/api/documentformat.openxml.drawing.fillrectangle
+ * https://learn.microsoft.com/dotnet/api/documentformat.openxml.presentation.sourcerectangle
  */
-export class FillRectangle extends _Namespace {
-  readonly tag = 'fillRect'
+export class SourceRectangle extends _Namespace {
+  readonly tag = 'srcRect'
 
   @defineProperty('b', 'rate') declare b: number
   @defineProperty('l', 'rate') declare l: number

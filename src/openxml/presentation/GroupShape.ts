@@ -1,6 +1,7 @@
 import { defineChild } from '../../core'
-import { Transform2D } from '../drawing'
 import { _Namespace } from './_Namespace'
+import { GroupShapeProperties } from './GroupShapeProperties'
+import { NonVisualGroupShapeProperties } from './NonVisualGroupShapeProperties'
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.presentation.nonvisualdrawingproperties
@@ -8,5 +9,6 @@ import { _Namespace } from './_Namespace'
 export class GroupShape extends _Namespace {
   readonly tag = 'grpSp'
 
-  @defineChild('a:xfrm', Transform2D) declare xfrm: Transform2D
+  @defineChild('p:nvGrpSpPr', NonVisualGroupShapeProperties) declare nvGrpSpPr: NonVisualGroupShapeProperties
+  @defineChild('p:grpSpPr', GroupShapeProperties) declare grpSpPr: GroupShapeProperties
 }
