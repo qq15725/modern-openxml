@@ -1,9 +1,9 @@
-import { defineNode, XmlObject } from '../../core'
+import { defineElement, OXML } from '../../core'
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.drawing.mastercolormapping
  */
-@defineNode('masterClrMapping', 'a')
-export class MasterColorMapping extends XmlObject {
+@defineElement('masterClrMapping', 'a')
+export class MasterColorMapping extends OXML {
   //
 }

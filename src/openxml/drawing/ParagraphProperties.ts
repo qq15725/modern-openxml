@@ -1,11 +1,11 @@
-import { defineNode, defineProperty, XmlObject } from '../../core'
+import { defineElement, defineProperty, OXML } from '../../core'
 import { TextAlignmentTypeValues } from './TextAlignmentTypeValues'
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.drawing.paragraphproperties
  */
-@defineNode('pPr', 'a')
-export class ParagraphProperties extends XmlObject {
+@defineElement('pPr', 'a')
+export class ParagraphProperties extends OXML {
   @defineProperty('lvl', 'number') lvl?: number
   @defineProperty('marL', 'emu') marL?: number
   @defineProperty('marR', 'emu') marR?: number

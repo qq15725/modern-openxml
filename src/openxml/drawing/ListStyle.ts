@@ -1,9 +1,9 @@
-import { defineNode, XmlObject } from '../../core'
+import { defineElement, OXML } from '../../core'
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.drawing.liststyle
  */
-@defineNode('lstStyle', 'a')
-export class ListStyle extends XmlObject {
+@defineElement('lstStyle', 'a')
+export class ListStyle extends OXML {
   //
 }

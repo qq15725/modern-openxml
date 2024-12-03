@@ -1,9 +1,9 @@
-import { defineNode, XmlObject } from '../../core'
+import { defineElement, OXML } from '../../core'
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.drawing.outline
  */
-@defineNode('ln', 'a')
-export class Outline extends XmlObject {
+@defineElement('ln', 'a')
+export class Outline extends OXML {
   //
 }

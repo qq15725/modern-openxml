@@ -1,10 +1,10 @@
-import { defineChild, defineNode, XmlObject } from '../../core'
-import { MasterColorMapping } from '../drawing'
+import type { MasterColorMapping } from '../drawing'
+import { defineChild, defineElement, OXML } from '../../core'
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.presentation.colormapoverride
  */
-@defineNode('clrMapOvr', 'p')
-export class ColorMapOverride extends XmlObject {
-  @defineChild('a:masterClrMapping', MasterColorMapping) declare masterClrMapping: MasterColorMapping
+@defineElement('clrMapOvr', 'p')
+export class ColorMapOverride extends OXML {
+  @defineChild('masterClrMapping') declare masterClrMapping: MasterColorMapping
 }

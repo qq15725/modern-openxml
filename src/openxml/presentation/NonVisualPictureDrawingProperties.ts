@@ -1,9 +1,9 @@
-import { defineNode, XmlObject } from '../../core'
+import { defineElement, OXML } from '../../core'
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.presentation.nonvisualpicturedrawingproperties
  */
-@defineNode('cNvPicPr', 'p')
-export class NonVisualPictureDrawingProperties extends XmlObject {
+@defineElement('cNvPicPr', 'p')
+export class NonVisualPictureDrawingProperties extends OXML {
   //
 }

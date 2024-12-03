@@ -1,10 +1,10 @@
-import { defineNode, XmlObject } from '../../core'
+import { defineElement, OXML } from '../../core'
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.spreadsheet.stylesheet
  */
-@defineNode('styleSheet')
-export class Stylesheet extends XmlObject {
+@defineElement('styleSheet')
+export class Stylesheet extends OXML {
   override toXmlString(): string {
     return `<styleSheet
   xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"

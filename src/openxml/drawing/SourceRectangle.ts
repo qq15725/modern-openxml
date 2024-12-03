@@ -1,10 +1,10 @@
-import { defineNode, defineProperty, XmlObject } from '../../core'
+import { defineElement, defineProperty, OXML } from '../../core'
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.presentation.sourcerectangle
  */
-@defineNode('srcRect', 'a')
-export class SourceRectangle extends XmlObject {
+@defineElement('srcRect', 'a')
+export class SourceRectangle extends OXML {
   @defineProperty('b', 'rate') declare b: number
   @defineProperty('l', 'rate') declare l: number
   @defineProperty('r', 'rate') declare r: number

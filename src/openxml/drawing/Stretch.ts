@@ -1,10 +1,10 @@
-import { defineChild, defineNode, XmlObject } from '../../core'
-import { FillRectangle } from './FillRectangle'
+import type { FillRectangle } from './FillRectangle'
+import { defineChild, defineElement, OXML } from '../../core'
 
 /**
  * @link https://learn.microsoft.com/dotnet/api/documentformat.openxml.drawing.stretch
  */
-@defineNode('stretch', 'a')
-export class Stretch extends XmlObject {
-  @defineChild('a:fillRect', FillRectangle) fillRect?: FillRectangle
+@defineElement('stretch', 'a')
+export class Stretch extends OXML {
+  @defineChild('fillRect') fillRect?: FillRectangle
 }

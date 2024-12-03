@@ -1,10 +1,10 @@
-import { defineChild, defineNode, XmlObject } from '../../core'
-import { PlaceholderShape } from './PlaceholderShape'
+import type { PlaceholderShape } from './PlaceholderShape'
+import { defineChild, defineElement, OXML } from '../../core'
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.presentation.applicationnonvisualdrawingproperties
  */
-@defineNode('nvPr', 'p')
-export class ApplicationNonVisualDrawingProperties extends XmlObject {
-  @defineChild('p:ph', PlaceholderShape) declare ph: PlaceholderShape
+@defineElement('nvPr', 'p')
+export class ApplicationNonVisualDrawingProperties extends OXML {
+  @defineChild('ph') declare ph: PlaceholderShape
 }

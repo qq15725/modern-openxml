@@ -1,13 +1,13 @@
-import { defineChild, defineNode, XmlObject } from '../../core'
-import { ApplicationNonVisualDrawingProperties } from './ApplicationNonVisualDrawingProperties'
-import { NonVisualDrawingProperties } from './NonVisualDrawingProperties'
+import type { ApplicationNonVisualDrawingProperties } from './ApplicationNonVisualDrawingProperties'
+import type { NonVisualDrawingProperties } from './NonVisualDrawingProperties'
+import { defineChild, defineElement, OXML } from '../../core'
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.presentation.nonvisualgroupshapeproperties
  */
-@defineNode('nvGrpSpPr', 'p')
-export class NonVisualGroupShapeProperties extends XmlObject {
-  @defineChild('p:cNvPr', NonVisualDrawingProperties) declare cNvPr: NonVisualDrawingProperties
-  @defineChild('p:cNvGrpSpPr', XmlObject) declare cNvGrpSpPr: XmlObject
-  @defineChild('p:nvPr', ApplicationNonVisualDrawingProperties) declare nvPr: ApplicationNonVisualDrawingProperties
+@defineElement('nvGrpSpPr', 'p')
+export class NonVisualGroupShapeProperties extends OXML {
+  @defineChild('cNvPr') declare cNvPr: NonVisualDrawingProperties
+  @defineChild('cNvGrpSpPr') declare cNvGrpSpPr: OXML
+  @defineChild('nvPr') declare nvPr: ApplicationNonVisualDrawingProperties
 }

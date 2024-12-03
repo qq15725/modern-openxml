@@ -1,4 +1,10 @@
-import { Pptx } from '../../src'
+import { Picture, Pptx } from '../../src'
+
+console.log(
+  Picture.tagToConstructor,
+  Picture.protoToDefinition,
+  new Picture().definition(),
+)
 
 const input = document.createElement('input')
 document.body.appendChild(input)
@@ -9,7 +15,5 @@ input.onchange = async () => {
 
   const pptx = Pptx.parse(new Uint8Array(await file?.arrayBuffer()))
 
-  console.log(pptx.slides[0].elements)
-
-  console.log(pptx)
+  console.log(pptx.toJSON())
 }

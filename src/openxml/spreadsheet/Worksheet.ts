@@ -2,7 +2,7 @@ import { decodeForMap, encodeForMap, withAttr, withAttrs, withIndents } from '..
 
 // Types
 import type { VNode } from '../vnode'
-import { defineNode, XmlObject } from '../../core'
+import { defineElement, OXML } from '../../core'
 
 const CellType = {
   map: {
@@ -25,8 +25,8 @@ const CellType = {
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.spreadsheet.worksheet
  */
-@defineNode('worksheet')
-export class Worksheet extends XmlObject {
+@defineElement('worksheet')
+export class Worksheet extends OXML {
   parse(node: VNode, sharedStrings: string[]) {
     return {
       cols: node.get('worksheet/cols/col').map((col) => {

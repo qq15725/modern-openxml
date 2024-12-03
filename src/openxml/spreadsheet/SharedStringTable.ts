@@ -1,17 +1,17 @@
 import type { VNode } from '../vnode'
-import { defineNode, XmlObject } from '../../core'
+import { defineElement, OXML } from '../../core'
 import { withIndents } from '../utils'
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.spreadsheet.sharedstringtable
  */
-@defineNode('sst')
-export class SharedStringTable extends XmlObject {
+@defineElement('sst')
+export class SharedStringTable extends OXML {
   parse(node: VNode) {
     return node.get('sst/si').map(v => v.findEl<Node>('t')?.textContent || '')
   }
 
-  override toXmlString(strings: ReturnType<typeof SharedStrings.parse> = []) {
+  override toXmlString(strings: any = []) {
     const stringInners = strings.map((v) => {
       return `<si>
   <t>${v}</t>

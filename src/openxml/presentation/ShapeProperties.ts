@@ -1,5 +1,4 @@
-import { defineChild, defineNode, XmlObject } from '../../core'
-import {
+import type {
   CustomGeometry,
   EffectList,
   GradientFill,
@@ -10,25 +9,26 @@ import {
   SolidFill,
   Transform2D,
 } from '../drawing'
+import { defineChild, defineElement, OXML } from '../../core'
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.presentation.shapeproperties
  */
-@defineNode('spPr', 'p')
-export class ShapeProperties extends XmlObject {
-  @defineChild('a:blipFill', XmlObject) blipFill?: XmlObject
-  @defineChild('a:custGeom', CustomGeometry) custGeom?: CustomGeometry
-  @defineChild('a:effectDag', XmlObject) effectDag?: XmlObject
-  @defineChild('a:effectLst', EffectList) effectLst?: EffectList
-  @defineChild('a:extLst', XmlObject) extLst?: XmlObject
-  @defineChild('a:gradFill', GradientFill) gradFill?: GradientFill
-  @defineChild('a:grpFill', XmlObject) grpFill?: XmlObject
-  @defineChild('a:ln', Outline) ln?: Outline
-  @defineChild('a:noFill', NoFill) noFill?: NoFill
-  @defineChild('a:pattFill', PatternFill) pattFill?: PatternFill
-  @defineChild('a:prstGeom', PresetGeometry) prstGeom?: PresetGeometry
-  @defineChild('a:scene3d', XmlObject) scene3d?: XmlObject
-  @defineChild('a:solidFill', SolidFill) solidFill?: SolidFill
-  @defineChild('a:sp3d', XmlObject) sp3d?: XmlObject
-  @defineChild('a:xfrm', Transform2D) declare xfrm: Transform2D
+@defineElement('spPr', 'p')
+export class ShapeProperties extends OXML {
+  @defineChild('blipFill') blipFill?: OXML
+  @defineChild('custGeom') custGeom?: CustomGeometry
+  @defineChild('effectDag') effectDag?: OXML
+  @defineChild('effectLst') effectLst?: EffectList
+  @defineChild('extLst') extLst?: OXML
+  @defineChild('gradFill') gradFill?: GradientFill
+  @defineChild('grpFill') grpFill?: OXML
+  @defineChild('ln') ln?: Outline
+  @defineChild('noFill') noFill?: NoFill
+  @defineChild('pattFill') pattFill?: PatternFill
+  @defineChild('prstGeom') prstGeom?: PresetGeometry
+  @defineChild('scene3d') scene3d?: OXML
+  @defineChild('solidFill') solidFill?: SolidFill
+  @defineChild('sp3d') sp3d?: OXML
+  @defineChild('xfrm') declare xfrm: Transform2D
 }

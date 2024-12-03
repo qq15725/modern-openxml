@@ -1,9 +1,9 @@
-import { defineNode, XmlObject } from '../../core'
+import { defineElement, OXML } from '../../core'
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.presentation.customgeometry
  */
-@defineNode('custGeom', 'a')
-export class CustomGeometry extends XmlObject {
+@defineElement('custGeom', 'a')
+export class CustomGeometry extends OXML {
   //
 }

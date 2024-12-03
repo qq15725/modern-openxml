@@ -1,20 +1,20 @@
 import type { Paragraph, TextAnchoringTypeValues, TextWrappingValues } from '../drawing'
+import type { NonVisualShapeProperties } from './NonVisualShapeProperties'
 import type { PlaceholderShape } from './PlaceholderShape'
-import { defineChild, defineNode, XmlObject } from '../../core'
-import { NonVisualShapeProperties } from './NonVisualShapeProperties'
-import { ShapeProperties } from './ShapeProperties'
-import { ShapeStyle } from './ShapeStyle'
-import { TextBody } from './TextBody'
+import type { ShapeProperties } from './ShapeProperties'
+import type { ShapeStyle } from './ShapeStyle'
+import type { TextBody } from './TextBody'
+import { defineChild, defineElement, OXML } from '../../core'
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.presentation.shape
  */
-@defineNode('sp', 'p')
-export class Shape extends XmlObject {
-  @defineChild('p:nvSpPr', NonVisualShapeProperties) declare nvSpPr: NonVisualShapeProperties
-  @defineChild('p:spPr', ShapeProperties) declare spPr: ShapeProperties
-  @defineChild('p:txBody', TextBody) declare txBody: TextBody
-  @defineChild('p:style', ShapeStyle) declare style: ShapeStyle
+@defineElement('sp', 'p')
+export class Shape extends OXML {
+  @defineChild('nvSpPr') declare nvSpPr: NonVisualShapeProperties
+  @defineChild('spPr') declare spPr: ShapeProperties
+  @defineChild('txBody') declare txBody: TextBody
+  @defineChild('style') declare style: ShapeStyle
 
   get id(): string { return this.nvSpPr.cNvPr.id }
   get name(): string { return this.nvSpPr.cNvPr.name }

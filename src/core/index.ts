@@ -1,1 +1,1 @@
-export * from './XmlObject'
+export * from './OXML'

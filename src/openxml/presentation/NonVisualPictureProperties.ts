@@ -1,14 +1,14 @@
-import { defineChild, defineNode, XmlObject } from '../../core'
-import { ApplicationNonVisualDrawingProperties } from './ApplicationNonVisualDrawingProperties'
-import { NonVisualDrawingProperties } from './NonVisualDrawingProperties'
-import { NonVisualPictureDrawingProperties } from './NonVisualPictureDrawingProperties'
+import type { ApplicationNonVisualDrawingProperties } from './ApplicationNonVisualDrawingProperties'
+import type { NonVisualDrawingProperties } from './NonVisualDrawingProperties'
+import type { NonVisualPictureDrawingProperties } from './NonVisualPictureDrawingProperties'
+import { defineChild, defineElement, OXML } from '../../core'
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.presentation.nonvisualpictureproperties
  */
-@defineNode('nvPicPr', 'p')
-export class NonVisualPictureProperties extends XmlObject {
-  @defineChild('p:cNvPr', NonVisualDrawingProperties) declare cNvPr: NonVisualDrawingProperties
-  @defineChild('p:cNvPicPr', NonVisualPictureDrawingProperties) declare cNvPicPr: NonVisualPictureDrawingProperties
-  @defineChild('p:nvPr', ApplicationNonVisualDrawingProperties) declare nvPr: ApplicationNonVisualDrawingProperties
+@defineElement('nvPicPr', 'p')
+export class NonVisualPictureProperties extends OXML {
+  @defineChild('cNvPr') declare cNvPr: NonVisualDrawingProperties
+  @defineChild('cNvPicPr') declare cNvPicPr: NonVisualPictureDrawingProperties
+  @defineChild('nvPr') declare nvPr: ApplicationNonVisualDrawingProperties
 }

@@ -1,13 +1,13 @@
 import type { TextAlignmentTypeValues } from './TextAlignmentTypeValues'
-import { defineChild, defineNode, XmlObject } from '../../core'
+import { defineChild, defineElement, OXML } from '../../core'
 import { ParagraphProperties } from './ParagraphProperties'
 import { Run } from './Run'
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.drawing.paragraph
  */
-@defineNode('p', 'a')
-export class Paragraph extends XmlObject {
+@defineElement('p', 'a')
+export class Paragraph extends OXML {
   @defineChild('pPr', ParagraphProperties) declare pPr: ParagraphProperties
   @defineChild('r', Run) declare rList: Run[]
 

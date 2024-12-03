@@ -1,7 +1,7 @@
-import { defineNode, defineProperty, XmlObject } from '../../core'
+import { defineElement, defineProperty, OXML } from '../../core'
 
-@defineNode('Default')
-export class Default extends XmlObject {
+@defineElement('Default')
+export class Default extends OXML {
   @defineProperty('ContentType', 'string') declare contentType: string
   @defineProperty('Extension', 'string') declare extension: string
 }

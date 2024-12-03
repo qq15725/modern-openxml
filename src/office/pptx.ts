@@ -4,12 +4,6 @@ import { unzipSync, zipSync } from 'fflate'
 import { Picture, Presentation, PresentationProperties, Slide, SlideMaster, ViewProperties } from '../openxml'
 import { CoreProperties, Properties, Relationships, Types } from './doc'
 
-interface PptxProps {
-  width?: number
-  height?: number
-  slides: SlideProps[]
-}
-
 export class Pptx {
   declare app: Properties
   declare core: CoreProperties
@@ -40,12 +34,11 @@ export class Pptx {
     const pptx = new Pptx()
 
     // [Content_Types].xml
-    const types = new Types().parse(readXml('[Content_Types].xml'))
-    console.log(types.value)
+    const types = new Types().fromXML(readXml('[Content_Types].xml'))
 
     // _rels/.rels
     const { path: relsPath } = getRelsPath()
-    const rels = new Relationships().parse(readXml(relsPath)).value
+    const rels = new Relationships().fromXML(readXml(relsPath)).value
 
     let presentationPath
     rels.forEach((rel) => {
@@ -53,15 +46,15 @@ export class Pptx {
         // ppt/presentation.xml
         case Relationships.types.presentation:
           presentationPath = rel.target
-          pptx.presentation = new Presentation().parse(readXml(presentationPath))
+          pptx.presentation = new Presentation().fromXML(readXml(presentationPath))
           break
         // doc/app.xml
         case Relationships.types.app:
-          pptx.app = new Properties().parse(readXml(rel.target))
+          pptx.app = new Properties().fromXML(readXml(rel.target))
           break
         // doc/core.xml
         case Relationships.types.core:
-          pptx.core = new CoreProperties().parse(readXml(rel.target))
+          pptx.core = new CoreProperties().fromXML(readXml(rel.target))
           break
         // doc/custom.xml
         case Relationships.types.custom:
@@ -71,19 +64,18 @@ export class Pptx {
 
     // ppt/_rels/presentation.xml.rels
     const { base: presentationRelsBase, path: presentationRelsPath } = getRelsPath(presentationPath)
-    const presentationRels = new Relationships().parse(readXml(presentationRelsPath)).value
-    console.log(presentationRels)
+    const presentationRels = new Relationships().fromXML(readXml(presentationRelsPath)).value
 
     presentationRels.forEach((rel) => {
       const target = `${presentationRelsBase}/${rel.target}`
       switch (rel.type) {
         // ppt/presProps.xml
         case Relationships.types.presProps:
-          pptx.presProps = new PresentationProperties().parse(readXml(target))
+          pptx.presProps = new PresentationProperties().fromXML(readXml(target))
           break
         // ppt/viewProps.xml
         case Relationships.types.viewProps:
-          pptx.viewProps = new ViewProperties().parse(readXml(target))
+          pptx.viewProps = new ViewProperties().fromXML(readXml(target))
           break
       }
     })
@@ -95,11 +87,11 @@ export class Pptx {
     pptx.presentation.sldIdLst.children.forEach((v) => {
       // ppt/slides/slide1.xml
       const slidePath = ridToTarget[v.rId]
-      const slide = new Slide().parse(readXml(slidePath))
+      const slide = new Slide().fromXML(readXml(slidePath))
 
       // ppt/slides/_rels/slide1.xml.rels
       const { base: slideRelsBase, path: slideRelsPath } = getRelsPath(slidePath)
-      const slideRels = new Relationships().parse(readXml(slideRelsPath)).value
+      const slideRels = new Relationships().fromXML(readXml(slideRelsPath)).value
       slideRels.forEach((rel) => {
         switch (rel.type) {
           // ppt/slideLayout/slideLayout1.xml
@@ -117,12 +109,12 @@ export class Pptx {
     pptx.presentation.sldMasterIdLst.children.forEach((v) => {
       // slideMasters/slideMaster1.xml
       const slideMasterPath = ridToTarget[v.rId]
-      const slideMaster = new SlideMaster().parse(readXml(slideMasterPath))
+      const slideMaster = new SlideMaster().fromXML(readXml(slideMasterPath))
       pptx.slideMasters.push(slideMaster)
 
       // ppt/slides/_rels/slide1.xml.rels
       const { base: slideMasterRelsBase, path: slideMasterRelsPath } = getRelsPath(slideMasterPath)
-      const slideMasterRels = new Relationships().parse(readXml(slideMasterRelsPath)).value
+      const slideMasterRels = new Relationships().fromXML(readXml(slideMasterRelsPath)).value
       console.log(slideMasterRels)
     })
 
@@ -137,13 +129,13 @@ export class Pptx {
 
     const data = {
       'docProps': {
-        'app.xml': this.app,
-        'core.xml': this.core,
+        'app.xml': this.app.toXML(),
+        'core.xml': this.core.toXML(),
       },
       'ppt': {
-        'presentation.xml': this.presentation,
-        'presProps.xml': this.presProps,
-        'viewProps.xml': this.viewProps,
+        'presentation.xml': this.presentation.toXML(),
+        'presProps.xml': this.presProps.toXML(),
+        'viewProps.xml': this.viewProps.toXML(),
         'theme': Object.fromEntries(themes),
         'slideLayouts': {
           ...Object.fromEntries(slideLayouts),
@@ -199,5 +191,21 @@ export class Pptx {
 
   toBuffer(): ArrayBuffer {
     return zipSync(this.toZippable()).buffer
+  }
+
+  toJSON() {
+    return {
+      width: this.width,
+      height: this.height,
+      app: this.app?.toJSON(),
+      core: this.core?.toJSON(),
+      themes: this.themes.map(v => v.toJSON()),
+      slideMasters: this.slideMasters.map(v => v.toJSON()),
+      slideLayouts: this.slideLayouts.map(v => v.toJSON()),
+      slides: this.slides.map(v => v.toJSON()),
+      presentation: this.presentation?.toJSON(),
+      presProps: this.presProps?.toJSON(),
+      viewProps: this.viewProps?.toJSON(),
+    }
   }
 }

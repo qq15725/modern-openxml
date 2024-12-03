@@ -1,33 +1,36 @@
-import { defineChild, defineNode, XmlObject } from '../../core'
-import { Relationship } from './Relationship'
+import type { Relationship } from './Relationship'
+import { defineChildren, defineElement, OXML } from '../../core'
 
-@defineNode('Relationships')
-export class Relationships extends XmlObject {
-  static officeDocument = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships'
-  static package = 'http://schemas.openxmlformats.org/package/2006/relationships'
+const officeDocument = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships'
+const _package = 'http://schemas.openxmlformats.org/package/2006/relationships'
+
+@defineElement('Relationships')
+export class Relationships extends OXML {
+  static officeDocument = officeDocument
+  static package = _package
   static types = {
-    presentation: `${this.officeDocument}/officeDocument`,
-    app: `${this.officeDocument}/extended-properties`,
-    core: `${this.package}/metadata/core-properties`,
-    custom: `${this.officeDocument}/custom-properties`,
-    slide: `${this.officeDocument}/slide`,
-    slideLayout: `${this.officeDocument}/slideLayout`,
-    slideMaster: `${this.officeDocument}/slideMaster`,
-    theme: `${this.officeDocument}/theme`,
-    tags: `${this.officeDocument}/tags`,
-    tableStyles: `${this.officeDocument}/tableStyles`,
-    presProps: `${this.officeDocument}/presProps`,
-    viewProps: `${this.officeDocument}/viewProps`,
-    notesMaster: `${this.officeDocument}/notesMaster`,
-    handoutMaster: `${this.officeDocument}/handoutMaster`,
-    commentAuthors: `${this.officeDocument}/commentAuthors`,
+    presentation: `${officeDocument}/officeDocument`,
+    app: `${officeDocument}/extended-properties`,
+    core: `${_package}/metadata/core-properties`,
+    custom: `${officeDocument}/custom-properties`,
+    slide: `${officeDocument}/slide`,
+    slideLayout: `${officeDocument}/slideLayout`,
+    slideMaster: `${officeDocument}/slideMaster`,
+    theme: `${officeDocument}/theme`,
+    tags: `${officeDocument}/tags`,
+    tableStyles: `${officeDocument}/tableStyles`,
+    presProps: `${officeDocument}/presProps`,
+    viewProps: `${officeDocument}/viewProps`,
+    notesMaster: `${officeDocument}/notesMaster`,
+    handoutMaster: `${officeDocument}/handoutMaster`,
+    commentAuthors: `${officeDocument}/commentAuthors`,
   }
 
   attrs = {
     xmlns: 'http://schemas.openxmlformats.org/package/2006/relationships',
   }
 
-  @defineChild('Relationship', Relationship, true) declare children: Relationship[]
+  @defineChildren('Relationship') declare children: Relationship[]
 
   get value(): { id: string, type: string, target: string }[] {
     return this.children.map(v => ({ id: v.id, type: v.type, target: v.target }))

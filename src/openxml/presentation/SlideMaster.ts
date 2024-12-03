@@ -1,12 +1,12 @@
-import { defineChild, defineNode, XmlObject } from '../../core'
-import { ColorMap } from './ColorMap'
+import type { ColorMap } from './ColorMap'
+import { defineChild, defineElement, OXML } from '../../core'
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.presentation.slidemaster
  */
-@defineNode('sldMaster', 'p')
-export class SlideMaster extends XmlObject {
-  @defineChild('p:clrMap', ColorMap) declare clrMap: ColorMap
+@defineElement('sldMaster', 'p')
+export class SlideMaster extends OXML {
+  @defineChild('clrMap') declare clrMap: ColorMap
 
   override toXmlString(): string {
     return `<p:sldMaster

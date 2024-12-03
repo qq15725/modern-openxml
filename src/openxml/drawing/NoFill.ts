@@ -1,9 +1,9 @@
-import { defineNode, XmlObject } from '../../core'
+import { defineElement, OXML } from '../../core'
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.drawing.nofill
  */
-@defineNode('noFill', 'a')
-export class NoFill extends XmlObject {
+@defineElement('noFill', 'a')
+export class NoFill extends OXML {
   //
 }

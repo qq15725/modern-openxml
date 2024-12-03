@@ -1,9 +1,9 @@
-import { defineNode, XmlObject } from '../../core'
+import { defineElement, OXML } from '../../core'
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.presentation.timing
  */
-@defineNode('timing', 'p')
-export class Timing extends XmlObject {
+@defineElement('timing', 'p')
+export class Timing extends OXML {
   // TODO
 }

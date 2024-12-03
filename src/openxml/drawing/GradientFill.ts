@@ -1,12 +1,12 @@
-import { defineChild, defineNode, XmlObject } from '../../core'
+import { defineChild, defineElement, OXML } from '../../core'
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.drawing.gradientfill
  */
-@defineNode('gradFill', 'a')
-export class GradientFill extends XmlObject {
-  @defineChild('a:gsLst', XmlObject) gsLst?: XmlObject
-  @defineChild('a:lin', XmlObject) lin?: XmlObject
-  @defineChild('a:path', XmlObject) path?: XmlObject
-  @defineChild('a:tileRect', XmlObject) tileRect?: XmlObject
+@defineElement('gradFill', 'a')
+export class GradientFill extends OXML {
+  @defineChild('a:gsLst', OXML) gsLst?: OXML
+  @defineChild('a:lin', OXML) lin?: OXML
+  @defineChild('a:path', OXML) path?: OXML
+  @defineChild('a:tileRect', OXML) tileRect?: OXML
 }

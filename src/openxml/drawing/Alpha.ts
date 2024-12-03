@@ -1,9 +1,9 @@
-import { defineNode, defineProperty, XmlObject } from '../../core'
+import { defineElement, defineProperty, OXML } from '../../core'
 
 /**
  * @link https://learn.microsoft.com/dotnet/api/documentformat.openxml.drawing.alpha
  */
-@defineNode('alpha', 'a')
-export class Alpha extends XmlObject {
+@defineElement('alpha', 'a')
+export class Alpha extends OXML {
   @defineProperty('val', 'string') declare val: string
 }

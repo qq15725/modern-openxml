@@ -1,10 +1,10 @@
-import { defineChild, defineNode, XmlObject } from '../../core'
-import { SlideId } from './SlideId'
+import type { SlideId } from './SlideId'
+import { defineChildren, defineElement, OXML } from '../../core'
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.presentation.slideidlist
  */
-@defineNode('sldIdLst', 'p')
-export class SlideIdList extends XmlObject {
-  @defineChild('p:sldId', SlideId, true) declare children: SlideId[]
+@defineElement('sldIdLst', 'p')
+export class SlideIdList extends OXML {
+  @defineChildren('sldId') declare children: SlideId[]
 }

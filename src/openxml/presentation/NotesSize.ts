@@ -1,10 +1,10 @@
-import { defineNode, defineProperty, XmlObject } from '../../core'
+import { defineElement, defineProperty, OXML } from '../../core'
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.presentation.notessize
  */
-@defineNode('notesSz', 'p')
-export class NotesSize extends XmlObject {
+@defineElement('notesSz', 'p')
+export class NotesSize extends OXML {
   @defineProperty('cx', 'emu') declare cx: number
   @defineProperty('cy', 'emu') declare cy: number
 }

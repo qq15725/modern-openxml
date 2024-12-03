@@ -1,7 +1,7 @@
-import { defineNode, XmlObject } from '../../core'
+import { defineElement, OXML } from '../../core'
 
-@defineNode('clrMap', 'p')
-export class ColorMap extends XmlObject {
+@defineElement('clrMap', 'p')
+export class ColorMap extends OXML {
   // parse(node: VNode | undefined) {
   //   if (!node)
   //     return undefined

@@ -1,12 +1,12 @@
-import { defineChild, defineNode, defineProperty, XmlObject } from '../../core'
-import { Alpha } from './Alpha'
+import type { Alpha } from './Alpha'
+import { defineChild, defineElement, defineProperty, OXML } from '../../core'
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.drawing.srgbclr
  */
-@defineNode('srgbClr', 'a')
-export class SrgbClr extends XmlObject {
+@defineElement('srgbClr', 'a')
+export class SrgbClr extends OXML {
   @defineProperty('val', 'string') declare val: string
 
-  @defineChild('a:alpha', Alpha) alpha?: Alpha
+  @defineChild('alpha') alpha?: Alpha
 }

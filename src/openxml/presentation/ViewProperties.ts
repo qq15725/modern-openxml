@@ -1,10 +1,10 @@
-import { defineNode, XmlObject } from '../../core'
+import { defineElement, OXML } from '../../core'
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.presentation.viewproperties
  */
-@defineNode('viewPr', 'p')
-export class ViewProperties extends XmlObject {
+@defineElement('viewPr', 'p')
+export class ViewProperties extends OXML {
   attrs = {
     'xmlns': 'http://schemas.openxmlformats.org/presentationml/2006/main',
     'xmlns:a': 'http://schemas.openxmlformats.org/drawingml/2006/main',

@@ -1,7 +1,7 @@
-import { defineNode, defineProperty, XmlObject } from '../../core'
+import { defineElement, defineProperty, OXML } from '../../core'
 
-@defineNode('Relationship')
-export class Relationship extends XmlObject {
+@defineElement('Relationship')
+export class Relationship extends OXML {
   @defineProperty('Id', 'string') declare id: string
   @defineProperty('Type', 'string') declare type: string
   @defineProperty('Target', 'string') declare target: string

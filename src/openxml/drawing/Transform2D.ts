@@ -1,18 +1,18 @@
-import { defineChild, defineNode, defineProperty, XmlObject } from '../../core'
-import { Extents } from './Extents'
-import { Offset } from './Offset'
+import type { Extents } from './Extents'
+import type { Offset } from './Offset'
+import { defineChild, defineElement, defineProperty, OXML } from '../../core'
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.drawing.transform2d
  */
-@defineNode('xfrm', 'a')
-export class Transform2D extends XmlObject {
+@defineElement('xfrm', 'a')
+export class Transform2D extends OXML {
   @defineProperty('rot', 'degree') declare rot: number
   @defineProperty('flipV', 'boolean') declare flipV: boolean
   @defineProperty('flipH', 'boolean') declare flipH: boolean
 
-  @defineChild('a:off', Offset) declare off: Offset
-  @defineChild('a:ext', Extents) declare ext: Extents
-  @defineChild('a:chOff', Offset) chOff?: Offset
-  @defineChild('a:chExt', Extents) chExt?: Extents
+  @defineChild('off') declare off: Offset
+  @defineChild('ext') declare ext: Extents
+  @defineChild('chOff') chOff?: Offset
+  @defineChild('chExt') chExt?: Extents
 }

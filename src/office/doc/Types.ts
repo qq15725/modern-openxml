@@ -1,45 +1,51 @@
-import { defineChild, defineNode, XmlObject } from '../../core'
-import { Default } from './Default'
-import { Override } from './Override'
+import type { Default } from './Default'
+import type { Override } from './Override'
+import { defineChildren, defineElement, OXML } from '../../core'
 
-@defineNode('Types')
-export class Types extends XmlObject {
-  static package = 'application/vnd.openxmlformats-package'
-  static officedocument = 'application/vnd.openxmlformats-officedocument'
-  static presentationml = `${this.officedocument}/presentationml`
-  static wordprocessingml = `${this.officedocument}/wordprocessingml`
-  static spreadsheetml = `${this.officedocument}/spreadsheetml`
+const _package = 'application/vnd.openxmlformats-package'
+const officedocument = 'application/vnd.openxmlformats-officedocument'
+const presentationml = `${officedocument}/presentationml`
+const wordprocessingml = `${officedocument}/wordprocessingml`
+const spreadsheetml = `${officedocument}/spreadsheetml`
+
+@defineElement('Types')
+export class Types extends OXML {
+  static package = _package
+  static officedocument = officedocument
+  static presentationml = presentationml
+  static wordprocessingml = wordprocessingml
+  static spreadsheetml = spreadsheetml
   static map = {
-    relationship: `${this.package}.relationships+xml`,
-    core: `${this.package}.core-properties+xml`,
-    app: `${this.officedocument}.extended-properties+xml`,
-    custom: `${this.officedocument}.custom-properties+xml`,
-    theme: `${this.officedocument}.theme+xml`,
-    notesSlide: `${this.presentationml}.notesSlide+xml`,
-    notesMaster: `${this.presentationml}.notesMaster+xml`,
-    slideLayout: `${this.presentationml}.slideLayout+xml`,
-    slideMaster: `${this.presentationml}.slideMaster+xml`,
-    slide: `${this.presentationml}.slide+xml`,
-    presentation: `${this.presentationml}.presentation.main+xml`,
-    presProps: `${this.presentationml}.presProps+xml`,
-    viewProps: `${this.presentationml}.viewProps+xml`,
-    document: `${this.wordprocessingml}.document.main+xml`,
-    docxStyles: `${this.wordprocessingml}.styles+xml`,
-    settings: `${this.wordprocessingml}.settings+xml`,
-    webSettings: `${this.wordprocessingml}.webSettings+xml`,
-    fontTable: `${this.wordprocessingml}.fontTable+xml`,
-    sharedStrings: `${this.spreadsheetml}.sharedStrings+xml`,
-    xlsxStyles: `${this.spreadsheetml}.styles+xml`,
-    workbook: `${this.spreadsheetml}.sheet.main+xml`,
-    worksheet: `${this.spreadsheetml}.worksheet+xml`,
+    relationship: `${_package}.relationships+xml`,
+    core: `${_package}.core-properties+xml`,
+    app: `${officedocument}.extended-properties+xml`,
+    custom: `${officedocument}.custom-properties+xml`,
+    theme: `${officedocument}.theme+xml`,
+    notesSlide: `${presentationml}.notesSlide+xml`,
+    notesMaster: `${presentationml}.notesMaster+xml`,
+    slideLayout: `${presentationml}.slideLayout+xml`,
+    slideMaster: `${presentationml}.slideMaster+xml`,
+    slide: `${presentationml}.slide+xml`,
+    presentation: `${presentationml}.presentation.main+xml`,
+    presProps: `${presentationml}.presProps+xml`,
+    viewProps: `${presentationml}.viewProps+xml`,
+    document: `${wordprocessingml}.document.main+xml`,
+    docxStyles: `${wordprocessingml}.styles+xml`,
+    settings: `${wordprocessingml}.settings+xml`,
+    webSettings: `${wordprocessingml}.webSettings+xml`,
+    fontTable: `${wordprocessingml}.fontTable+xml`,
+    sharedStrings: `${spreadsheetml}.sharedStrings+xml`,
+    xlsxStyles: `${spreadsheetml}.styles+xml`,
+    workbook: `${spreadsheetml}.sheet.main+xml`,
+    worksheet: `${spreadsheetml}.worksheet+xml`,
   } as const
 
   attrs = {
     xmlns: 'http://schemas.openxmlformats.org/package/2006/content-types',
   }
 
-  @defineChild('Default', Default, true) declare defaultList: Default[]
-  @defineChild('Override', Override, true) declare overrideList: Override[]
+  @defineChildren('Default') declare defaultList: Default[]
+  @defineChildren('Override') declare overrideList: Override[]
 
   get value(): Record<string, string> {
     return {

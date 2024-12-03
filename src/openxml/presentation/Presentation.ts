@@ -1,15 +1,15 @@
-import { defineChild, defineNode, XmlObject } from '../../core'
-import { DefaultTextStyle } from './DefaultTextStyle'
-import { NotesSize } from './NotesSize'
-import { SlideIdList } from './SlideIdList'
-import { SlideMasterIdList } from './SlideMasterIdList'
-import { SlideSize } from './SlideSize'
+import type { DefaultTextStyle } from './DefaultTextStyle'
+import type { NotesSize } from './NotesSize'
+import type { SlideIdList } from './SlideIdList'
+import type { SlideMasterIdList } from './SlideMasterIdList'
+import type { SlideSize } from './SlideSize'
+import { defineChild, defineElement, OXML } from '../../core'
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.presentation.presentation
  */
-@defineNode('presentation', 'p')
-export class Presentation extends XmlObject {
+@defineElement('presentation', 'p')
+export class Presentation extends OXML {
   attrs = {
     'xmlns': 'http://schemas.openxmlformats.org/presentationml/2006/main',
     'xmlns:a': 'http://schemas.openxmlformats.org/drawingml/2006/main',
@@ -20,9 +20,9 @@ export class Presentation extends XmlObject {
     'conformance': 'transitional',
   }
 
-  @defineChild('p:sldMasterIdLst', SlideMasterIdList) declare sldMasterIdLst: SlideMasterIdList
-  @defineChild('p:sldIdLst', SlideIdList) declare sldIdLst: SlideIdList
-  @defineChild('p:sldSz', SlideSize) declare sldSz: SlideSize
-  @defineChild('p:notesSz', NotesSize) declare notesSz: NotesSize
-  @defineChild('p:defaultTextStyle', DefaultTextStyle) declare defaultTextStyle: DefaultTextStyle
+  @defineChild('sldMasterIdLst') declare sldMasterIdLst: SlideMasterIdList
+  @defineChild('sldIdLst') declare sldIdLst: SlideIdList
+  @defineChild('sldSz') declare sldSz: SlideSize
+  @defineChild('notesSz') declare notesSz: NotesSize
+  @defineChild('defaultTextStyle') declare defaultTextStyle: DefaultTextStyle
 }

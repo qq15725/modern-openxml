@@ -1,18 +1,18 @@
-import { defineChild, defineNode, XmlObject } from '../../core'
-import { BlipFill } from './BlipFill'
-import { NonVisualPictureProperties } from './NonVisualPictureProperties'
-import { ShapeProperties } from './ShapeProperties'
-import { ShapeStyle } from './ShapeStyle'
+import type { BlipFill } from './BlipFill'
+import type { NonVisualPictureProperties } from './NonVisualPictureProperties'
+import type { ShapeProperties } from './ShapeProperties'
+import type { ShapeStyle } from './ShapeStyle'
+import { defineChild, defineElement, OXML } from '../../core'
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.presentation.picture
  */
-@defineNode('pic', 'p')
-export class Picture extends XmlObject {
-  @defineChild('p:blipFill', BlipFill) declare blipFill: BlipFill
-  @defineChild('p:nvPicPr', NonVisualPictureProperties) declare nvPicPr: NonVisualPictureProperties
-  @defineChild('p:spPr', ShapeProperties) declare spPr: ShapeProperties
-  @defineChild('p:style', ShapeStyle) declare style: ShapeStyle
+@defineElement('pic', 'p')
+export class Picture extends OXML {
+  @defineChild('blipFill') declare blipFill: BlipFill
+  @defineChild('nvPicPr') declare nvPicPr: NonVisualPictureProperties
+  @defineChild('spPr') declare spPr: ShapeProperties
+  @defineChild('style') declare style: ShapeStyle
 
   get id(): string { return this.nvPicPr.cNvPr.id }
   get name(): string { return this.nvPicPr.cNvPr.name }

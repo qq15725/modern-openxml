@@ -1,14 +1,14 @@
-import { defineChild, defineNode, XmlObject } from '../../core'
+import { defineChild, defineElement, OXML } from '../../core'
 
 /**
  * @link https://learn.microsoft.com/dotnet/api/documentformat.openxml.drawing.effectreference
  */
-@defineNode('effectRef', 'a')
-export class EffectReference extends XmlObject {
-  @defineChild('hslClr', XmlObject) hslClr?: XmlObject
-  @defineChild('prstClr', XmlObject) prstClr?: XmlObject
-  @defineChild('schemeClr', XmlObject) schemeClr?: XmlObject
-  @defineChild('scrgbClr', XmlObject) scrgbClr?: XmlObject
-  @defineChild('srgbClr', XmlObject) srgbClr?: XmlObject
-  @defineChild('sysClr', XmlObject) sysClr?: XmlObject
+@defineElement('effectRef', 'a')
+export class EffectReference extends OXML {
+  @defineChild('hslClr') hslClr?: OXML
+  @defineChild('prstClr') prstClr?: OXML
+  @defineChild('schemeClr') schemeClr?: OXML
+  @defineChild('scrgbClr') scrgbClr?: OXML
+  @defineChild('srgbClr') srgbClr?: OXML
+  @defineChild('sysClr') sysClr?: OXML
 }

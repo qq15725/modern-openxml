@@ -1,9 +1,9 @@
-import { defineNode, defineProperty, XmlObject } from '../../core'
+import { defineElement, defineProperty, OXML } from '../../core'
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.drawing.schemecolor
  */
-@defineNode('schemeClr', 'a')
-export class SchemeColor extends XmlObject {
+@defineElement('schemeClr', 'a')
+export class SchemeColor extends OXML {
   @defineProperty('val', 'string') declare val: string
 }

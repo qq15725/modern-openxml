@@ -1,9 +1,9 @@
-import { defineNode, defineProperty, XmlObject } from '../../core'
+import { defineElement, defineProperty, OXML } from '../../core'
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.presentation.presetgeometry
  */
-@defineNode('prstGeom', 'a')
-export class PresetGeometry extends XmlObject {
+@defineElement('prstGeom', 'a')
+export class PresetGeometry extends OXML {
   @defineProperty('prst', 'string') declare prst: string
 }

@@ -1,14 +1,14 @@
-import { defineChild, defineNode, XmlObject } from '../../core'
-import { RunProperties } from './RunProperties'
-import { Text } from './Text'
+import type { RunProperties } from './RunProperties'
+import type { Text } from './Text'
+import { defineChild, defineElement, OXML } from '../../core'
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.drawing.run
  */
-@defineNode('r', 'a')
-export class Run extends XmlObject {
-  @defineChild('rPr', RunProperties) declare rPr: RunProperties
-  @defineChild('t', Text) declare t: Text
+@defineElement('r', 'a')
+export class Run extends OXML {
+  @defineChild('rPr') declare rPr: RunProperties
+  @defineChild('t') declare t: Text
 
   get color(): string | undefined { return this.rPr.solidFill?.srgbClr.val }
   get bold(): boolean | undefined { return this.rPr.b }
@@ -21,5 +21,5 @@ export class Run extends XmlObject {
   get fontEastasian(): string | undefined { return this.rPr.ea?.typeface }
   get fontLatin(): string | undefined { return this.rPr.latin?.typeface }
   get fontSymbol(): string | undefined { return this.rPr.sym?.typeface }
-  get textContent(): string { return this.t.node.textContent ?? '' }
+  get textContent(): string { return this.t.element.textContent ?? '' }
 }
