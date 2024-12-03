@@ -1,4 +1,4 @@
-import { defineElement, defineProperty, OXML } from '../../core'
+import { defineAttribute, defineElement, OXML } from '../../core'
 import { TextAlignmentTypeValues } from './TextAlignmentTypeValues'
 
 /**
@@ -6,11 +6,11 @@ import { TextAlignmentTypeValues } from './TextAlignmentTypeValues'
  */
 @defineElement('pPr', 'a')
 export class ParagraphProperties extends OXML {
-  @defineProperty('lvl', 'number') lvl?: number
-  @defineProperty('marL', 'emu') marL?: number
-  @defineProperty('marR', 'emu') marR?: number
-  @defineProperty('indent', 'emu') indent?: number
-  @defineProperty('algn', TextAlignmentTypeValues) algn?: TextAlignmentTypeValues
-  @defineProperty('fontAlgn', 'string') fontAlgn?: string
-  @defineProperty('rtl', 'string') rtl?: string
+  @defineAttribute('lvl', 'number') lvl?: number
+  @defineAttribute('marL', 'emu') marL?: number
+  @defineAttribute('marR', 'emu') marR?: number
+  @defineAttribute('indent', 'emu') indent?: number
+  @defineAttribute('algn', TextAlignmentTypeValues) algn?: TextAlignmentTypeValues
+  @defineAttribute('fontAlgn') fontAlgn?: string
+  @defineAttribute('rtl') rtl?: string
 }

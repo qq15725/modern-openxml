@@ -1,5 +1,5 @@
 import type { TextWrappingValues } from './TextWrappingValues'
-import { defineElement, defineProperty, OXML } from '../../core'
+import { defineAttribute, defineElement, OXML } from '../../core'
 import { TextAnchoringTypeValues } from './TextAnchoringTypeValues'
 
 /**
@@ -7,14 +7,14 @@ import { TextAnchoringTypeValues } from './TextAnchoringTypeValues'
  */
 @defineElement('bodyPr', 'a')
 export class BodyProperties extends OXML {
-  @defineProperty('anchor', TextAnchoringTypeValues) anchor?: TextAnchoringTypeValues
-  @defineProperty('anchorCtr', 'boolean') anchorCtr?: boolean
-  @defineProperty('spcFirstLastPara', 'boolean') spcFirstLastPara?: boolean
-  @defineProperty('lIns', 'emu') lIns?: number
-  @defineProperty('tIns', 'emu') tIns?: number
-  @defineProperty('rIns', 'emu') rIns?: number
-  @defineProperty('bIns', 'emu') bIns?: number
-  @defineProperty('rot', 'degree') rot?: number
-  @defineProperty('wrap', 'string') wrap?: TextWrappingValues
-  @defineProperty('upright', 'boolean') upright?: boolean
+  @defineAttribute('anchor', TextAnchoringTypeValues) anchor?: TextAnchoringTypeValues
+  @defineAttribute('anchorCtr', 'boolean') anchorCtr?: boolean
+  @defineAttribute('spcFirstLastPara', 'boolean') spcFirstLastPara?: boolean
+  @defineAttribute('lIns', 'emu') lIns?: number
+  @defineAttribute('tIns', 'emu') tIns?: number
+  @defineAttribute('rIns', 'emu') rIns?: number
+  @defineAttribute('bIns', 'emu') bIns?: number
+  @defineAttribute('rot', 'degree') rot?: number
+  @defineAttribute('wrap') wrap?: TextWrappingValues
+  @defineAttribute('upright', 'boolean') upright?: boolean
 }

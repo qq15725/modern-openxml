@@ -1,7 +1,7 @@
-import { defineElement, defineProperty, OXML } from '../../core'
+import { defineAttribute, defineElement, OXML } from '../../core'
 
 @defineElement('Override')
 export class Override extends OXML {
-  @defineProperty('ContentType', 'string') declare contentType: string
-  @defineProperty('PartName', 'string') declare partName: string
+  @defineAttribute('ContentType') declare contentType: string
+  @defineAttribute('PartName') declare partName: string
 }

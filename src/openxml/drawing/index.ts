@@ -1,5 +1,7 @@
 export * from './Blip'
 export * from './BodyProperties'
+export * from './ChildExtents'
+export * from './ChildOffset'
 export * from './CustomGeometry'
 export * from './EffectList'
 export * from './EffectReference'

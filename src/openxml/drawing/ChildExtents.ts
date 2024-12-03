@@ -1,10 +1,10 @@
 import { defineAttribute, defineElement, OXML } from '../../core'
 
 /**
- * @link https://learn.microsoft.com/dotnet/api/documentformat.openxml.drawing.extents
+ * @link https://learn.microsoft.com/dotnet/api/documentformat.openxml.drawing.childextents
  */
-@defineElement('ext', 'a')
-export class Extents extends OXML {
+@defineElement('chExt', 'a')
+export class ChildExtents extends OXML {
   @defineAttribute('cx', 'emu') declare cx: number
   @defineAttribute('cy', 'emu') declare cy: number
 }

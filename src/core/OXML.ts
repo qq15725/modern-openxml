@@ -1,13 +1,11 @@
 export type OXMLProto = new (...args: any[]) => OXML
 
-export interface OXMLPropertyDefinition {
-  key: string
+export interface OXMLAttributeDefinition {
   type: string
   defaultValue?: any
 }
 
-export interface OXMLAttrDefinition {
-  name: string
+export interface OXMLPropertyDefinition {
   type: string
   defaultValue?: any
 }
@@ -21,8 +19,8 @@ export interface OXMLChildDefinition {
 export interface OXMLDefinition {
   tag?: string
   namespace?: string
-  attrs?: OXMLAttrDefinition[]
-  properties?: OXMLPropertyDefinition[]
+  attributes?: Map<string, OXMLAttributeDefinition>
+  properties?: Map<string, OXMLPropertyDefinition>
   children?: OXMLChildDefinition[]
 }
 
@@ -45,18 +43,41 @@ export function defineElement(tag: string, namespace?: string) {
   }
 }
 
-export function defineProperty(attrName: string, type: string, defaultValue?: any) {
+export function defineAttribute(
+  attrName: string,
+  type: string | Record<string, any> = 'string',
+  defaultValue?: any,
+) {
   return function (proto: any, name: any) {
     let definition = OXML.protoToDefinition.get(proto)
     if (!definition) {
       definition = {} as OXMLDefinition
       OXML.protoToDefinition.set(proto, definition)
     }
-    definition.attrs ??= []
-    definition.attrs.push({ name: attrName, type, defaultValue })
+    definition.attributes ??= new Map()
+    definition.attributes.set(attrName, { type, defaultValue })
     Object.defineProperty(proto, name, {
       get() {
-        return (this as OXML).getProperty(attrName)
+        return (this as OXML).getAttribute(attrName)
+      },
+      configurable: true,
+      enumerable: true,
+    })
+  }
+}
+
+export function defineProperty(propName: string, type: any, defaultValue: any) {
+  return function (proto: any, name: any) {
+    let definition = OXML.protoToDefinition.get(proto)
+    if (!definition) {
+      definition = {} as OXMLDefinition
+      OXML.protoToDefinition.set(proto, definition)
+    }
+    definition.properties ??= new Map()
+    definition.properties.set(propName, { type, defaultValue })
+    Object.defineProperty(proto, name, {
+      get() {
+        return (this as OXML).getAttribute(propName)
       },
     })
   }
@@ -80,6 +101,8 @@ export function defineChild(tag: string, defaultValue?: any, isArray = false) {
           return (this as OXML).getChild(tag) ?? defaultValue
         }
       },
+      configurable: true,
+      enumerable: true,
     })
   }
 }
@@ -89,15 +112,16 @@ export function defineChildren(tag: string, defaultValue?: any) {
 }
 
 export class OXML {
+  static DPI = 72
   static tagToConstructor = new Map<string, OXMLProto>()
   static protoToDefinition = new WeakMap<OXMLProto, OXMLDefinition>()
 
-  static findConstructor(tag: string): OXMLProto | undefined {
+  static getConstructor(tag: string): OXMLProto | undefined {
     return this.tagToConstructor.get(tag)
   }
 
-  static findDefinition(tag: string): OXMLDefinition | undefined {
-    const proto = this.findConstructor(tag)?.prototype
+  static getDefinition(tag: string): OXMLDefinition | undefined {
+    const proto = this.getConstructor(tag)?.prototype
     return proto ? this.protoToDefinition.get(proto) : undefined
   }
 
@@ -108,14 +132,64 @@ export class OXML {
     return OXML.protoToDefinition.get(this.constructor.prototype as any)
   }
 
-  getProperty(name: string): any | undefined {
-    return this.element.getAttribute(name)
+  setAttribute(name: string, value: any): void {
+    const definition = this.definition()?.attributes?.get(name)
+    let newValue
+    switch (definition?.type) {
+      case 'boolean':
+        newValue = !!value
+        break
+      case 'degree':
+        newValue = Number(value) / 60000
+        break
+      case 'number':
+        newValue = Number(value)
+        break
+      case 'string':
+        newValue = value
+        break
+      case 'emu':
+        newValue = (Number(value) / 914400) * OXML.DPI
+        break
+      default:
+        if (definition) {
+          console.warn(`${this.tag ?? this.element.tagName} ${name} type not found: ${definition.type}`, definition)
+        }
+        newValue = value
+        break
+    }
+    this.element.setAttribute(name, newValue)
   }
 
-  getProperties(): Record<string, any> {
+  getAttribute(name: string): any | undefined {
+    const value = this.element.getAttribute(name)
+    const definition = this.definition()?.attributes?.get(name)
+    if (value === undefined) {
+      return value ?? definition?.defaultValue
+    }
+    switch (definition?.type) {
+      case 'boolean':
+        return !!value
+      case 'degree':
+        return Number(value) / 60000
+      case 'number':
+        return Number(value)
+      case 'string':
+        return value
+      case 'emu':
+        return (Number(value) / 914400) * OXML.DPI
+      default:
+        if (definition) {
+          console.warn(`${this.tag ?? this.element.tagName} ${name} type not found: ${definition.type}`, definition)
+        }
+        return value
+    }
+  }
+
+  getAttributes(): Record<string, any> {
     return Object.fromEntries(
       this.element.getAttributeNames().map((name) => {
-        return [name, this.element.getAttribute(name)]
+        return [name, this.getAttribute(name)]
       }),
     )
   }
@@ -125,7 +199,7 @@ export class OXML {
       return element.tagName === tag || element.localName === tag
     })
     if (element) {
-      return new (OXML.findConstructor(element.tagName) ?? OXML)().fromElement(element)
+      return new (OXML.getConstructor(element.tagName) ?? OXML)().fromElement(element)
     }
     return undefined
   }
@@ -134,7 +208,7 @@ export class OXML {
     return Array.from(this.element.children)
       .map((element) => {
         if (!tag || (element.tagName === tag || element.localName === tag)) {
-          return new (OXML.findConstructor(element.tagName) ?? OXML)().fromElement(element)
+          return new (OXML.getConstructor(element.tagName) ?? OXML)().fromElement(element)
         }
         return undefined
       })
@@ -167,7 +241,7 @@ export class OXML {
 
   toJSON(): Record<string, any> {
     return {
-      ...this.getProperties(),
+      ...this.getAttributes(),
       ...Object.fromEntries(this.getChildren().map((child) => {
         const tag = child.tag ?? child.element.tagName
         const tagArr = tag.split(':')

@@ -1,7 +1,7 @@
 import type { ColorMapOverride } from './ColorMapOverride'
 import type { CommonSlideData } from './CommonSlideData'
 import type { Timing } from './Timing'
-import { defineChild, defineElement, OXML } from '../../core'
+import { defineChild, defineElement, defineProperty, OXML } from '../../core'
 import { getElements } from './_utils'
 
 /**
@@ -20,7 +20,12 @@ export class Slide extends OXML {
   @defineChild('clrMapOvr') declare clrMapOvr: ColorMapOverride
   @defineChild('timing') declare timing: Timing
 
-  get id(): string { return this.cSld.spTree.nvGrpSpPr.cNvPr.id }
-  get name(): string { return this.cSld.spTree.nvGrpSpPr.cNvPr.name }
-  get elements(): OXML[] { return getElements(this.cSld.spTree.element.children) }
+  @defineProperty('cSld.spTree.nvGrpSpPr.cNvPr.id') declare id: string
+  @defineProperty('cSld.spTree.nvGrpSpPr.cNvPr.name') declare name: string
+  @defineProperty({
+    get() {
+      return getElements(this.cSld.spTree.element.children)
+    },
+  })
+  declare elements: OXML[]
 }

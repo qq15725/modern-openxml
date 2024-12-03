@@ -1,8 +1,8 @@
-import { defineElement, defineProperty, OXML } from '../../core'
+import { defineAttribute, defineElement, OXML } from '../../core'
 
 @defineElement('Relationship')
 export class Relationship extends OXML {
-  @defineProperty('Id', 'string') declare id: string
-  @defineProperty('Type', 'string') declare type: string
-  @defineProperty('Target', 'string') declare target: string
+  @defineAttribute('Id') declare id: string
+  @defineAttribute('Type') declare type: string
+  @defineAttribute('Target') declare target: string
 }
