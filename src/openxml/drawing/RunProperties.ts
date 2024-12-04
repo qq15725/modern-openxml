@@ -17,5 +17,5 @@ export class RunProperties extends OXML {
   @defineChild('ea') ea?: OXML
   @defineChild('latin') latin?: OXML
   @defineChild('sym') sym?: OXML
-  @defineChild('solidFill') solidFill?: SolidFill
+  @defineChild('a:solidFill') solidFill?: SolidFill
 }

@@ -1,3 +1,7 @@
+import type { GradientStopList } from './GradientStopList'
+import type { LinearGradientFill } from './LinearGradientFill'
+import type { Path } from './Path'
+import type { TileRectangle } from './TileRectangle'
 import { defineChild, defineElement, OXML } from '../../core'
 
 /**
@@ -5,8 +9,8 @@ import { defineChild, defineElement, OXML } from '../../core'
  */
 @defineElement('a:gradFill')
 export class GradientFill extends OXML {
-  @defineChild('a:gsLst', OXML) gsLst?: OXML
-  @defineChild('a:lin', OXML) lin?: OXML
-  @defineChild('a:path', OXML) path?: OXML
-  @defineChild('a:tileRect', OXML) tileRect?: OXML
+  @defineChild('a:gsLst') gsLst?: GradientStopList
+  @defineChild('a:lin') lin?: LinearGradientFill
+  @defineChild('a:path') path?: Path
+  @defineChild('a:tileRect') tileRect?: TileRectangle
 }

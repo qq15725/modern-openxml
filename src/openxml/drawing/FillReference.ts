@@ -1,14 +1,10 @@
-import { defineChild, defineElement, OXML } from '../../core'
+import { defineAttribute, defineElement } from '../../core'
+import { _ColorDefinable } from './_ColorDefinable'
 
 /**
  * @link https://learn.microsoft.com/dotnet/api/documentformat.openxml.drawing.fillreference
  */
 @defineElement('a:fillRef')
-export class FillReference extends OXML {
-  @defineChild('a:hslClr', OXML) hslClr?: OXML
-  @defineChild('a:prstClr', OXML) prstClr?: OXML
-  @defineChild('a:schemeClr', OXML) schemeClr?: OXML
-  @defineChild('a:scrgbClr', OXML) scrgbClr?: OXML
-  @defineChild('a:srgbClr', OXML) srgbClr?: OXML
-  @defineChild('a:sysClr', OXML) sysClr?: OXML
+export class FillReference extends _ColorDefinable {
+  @defineAttribute('idx') declare idx: string
 }
