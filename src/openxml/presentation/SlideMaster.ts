@@ -4,9 +4,9 @@ import { defineChild, defineElement, OXML } from '../../core'
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.presentation.slidemaster
  */
-@defineElement('sldMaster', 'p')
+@defineElement('p:sldMaster')
 export class SlideMaster extends OXML {
-  @defineChild('clrMap') declare clrMap: ColorMap
+  @defineChild('p:clrMap') declare clrMap: ColorMap
 
   override toXmlString(): string {
     return `<p:sldMaster

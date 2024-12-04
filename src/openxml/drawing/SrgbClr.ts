@@ -4,9 +4,9 @@ import { defineAttribute, defineChild, defineElement, OXML } from '../../core'
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.drawing.srgbclr
  */
-@defineElement('srgbClr', 'a')
+@defineElement('a:srgbClr')
 export class SrgbClr extends OXML {
   @defineAttribute('val') declare val: string
 
-  @defineChild('alpha') alpha?: Alpha
+  @defineChild('a:alpha') alpha?: Alpha
 }

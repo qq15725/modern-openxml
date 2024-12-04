@@ -4,7 +4,7 @@ import { defineChild, defineElement, OXML } from '../../core'
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.presentation.background
  */
-@defineElement('bg', 'p')
+@defineElement('p:bg')
 export class Background extends OXML {
-  @defineChild('bgPr') declare bgPr: BackgroundProperties
+  @defineChild('p:bgPr') declare bgPr: BackgroundProperties
 }

@@ -3,7 +3,7 @@ import { defineAttribute, defineElement, OXML } from '../../core'
 /**
  * @link https://learn.microsoft.com/dotnet/api/documentformat.openxml.drawing.tile
  */
-@defineElement('tile', 'a')
+@defineElement('a:tile')
 export class Tile extends OXML {
   @defineAttribute('sx', 'rate') declare sx: number
   @defineAttribute('sy', 'rate') declare sy: number

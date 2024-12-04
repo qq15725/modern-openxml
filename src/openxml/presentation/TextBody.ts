@@ -4,9 +4,9 @@ import { defineChild, defineChildren, defineElement, OXML } from '../../core'
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.presentation.textbody
  */
-@defineElement('txBody', 'p')
+@defineElement('p:txBody')
 export class TextBody extends OXML {
-  @defineChild('bodyPr') declare bodyPr: BodyProperties
-  @defineChild('lstStyle') lstStyle?: ListStyle
-  @defineChildren('p') declare pList: Paragraph[]
+  @defineChild('a:bodyPr') declare bodyPr: BodyProperties
+  @defineChild('a:lstStyle') lstStyle?: ListStyle
+  @defineChildren('a:p') declare pList: Paragraph[]
 }

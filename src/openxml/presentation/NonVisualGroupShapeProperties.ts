@@ -5,9 +5,9 @@ import { defineChild, defineElement, OXML } from '../../core'
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.presentation.nonvisualgroupshapeproperties
  */
-@defineElement('nvGrpSpPr', 'p')
+@defineElement('p:nvGrpSpPr')
 export class NonVisualGroupShapeProperties extends OXML {
-  @defineChild('cNvPr') declare cNvPr: NonVisualDrawingProperties
-  @defineChild('cNvGrpSpPr') declare cNvGrpSpPr: OXML
-  @defineChild('nvPr') declare nvPr: ApplicationNonVisualDrawingProperties
+  @defineChild('p:cNvPr') declare cNvPr: NonVisualDrawingProperties
+  @defineChild('p:cNvGrpSpPr') declare cNvGrpSpPr: OXML
+  @defineChild('p:nvPr') declare nvPr: ApplicationNonVisualDrawingProperties
 }

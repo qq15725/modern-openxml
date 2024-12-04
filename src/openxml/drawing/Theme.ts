@@ -3,7 +3,7 @@ import { defineElement, OXML } from '../../core'
 /**
  * @link https://learn.microsoft.com/dotnet/api/documentformat.openxml.drawing.theme
  */
-@defineElement('theme', 'a')
+@defineElement('a:theme')
 export class Theme extends OXML {
   override toXmlString(): string {
     return `<a:theme

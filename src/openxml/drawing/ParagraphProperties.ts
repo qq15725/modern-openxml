@@ -4,7 +4,7 @@ import { TextAlignmentTypeValues } from './TextAlignmentTypeValues'
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.drawing.paragraphproperties
  */
-@defineElement('pPr', 'a')
+@defineElement('a:pPr')
 export class ParagraphProperties extends OXML {
   @defineAttribute('lvl', 'number') lvl?: number
   @defineAttribute('marL', 'emu') marL?: number

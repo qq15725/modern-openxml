@@ -5,7 +5,7 @@ import { TextAnchoringTypeValues } from './TextAnchoringTypeValues'
 /**
  * @link https://learn.microsoft.com/dotnet/api/documentformat.openxml.drawing.bodyproperties
  */
-@defineElement('bodyPr', 'a')
+@defineElement('a:bodyPr')
 export class BodyProperties extends OXML {
   @defineAttribute('anchor', TextAnchoringTypeValues) anchor?: TextAnchoringTypeValues
   @defineAttribute('anchorCtr', 'boolean') anchorCtr?: boolean

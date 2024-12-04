@@ -1,7 +1,7 @@
 import type { Zippable } from 'fflate'
-import type { SlideLayout, Theme } from '../openxml'
+import type { SlideLayout, Theme } from '../openxml/presentation'
 import { unzipSync, zipSync } from 'fflate'
-import { Picture, Presentation, PresentationProperties, Slide, SlideMaster, ViewProperties } from '../openxml'
+import { Picture, Presentation, PresentationProperties, Slide, SlideMaster, ViewProperties } from '../openxml/presentation'
 import { CoreProperties, Properties, Relationships, Types } from './doc'
 
 export class Pptx {

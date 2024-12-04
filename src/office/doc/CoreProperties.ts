@@ -1,6 +1,6 @@
 import { defineElement, OXML } from '../../core'
 
-@defineElement('coreProperties', 'cp')
+@defineElement('cp:coreProperties')
 export class CoreProperties extends OXML {
   attrs = {
     'xmlns': 'http://schemas.openxmlformats.org/package/2006/metadata/core-properties',

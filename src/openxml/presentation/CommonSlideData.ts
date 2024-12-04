@@ -5,8 +5,8 @@ import { defineChild, defineElement, OXML } from '../../core'
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.presentation.commonslidedata
  */
-@defineElement('cSld', 'p')
+@defineElement('p:cSld')
 export class CommonSlideData extends OXML {
-  @defineChild('bg') declare bg: Background
-  @defineChild('spTree') declare spTree: ShapeTree
+  @defineChild('p:bg') declare bg: Background
+  @defineChild('p:spTree') declare spTree: ShapeTree
 }

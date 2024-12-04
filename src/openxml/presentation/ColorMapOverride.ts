@@ -4,7 +4,7 @@ import { defineChild, defineElement, OXML } from '../../core'
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.presentation.colormapoverride
  */
-@defineElement('clrMapOvr', 'p')
+@defineElement('p:clrMapOvr')
 export class ColorMapOverride extends OXML {
-  @defineChild('masterClrMapping') declare masterClrMapping: MasterColorMapping
+  @defineChild('a:masterClrMapping') declare masterClrMapping: MasterColorMapping
 }

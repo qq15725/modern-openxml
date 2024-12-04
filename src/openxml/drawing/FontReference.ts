@@ -3,12 +3,12 @@ import { defineChild, defineElement, OXML } from '../../core'
 /**
  * @link https://learn.microsoft.com/dotnet/api/documentformat.openxml.drawing.fontreference
  */
-@defineElement('fontRef', 'a')
+@defineElement('a:fontRef')
 export class FontReference extends OXML {
-  @defineChild('hslClr') hslClr?: OXML
-  @defineChild('prstClr') prstClr?: OXML
-  @defineChild('schemeClr') schemeClr?: OXML
-  @defineChild('scrgbClr') scrgbClr?: OXML
-  @defineChild('srgbClr') srgbClr?: OXML
-  @defineChild('sysClr') sysClr?: OXML
+  @defineChild('a:hslClr') hslClr?: OXML
+  @defineChild('a:prstClr') prstClr?: OXML
+  @defineChild('a:schemeClr') schemeClr?: OXML
+  @defineChild('a:scrgbClr') scrgbClr?: OXML
+  @defineChild('a:srgbClr') srgbClr?: OXML
+  @defineChild('a:sysClr') sysClr?: OXML
 }

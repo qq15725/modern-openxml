@@ -5,8 +5,8 @@ import { defineChild, defineElement, OXML } from '../../core'
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.drawing.solidfill
  */
-@defineElement('solidFill', 'a')
+@defineElement('a:solidFill')
 export class SolidFill extends OXML {
-  @defineChild('srgbClr') srgbClr?: SrgbClr
-  @defineChild('schemeClr') schemeClr?: SchemeColor
+  @defineChild('a:srgbClr') srgbClr?: SrgbClr
+  @defineChild('a:schemeClr') schemeClr?: SchemeColor
 }

@@ -1,9 +1,8 @@
-import { Picture, Pptx } from '../../src'
+import { OXML, Pptx } from '../../src'
 
 console.log(
-  Picture.tagToConstructor,
-  Picture.protoToDefinition,
-  new Picture().definition(),
+  OXML.tagToConstructor,
+  OXML.protoToDefinition,
 )
 
 const input = document.createElement('input')

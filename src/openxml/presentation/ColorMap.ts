@@ -1,6 +1,6 @@
 import { defineElement, OXML } from '../../core'
 
-@defineElement('clrMap', 'p')
+@defineElement('p:clrMap')
 export class ColorMap extends OXML {
   // parse(node: VNode | undefined) {
   //   if (!node)

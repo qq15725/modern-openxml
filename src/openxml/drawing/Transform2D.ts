@@ -7,14 +7,14 @@ import { defineAttribute, defineChild, defineElement, OXML } from '../../core'
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.drawing.transform2d
  */
-@defineElement('xfrm', 'a')
+@defineElement('a:xfrm')
 export class Transform2D extends OXML {
   @defineAttribute('rot', 'degree') declare rot: number
   @defineAttribute('flipV', 'boolean') declare flipV: boolean
   @defineAttribute('flipH', 'boolean') declare flipH: boolean
 
-  @defineChild('off') declare off: Offset
-  @defineChild('ext') declare ext: Extents
-  @defineChild('chOff') chOff?: ChildOffset
-  @defineChild('chExt') chExt?: ChildExtents
+  @defineChild('a:off') declare off: Offset
+  @defineChild('a:ext') declare ext: Extents
+  @defineChild('a:chOff') chOff?: ChildOffset
+  @defineChild('a:chExt') chExt?: ChildExtents
 }

@@ -24,7 +24,7 @@ export interface OXMLDefinition {
   children?: OXMLChildDefinition[]
 }
 
-export function defineElement(tag: string, namespace?: string) {
+export function defineElement(tag: string) {
   return (constructor: any) => {
     const proto = constructor.prototype
     let definition = OXML.protoToDefinition.get(proto)
@@ -32,9 +32,10 @@ export function defineElement(tag: string, namespace?: string) {
       definition = {} as OXMLDefinition
       OXML.protoToDefinition.set(proto, definition)
     }
+    const tagArr = tag.split(':')
     definition.tag = tag
-    definition.namespace = namespace
-    OXML.tagToConstructor.set([namespace, tag].filter(Boolean).join(':'), constructor)
+    definition.namespace = tagArr.length > 1 ? tagArr[0] : undefined
+    OXML.tagToConstructor.set(tag, constructor)
     Object.defineProperty(proto, 'tag', {
       value: tag,
       configurable: true,
@@ -66,7 +67,7 @@ export function defineAttribute(
   }
 }
 
-export function defineProperty(propName: string, type: any, defaultValue: any) {
+export function defineProperty(propName: string) {
   return function (proto: any, name: any) {
     let definition = OXML.protoToDefinition.get(proto)
     if (!definition) {
@@ -74,7 +75,7 @@ export function defineProperty(propName: string, type: any, defaultValue: any) {
       OXML.protoToDefinition.set(proto, definition)
     }
     definition.properties ??= new Map()
-    definition.properties.set(propName, { type, defaultValue })
+    definition.properties.set(propName, {})
     Object.defineProperty(proto, name, {
       get() {
         return (this as OXML).getAttribute(propName)
@@ -132,31 +133,74 @@ export class OXML {
     return OXML.protoToDefinition.get(this.constructor.prototype as any)
   }
 
+  getSetterValue(type: string, value: any): any {
+    switch (type) {
+      case 'boolean':
+        return value ? '1' : '0'
+      case 'degree':
+        return String(Number(value) * 60000)
+      case 'fontSize':
+        return String(Number(value) * 100)
+      case 'number':
+        return String(value)
+      case 'string':
+        return String(value)
+      case 'emu':
+        return String((Number(value) / OXML.DPI) * 914400)
+      case 'dxa':
+        return String((Number(value) / OXML.DPI) * 1440)
+      case 'percentage':
+        return String(Number(value) * 1000)
+      case 'rate':
+        return String(Number(value) * 100000)
+      case 'lineHeight':
+        return String((value * 100000) / 1.2018 - 0.0034)
+      default:
+        throw new Error(`type not found: ${type}`)
+    }
+  }
+
+  getGetterValue(type: any, value: any): any {
+    if (typeof type === 'string') {
+      switch (type) {
+        case 'boolean':
+          return !!value
+        case 'degree':
+          return Number(value) / 60000
+        case 'fontSize':
+          return Number(value) / 100
+        case 'number':
+          return Number(value)
+        case 'string':
+          return String(value)
+        case 'emu':
+          return (Number(value) / 914400) * OXML.DPI
+        case 'dxa':
+          return (Number(value) / 1440) * OXML.DPI
+        case 'percentage':
+          return Number(value) / 1000
+        case 'rate':
+          return Number(value) / 100000
+        case 'lineHeight':
+          return (Number(value) / 100000) * 1.2018 + 0.0034
+      }
+    }
+    else if (typeof type === 'object') {
+      return type[value]
+    }
+    throw new Error(`type not found: ${type}`)
+  }
+
   setAttribute(name: string, value: any): void {
     const definition = this.definition()?.attributes?.get(name)
-    let newValue
-    switch (definition?.type) {
-      case 'boolean':
-        newValue = !!value
-        break
-      case 'degree':
-        newValue = Number(value) / 60000
-        break
-      case 'number':
-        newValue = Number(value)
-        break
-      case 'string':
-        newValue = value
-        break
-      case 'emu':
-        newValue = (Number(value) / 914400) * OXML.DPI
-        break
-      default:
-        if (definition) {
-          console.warn(`${this.tag ?? this.element.tagName} ${name} type not found: ${definition.type}`, definition)
-        }
-        newValue = value
-        break
+    let newValue = value
+    if (definition) {
+      try {
+        newValue = this.getSetterValue(definition.type, value)
+      }
+      catch (err: any) {
+        console.warn(`${this.tag ?? this.element.tagName} ${name} ${err.message}`, definition)
+      }
     }
     this.element.setAttribute(name, newValue)
   }
@@ -167,23 +211,15 @@ export class OXML {
     if (value === undefined) {
       return value ?? definition?.defaultValue
     }
-    switch (definition?.type) {
-      case 'boolean':
-        return !!value
-      case 'degree':
-        return Number(value) / 60000
-      case 'number':
-        return Number(value)
-      case 'string':
-        return value
-      case 'emu':
-        return (Number(value) / 914400) * OXML.DPI
-      default:
-        if (definition) {
-          console.warn(`${this.tag ?? this.element.tagName} ${name} type not found: ${definition.type}`, definition)
-        }
-        return value
+    if (definition) {
+      try {
+        return this.getGetterValue(definition?.type, value)
+      }
+      catch (err: any) {
+        console.warn(`${this.tag ?? this.element.tagName} ${name} ${err.message}`, definition)
+      }
     }
+    return value
   }
 
   getAttributes(): Record<string, any> {

@@ -3,7 +3,7 @@ import { defineElement, OXML } from '../../core'
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.presentation.customgeometry
  */
-@defineElement('custGeom', 'a')
+@defineElement('a:custGeom')
 export class CustomGeometry extends OXML {
   //
 }

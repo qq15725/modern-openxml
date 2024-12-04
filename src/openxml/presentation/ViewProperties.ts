@@ -3,7 +3,7 @@ import { defineElement, OXML } from '../../core'
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.presentation.viewproperties
  */
-@defineElement('viewPr', 'p')
+@defineElement('p:viewPr')
 export class ViewProperties extends OXML {
   attrs = {
     'xmlns': 'http://schemas.openxmlformats.org/presentationml/2006/main',

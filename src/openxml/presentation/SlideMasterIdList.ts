@@ -4,7 +4,7 @@ import { defineChildren, defineElement, OXML } from '../../core'
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.presentation.slidemasteridlist
  */
-@defineElement('sldMasterIdLst', 'p')
+@defineElement('p:sldMasterIdLst')
 export class SlideMasterIdList extends OXML {
-  @defineChildren('sldMasterId') declare children: SlideMasterId[]
+  @defineChildren('p:sldMasterId') declare children: SlideMasterId[]
 }

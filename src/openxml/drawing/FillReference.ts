@@ -3,12 +3,12 @@ import { defineChild, defineElement, OXML } from '../../core'
 /**
  * @link https://learn.microsoft.com/dotnet/api/documentformat.openxml.drawing.fillreference
  */
-@defineElement('fillRef', 'a')
+@defineElement('a:fillRef')
 export class FillReference extends OXML {
-  @defineChild('hslClr', OXML) hslClr?: OXML
-  @defineChild('prstClr', OXML) prstClr?: OXML
-  @defineChild('schemeClr', OXML) schemeClr?: OXML
-  @defineChild('scrgbClr', OXML) scrgbClr?: OXML
-  @defineChild('srgbClr', OXML) srgbClr?: OXML
-  @defineChild('sysClr', OXML) sysClr?: OXML
+  @defineChild('a:hslClr', OXML) hslClr?: OXML
+  @defineChild('a:prstClr', OXML) prstClr?: OXML
+  @defineChild('a:schemeClr', OXML) schemeClr?: OXML
+  @defineChild('a:scrgbClr', OXML) scrgbClr?: OXML
+  @defineChild('a:srgbClr', OXML) srgbClr?: OXML
+  @defineChild('a:sysClr', OXML) sysClr?: OXML
 }

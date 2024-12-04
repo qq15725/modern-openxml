@@ -8,7 +8,7 @@ import { defineChild, defineElement, OXML } from '../../core'
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.presentation.presentation
  */
-@defineElement('presentation', 'p')
+@defineElement('p:presentation')
 export class Presentation extends OXML {
   attrs = {
     'xmlns': 'http://schemas.openxmlformats.org/presentationml/2006/main',

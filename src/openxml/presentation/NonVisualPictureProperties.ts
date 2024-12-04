@@ -6,9 +6,9 @@ import { defineChild, defineElement, OXML } from '../../core'
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.presentation.nonvisualpictureproperties
  */
-@defineElement('nvPicPr', 'p')
+@defineElement('p:nvPicPr')
 export class NonVisualPictureProperties extends OXML {
-  @defineChild('cNvPr') declare cNvPr: NonVisualDrawingProperties
-  @defineChild('cNvPicPr') declare cNvPicPr: NonVisualPictureDrawingProperties
-  @defineChild('nvPr') declare nvPr: ApplicationNonVisualDrawingProperties
+  @defineChild('p:cNvPr') declare cNvPr: NonVisualDrawingProperties
+  @defineChild('p:cNvPicPr') declare cNvPicPr: NonVisualPictureDrawingProperties
+  @defineChild('p:nvPr') declare nvPr: ApplicationNonVisualDrawingProperties
 }

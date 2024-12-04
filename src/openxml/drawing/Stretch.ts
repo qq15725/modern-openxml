@@ -4,7 +4,7 @@ import { defineChild, defineElement, OXML } from '../../core'
 /**
  * @link https://learn.microsoft.com/dotnet/api/documentformat.openxml.drawing.stretch
  */
-@defineElement('stretch', 'a')
+@defineElement('a:stretch')
 export class Stretch extends OXML {
-  @defineChild('fillRect') fillRect?: FillRectangle
+  @defineChild('a:fillRect') fillRect?: FillRectangle
 }
