@@ -1,4 +1,5 @@
-import { defineAttribute, defineElement, OXML } from '../../core'
+import type { Alpha } from './Alpha'
+import { defineAttribute, defineChild, defineElement, OXML } from '../../core'
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.drawing.hslcolor
@@ -8,4 +9,6 @@ export class HslColor extends OXML {
   @defineAttribute('hue', 'positiveFixedAngle') declare hue: number
   @defineAttribute('sat', 'percentage') declare sat: number
   @defineAttribute('lum', 'percentage') declare lum: number
+
+  @defineChild('a:alpha') alpha?: Alpha
 }

@@ -1,17 +1,20 @@
-import { defineElement, OXML } from '../../core'
+import { defineAttribute, defineElement, OXML } from '../../core'
 
+/**
+ * https://learn.microsoft.com/dotnet/api/documentformat.openxml.presentation.colormap
+ */
 @defineElement('p:clrMap')
 export class ColorMap extends OXML {
-  // parse(node: VNode | undefined) {
-  //   if (!node)
-  //     return undefined
-  //   const el = node.getEl<HTMLElement>()
-  //   const length = el.attributes.length
-  //   const map: Record<string, any> = {}
-  //   for (let i = 0; i < length; i++) {
-  //     const attr = el.attributes.item(i)!
-  //     map[attr.name] = attr.value
-  //   }
-  //   return map
-  // }
+  @defineAttribute('accent1') accent1?: string
+  @defineAttribute('accent2') accent2?: string
+  @defineAttribute('accent3') accent3?: string
+  @defineAttribute('accent4') accent4?: string
+  @defineAttribute('accent5') accent5?: string
+  @defineAttribute('accent6') accent6?: string
+  @defineAttribute('bg1') bg1?: string
+  @defineAttribute('bg2') bg2?: string
+  @defineAttribute('folHlink') folHlink?: string
+  @defineAttribute('hlink') hlink?: string
+  @defineAttribute('tx1') tx1?: string
+  @defineAttribute('tx2') tx2?: string
 }

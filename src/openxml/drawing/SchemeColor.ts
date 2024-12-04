@@ -1,4 +1,5 @@
-import { defineAttribute, defineElement, OXML } from '../../core'
+import type { Alpha } from './Alpha'
+import { defineAttribute, defineChild, defineElement, OXML } from '../../core'
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.drawing.schemecolor
@@ -6,4 +7,6 @@ import { defineAttribute, defineElement, OXML } from '../../core'
 @defineElement('a:schemeClr')
 export class SchemeColor extends OXML {
   @defineAttribute('val') declare val: string
+
+  @defineChild('a:alpha') alpha?: Alpha
 }

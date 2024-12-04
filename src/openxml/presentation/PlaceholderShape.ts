@@ -6,5 +6,5 @@ import { defineAttribute, defineElement, OXML } from '../../core'
 @defineElement('p:ph')
 export class PlaceholderShape extends OXML {
   @defineAttribute('type') type?: string
-  @defineAttribute('idx', 'number') idx?: number
+  @defineAttribute('idx') idx?: string
 }

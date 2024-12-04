@@ -15,11 +15,11 @@ export class Shape extends OXML {
   @defineChild('p:nvSpPr') declare nvSpPr: NonVisualShapeProperties
   @defineChild('p:spPr') declare spPr: ShapeProperties
   @defineChild('p:txBody') declare txBody: TextBody
-  @defineChild('p:style') declare style: ShapeStyle
+  @defineChild('p:style') style?: ShapeStyle
 
-  @defineProperty('nvSpPr.cNvPr.id') declare id: string
-  @defineProperty('nvSpPr.cNvPr.name') declare name: string
-  @defineProperty('nvSpPr.nvPr.ph') declare placeholder: PlaceholderShape
+  @defineProperty('nvSpPr.cNvPr.id') id?: string
+  @defineProperty('nvSpPr.cNvPr.name') name?: string
+  @defineProperty('nvSpPr.nvPr.ph') placeholder?: PlaceholderShape
   @defineProperty('nvSpPr.cNvSpPr.txBox') declare isTextBox: boolean
   @defineProperty('spPr.xfrm.off.x') declare left: number
   @defineProperty('spPr.xfrm.off.y') declare top: number
@@ -40,4 +40,8 @@ export class Shape extends OXML {
   get textAlign(): string | undefined { return this.txBody.bodyPr.anchorCtr ? 'center' : undefined }
   get useParagraphSpacing(): boolean { return !!this.txBody.bodyPr.spcFirstLastPara }
   get writingMode(): 'vertical-lr' | 'horizontal-tb' { return this.txBody.bodyPr.upright ? 'vertical-lr' : 'horizontal-tb' }
+
+  get geometry() {
+    return this.spPr.prstGeom
+  }
 }

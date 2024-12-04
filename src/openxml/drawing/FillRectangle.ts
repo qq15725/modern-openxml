@@ -5,8 +5,8 @@ import { defineAttribute, defineElement, OXML } from '../../core'
  */
 @defineElement('a:fillRect')
 export class FillRectangle extends OXML {
-  @defineAttribute('b', 'rate') declare b: number
-  @defineAttribute('l', 'rate') declare l: number
-  @defineAttribute('r', 'rate') declare r: number
-  @defineAttribute('t', 'rate') declare t: number
+  @defineAttribute('b', 'ST_Percentage') declare b: number
+  @defineAttribute('l', 'ST_Percentage') declare l: number
+  @defineAttribute('r', 'ST_Percentage') declare r: number
+  @defineAttribute('t', 'ST_Percentage') declare t: number
 }

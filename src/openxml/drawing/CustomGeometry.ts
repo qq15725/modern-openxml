@@ -1,4 +1,9 @@
+import type { AdjustHandleList } from './AdjustHandleList'
+import type { AdjustValueList } from './AdjustValueList'
+import type { ConnectionSiteList } from './ConnectionSiteList'
+import type { PathList } from './PathList'
 import type { Rectangle } from './Rectangle'
+import type { ShapeGuideList } from './ShapeGuideList'
 import { defineChild, defineElement, OXML } from '../../core'
 
 /**
@@ -6,10 +11,10 @@ import { defineChild, defineElement, OXML } from '../../core'
  */
 @defineElement('a:custGeom')
 export class CustomGeometry extends OXML {
-  @defineChild('a:ahLst') declare ahLst: OXML
-  @defineChild('a:avLst') declare avLst: OXML
-  @defineChild('a:cxnLst') declare cxnLst: OXML
-  @defineChild('a:gdLst') declare gdLst: OXML
-  @defineChild('a:pathLst') declare pathLst: OXML
-  @defineChild('a:rect') declare rect: Rectangle
+  @defineChild('a:ahLst') ahLst?: AdjustHandleList
+  @defineChild('a:avLst') avLst?: AdjustValueList
+  @defineChild('a:cxnLst') cxnLst?: ConnectionSiteList
+  @defineChild('a:gdLst') gdLst?: ShapeGuideList
+  @defineChild('a:pathLst') pathLst?: PathList
+  @defineChild('a:rect') rect?: Rectangle
 }

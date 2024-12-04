@@ -6,5 +6,5 @@ import { defineChildren, defineElement, OXML } from '../../core'
  */
 @defineElement('p:extLst')
 export class ExtensionList extends OXML {
-  @defineChildren('p:ext') declare extList: Extension[]
+  @defineChildren('p:ext') declare value: Extension[]
 }

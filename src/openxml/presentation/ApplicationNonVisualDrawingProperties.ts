@@ -11,8 +11,8 @@ export class ApplicationNonVisualDrawingProperties extends OXML {
   @defineChild('a:audioFile') audioFile?: AudioFromFile
   @defineChild('a:custDataLst') custDataLst?: OXML
   @defineChild('a:extLst') extLst?: ExtensionList
-  @defineChild('p:ph') declare ph: PlaceholderShape
-  @defineChild('quickTimeFile') declare quickTimeFile: OXML
+  @defineChild('p:ph') ph?: PlaceholderShape
+  @defineChild('quickTimeFile') quickTimeFile?: OXML
   @defineChild('a:videoFile') videoFile?: VideoFromFile
   @defineChild('a:wavAudioFile') wavAudioFile?: OXML
 }

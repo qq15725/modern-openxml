@@ -1,0 +1,21 @@
+import type { CommonSlideData } from './CommonSlideData'
+import type { ExtensionList } from './ExtensionList'
+import type { Timing } from './Timing'
+import { defineChild, defineProperty, OXML } from '../../core'
+import { getElements } from './_utils'
+
+export class _Slide extends OXML {
+  @defineChild('p:cSld') declare cSld: CommonSlideData
+  @defineChild('p:extLst') declare extLst: ExtensionList
+  @defineChild('p:timing') declare timing: Timing
+  @defineChild('p:transition') declare transition: OXML
+  @defineChild('mc:AlternateContent') declare AlternateContent: OXML
+
+  @defineProperty('cSld.spTree.nvGrpSpPr.cNvPr.id') declare id: string
+  @defineProperty('cSld.spTree.nvGrpSpPr.cNvPr.name') declare name: string
+  @defineProperty(['getElements']) declare elements: OXML[]
+
+  getElements(): OXML[] {
+    return getElements(this.cSld.spTree.element.children)
+  }
+}

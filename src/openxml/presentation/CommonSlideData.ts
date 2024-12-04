@@ -7,6 +7,6 @@ import { defineChild, defineElement, OXML } from '../../core'
  */
 @defineElement('p:cSld')
 export class CommonSlideData extends OXML {
-  @defineChild('p:bg') declare bg: Background
+  @defineChild('p:bg') bg?: Background
   @defineChild('p:spTree') declare spTree: ShapeTree
 }

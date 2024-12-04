@@ -1,39 +1,26 @@
-import type { ColorMap } from './ColorMap'
-import { defineChild, defineElement, OXML } from '../../core'
+import type { OXML } from '../../core'
+import type { ColorMapOverride } from './ColorMapOverride'
+import { defineAttribute, defineChild, defineElement } from '../../core'
+import { _Slide } from './_Slide'
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.presentation.slidelayout
  */
 @defineElement('p:sldLayout')
-export class SlideLayout extends OXML {
-  @defineChild('p:clrMap') declare clrMap: ColorMap
-
-  override toXmlString(): string {
-    return `<p:sldLayout
-  xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"
-  xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"
-  xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main"
->
-  <p:cSld>
-    <p:spTree>
-      <p:nvGrpSpPr>
-        <p:cNvPr id="1" name=""/>
-        <p:cNvGrpSpPr/>
-        <p:nvPr/>
-      </p:nvGrpSpPr>
-      <p:grpSpPr>
-        <a:xfrm>
-          <a:off x="0" y="0"/>
-          <a:ext cx="0" cy="0"/>
-          <a:chOff x="0" y="0"/>
-          <a:chExt cx="0" cy="0"/>
-        </a:xfrm>
-      </p:grpSpPr>
-    </p:spTree>
-  </p:cSld>
-  <p:clrMapOvr>
-    <a:masterClrMapping/>
-  </p:clrMapOvr>
-</p:sldLayout>`
+export class SlideLayout extends _Slide {
+  attrs = {
+    'xmlns:a': 'http://schemas.openxmlformats.org/drawingml/2006/main',
+    'xmlns:r': 'http://schemas.openxmlformats.org/officeDocument/2006/relationships',
+    'xmlns:p': 'http://schemas.openxmlformats.org/presentationml/2006/main',
   }
+
+  @defineAttribute('matchingName') matchingName?: string
+  @defineAttribute('preserve', 'boolean') preserve?: boolean
+  @defineAttribute('showMasterPhAnim', 'boolean') showMasterPhAnim?: boolean
+  @defineAttribute('showMasterSp', 'boolean') showMasterSp?: boolean
+  @defineAttribute('type', 'ST_SlideLayoutType') type?: string
+  @defineAttribute('userDrawn', 'boolean') userDrawn?: boolean
+
+  @defineChild('p:clrMapOvr') declare clrMapOvr: ColorMapOverride
+  @defineChild('p:hf') hf?: OXML
 }

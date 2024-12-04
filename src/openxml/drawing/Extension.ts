@@ -5,5 +5,5 @@ import { defineAttribute, defineElement, OXML } from '../../core'
  */
 @defineElement('a:ext')
 export class Extension extends OXML {
-  @defineAttribute('uri', 'string') declare uri: string
+  @defineAttribute('uri') declare uri: string
 }

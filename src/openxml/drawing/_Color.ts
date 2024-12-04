@@ -6,7 +6,7 @@ import type { SchemeColor } from './SchemeColor'
 import type { SystemColor } from './SystemColor'
 import { defineChild, OXML } from '../../core'
 
-export class _ColorDefinable extends OXML {
+export class _Color extends OXML {
   @defineChild('a:hslClr') hslClr?: HslColor
   @defineChild('a:prstClr') prstClr?: PresetColor
   @defineChild('a:schemeClr') schemeClr?: SchemeColor

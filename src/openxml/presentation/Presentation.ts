@@ -1,4 +1,5 @@
 import type { DefaultTextStyle } from './DefaultTextStyle'
+import type { EmbeddedFontList } from './EmbeddedFontList'
 import type { NotesSize } from './NotesSize'
 import type { SlideIdList } from './SlideIdList'
 import type { SlideMasterIdList } from './SlideMasterIdList'
@@ -20,9 +21,19 @@ export class Presentation extends OXML {
     'conformance': 'transitional',
   }
 
-  @defineChild('sldMasterIdLst') declare sldMasterIdLst: SlideMasterIdList
-  @defineChild('sldIdLst') declare sldIdLst: SlideIdList
-  @defineChild('sldSz') declare sldSz: SlideSize
-  @defineChild('notesSz') declare notesSz: NotesSize
-  @defineChild('defaultTextStyle') declare defaultTextStyle: DefaultTextStyle
+  @defineChild('p:custDataLst') custDataLst?: OXML
+  @defineChild('p:custShowLst') custShowLst?: OXML
+  @defineChild('p:defaultTextStyle') declare defaultTextStyle: DefaultTextStyle
+  @defineChild('p:embeddedFontLst') embeddedFontLst?: EmbeddedFontList
+  @defineChild('p:extLst') extLst?: OXML
+  @defineChild('p:handoutMasterIdLst') handoutMasterIdLst?: OXML
+  @defineChild('p:kinsoku') kinsoku?: OXML
+  @defineChild('p:modifyVerifier') modifyVerifier?: OXML
+  @defineChild('p:notesMasterIdLst') notesMasterIdLst?: OXML
+  @defineChild('p:notesSz') notesSz?: NotesSize
+  @defineChild('p:photoAlbum') photoAlbum?: OXML
+  @defineChild('p:sldIdLst') declare sldIdLst: SlideIdList
+  @defineChild('p:sldMasterIdLst') declare sldMasterIdLst: SlideMasterIdList
+  @defineChild('p:sldSz') declare sldSz: SlideSize
+  @defineChild('p:smartTags') smartTags?: OXML
 }
