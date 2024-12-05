@@ -7,8 +7,8 @@ import { defineAttribute, defineChild, defineElement, OXML } from '../../core'
  */
 @defineElement('a:pattFill')
 export class PatternFill extends OXML {
-  @defineAttribute('prst', 'presetPatternVal') prst?: string
+  @defineAttribute('prst', 'presetPatternVal') declare prst?: string
 
-  @defineChild('a:bgClr') bgClr?: BackgroundColor
-  @defineChild('a:fgClr') fgClr?: ForegroundColor
+  @defineChild('a:bgClr') declare bgClr?: BackgroundColor
+  @defineChild('a:fgClr') declare fgClr?: ForegroundColor
 }

@@ -6,13 +6,13 @@ import { defineAttribute, defineChild, defineElement, OXML } from '../../core'
  */
 @defineElement('p:cNvPr')
 export class NonVisualDrawingProperties extends OXML {
-  @defineAttribute('id') id?: string
-  @defineAttribute('title') title?: string
-  @defineAttribute('name') name?: string
-  @defineAttribute('descr') descr?: string
-  @defineAttribute('hidden') hidden?: string
+  @defineAttribute('id') declare id?: string
+  @defineAttribute('title') declare title?: string
+  @defineAttribute('name') declare name?: string
+  @defineAttribute('descr') declare descr?: string
+  @defineAttribute('hidden') declare hidden?: string
 
-  @defineChild('a:extLst') extLst?: ExtensionList
-  @defineChild('a:hlinkClick') hlinkClick?: OXML
-  @defineChild('a:hlinkHover') hlinkHover?: OXML
+  @defineChild('a:extLst') declare extLst?: ExtensionList
+  @defineChild('a:hlinkClick') declare hlinkClick?: OXML
+  @defineChild('a:hlinkHover') declare hlinkHover?: OXML
 }

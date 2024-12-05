@@ -1,12 +1,17 @@
+import { deepMerge, getObjectValueByPath, setObjectValueByPath } from './utils'
+
 export type OXMLProto = new (...args: any[]) => OXML
 
 export interface OXMLAttributeDefinition {
-  type: string
+  name: string
+  alias: string
+  type: string | Record<string, any>
   defaultValue?: any
 }
 
 export interface OXMLPropertyDefinition {
-  type: string
+  name: string
+  alias: string
   defaultValue?: any
 }
 
@@ -19,8 +24,8 @@ export interface OXMLChildDefinition {
 export interface OXMLDefinition {
   tag?: string
   namespace?: string
-  attributes?: Map<string, OXMLAttributeDefinition>
-  properties?: Map<string, OXMLPropertyDefinition>
+  attributes?: Record<string, OXMLAttributeDefinition>
+  properties?: Record<string, OXMLPropertyDefinition>
   children?: OXMLChildDefinition[]
 }
 
@@ -55,8 +60,8 @@ export function defineAttribute(
       definition = {} as OXMLDefinition
       OXML.protoToDefinition.set(proto, definition)
     }
-    definition.attributes ??= new Map()
-    definition.attributes.set(attrName, { type, defaultValue })
+    definition.attributes ??= {}
+    definition.attributes[attrName] = { name, alias: attrName, type, defaultValue }
     Object.defineProperty(proto, name, {
       get() {
         return (this as OXML).getAttribute(attrName)
@@ -74,11 +79,11 @@ export function defineProperty(propName: string) {
       definition = {} as OXMLDefinition
       OXML.protoToDefinition.set(proto, definition)
     }
-    definition.properties ??= new Map()
-    definition.properties.set(propName, {})
+    definition.properties ??= {}
+    definition.properties[propName] = { name, alias: propName }
     Object.defineProperty(proto, name, {
       get() {
-        return (this as OXML).getAttribute(propName)
+        return (this as OXML).offsetGet(propName)
       },
     })
   }
@@ -121,16 +126,41 @@ export class OXML {
     return this.tagToConstructor.get(tag)
   }
 
-  static getDefinition(tag: string): OXMLDefinition | undefined {
-    const proto = this.getConstructor(tag)?.prototype
-    return proto ? this.protoToDefinition.get(proto) : undefined
+  static getDefinition(proto: any): OXMLDefinition | undefined {
+    let definition: OXMLDefinition | undefined
+    let cur = proto
+    while (cur) {
+      const _definition = this.protoToDefinition.get(cur)
+      if (_definition) {
+        definition = deepMerge(definition ?? {}, _definition)
+      }
+      cur = Object.getPrototypeOf(cur)
+    }
+    return definition
+  }
+
+  static make<T extends OXML = OXML>(source: string | Element): T {
+    let tag: string
+    let element: Element | undefined
+    if (typeof source === 'string') {
+      tag = source
+    }
+    else {
+      tag = source.tagName
+      element = source
+    }
+    const oxml = new (this.getConstructor(tag) ?? OXML)()
+    if (element) {
+      oxml.fromElement(element)
+    }
+    return oxml as T
   }
 
   declare tag?: string
   declare element: Element
 
   definition(): OXMLDefinition | undefined {
-    return OXML.protoToDefinition.get(this.constructor.prototype as any)
+    return OXML.getDefinition(this)
   }
 
   getSetterValue(type: string, value: any): any {
@@ -192,7 +222,7 @@ export class OXML {
   }
 
   setAttribute(name: string, value: any): void {
-    const definition = this.definition()?.attributes?.get(name)
+    const definition = this.definition()?.attributes?.[name]
     let newValue = value
     if (definition) {
       try {
@@ -207,7 +237,7 @@ export class OXML {
 
   getAttribute(name: string): any | undefined {
     const value = this.element.getAttribute(name)
-    const definition = this.definition()?.attributes?.get(name)
+    const definition = this.definition()?.attributes?.[name]
     if (value === undefined) {
       return value ?? definition?.defaultValue
     }
@@ -230,12 +260,20 @@ export class OXML {
     )
   }
 
+  offsetSet(path: string, value: any): void {
+    return setObjectValueByPath(this, path, value)
+  }
+
+  offsetGet(path: string): any | undefined {
+    return getObjectValueByPath(this, path)
+  }
+
   getChild(tag: string): OXML | undefined {
     const element = Array.from(this.element.children).find((element) => {
       return element.tagName === tag || element.localName === tag
     })
     if (element) {
-      return new (OXML.getConstructor(element.tagName) ?? OXML)().fromElement(element)
+      return OXML.make(element)
     }
     return undefined
   }
@@ -244,7 +282,7 @@ export class OXML {
     return Array.from(this.element.children)
       .map((element) => {
         if (!tag || (element.tagName === tag || element.localName === tag)) {
-          return new (OXML.getConstructor(element.tagName) ?? OXML)().fromElement(element)
+          return OXML.make(element)
         }
         return undefined
       })
@@ -276,13 +314,40 @@ export class OXML {
   }
 
   toJSON(): Record<string, any> {
-    return {
-      ...this.getAttributes(),
-      ...Object.fromEntries(this.getChildren().map((child) => {
-        const tag = child.tag ?? child.element.tagName
-        const tagArr = tag.split(':')
-        return [tagArr[tagArr.length - 1], child.toJSON()]
-      })),
+    const definition = this.definition()
+    const properties: Record<string, any> = {}
+    if (definition?.properties) {
+      Object.values(definition.properties).forEach((property) => {
+        let value = this.offsetGet(property.alias)
+        if (value instanceof OXML) {
+          value = value.toJSON()
+        }
+        else if (Array.isArray(value)) {
+          value = value.map((v) => {
+            if (v instanceof OXML) {
+              return v.toJSON()
+            }
+            return v
+          })
+        }
+        if (value !== undefined) {
+          properties[property.name] = value
+        }
+      })
     }
+    definition?.children?.forEach((child) => {
+      child.tag
+    })
+    return {
+      ...properties,
+    }
+    // return {
+    //   ...this.getAttributes(),
+    //   ...Object.fromEntries(this.getChildren().map((child) => {
+    //     const tag = child.tag ?? child.element.tagName
+    //     const tagArr = tag.split(':')
+    //     return [tagArr[tagArr.length - 1], child.toJSON()]
+    //   })),
+    // }
   }
 }

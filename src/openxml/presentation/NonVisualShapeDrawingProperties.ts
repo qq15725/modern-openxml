@@ -5,5 +5,5 @@ import { defineAttribute, defineElement, OXML } from '../../core'
  */
 @defineElement('p:cNvSpPr')
 export class NonVisualShapeDrawingProperties extends OXML {
-  @defineAttribute('txBox', 'boolean') txBox?: boolean
+  @defineAttribute('txBox', 'boolean') declare txBox?: boolean
 }

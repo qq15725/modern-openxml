@@ -1,5 +1,5 @@
 import type { ColorMapOverride } from './ColorMapOverride'
-import { defineChild, defineElement } from '../../core'
+import { defineChild, defineElement, defineProperty } from '../../core'
 import { _Slide } from './_Slide'
 
 /**
@@ -15,4 +15,8 @@ export class Slide extends _Slide {
   }
 
   @defineChild('p:clrMapOvr') declare clrMapOvr: ColorMapOverride
+
+  @defineProperty('_type') declare type: string
+
+  protected get _type(): string { return 'slide' }
 }

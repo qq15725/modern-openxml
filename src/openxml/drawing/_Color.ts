@@ -7,10 +7,10 @@ import type { SystemColor } from './SystemColor'
 import { defineChild, OXML } from '../../core'
 
 export class _Color extends OXML {
-  @defineChild('a:hslClr') hslClr?: HslColor
-  @defineChild('a:prstClr') prstClr?: PresetColor
-  @defineChild('a:schemeClr') schemeClr?: SchemeColor
-  @defineChild('a:scrgbClr') scrgbClr?: RgbColorModelPercentage
-  @defineChild('a:srgbClr') srgbClr?: RgbColorModelHex
-  @defineChild('a:sysClr') sysClr?: SystemColor
+  @defineChild('a:hslClr') declare hslClr?: HslColor
+  @defineChild('a:prstClr') declare prstClr?: PresetColor
+  @defineChild('a:schemeClr') declare schemeClr?: SchemeColor
+  @defineChild('a:scrgbClr') declare scrgbClr?: RgbColorModelPercentage
+  @defineChild('a:srgbClr') declare srgbClr?: RgbColorModelHex
+  @defineChild('a:sysClr') declare sysClr?: SystemColor
 }

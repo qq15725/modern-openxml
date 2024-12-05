@@ -9,8 +9,8 @@ import { defineAttribute, defineChild, defineElement, OXML } from '../../core'
  */
 @defineElement('a:blipFill')
 export class BlipFill extends OXML {
-  @defineAttribute('rotWithShape', 'boolean') rotWithShape?: boolean
-  @defineAttribute('dpi', 'number') dpi?: number
+  @defineAttribute('rotWithShape', 'boolean') declare rotWithShape?: boolean
+  @defineAttribute('dpi', 'number') declare dpi?: number
 
   @defineChild('a:blip') declare blip: Blip
   @defineChild('a:srcRect') declare srcRect: SourceRectangle

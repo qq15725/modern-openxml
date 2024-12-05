@@ -11,10 +11,10 @@ import { defineChild, defineElement, OXML } from '../../core'
  */
 @defineElement('a:custGeom')
 export class CustomGeometry extends OXML {
-  @defineChild('a:ahLst') ahLst?: AdjustHandleList
-  @defineChild('a:avLst') avLst?: AdjustValueList
-  @defineChild('a:cxnLst') cxnLst?: ConnectionSiteList
-  @defineChild('a:gdLst') gdLst?: ShapeGuideList
-  @defineChild('a:pathLst') pathLst?: PathList
-  @defineChild('a:rect') rect?: Rectangle
+  @defineChild('a:ahLst') declare ahLst?: AdjustHandleList
+  @defineChild('a:avLst') declare avLst?: AdjustValueList
+  @defineChild('a:cxnLst') declare cxnLst?: ConnectionSiteList
+  @defineChild('a:gdLst') declare gdLst?: ShapeGuideList
+  @defineChild('a:pathLst') declare pathLst?: PathList
+  @defineChild('a:rect') declare rect?: Rectangle
 }

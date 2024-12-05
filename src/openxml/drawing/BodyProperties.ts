@@ -7,14 +7,14 @@ import { TextAnchoringTypeValues } from './TextAnchoringTypeValues'
  */
 @defineElement('a:bodyPr')
 export class BodyProperties extends OXML {
-  @defineAttribute('anchor', TextAnchoringTypeValues) anchor?: TextAnchoringTypeValues
-  @defineAttribute('anchorCtr', 'boolean') anchorCtr?: boolean
-  @defineAttribute('spcFirstLastPara', 'boolean') spcFirstLastPara?: boolean
-  @defineAttribute('lIns', 'emu') lIns?: number
-  @defineAttribute('tIns', 'emu') tIns?: number
-  @defineAttribute('rIns', 'emu') rIns?: number
-  @defineAttribute('bIns', 'emu') bIns?: number
-  @defineAttribute('rot', 'degree') rot?: number
-  @defineAttribute('wrap') wrap?: TextWrappingValues
-  @defineAttribute('upright', 'boolean') upright?: boolean
+  @defineAttribute('anchor', TextAnchoringTypeValues) declare anchor?: TextAnchoringTypeValues
+  @defineAttribute('anchorCtr', 'boolean') declare anchorCtr?: boolean
+  @defineAttribute('spcFirstLastPara', 'boolean') declare spcFirstLastPara?: boolean
+  @defineAttribute('lIns', 'emu') declare lIns?: number
+  @defineAttribute('tIns', 'emu') declare tIns?: number
+  @defineAttribute('rIns', 'emu') declare rIns?: number
+  @defineAttribute('bIns', 'emu') declare bIns?: number
+  @defineAttribute('rot', 'degree') declare rot?: number
+  @defineAttribute('wrap') declare wrap?: TextWrappingValues
+  @defineAttribute('upright', 'boolean') declare upright?: boolean
 }

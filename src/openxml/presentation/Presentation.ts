@@ -21,19 +21,19 @@ export class Presentation extends OXML {
     'conformance': 'transitional',
   }
 
-  @defineChild('p:custDataLst') custDataLst?: OXML
-  @defineChild('p:custShowLst') custShowLst?: OXML
+  @defineChild('p:custDataLst') declare custDataLst?: OXML
+  @defineChild('p:custShowLst') declare custShowLst?: OXML
   @defineChild('p:defaultTextStyle') declare defaultTextStyle: DefaultTextStyle
-  @defineChild('p:embeddedFontLst') embeddedFontLst?: EmbeddedFontList
-  @defineChild('p:extLst') extLst?: OXML
-  @defineChild('p:handoutMasterIdLst') handoutMasterIdLst?: OXML
-  @defineChild('p:kinsoku') kinsoku?: OXML
-  @defineChild('p:modifyVerifier') modifyVerifier?: OXML
-  @defineChild('p:notesMasterIdLst') notesMasterIdLst?: OXML
-  @defineChild('p:notesSz') notesSz?: NotesSize
-  @defineChild('p:photoAlbum') photoAlbum?: OXML
+  @defineChild('p:embeddedFontLst') declare embeddedFontLst?: EmbeddedFontList
+  @defineChild('p:extLst') declare extLst?: OXML
+  @defineChild('p:handoutMasterIdLst') declare handoutMasterIdLst?: OXML
+  @defineChild('p:kinsoku') declare kinsoku?: OXML
+  @defineChild('p:modifyVerifier') declare modifyVerifier?: OXML
+  @defineChild('p:notesMasterIdLst') declare notesMasterIdLst?: OXML
+  @defineChild('p:notesSz') declare notesSz?: NotesSize
+  @defineChild('p:photoAlbum') declare photoAlbum?: OXML
   @defineChild('p:sldIdLst') declare sldIdLst: SlideIdList
   @defineChild('p:sldMasterIdLst') declare sldMasterIdLst: SlideMasterIdList
   @defineChild('p:sldSz') declare sldSz: SlideSize
-  @defineChild('p:smartTags') smartTags?: OXML
+  @defineChild('p:smartTags') declare smartTags?: OXML
 }

@@ -9,8 +9,8 @@ import { defineChild, defineElement, OXML } from '../../core'
  */
 @defineElement('p:cxnSp')
 export class ConnectionShape extends OXML {
-  @defineChild('p:extLst') extLst?: ExtensionList
+  @defineChild('p:extLst') declare extLst?: ExtensionList
   @defineChild('p:nvCxnSpPr') declare nvCxnSpPr: NonVisualConnectionShapeProperties
   @defineChild('p:spPr') declare spPr: ShapeProperties
-  @defineChild('p:style') style?: ShapeStyle
+  @defineChild('p:style') declare style?: ShapeStyle
 }

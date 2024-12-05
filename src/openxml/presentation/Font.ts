@@ -5,8 +5,8 @@ import { defineAttribute, defineElement, OXML } from '../../core'
  */
 @defineElement('p:font')
 export class Font extends OXML {
-  @defineAttribute('charset') charset?: string
-  @defineAttribute('panose') panose?: string
-  @defineAttribute('pitchFamily') pitchFamily?: string
-  @defineAttribute('typeface') typeface?: string
+  @defineAttribute('charset') declare charset?: string
+  @defineAttribute('panose') declare panose?: string
+  @defineAttribute('pitchFamily') declare pitchFamily?: string
+  @defineAttribute('typeface') declare typeface?: string
 }

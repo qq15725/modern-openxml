@@ -14,10 +14,10 @@ export class SlideMaster extends _Slide {
     'xmlns:p': 'http://schemas.openxmlformats.org/presentationml/2006/main',
   }
 
-  @defineAttribute('preserve', 'boolean') preserve?: boolean
+  @defineAttribute('preserve', 'boolean') declare preserve?: boolean
 
   @defineChild('p:clrMap') declare clrMap: ColorMap
-  @defineChild('p:hf') hf?: OXML
+  @defineChild('p:hf') declare hf?: OXML
   @defineChild('p:sldLayoutIdLst') declare sldLayoutIdLst: OXML
   @defineChild('p:txStyles') declare txStyles: OXML
 }

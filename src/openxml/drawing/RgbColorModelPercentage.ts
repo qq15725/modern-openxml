@@ -10,5 +10,5 @@ export class RgbColorModelPercentage extends OXML {
   @defineAttribute('g', 'percentage') declare g: number
   @defineAttribute('b', 'percentage') declare b: number
 
-  @defineChild('a:alpha') alpha?: Alpha
+  @defineChild('a:alpha') declare alpha?: Alpha
 }

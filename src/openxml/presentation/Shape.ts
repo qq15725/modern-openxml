@@ -15,23 +15,27 @@ export class Shape extends OXML {
   @defineChild('p:nvSpPr') declare nvSpPr: NonVisualShapeProperties
   @defineChild('p:spPr') declare spPr: ShapeProperties
   @defineChild('p:txBody') declare txBody: TextBody
-  @defineChild('p:style') style?: ShapeStyle
+  @defineChild('p:style') declare style?: ShapeStyle
 
-  @defineProperty('nvSpPr.cNvPr.id') id?: string
-  @defineProperty('nvSpPr.cNvPr.name') name?: string
-  @defineProperty('nvSpPr.nvPr.ph') placeholder?: PlaceholderShape
+  @defineProperty('_type') declare type: string
+  @defineProperty('nvSpPr.cNvPr.id') declare id?: string
+  @defineProperty('nvSpPr.cNvPr.name') declare name?: string
+  @defineProperty('nvSpPr.nvPr.ph') declare placeholder?: PlaceholderShape
   @defineProperty('nvSpPr.cNvSpPr.txBox') declare isTextBox: boolean
   @defineProperty('spPr.xfrm.off.x') declare left: number
   @defineProperty('spPr.xfrm.off.y') declare top: number
   @defineProperty('spPr.xfrm.ext.cx') declare width: number
   @defineProperty('spPr.xfrm.ext.cy') declare height: number
-  @defineProperty('txBody.bodyPr.lIns', 0) declare paddingLeft: number
-  @defineProperty('txBody.bodyPr.tIns', 0) declare paddingTop: number
-  @defineProperty('txBody.bodyPr.rIns', 0) declare paddingRight: number
-  @defineProperty('txBody.bodyPr.bIns', 0) declare paddingBottom: number
-  @defineProperty('txBody.bodyPr.rot', 0) declare textRotate: number
-  @defineProperty('txBody.bodyPr.wrap', 0) declare textWrap: TextWrappingValues
+  @defineProperty('spPr.ln') declare outline: Record<string, any>
+  @defineProperty('txBody.bodyPr.lIns') declare paddingLeft: number
+  @defineProperty('txBody.bodyPr.tIns') declare paddingTop: number
+  @defineProperty('txBody.bodyPr.rIns') declare paddingRight: number
+  @defineProperty('txBody.bodyPr.bIns') declare paddingBottom: number
+  @defineProperty('txBody.bodyPr.rot') declare textRotate: number
+  @defineProperty('txBody.bodyPr.wrap') declare textWrap: TextWrappingValues
   @defineProperty('txBody.pList') declare paragraphs: Paragraph[]
+
+  protected get _type(): string { return 'shape' }
 
   get schemeColor(): string | undefined { return this.spPr.solidFill?.schemeClr?.val }
   get color(): string | undefined { return this.spPr.solidFill?.srgbClr?.val }

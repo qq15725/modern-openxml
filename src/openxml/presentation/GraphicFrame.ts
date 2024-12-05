@@ -7,8 +7,8 @@ import { defineChild, defineElement, OXML } from '../../core'
  */
 @defineElement('p:graphicFrame')
 export class GraphicFrame extends OXML {
-  @defineChild('p:extLst') extLst?: ExtensionList
-  @defineChild('a:graphic') graphic?: OXML
+  @defineChild('p:extLst') declare extLst?: ExtensionList
+  @defineChild('a:graphic') declare graphic?: OXML
   @defineChild('p:nvGraphicFramePr') declare nvGraphicFramePr: OXML
   @defineChild('p:xfrm') declare xfrm: Transform2D
 }

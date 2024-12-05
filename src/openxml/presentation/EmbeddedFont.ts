@@ -6,9 +6,9 @@ import { defineChild, defineElement, OXML } from '../../core'
  */
 @defineElement('p:embeddedFont')
 export class EmbeddedFont extends OXML {
-  @defineChild('p:bold') bold?: OXML
-  @defineChild('p:boldItalic') boldItalic?: OXML
+  @defineChild('p:bold') declare bold?: OXML
+  @defineChild('p:boldItalic') declare boldItalic?: OXML
   @defineChild('p:font') declare font: Font
-  @defineChild('p:italic') italic?: OXML
-  @defineChild('p:regular') regular?: OXML
+  @defineChild('p:italic') declare italic?: OXML
+  @defineChild('p:regular') declare regular?: OXML
 }

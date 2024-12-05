@@ -6,5 +6,5 @@ import { defineChild, defineElement, OXML } from '../../core'
  */
 @defineElement('a:stretch')
 export class Stretch extends OXML {
-  @defineChild('a:fillRect') fillRect?: FillRectangle
+  @defineChild('a:fillRect') declare fillRect?: FillRectangle
 }

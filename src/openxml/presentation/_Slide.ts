@@ -13,9 +13,7 @@ export class _Slide extends OXML {
 
   @defineProperty('cSld.spTree.nvGrpSpPr.cNvPr.id') declare id: string
   @defineProperty('cSld.spTree.nvGrpSpPr.cNvPr.name') declare name: string
-  @defineProperty(['getElements']) declare elements: OXML[]
+  @defineProperty('_elements') declare elements: OXML[]
 
-  getElements(): OXML[] {
-    return getElements(this.cSld.spTree.element.children)
-  }
+  get _elements(): OXML[] { return getElements(this.cSld.spTree.element.children) }
 }

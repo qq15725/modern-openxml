@@ -6,8 +6,8 @@ import { defineChild, defineElement, OXML } from '../../core'
  */
 @defineElement('p:style')
 export class ShapeStyle extends OXML {
-  @defineChild('a:lnRef') lnRef?: LineReference
-  @defineChild('a:fillRef') fillRef?: FillReference
-  @defineChild('a:effectRef') effectRef?: EffectReference
-  @defineChild('a:fontRef') fontRef?: FontReference
+  @defineChild('a:lnRef') declare lnRef?: LineReference
+  @defineChild('a:fillRef') declare fillRef?: FillReference
+  @defineChild('a:effectRef') declare effectRef?: EffectReference
+  @defineChild('a:fontRef') declare fontRef?: FontReference
 }

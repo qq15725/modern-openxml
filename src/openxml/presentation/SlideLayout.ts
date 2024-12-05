@@ -14,13 +14,13 @@ export class SlideLayout extends _Slide {
     'xmlns:p': 'http://schemas.openxmlformats.org/presentationml/2006/main',
   }
 
-  @defineAttribute('matchingName') matchingName?: string
-  @defineAttribute('preserve', 'boolean') preserve?: boolean
-  @defineAttribute('showMasterPhAnim', 'boolean') showMasterPhAnim?: boolean
-  @defineAttribute('showMasterSp', 'boolean') showMasterSp?: boolean
-  @defineAttribute('type', 'ST_SlideLayoutType') type?: string
-  @defineAttribute('userDrawn', 'boolean') userDrawn?: boolean
+  @defineAttribute('matchingName') declare matchingName?: string
+  @defineAttribute('preserve', 'boolean') declare preserve?: boolean
+  @defineAttribute('showMasterPhAnim', 'boolean') declare showMasterPhAnim?: boolean
+  @defineAttribute('showMasterSp', 'boolean') declare showMasterSp?: boolean
+  @defineAttribute('type', 'ST_SlideLayoutType') declare type?: string
+  @defineAttribute('userDrawn', 'boolean') declare userDrawn?: boolean
 
   @defineChild('p:clrMapOvr') declare clrMapOvr: ColorMapOverride
-  @defineChild('p:hf') hf?: OXML
+  @defineChild('p:hf') declare hf?: OXML
 }

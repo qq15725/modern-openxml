@@ -14,8 +14,8 @@ export class Paragraph extends OXML {
   @defineProperty('pPr.marL', 0) declare marginLeft: number
   @defineProperty('pPr.marR', 0) declare marginRight: number
   @defineProperty('pPr.indent', 0) declare textIndent: number
-  @defineProperty('pPr.lvl') level?: number
-  @defineProperty('pPr.fontAlgn') fontAlign?: string
+  @defineProperty('pPr.lvl') declare level?: number
+  @defineProperty('pPr.fontAlgn') declare fontAlign?: string
 
   get textAlign(): TextAlignmentTypeValues | undefined { return this.pPr.algn }
   get rightToLeft(): string | undefined { return this.pPr.rtl }

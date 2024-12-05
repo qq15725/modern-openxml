@@ -14,6 +14,7 @@ export class Picture extends OXML {
   @defineChild('p:spPr') declare spPr: ShapeProperties
   @defineChild('p:style') declare style: ShapeStyle
 
+  @defineProperty('_type') declare type: string
   @defineProperty('nvPicPr.cNvPr.id') declare id: string
   @defineProperty('nvPicPr.cNvPr.name') declare name: string
   @defineProperty('spPr.xfrm.off.x') declare left: number
@@ -21,4 +22,6 @@ export class Picture extends OXML {
   @defineProperty('spPr.xfrm.ext.cx') declare width: number
   @defineProperty('spPr.xfrm.ext.cy') declare height: number
   @defineProperty('blipFill.blip.rEmbed') declare rEmbed: string
+
+  protected get _type(): string { return 'picture' }
 }

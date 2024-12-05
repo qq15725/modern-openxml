@@ -10,5 +10,5 @@ export class HslColor extends OXML {
   @defineAttribute('sat', 'percentage') declare sat: number
   @defineAttribute('lum', 'percentage') declare lum: number
 
-  @defineChild('a:alpha') alpha?: Alpha
+  @defineChild('a:alpha') declare alpha?: Alpha
 }

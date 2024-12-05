@@ -7,12 +7,12 @@ import { defineChild, defineElement, OXML } from '../../core'
  */
 @defineElement('p:nvPr')
 export class ApplicationNonVisualDrawingProperties extends OXML {
-  @defineChild('a:audioCd') audioCd?: OXML
-  @defineChild('a:audioFile') audioFile?: AudioFromFile
-  @defineChild('a:custDataLst') custDataLst?: OXML
-  @defineChild('a:extLst') extLst?: ExtensionList
-  @defineChild('p:ph') ph?: PlaceholderShape
-  @defineChild('quickTimeFile') quickTimeFile?: OXML
-  @defineChild('a:videoFile') videoFile?: VideoFromFile
-  @defineChild('a:wavAudioFile') wavAudioFile?: OXML
+  @defineChild('a:audioCd') declare audioCd?: OXML
+  @defineChild('a:audioFile') declare audioFile?: AudioFromFile
+  @defineChild('a:custDataLst') declare custDataLst?: OXML
+  @defineChild('a:extLst') declare extLst?: ExtensionList
+  @defineChild('p:ph') declare ph?: PlaceholderShape
+  @defineChild('quickTimeFile') declare quickTimeFile?: OXML
+  @defineChild('a:videoFile') declare videoFile?: VideoFromFile
+  @defineChild('a:wavAudioFile') declare wavAudioFile?: OXML
 }

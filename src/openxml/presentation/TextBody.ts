@@ -7,6 +7,6 @@ import { defineChild, defineChildren, defineElement, OXML } from '../../core'
 @defineElement('p:txBody')
 export class TextBody extends OXML {
   @defineChild('a:bodyPr') declare bodyPr: BodyProperties
-  @defineChild('a:lstStyle') lstStyle?: ListStyle
+  @defineChild('a:lstStyle') declare lstStyle?: ListStyle
   @defineChildren('a:p') declare pList: Paragraph[]
 }

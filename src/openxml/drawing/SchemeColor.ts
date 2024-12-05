@@ -8,5 +8,5 @@ import { defineAttribute, defineChild, defineElement, OXML } from '../../core'
 export class SchemeColor extends OXML {
   @defineAttribute('val') declare val: string
 
-  @defineChild('a:alpha') alpha?: Alpha
+  @defineChild('a:alpha') declare alpha?: Alpha
 }
