@@ -17,3 +17,18 @@
     <img src="https://img.shields.io/npm/l/modern-openxml.svg" alt="License">
   </a>
 </p>
+
+## Usage
+
+```ts
+import { Pptx } from 'modern-openxml'
+
+// parse
+fetch('you.pptx')
+  .then(rep => rep.arrayBuffer())
+  .then(buffer => {
+    const pptx = Pptx.parse(new Uint8Array(buffer))
+    console.log(pptx.toJSON())
+  })
+```
+
