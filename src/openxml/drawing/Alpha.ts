@@ -5,5 +5,5 @@ import { defineAttribute, defineElement, OXML } from '../../core'
  */
 @defineElement('a:alpha')
 export class Alpha extends OXML {
-  @defineAttribute('val') declare val: string
+  @defineAttribute('val', 'CT_PositiveFixedPercentage') declare val: number
 }

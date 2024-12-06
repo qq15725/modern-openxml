@@ -19,6 +19,7 @@ export class Run extends OXML {
 }
 
 export class _RunStyle extends OXML {
+  @defineProperty('_color') declare color?: string
   @defineProperty('_fontWeight') declare fontWeight?: 700
   @defineProperty('_fontStyle') declare fontStyle?: 'italic'
   @defineProperty('_fontFamily') declare fontFamily?: string
@@ -26,6 +27,10 @@ export class _RunStyle extends OXML {
   @defineProperty('_textDecoration') declare textDecoration?: 'underline'
   @defineProperty('_parent.rPr.sz') declare fontSize?: number
   @defineProperty('_parent.rPr.spc') declare letterSpacing?: number
+
+  protected get _color(): string | undefined {
+    return this._parent.rPr.fillColor
+  }
 
   protected get _fontFamily(): string | undefined {
     const rPr = this._parent.rPr

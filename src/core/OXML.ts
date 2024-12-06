@@ -198,6 +198,7 @@ export class OXML {
           return !!value
         case 'degree':
         case 'ST_Angle':
+        case 'ST_PositiveFixedAngle':
           return Number(value) / 60000
         case 'fontSize':
           return Number(value) / 100
@@ -209,18 +210,21 @@ export class OXML {
         case 'StringValue':
           return String(value)
         case 'emu':
+        case 'ST_PositiveCoordinate':
         case 'ST_Coordinate32':
         case 'ST_AdjCoordinate':
           return (Number(value) / 914400) * OXML.DPI
         case 'dxa':
           return (Number(value) / 1440) * OXML.DPI
         case 'percentage':
-        case 'ST_TextSpacingPercentOrPercentString':
-          return Number(value) / 1000
-        case 'ST_TextSpacingPoint':
-          return Number(value) / 100
+        case 'ST_Percentage':
+        case 'CT_PositiveFixedPercentage':
         case 'rate':
           return Number(value) / 100000
+        case 'ST_TextSpacingPercentOrPercentString':
+          return Number(String(value).replace('%', '')) / 100
+        case 'ST_TextSpacingPoint':
+          return Number(value) / 100
         case 'lineHeight':
           return (Number(value) / 100000) * 1.2018 + 0.0034
       }

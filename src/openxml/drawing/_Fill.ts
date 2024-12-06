@@ -13,4 +13,29 @@ export class _Fill extends OXML {
   @defineChild('a:grpFill') declare grpFill?: GroupFill
   @defineChild('a:pattFill') declare pattFill?: PatternFill
   @defineChild('a:solidFill') declare solidFill?: SolidFill
+
+  get fillColor(): string | undefined {
+    if (this.noFill) {
+      return undefined
+    }
+    else if (this.blipFill) {
+      return undefined
+    }
+    else if (this.gradFill) {
+      // TODO
+      return undefined
+    }
+    else if (this.grpFill) {
+      // TODO
+      return undefined
+    }
+    else if (this.pattFill) {
+      // TODO
+      return undefined
+    }
+    else if (this.solidFill) {
+      return this.solidFill.color
+    }
+    return undefined
+  }
 }

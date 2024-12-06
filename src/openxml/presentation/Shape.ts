@@ -21,13 +21,8 @@ export class Shape extends OXML {
   @defineProperty('nvSpPr.cNvPr.name') declare name?: string
   @defineProperty() style = new _ShapeStyle(this)
   @defineProperty('nvSpPr.nvPr.ph') declare placeholder?: PlaceholderShape
-
-  @defineProperty('spPr.ln') declare outline: Record<string, any>
   @defineProperty('_paragraphs') declare paragraphs: Paragraph[]
 
-  get schemeColor(): string | undefined { return this.spPr.solidFill?.schemeClr?.val }
-  get color(): string | undefined { return this.spPr.solidFill?.srgbClr?.val }
-  get alpha(): string | undefined { return this.spPr.solidFill?.srgbClr?.alpha?.val }
   get useParagraphSpacing(): boolean { return !!this.txBody.bodyPr.spcFirstLastPara }
   get geometry() {
     return this.spPr.prstGeom
@@ -42,6 +37,7 @@ export class Shape extends OXML {
 }
 
 export class _ShapeStyle extends OXML {
+  @defineProperty('_backgroundColor') declare backgroundColor?: string
   @defineProperty('_parent.spPr.xfrm.off.x') declare left: number
   @defineProperty('_parent.spPr.xfrm.off.y') declare top: number
   @defineProperty('_parent.spPr.xfrm.ext.cx') declare width: number
@@ -49,7 +45,6 @@ export class _ShapeStyle extends OXML {
   @defineProperty('_parent.spPr.xfrm.rot') declare rotate: number
   @defineProperty('_parent.spPr.xfrm.flipH') declare flipH: boolean
   @defineProperty('_parent.spPr.xfrm.flipV') declare flipV: boolean
-
   @defineProperty('_parent.txBody.bodyPr.lIns') declare paddingLeft: number
   @defineProperty('_parent.txBody.bodyPr.tIns') declare paddingTop: number
   @defineProperty('_parent.txBody.bodyPr.rIns') declare paddingRight: number
@@ -59,6 +54,11 @@ export class _ShapeStyle extends OXML {
   @defineProperty('_textWrap') declare textWrap?: 'wrap' | 'nowrap'
   @defineProperty('_textAlign') declare textAlign?: 'center' | 'start'
   @defineProperty('_verticalAlign') declare verticalAlign?: 'top' | 'middle' | 'bottom'
+  @defineProperty('_shadow') declare shadow?: string
+
+  protected get _backgroundColor(): string | undefined {
+    return this._parent.spPr.fillColor
+  }
 
   protected get _writingMode(): 'horizontal-tb' | 'vertical-lr' | 'vertical-rl' | undefined {
     switch (this._parent.txBody.bodyPr.upright) {
@@ -104,6 +104,27 @@ export class _ShapeStyle extends OXML {
       default:
         return undefined
     }
+  }
+
+  protected get _shadow() {
+    const effectLst = this._parent.spPr.effectLst
+    if (!effectLst) {
+      return undefined
+    }
+    const shdw = effectLst.outerShdw
+    if (!shdw) {
+      return undefined
+    }
+    const distance = shdw.dist ?? 0
+    const color = shdw.color ?? 'rgba(0, 0, 0, 1)'
+    const blurRadius = shdw.blurRad ?? 0
+    const degree = (shdw.dir ?? 0) + 90
+    const radian = (degree / 180) * Math.PI
+    const dx = distance * Math.sin(radian)
+    const dy = distance * -Math.cos(radian)
+    const sx = shdw.sx ?? 1
+    const sy = shdw.sy ?? 1
+    return `${dx * sx}px ${dy * sy}px ${blurRadius}px ${color}`
   }
 
   constructor(

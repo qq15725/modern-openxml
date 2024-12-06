@@ -6,9 +6,9 @@ import { defineAttribute, defineChild, defineElement, OXML } from '../../core'
  */
 @defineElement('a:hslClr')
 export class HslColor extends OXML {
-  @defineAttribute('hue', 'positiveFixedAngle') declare hue: number
-  @defineAttribute('sat', 'percentage') declare sat: number
-  @defineAttribute('lum', 'percentage') declare lum: number
+  @defineAttribute('hue', 'ST_PositiveFixedAngle') declare hue: number
+  @defineAttribute('sat', 'ST_Percentage') declare sat: number
+  @defineAttribute('lum', 'ST_Percentage') declare lum: number
 
   @defineChild('a:alpha') declare alpha?: Alpha
 }

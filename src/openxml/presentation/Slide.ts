@@ -1,5 +1,5 @@
 import type { ColorMapOverride } from './ColorMapOverride'
-import { defineChild, defineElement, defineProperty } from '../../core'
+import { defineChild, defineElement, defineProperty, OXML } from '../../core'
 import { _Slide } from './_Slide'
 
 /**
@@ -17,4 +17,19 @@ export class Slide extends _Slide {
   @defineChild('p:clrMapOvr') declare clrMapOvr: ColorMapOverride
 
   @defineProperty() type = 'slide'
+  @defineProperty() style = new _SlideStyle(this)
+}
+
+export class _SlideStyle extends OXML {
+  @defineProperty('_backgroundColor') declare backgroundColor?: string
+
+  protected get _backgroundColor(): string | undefined {
+    return this._parent.cSld.bg?.bgPr.fillColor
+  }
+
+  constructor(
+    protected _parent: Slide,
+  ) {
+    super()
+  }
 }

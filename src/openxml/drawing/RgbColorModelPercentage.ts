@@ -6,9 +6,9 @@ import { defineAttribute, defineChild, defineElement, OXML } from '../../core'
  */
 @defineElement('a:scrgbClr')
 export class RgbColorModelPercentage extends OXML {
-  @defineAttribute('r', 'percentage') declare r: number
-  @defineAttribute('g', 'percentage') declare g: number
-  @defineAttribute('b', 'percentage') declare b: number
+  @defineAttribute('r', 'ST_Percentage') declare r: number
+  @defineAttribute('g', 'ST_Percentage') declare g: number
+  @defineAttribute('b', 'ST_Percentage') declare b: number
 
   @defineChild('a:alpha') declare alpha?: Alpha
 }
