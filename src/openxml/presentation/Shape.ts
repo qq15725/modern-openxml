@@ -66,7 +66,7 @@ export class _ShapeStyle extends OXML {
   }
 
   protected get _writingMode(): 'horizontal-tb' | 'vertical-lr' | 'vertical-rl' | undefined {
-    switch (this._parent.txBody.bodyPr.upright) {
+    switch (this._parent.txBody?.bodyPr.upright) {
       case true:
         return 'vertical-rl'
       case false:
@@ -77,7 +77,7 @@ export class _ShapeStyle extends OXML {
   }
 
   protected get _textWrap(): 'wrap' | 'nowrap' | undefined {
-    switch (this._parent.txBody.bodyPr.wrap) {
+    switch (this._parent.txBody?.bodyPr.wrap) {
       case 'none':
         return 'nowrap'
       case 'square':
@@ -88,7 +88,7 @@ export class _ShapeStyle extends OXML {
   }
 
   protected get _verticalAlign(): 'top' | 'middle' | 'bottom' | undefined {
-    switch (this._parent.txBody.bodyPr.anchor) {
+    switch (this._parent.txBody?.bodyPr.anchor) {
       case 't':
         return 'top'
       case 'b':
@@ -101,7 +101,7 @@ export class _ShapeStyle extends OXML {
   }
 
   protected get _textAlign(): 'center' | 'start' | undefined {
-    switch (this._parent.txBody.bodyPr.anchorCtr) {
+    switch (this._parent.txBody?.bodyPr.anchorCtr) {
       case true:
         return 'center'
       case false:

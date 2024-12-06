@@ -3,6 +3,7 @@ import type { NonVisualPictureProperties } from './NonVisualPictureProperties'
 import type { ShapeProperties } from './ShapeProperties'
 import type { ShapeStyle } from './ShapeStyle'
 import { defineChild, defineElement, defineProperty, OXML } from '../../core'
+import { _ShapeStyle } from './Shape'
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.presentation.picture
@@ -17,19 +18,6 @@ export class Picture extends OXML {
   @defineProperty() type = 'picture'
   @defineProperty('nvPicPr.cNvPr.id') declare id: string
   @defineProperty('nvPicPr.cNvPr.name') declare name: string
-  @defineProperty() style = new _PictureStyle(this)
+  @defineProperty() style = new _ShapeStyle(this as any)
   @defineProperty('blipFill.blip.rEmbed') declare src: string
-}
-
-export class _PictureStyle extends OXML {
-  @defineProperty('_parent.spPr.xfrm.off.x') declare left: number
-  @defineProperty('_parent.spPr.xfrm.off.y') declare top: number
-  @defineProperty('_parent.spPr.xfrm.ext.cx') declare width: number
-  @defineProperty('_parent.spPr.xfrm.ext.cy') declare height: number
-
-  constructor(
-    protected _parent: Picture,
-  ) {
-    super()
-  }
 }

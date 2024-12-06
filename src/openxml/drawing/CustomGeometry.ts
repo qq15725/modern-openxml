@@ -17,4 +17,9 @@ export class CustomGeometry extends OXML {
   @defineChild('a:gdLst') declare gdLst?: ShapeGuideList
   @defineChild('a:pathLst') declare pathLst?: PathList
   @defineChild('a:rect') declare rect?: Rectangle
+
+  toSVGString(): string {
+    // TODO
+    return ''
+  }
 }
