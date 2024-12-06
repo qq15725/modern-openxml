@@ -1,20 +1,34 @@
-import type { TextWrappingValues } from './TextWrappingValues'
+import type {
+  TextAnchoringTypeValues,
+  TextHorizontalOverflowValues,
+  TextVerticalOverflowValues,
+  TextVerticalValues,
+  TextWrappingValues,
+} from './_types'
 import { defineAttribute, defineElement, OXML } from '../../core'
-import { TextAnchoringTypeValues } from './TextAnchoringTypeValues'
 
 /**
  * @link https://learn.microsoft.com/dotnet/api/documentformat.openxml.drawing.bodyproperties
  */
 @defineElement('a:bodyPr')
 export class BodyProperties extends OXML {
-  @defineAttribute('anchor', TextAnchoringTypeValues) declare anchor?: TextAnchoringTypeValues
+  @defineAttribute('anchor') declare anchor?: TextAnchoringTypeValues
   @defineAttribute('anchorCtr', 'boolean') declare anchorCtr?: boolean
-  @defineAttribute('spcFirstLastPara', 'boolean') declare spcFirstLastPara?: boolean
-  @defineAttribute('lIns', 'emu') declare lIns?: number
-  @defineAttribute('tIns', 'emu') declare tIns?: number
-  @defineAttribute('rIns', 'emu') declare rIns?: number
-  @defineAttribute('bIns', 'emu') declare bIns?: number
-  @defineAttribute('rot', 'degree') declare rot?: number
-  @defineAttribute('wrap') declare wrap?: TextWrappingValues
+  @defineAttribute('bIns', 'ST_Coordinate32') declare bIns?: number
+  @defineAttribute('numCol', 'ST_TextColumnCount') declare numCol?: number
+  @defineAttribute('spcCol', 'ST_PositiveCoordinate32') declare spcCol?: number
+  @defineAttribute('compatLnSpc', 'boolean') declare compatLnSpc?: boolean
+  @defineAttribute('forceAA', 'boolean') declare forceAA?: boolean
+  @defineAttribute('fromWordArt', 'boolean') declare fromWordArt?: boolean
+  @defineAttribute('horzOverflow') declare horzOverflow?: TextHorizontalOverflowValues
+  @defineAttribute('lIns', 'ST_Coordinate32') declare lIns?: number
+  @defineAttribute('rIns', 'ST_Coordinate32') declare rIns?: number
+  @defineAttribute('rtlCol', 'boolean') declare rtlCol?: boolean
+  @defineAttribute('rot', 'ST_Angle') declare rot?: number
+  @defineAttribute('tIns', 'ST_Coordinate32') declare tIns?: number
   @defineAttribute('upright', 'boolean') declare upright?: boolean
+  @defineAttribute('spcFirstLastPara', 'boolean') declare spcFirstLastPara?: boolean
+  @defineAttribute('vert') declare vert?: TextVerticalValues
+  @defineAttribute('vertOverflow') declare vertOverflow?: TextVerticalOverflowValues
+  @defineAttribute('wrap') declare wrap?: TextWrappingValues
 }

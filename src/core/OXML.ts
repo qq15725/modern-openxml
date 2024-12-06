@@ -24,19 +24,15 @@ export interface OXMLChildDefinition {
 export interface OXMLDefinition {
   tag?: string
   namespace?: string
-  attributes?: Record<string, OXMLAttributeDefinition>
-  properties?: Record<string, OXMLPropertyDefinition>
-  children?: OXMLChildDefinition[]
+  attributes: Record<string, OXMLAttributeDefinition>
+  properties: Record<string, OXMLPropertyDefinition>
+  children: OXMLChildDefinition[]
 }
 
 export function defineElement(tag: string) {
   return (constructor: any) => {
     const proto = constructor.prototype
-    let definition = OXML.protoToDefinition.get(proto)
-    if (!definition) {
-      definition = {} as OXMLDefinition
-      OXML.protoToDefinition.set(proto, definition)
-    }
+    const definition = OXML.makeDefinition(proto)
     const tagArr = tag.split(':')
     definition.tag = tag
     definition.namespace = tagArr.length > 1 ? tagArr[0] : undefined
@@ -55,12 +51,7 @@ export function defineAttribute(
   defaultValue?: any,
 ) {
   return function (proto: any, name: any) {
-    let definition = OXML.protoToDefinition.get(proto)
-    if (!definition) {
-      definition = {} as OXMLDefinition
-      OXML.protoToDefinition.set(proto, definition)
-    }
-    definition.attributes ??= {}
+    const definition = OXML.makeDefinition(proto)
     definition.attributes[attrName] = { name, alias: attrName, type, defaultValue }
     Object.defineProperty(proto, name, {
       get() {
@@ -72,31 +63,26 @@ export function defineAttribute(
   }
 }
 
-export function defineProperty(propName: string) {
+export function defineProperty(aliasName?: string) {
   return function (proto: any, name: any) {
-    let definition = OXML.protoToDefinition.get(proto)
-    if (!definition) {
-      definition = {} as OXMLDefinition
-      OXML.protoToDefinition.set(proto, definition)
+    const alias = aliasName ?? name
+    const definition = OXML.makeDefinition(proto)
+    definition.properties[alias] = { name, alias }
+    if (name !== alias) {
+      Object.defineProperty(proto, name, {
+        get() {
+          return (this as OXML).offsetGet(alias)
+        },
+        configurable: true,
+        enumerable: true,
+      })
     }
-    definition.properties ??= {}
-    definition.properties[propName] = { name, alias: propName }
-    Object.defineProperty(proto, name, {
-      get() {
-        return (this as OXML).offsetGet(propName)
-      },
-    })
   }
 }
 
 export function defineChild(tag: string, defaultValue?: any, isArray = false) {
   return function (proto: any, name: any) {
-    let definition = OXML.protoToDefinition.get(proto)
-    if (!definition) {
-      definition = {} as OXMLDefinition
-      OXML.protoToDefinition.set(proto, definition)
-    }
-    definition.children ??= []
+    const definition = OXML.makeDefinition(proto)
     definition.children.push({ tag, defaultValue, isArray })
     Object.defineProperty(proto, name, {
       get() {
@@ -126,13 +112,28 @@ export class OXML {
     return this.tagToConstructor.get(tag)
   }
 
+  static makeDefinition(proto: any): OXMLDefinition {
+    let definition = OXML.protoToDefinition.get(proto)
+    if (!definition) {
+      definition = {
+        attributes: {},
+        properties: {
+          tag: { name: 'tag', alias: 'tag' },
+        },
+        children: [],
+      } as unknown as OXMLDefinition
+      OXML.protoToDefinition.set(proto, definition)
+    }
+    return definition
+  }
+
   static getDefinition(proto: any): OXMLDefinition | undefined {
     let definition: OXMLDefinition | undefined
     let cur = proto
     while (cur) {
       const _definition = this.protoToDefinition.get(cur)
       if (_definition) {
-        definition = deepMerge(definition ?? {}, _definition)
+        definition = deepMerge(definition ?? {}, _definition) as any
       }
       cur = Object.getPrototypeOf(cur)
     }
@@ -196,19 +197,28 @@ export class OXML {
         case 'boolean':
           return !!value
         case 'degree':
+        case 'ST_Angle':
           return Number(value) / 60000
         case 'fontSize':
           return Number(value) / 100
         case 'number':
+        case 'SByteValue':
           return Number(value)
         case 'string':
+        case 'HexBinaryValue':
+        case 'StringValue':
           return String(value)
         case 'emu':
+        case 'ST_Coordinate32':
+        case 'ST_AdjCoordinate':
           return (Number(value) / 914400) * OXML.DPI
         case 'dxa':
           return (Number(value) / 1440) * OXML.DPI
         case 'percentage':
+        case 'ST_TextSpacingPercentOrPercentString':
           return Number(value) / 1000
+        case 'ST_TextSpacingPoint':
+          return Number(value) / 100
         case 'rate':
           return Number(value) / 100000
         case 'lineHeight':
@@ -335,19 +345,6 @@ export class OXML {
         }
       })
     }
-    definition?.children?.forEach((child) => {
-      child.tag
-    })
-    return {
-      ...properties,
-    }
-    // return {
-    //   ...this.getAttributes(),
-    //   ...Object.fromEntries(this.getChildren().map((child) => {
-    //     const tag = child.tag ?? child.element.tagName
-    //     const tagArr = tag.split(':')
-    //     return [tagArr[tagArr.length - 1], child.toJSON()]
-    //   })),
-    // }
+    return properties
   }
 }

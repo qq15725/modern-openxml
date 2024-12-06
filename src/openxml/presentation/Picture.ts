@@ -12,16 +12,24 @@ export class Picture extends OXML {
   @defineChild('p:blipFill') declare blipFill: BlipFill
   @defineChild('p:nvPicPr') declare nvPicPr: NonVisualPictureProperties
   @defineChild('p:spPr') declare spPr: ShapeProperties
-  @defineChild('p:style') declare style: ShapeStyle
+  @defineChild('p:style') declare pStyle: ShapeStyle
 
-  @defineProperty('_type') declare type: string
+  @defineProperty() type = 'picture'
   @defineProperty('nvPicPr.cNvPr.id') declare id: string
   @defineProperty('nvPicPr.cNvPr.name') declare name: string
-  @defineProperty('spPr.xfrm.off.x') declare left: number
-  @defineProperty('spPr.xfrm.off.y') declare top: number
-  @defineProperty('spPr.xfrm.ext.cx') declare width: number
-  @defineProperty('spPr.xfrm.ext.cy') declare height: number
+  @defineProperty() style = new _PictureStyle(this)
   @defineProperty('blipFill.blip.rEmbed') declare rEmbed: string
+}
 
-  protected get _type(): string { return 'picture' }
+export class _PictureStyle extends OXML {
+  @defineProperty('_parent.spPr.xfrm.off.x') declare left: number
+  @defineProperty('_parent.spPr.xfrm.off.y') declare top: number
+  @defineProperty('_parent.spPr.xfrm.ext.cx') declare width: number
+  @defineProperty('_parent.spPr.xfrm.ext.cy') declare height: number
+
+  constructor(
+    protected _parent: Picture,
+  ) {
+    super()
+  }
 }

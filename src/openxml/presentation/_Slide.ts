@@ -2,7 +2,6 @@ import type { CommonSlideData } from './CommonSlideData'
 import type { ExtensionList } from './ExtensionList'
 import type { Timing } from './Timing'
 import { defineChild, defineProperty, OXML } from '../../core'
-import { getElements } from './_utils'
 
 export class _Slide extends OXML {
   @defineChild('p:cSld') declare cSld: CommonSlideData
@@ -15,5 +14,7 @@ export class _Slide extends OXML {
   @defineProperty('cSld.spTree.nvGrpSpPr.cNvPr.name') declare name: string
   @defineProperty('_elements') declare elements: OXML[]
 
-  get _elements(): OXML[] { return getElements(this.cSld.spTree.element.children) }
+  get _elements(): OXML[] {
+    return Array.from(this.cSld.spTree.element.children).map(element => OXML.make(element))
+  }
 }

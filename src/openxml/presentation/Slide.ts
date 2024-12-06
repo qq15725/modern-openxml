@@ -16,7 +16,5 @@ export class Slide extends _Slide {
 
   @defineChild('p:clrMapOvr') declare clrMapOvr: ColorMapOverride
 
-  @defineProperty('_type') declare type: string
-
-  protected get _type(): string { return 'slide' }
+  @defineProperty() type = 'slide'
 }

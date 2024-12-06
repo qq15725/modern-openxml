@@ -9,7 +9,7 @@ import { defineAttribute, defineChild, defineElement, OXML } from '../../core'
  */
 @defineElement('a:xfrm')
 export class Transform2D extends OXML {
-  @defineAttribute('rot', 'degree') declare rot: number
+  @defineAttribute('rot', 'ST_Angle') declare rot: number
   @defineAttribute('flipV', 'boolean') declare flipV: boolean
   @defineAttribute('flipH', 'boolean') declare flipH: boolean
 
