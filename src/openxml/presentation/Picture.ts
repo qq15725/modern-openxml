@@ -18,7 +18,7 @@ export class Picture extends OXML {
   @defineProperty('nvPicPr.cNvPr.id') declare id: string
   @defineProperty('nvPicPr.cNvPr.name') declare name: string
   @defineProperty() style = new _PictureStyle(this)
-  @defineProperty('blipFill.blip.rEmbed') declare rEmbed: string
+  @defineProperty('blipFill.blip.rEmbed') declare src: string
 }
 
 export class _PictureStyle extends OXML {

@@ -38,6 +38,7 @@ export class Shape extends OXML {
 
 export class _ShapeStyle extends OXML {
   @defineProperty('_backgroundColor') declare backgroundColor?: string
+  @defineProperty('_backgroundImage') declare backgroundImage?: string
   @defineProperty('_parent.spPr.xfrm.off.x') declare left: number
   @defineProperty('_parent.spPr.xfrm.off.y') declare top: number
   @defineProperty('_parent.spPr.xfrm.ext.cx') declare width: number
@@ -58,6 +59,10 @@ export class _ShapeStyle extends OXML {
 
   protected get _backgroundColor(): string | undefined {
     return this._parent.spPr.fillColor
+  }
+
+  protected get _backgroundImage(): string | undefined {
+    return this._parent.spPr.fillImage
   }
 
   protected get _writingMode(): 'horizontal-tb' | 'vertical-lr' | 'vertical-rl' | undefined {

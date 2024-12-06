@@ -38,4 +38,14 @@ export class _Fill extends OXML {
     }
     return undefined
   }
+
+  get fillImage(): string | undefined {
+    if (this.noFill) {
+      return undefined
+    }
+    else if (this.blipFill) {
+      return this.blipFill.blip?.rEmbed
+    }
+    return undefined
+  }
 }

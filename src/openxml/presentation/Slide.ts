@@ -22,9 +22,14 @@ export class Slide extends _Slide {
 
 export class _SlideStyle extends OXML {
   @defineProperty('_backgroundColor') declare backgroundColor?: string
+  @defineProperty('_backgroundImage') declare backgroundImage?: string
 
   protected get _backgroundColor(): string | undefined {
     return this._parent.cSld.bg?.bgPr.fillColor
+  }
+
+  protected get _backgroundImage(): string | undefined {
+    return this._parent.cSld.bg?.bgPr.fillImage
   }
 
   constructor(
