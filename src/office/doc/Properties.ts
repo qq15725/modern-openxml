@@ -1,16 +1,21 @@
-import { defineChild, defineElement, OXML } from '../../core'
+import { defineChild, defineElement, defineProperty, OXML } from '../../core'
 
 @defineElement('Properties')
 export class Properties extends OXML {
   attrs = {
     'xmlns': 'http://schemas.openxmlformats.org/officeDocument/2006/extended-properties',
     'xmlns:vt': 'http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes',
-    'xmlns:xml': 'http://www.w3.org/XML/1998/namespace',
   }
 
-  @defineChild('Company', 'ModernOpenxml') declare company: string
-  @defineChild('LinksUpToDate', false) declare linksUpToDate: number
-  @defineChild('Application', 'ModernOpenxml') declare application: string
-  @defineChild('AppVersion', '00.0001') declare appVersion: string
-  @defineChild('DocSecurity', '0') declare docSecurity: string
+  @defineChild('Company') protected declare _company: OXML
+  @defineChild('LinksUpToDate') protected declare _linksUpToDate: OXML
+  @defineChild('Application') protected declare _application: OXML
+  @defineChild('AppVersion') protected declare _appVersion: OXML
+  @defineChild('DocSecurity') protected declare _docSecurity: OXML
+
+  @defineProperty('_company.textContent') declare company: string
+  @defineProperty('_linksUpToDate.textContent') declare linksUpToDate: string
+  @defineProperty('_application.textContent') declare application: string
+  @defineProperty('_appVersion.textContent') declare appVersion: string
+  @defineProperty('_docSecurity.textContent') declare docSecurity: string
 }

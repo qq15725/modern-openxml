@@ -117,9 +117,7 @@ export class OXML {
     if (!definition) {
       definition = {
         attributes: {},
-        properties: {
-          tag: { name: 'tag', alias: 'tag' },
-        },
+        properties: {},
         children: [],
       } as unknown as OXMLDefinition
       OXML.protoToDefinition.set(proto, definition)
@@ -159,6 +157,9 @@ export class OXML {
 
   declare tag?: string
   declare element: Element
+
+  get textContent(): string { return this.element.textContent ?? '' }
+  set textContent(val): void { this.element.textContent = val }
 
   definition(): OXMLDefinition | undefined {
     return OXML.getDefinition(this)
