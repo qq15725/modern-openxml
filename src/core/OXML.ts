@@ -80,13 +80,32 @@ export function defineProperty(aliasName?: string) {
   }
 }
 
-export function defineChild(tag: string, defaultValue?: any, isArray = false) {
+export interface DefineChildUsedOptions {
+  defaultValue?: any
+  isText?: boolean
+  isArray?: boolean
+  isProperty?: boolean
+}
+
+export function defineChild(tag: string, options: DefineChildUsedOptions = {}): any {
+  const {
+    defaultValue,
+    isText = false,
+    isArray = false,
+    isProperty = false,
+  } = options
   return function (proto: any, name: any) {
     const definition = OXML.makeDefinition(proto)
     definition.children.push({ tag, defaultValue, isArray })
+    if (isProperty) {
+      definition.properties[name] = { name, alias: name }
+    }
     Object.defineProperty(proto, name, {
       get() {
-        if (isArray) {
+        if (isText) {
+          return (this as OXML).getChild(tag)?.element.textContent ?? defaultValue
+        }
+        else if (isArray) {
           return (this as OXML).getChildren(tag) ?? defaultValue
         }
         else {
@@ -99,8 +118,8 @@ export function defineChild(tag: string, defaultValue?: any, isArray = false) {
   }
 }
 
-export function defineChildren(tag: string, defaultValue?: any) {
-  return defineChild(tag, defaultValue, true)
+export function defineChildren(tag: string, options: Omit<DefineChildUsedOptions, 'isArray'> = {}): any {
+  return defineChild(tag, { ...options, isArray: true })
 }
 
 export class OXML {

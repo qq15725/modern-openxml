@@ -1,5 +1,9 @@
+import type { ConnectionShape } from './ConnectionShape'
+import type { GraphicFrame } from './GraphicFrame'
 import type { GroupShapeProperties } from './GroupShapeProperties'
 import type { NonVisualGroupShapeProperties } from './NonVisualGroupShapeProperties'
+import type { Picture } from './Picture'
+import type { Shape } from './Shape'
 import { defineChild, defineElement, defineProperty, OXML } from '../../core'
 
 /**
@@ -14,10 +18,25 @@ export class GroupShape extends OXML {
   @defineProperty('nvSpPr.cNvPr.id') declare id?: string
   @defineProperty('nvSpPr.cNvPr.name') declare name?: string
   @defineProperty() style = new _GroupShapeStyle(this)
-  @defineProperty('_elements') declare elements: OXML[]
+  @defineProperty('_elements') declare elements: (Shape | GroupShape | Picture | ConnectionShape | GraphicFrame)[]
 
-  protected get _elements(): OXML[] {
-    return Array.from(this.element.children).map(element => OXML.make(element))
+  get _elements(): (Shape | GroupShape | Picture | ConnectionShape | GraphicFrame)[] {
+    return Array.from(this.element.children)
+      .map((element) => {
+        switch (element.tagName) {
+          case 'p:nvGrpSpPr':
+          case 'p:grpSpPr':
+            return undefined
+          case 'p:sp':
+          case 'p:grpSp':
+          case 'p:cxnSp':
+          case 'p:pic':
+          case 'p:graphicFrame':
+          default:
+            return OXML.make(element)
+        }
+      })
+      .filter(Boolean) as any[]
   }
 }
 

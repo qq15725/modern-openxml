@@ -5,7 +5,7 @@ import { withIndents } from '../utils'
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.spreadsheet.sharedstringtable
  */
-@defineElement('sst')
+@defineElement('x:sst')
 export class SharedStringTable extends OXML {
   parse(node: VNode) {
     return node.get('sst/si').map(v => v.findEl<Node>('t')?.textContent || '')

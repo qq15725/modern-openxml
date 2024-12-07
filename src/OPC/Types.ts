@@ -1,6 +1,6 @@
 import type { Default } from './Default'
 import type { Override } from './Override'
-import { defineChildren, defineElement, OXML } from '../../core'
+import { defineChildren, defineElement, OXML } from '../core'
 
 const _package = 'application/vnd.openxmlformats-package'
 const officedocument = 'application/vnd.openxmlformats-officedocument'
@@ -10,6 +10,10 @@ const spreadsheetml = `${officedocument}/spreadsheetml`
 
 @defineElement('Types')
 export class Types extends OXML {
+  attrs = {
+    xmlns: 'http://schemas.openxmlformats.org/package/2006/content-types',
+  }
+
   static package = _package
   static officedocument = officedocument
   static presentationml = presentationml
@@ -39,10 +43,6 @@ export class Types extends OXML {
     workbook: `${spreadsheetml}.sheet.main+xml`,
     worksheet: `${spreadsheetml}.worksheet+xml`,
   } as const
-
-  attrs = {
-    xmlns: 'http://schemas.openxmlformats.org/package/2006/content-types',
-  }
 
   @defineChildren('Default') declare defaultList: Default[]
   @defineChildren('Override') declare overrideList: Override[]

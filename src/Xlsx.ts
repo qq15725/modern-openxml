@@ -1,4 +1,4 @@
-import type { Source } from '../types'
+import type { Source } from './types'
 import Jszip from 'jszip'
 import { ContentTypes } from '../ContentTypes'
 import { App } from '../doc-props/App'

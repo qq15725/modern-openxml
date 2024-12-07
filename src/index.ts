@@ -1,3 +1,4 @@
 export * from './core'
-export * from './office'
+export * from './OPC'
 export * from './OpenXml'
+export * from './pptx'

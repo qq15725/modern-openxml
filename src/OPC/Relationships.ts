@@ -1,11 +1,15 @@
 import type { Relationship } from './Relationship'
-import { defineChildren, defineElement, OXML } from '../../core'
+import { defineChildren, defineElement, OXML } from '../core'
 
 const officeDocument = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships'
 const _package = 'http://schemas.openxmlformats.org/package/2006/relationships'
 
 @defineElement('Relationships')
 export class Relationships extends OXML {
+  attrs = {
+    xmlns: 'http://schemas.openxmlformats.org/package/2006/relationships',
+  }
+
   static officeDocument = officeDocument
   static package = _package
   static types = {
@@ -24,10 +28,6 @@ export class Relationships extends OXML {
     notesMaster: `${officeDocument}/notesMaster`,
     handoutMaster: `${officeDocument}/handoutMaster`,
     commentAuthors: `${officeDocument}/commentAuthors`,
-  }
-
-  attrs = {
-    xmlns: 'http://schemas.openxmlformats.org/package/2006/relationships',
   }
 
   @defineChildren('Relationship') declare children: Relationship[]

@@ -5,7 +5,7 @@ import { Pixel, withAttr, withAttrs, withIndents } from '../utils'
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.spreadsheet.workbook
  */
-@defineElement('workbook')
+@defineElement('x:workbook')
 export class Workbook extends OXML {
   parse(node: VNode) {
     return {
@@ -38,10 +38,10 @@ export class Workbook extends OXML {
   <workbookPr/>
   <bookViews>
     <workbookView${withAttrs([
-    withAttr('windowWidth', Pixel.encode(props.width ?? 1875, 'dxa')),
-    withAttr('windowHeight', Pixel.encode(props.height ?? 836, 'dxa')),
-    withAttr('activeTab', props.activeTab ?? 1),
-  ])}/>
+      withAttr('windowWidth', Pixel.encode(props.width ?? 1875, 'dxa')),
+      withAttr('windowHeight', Pixel.encode(props.height ?? 836, 'dxa')),
+      withAttr('activeTab', props.activeTab ?? 1),
+    ])}/>
   </bookViews>
   <sheets>
     ${withIndents(sheets, 2)}

@@ -3,7 +3,7 @@ import { defineElement, OXML } from '../../core'
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.spreadsheet.stylesheet
  */
-@defineElement('styleSheet')
+@defineElement('x:styleSheet')
 export class Stylesheet extends OXML {
   override toXmlString(): string {
     return `<styleSheet

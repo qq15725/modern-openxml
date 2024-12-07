@@ -1,4 +1,4 @@
-import { defineAttribute, defineElement, OXML } from '../../core'
+import { defineAttribute, defineElement, OXML } from '../core'
 
 @defineElement('Default')
 export class Default extends OXML {
