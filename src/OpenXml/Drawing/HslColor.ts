@@ -11,4 +11,9 @@ export class HslColor extends OXML {
   @defineAttribute('lum', 'ST_Percentage') declare lum: number
 
   @defineChild('a:alpha') declare alpha?: Alpha
+
+  get color(): string {
+    // TODO
+    return ''
+  }
 }

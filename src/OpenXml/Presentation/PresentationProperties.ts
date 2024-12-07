@@ -1,4 +1,8 @@
-import { defineElement, OXML } from '../../core'
+import type { ColorMostRecentlyUsed } from './ColorMostRecentlyUsed'
+import type { ExtensionList } from './ExtensionList'
+import type { PrintingProperties } from './PrintingProperties'
+import type { ShowProperties } from './ShowProperties'
+import { defineChild, defineElement, defineProperty, OXML } from '../../core'
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.presentation.presentationproperties
@@ -13,4 +17,11 @@ export class PresentationProperties extends OXML {
     'xmlns:sh': 'http://schemas.openxmlformats.org/officeDocument/2006/sharedTypes',
     'xmlns:xml': 'http://www.w3.org/XML/1998/namespace',
   }
+
+  @defineChild('p:clrMru') declare clrMru?: ColorMostRecentlyUsed
+  @defineChild('p:extLst') declare extLst?: ExtensionList
+  @defineChild('p:prnPr') declare prnPr?: PrintingProperties
+  @defineChild('p:showPr') declare showPr?: ShowProperties
+
+  @defineProperty('clrMru.colors') declare colorMostRecentlyUsed?: string[]
 }

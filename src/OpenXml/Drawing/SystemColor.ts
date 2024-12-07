@@ -9,4 +9,8 @@ export class SystemColor extends OXML {
   @defineAttribute('val') declare val: string
 
   @defineChild('a:alpha') declare alpha?: Alpha
+
+  get color(): string {
+    return this.val
+  }
 }

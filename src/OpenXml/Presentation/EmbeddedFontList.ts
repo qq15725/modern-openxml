@@ -6,5 +6,5 @@ import { defineChildren, defineElement, OXML } from '../../core'
  */
 @defineElement('p:embeddedFontLst')
 export class EmbeddedFontList extends OXML {
-  @defineChildren('p:embeddedFont') declare value: EmbeddedFont[]
+  @defineChildren('p:embeddedFont') declare children: EmbeddedFont[]
 }

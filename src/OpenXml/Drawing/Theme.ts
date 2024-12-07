@@ -1,10 +1,23 @@
-import { defineElement, OXML } from '../../core'
+import type { ExtensionList } from './ExtensionList'
+import type { ThemeElements } from './ThemeElements'
+import { defineChild, defineElement, OXML } from '../../core'
 
 /**
  * @link https://learn.microsoft.com/dotnet/api/documentformat.openxml.drawing.theme
  */
 @defineElement('a:theme')
 export class Theme extends OXML {
+  attrs = {
+    'xmlns:a': 'http://schemas.openxmlformats.org/drawingml/2006/main',
+    'name': 'Office Theme',
+  }
+
+  @defineChild('a:custClrLst') declare custClrLst?: OXML
+  @defineChild('a:extLst') declare extLst?: ExtensionList
+  @defineChild('a:extraClrSchemeLst') declare extraClrSchemeLst?: OXML
+  @defineChild('a:objectDefaults') declare objectDefaults?: OXML
+  @defineChild('a:themeElements', { isProperty: true }) declare themeElements?: ThemeElements
+
   override toXmlString(): string {
     return `<a:theme
   xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"
@@ -286,8 +299,6 @@ export class Theme extends OXML {
       </a:bgFillStyleLst>
     </a:fmtScheme>
   </a:themeElements>
-  <a:objectDefaults/>
-  <a:extraClrSchemeLst/>
 </a:theme>`
   }
 }

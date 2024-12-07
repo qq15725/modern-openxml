@@ -1,4 +1,8 @@
+import type { BoldFont } from './BoldFont'
+import type { BoldItalicFont } from './BoldItalicFont'
 import type { Font } from './Font'
+import type { ItalicFont } from './ItalicFont'
+import type { RegularFont } from './RegularFont'
 import { defineChild, defineElement, OXML } from '../../core'
 
 /**
@@ -6,9 +10,9 @@ import { defineChild, defineElement, OXML } from '../../core'
  */
 @defineElement('p:embeddedFont')
 export class EmbeddedFont extends OXML {
-  @defineChild('p:bold') declare bold?: OXML
-  @defineChild('p:boldItalic') declare boldItalic?: OXML
+  @defineChild('p:bold') declare bold?: BoldFont
+  @defineChild('p:boldItalic') declare boldItalic?: BoldItalicFont
   @defineChild('p:font') declare font: Font
-  @defineChild('p:italic') declare italic?: OXML
-  @defineChild('p:regular') declare regular?: OXML
+  @defineChild('p:italic') declare italic?: ItalicFont
+  @defineChild('p:regular') declare regular?: RegularFont
 }

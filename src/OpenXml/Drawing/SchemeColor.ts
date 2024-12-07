@@ -9,4 +9,9 @@ export class SchemeColor extends OXML {
   @defineAttribute('val') declare val: string
 
   @defineChild('a:alpha') declare alpha?: Alpha
+
+  get color(): string {
+    // TODO
+    return ''
+  }
 }

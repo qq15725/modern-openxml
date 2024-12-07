@@ -5,7 +5,7 @@ export type OXMLProto = new (...args: any[]) => OXML
 export interface OXMLAttributeDefinition {
   name: string
   alias: string
-  type: string | Record<string, any>
+  type: string
   defaultValue?: any
 }
 
@@ -45,17 +45,34 @@ export function defineElement(tag: string) {
   }
 }
 
-export function defineAttribute(
-  attrName: string,
-  type: string | Record<string, any> = 'string',
-  defaultValue?: any,
-) {
+export interface DefineAttributeUsedOptions {
+  type?: string
+  isProperty?: boolean
+  defaultValue?: any
+}
+
+export function defineAttribute(attr: string, options: DefineAttributeUsedOptions | string = {}) {
+  let _options
+  if (typeof options === 'string') {
+    _options = { type: options }
+  }
+  else {
+    _options = options
+  }
+  const {
+    type = 'string',
+    isProperty,
+    defaultValue,
+  } = _options
   return function (proto: any, name: any) {
     const definition = OXML.makeDefinition(proto)
-    definition.attributes[attrName] = { name, alias: attrName, type, defaultValue }
+    definition.attributes[attr] = { name, alias: attr, type, defaultValue }
+    if (isProperty) {
+      definition.properties[name] = { name, alias: name }
+    }
     Object.defineProperty(proto, name, {
       get() {
-        return (this as OXML).getAttribute(attrName)
+        return (this as OXML).getAttribute(attr)
       },
       configurable: true,
       enumerable: true,
@@ -81,18 +98,18 @@ export function defineProperty(aliasName?: string) {
 }
 
 export interface DefineChildUsedOptions {
-  defaultValue?: any
   isText?: boolean
   isArray?: boolean
   isProperty?: boolean
+  defaultValue?: any
 }
 
 export function defineChild(tag: string, options: DefineChildUsedOptions = {}): any {
   const {
-    defaultValue,
     isText = false,
     isArray = false,
     isProperty = false,
+    defaultValue,
   } = options
   return function (proto: any, name: any) {
     const definition = OXML.makeDefinition(proto)
@@ -178,7 +195,9 @@ export class OXML {
   declare element: Element
 
   get textContent(): string { return this.element.textContent ?? '' }
-  set textContent(val): void { this.element.textContent = val }
+  set textContent(val: string) {
+    this.element.textContent = val
+  }
 
   definition(): OXMLDefinition | undefined {
     return OXML.getDefinition(this)
@@ -347,7 +366,7 @@ export class OXML {
     return this.element.outerHTML
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): any {
     const definition = this.definition()
     const properties: Record<string, any> = {}
     if (definition?.properties) {

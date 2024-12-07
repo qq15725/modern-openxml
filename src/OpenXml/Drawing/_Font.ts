@@ -1,8 +1,19 @@
-import { defineAttribute, OXML } from '../../core'
+import { defineAttribute, type DefineAttributeUsedOptions, OXML } from '../../core'
+
+const options: DefineAttributeUsedOptions = {
+  isProperty: true,
+}
+
+export interface FontJSON {
+  charset?: number
+  panose?: string
+  pitchFamily?: number
+  typeface?: string
+}
 
 export class _Font extends OXML {
-  @defineAttribute('charset', 'SByteValue') declare charset?: number
-  @defineAttribute('panose', 'HexBinaryValue') declare panose?: string
-  @defineAttribute('pitchFamily', 'SByteValue') declare pitchFamily?: number
-  @defineAttribute('typeface', 'StringValue') declare typeface?: string
+  @defineAttribute('charset', { ...options, type: 'SByteValue' }) declare charset?: number
+  @defineAttribute('panose', { ...options, type: 'HexBinaryValue' }) declare panose?: string
+  @defineAttribute('pitchFamily', { ...options, type: 'SByteValue' }) declare pitchFamily?: number
+  @defineAttribute('typeface', { ...options, type: 'StringValue' }) declare typeface?: string
 }
