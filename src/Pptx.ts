@@ -1,8 +1,8 @@
 import type { Zippable } from 'fflate'
-import type { Theme } from './OpenXml/Drawing'
 import type { SlideLayout } from './OpenXml/Presentation'
 import { unzipSync, zipSync } from 'fflate'
 import { CoreProperties, Relationships, Types } from './OPC'
+import { Theme } from './OpenXml/Drawing'
 import { Properties } from './OpenXml/ExtendedProperties'
 import { Picture, Presentation, PresentationProperties, Slide, SlideMaster, ViewProperties } from './OpenXml/Presentation'
 
@@ -108,6 +108,8 @@ export class Pptx {
       pptx.slides.push(slide)
     })
 
+    const themePaths = []
+
     pptx.presentation.sldMasterIdLst.children.forEach((v) => {
       // slideMasters/slideMaster1.xml
       const slideMasterPath = ridToTarget[v.rId]
@@ -118,6 +120,18 @@ export class Pptx {
       const { base: slideMasterRelsBase, path: slideMasterRelsPath } = getRelsPath(slideMasterPath)
       const slideMasterRels = new Relationships().fromXML(readXml(slideMasterRelsPath)).value
       console.log(slideMasterRels)
+      slideMasterRels.forEach((rel) => {
+        switch (rel.type) {
+          case Relationships.types.theme:
+            // TODO
+            themePaths.push(rel.target.replace('../', 'ppt/'))
+            break
+        }
+      })
+    })
+
+    pptx.themes = themePaths.map((themePath) => {
+      return new Theme().fromXML(readXml(themePath))
     })
 
     return pptx
