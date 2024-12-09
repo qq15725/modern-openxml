@@ -32,7 +32,7 @@ export class Relationships extends OXML {
 
   @defineChildren('Relationship') declare children: Relationship[]
 
-  get value(): { id: string, type: string, target: string }[] {
-    return this.children.map(v => ({ id: v.id, type: v.type, target: v.target }))
+  get value(): Record<string, { type: string, target: string }> {
+    return Object.fromEntries(this.children.map(v => [v.id, { type: v.type, target: v.target }]))
   }
 }

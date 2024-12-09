@@ -184,11 +184,7 @@ export class OXML {
       tag = source.tagName
       element = source
     }
-    const oxml = new (this.getConstructor(tag) ?? OXML)()
-    if (element) {
-      oxml.fromElement(element)
-    }
-    return oxml as T
+    return new (this.getConstructor(tag) ?? OXML)(element) as T
   }
 
   declare tag?: string
@@ -197,6 +193,15 @@ export class OXML {
   get textContent(): string { return this.element.textContent ?? '' }
   set textContent(val: string) {
     this.element.textContent = val
+  }
+
+  constructor(source?: string | Element) {
+    if (typeof source === 'string') {
+      this.fromXML(source)
+    }
+    else if (source) {
+      this.fromElement(source)
+    }
   }
 
   definition(): OXMLDefinition | undefined {
@@ -357,7 +362,7 @@ export class OXML {
     return this
   }
 
-  fromJSON(props: Record<string, any>): this {
+  fromJSON(_props: Record<string, any>): this {
     // document.createElement('')
     return this
   }

@@ -14,5 +14,5 @@ input.onchange = async () => {
 
   const pptx = Pptx.parse(new Uint8Array(await file?.arrayBuffer()))
 
-  console.log(pptx.toJSON())
+  console.log(pptx, pptx.toJSON())
 }
