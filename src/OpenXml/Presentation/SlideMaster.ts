@@ -1,7 +1,8 @@
-import type { OXML } from '../../core'
 import type { ColorMap } from './ColorMap'
+import type { HeaderFooter } from './HeaderFooter'
 import type { SlideLayoutIdList } from './SlideLayoutIdList'
-import { defineAttribute, defineChild, defineElement } from '../../core'
+import type { TextStyles } from './TextStyles'
+import { defineAttribute, defineChild, defineElement, defineProperty } from '../../core'
 import { _Slide } from './_Slide'
 
 /**
@@ -17,8 +18,10 @@ export class SlideMaster extends _Slide {
 
   @defineAttribute('preserve', 'boolean') declare preserve?: boolean
 
-  @defineChild('p:clrMap') declare clrMap: ColorMap
-  @defineChild('p:hf') declare hf?: OXML
-  @defineChild('p:sldLayoutIdLst') declare sldLayoutIdLst: SlideLayoutIdList
-  @defineChild('p:txStyles') declare txStyles: OXML
+  @defineChild('p:clrMap') declare clrMap?: ColorMap
+  @defineChild('p:hf') declare hf?: HeaderFooter
+  @defineChild('p:sldLayoutIdLst') declare sldLayoutIdLst?: SlideLayoutIdList
+  @defineChild('p:txStyles') declare txStyles?: TextStyles
+
+  @defineProperty('clrMap') declare colorMap?: any
 }

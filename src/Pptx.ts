@@ -143,7 +143,7 @@ export class Pptx {
       })
 
       const slideMaster = new SlideMaster().fromXML(read(slideMasterPath))
-      slideMaster.sldLayoutIdLst.children.forEach((v) => {
+      slideMaster.sldLayoutIdLst?.children.forEach((v) => {
         slideMasterMeta.slideLayoutPaths.add(slideMasterRidToPath[v.rId])
       })
       pptx.slideMasters.push(slideMaster)

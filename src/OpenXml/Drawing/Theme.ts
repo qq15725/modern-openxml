@@ -1,3 +1,4 @@
+import type { CustomColorList } from './CustomColorList'
 import type { ExtensionList } from './ExtensionList'
 import type { ThemeElements } from './ThemeElements'
 import { defineChild, defineElement, defineProperty, OXML } from '../../core'
@@ -12,12 +13,13 @@ export class Theme extends OXML {
     'name': 'Office Theme',
   }
 
-  @defineChild('a:custClrLst') declare custClrLst?: OXML
+  @defineChild('a:custClrLst') declare custClrLst?: CustomColorList
   @defineChild('a:extLst') declare extLst?: ExtensionList
   @defineChild('a:extraClrSchemeLst') declare extraClrSchemeLst?: OXML
   @defineChild('a:objectDefaults') declare objectDefaults?: OXML
   @defineChild('a:themeElements') declare themeElements?: ThemeElements
 
+  @defineProperty('custClrLst') declare customColors?: any
   @defineProperty('themeElements.clrScheme') declare colors?: any
   @defineProperty('themeElements.fontScheme.majorFont') declare majorFonts?: any
   @defineProperty('themeElements.fontScheme.minorFont') declare minorFonts?: any
