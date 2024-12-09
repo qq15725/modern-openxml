@@ -11,7 +11,6 @@ export class PresetColor extends OXML {
   @defineChild('a:alpha') declare alpha?: Alpha
 
   get color(): string {
-    // TODO
-    return ''
+    return this.val
   }
 }

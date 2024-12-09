@@ -22,4 +22,8 @@ export class _Color extends OXML {
       ?? this.srgbClr?.color
       ?? this.sysClr?.color
   }
+
+  toJSON(): any {
+    return this.color
+  }
 }

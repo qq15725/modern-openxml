@@ -15,7 +15,6 @@ export class GroupShape extends OXML {
   @defineChild('p:grpSpPr') declare grpSpPr: GroupShapeProperties
 
   @defineProperty() type = 'groupShape'
-  @defineProperty('nvSpPr.cNvPr.id') declare id?: string
   @defineProperty('nvSpPr.cNvPr.name') declare name?: string
   @defineProperty() style = new _GroupShapeStyle(this)
   @defineProperty('_elements') declare elements: (Shape | GroupShape | Picture | ConnectionShape | GraphicFrame)[]

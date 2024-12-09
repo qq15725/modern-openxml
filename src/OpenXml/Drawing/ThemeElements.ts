@@ -12,5 +12,5 @@ export class ThemeElements extends OXML {
   @defineChild('a:clrScheme') declare clrScheme?: ColorScheme
   @defineChild('a:extLst') declare extLst?: ExtensionList
   @defineChild('a:fmtScheme') declare fmtScheme?: FormatScheme
-  @defineChild('a:fontScheme', { isProperty: true }) declare fontScheme?: FontScheme
+  @defineChild('a:fontScheme') declare fontScheme?: FontScheme
 }

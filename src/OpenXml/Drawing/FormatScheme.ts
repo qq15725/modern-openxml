@@ -1,3 +1,7 @@
+import type { BackgroundFillStyleList } from './BackgroundFillStyleList'
+import type { EffectStyleList } from './EffectStyleList'
+import type { FillStyleList } from './FillStyleList'
+import type { LineStyleList } from './LineStyleList'
 import { defineAttribute, defineChild, defineElement, OXML } from '../../core'
 
 /**
@@ -7,8 +11,8 @@ import { defineAttribute, defineChild, defineElement, OXML } from '../../core'
 export class FormatScheme extends OXML {
   @defineAttribute('name') declare name?: string
 
-  @defineChild('a:bgFillStyleLst') declare bgFillStyleLst?: OXML
-  @defineChild('a:effectStyleLst') declare effectStyleLst?: OXML
-  @defineChild('a:fillStyleLst') declare fillStyleLst?: OXML
-  @defineChild('a:lnStyleLst') declare lnStyleLst?: OXML
+  @defineChild('a:bgFillStyleLst') declare bgFillStyleLst?: BackgroundFillStyleList
+  @defineChild('a:effectStyleLst') declare effectStyleLst?: EffectStyleList
+  @defineChild('a:fillStyleLst') declare fillStyleLst?: FillStyleList
+  @defineChild('a:lnStyleLst') declare lnStyleLst?: LineStyleList
 }

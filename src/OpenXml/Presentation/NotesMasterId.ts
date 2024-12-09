@@ -10,6 +10,5 @@ export interface NotesMasterIdJSON {
  */
 @defineElement('p:notesMasterId')
 export class NotesMasterId extends OXML {
-  @defineAttribute('id', { isProperty: true }) declare id: string
   @defineAttribute('r:id', { isProperty: true }) declare rId: string
 }

@@ -15,7 +15,6 @@ export class _Slide extends OXML {
   @defineChild('p:transition') declare transition: OXML
   @defineChild('mc:AlternateContent') declare AlternateContent: OXML
 
-  @defineProperty('cSld.spTree.nvGrpSpPr.cNvPr.id') declare id: string
   @defineProperty('cSld.spTree.nvGrpSpPr.cNvPr.name') declare name: string
   @defineProperty('_elements') declare elements: (Shape | GroupShape | Picture | ConnectionShape | GraphicFrame)[]
 

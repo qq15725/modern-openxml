@@ -16,7 +16,6 @@ export class Picture extends OXML {
   @defineChild('p:style') declare pStyle: ShapeStyle
 
   @defineProperty() type = 'picture'
-  @defineProperty('nvPicPr.cNvPr.id') declare id: string
   @defineProperty('nvPicPr.cNvPr.name') declare name: string
   @defineProperty() style = new _ShapeStyle(this as any)
   @defineProperty('blipFill.blip.rEmbed') declare src: string

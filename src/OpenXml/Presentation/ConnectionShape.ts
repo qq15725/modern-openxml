@@ -16,7 +16,6 @@ export class ConnectionShape extends OXML {
   @defineChild('p:style') declare pStyle?: ShapeStyle
 
   @defineProperty() type = 'connectionShape'
-  @defineProperty('nvCxnSpPr.cNvPr.id') declare id?: string
   @defineProperty('nvCxnSpPr.cNvPr.name') declare name?: string
   @defineProperty() style = new _ShapeStyle(this as any)
 }

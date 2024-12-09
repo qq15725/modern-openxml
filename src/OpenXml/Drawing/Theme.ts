@@ -1,6 +1,6 @@
 import type { ExtensionList } from './ExtensionList'
 import type { ThemeElements } from './ThemeElements'
-import { defineChild, defineElement, OXML } from '../../core'
+import { defineChild, defineElement, defineProperty, OXML } from '../../core'
 
 /**
  * @link https://learn.microsoft.com/dotnet/api/documentformat.openxml.drawing.theme
@@ -16,7 +16,15 @@ export class Theme extends OXML {
   @defineChild('a:extLst') declare extLst?: ExtensionList
   @defineChild('a:extraClrSchemeLst') declare extraClrSchemeLst?: OXML
   @defineChild('a:objectDefaults') declare objectDefaults?: OXML
-  @defineChild('a:themeElements', { isProperty: true }) declare themeElements?: ThemeElements
+  @defineChild('a:themeElements') declare themeElements?: ThemeElements
+
+  @defineProperty('themeElements.clrScheme') declare colors?: any
+  @defineProperty('themeElements.fontScheme.majorFont') declare majorFonts?: any
+  @defineProperty('themeElements.fontScheme.minorFont') declare minorFonts?: any
+  @defineProperty('themeElements.fmtScheme.fillStyleLst.children') declare fills?: any[]
+  @defineProperty('themeElements.fmtScheme.lnStyleLst.children') declare outlines?: any[]
+  @defineProperty('themeElements.fmtScheme.effectStyleLst.children') declare effects?: any[]
+  @defineProperty('themeElements.fmtScheme.bgFillStyleLst.children') declare backgroundFills?: any
 
   override toXmlString(): string {
     return `<a:theme

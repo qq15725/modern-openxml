@@ -291,7 +291,7 @@ export class OXML {
   getAttribute(name: string): any | undefined {
     const value = this.element.getAttribute(name)
     const definition = this.definition()?.attributes?.[name]
-    if (value === undefined) {
+    if (value === null) {
       return value ?? definition?.defaultValue
     }
     if (definition) {

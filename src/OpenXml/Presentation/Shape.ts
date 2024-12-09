@@ -17,7 +17,6 @@ export class Shape extends OXML {
   @defineChild('p:style') declare pStyle?: ShapeStyle
 
   @defineProperty() type = 'shape'
-  @defineProperty('nvSpPr.cNvPr.id') declare id?: string
   @defineProperty('nvSpPr.cNvPr.name') declare name?: string
   @defineProperty() style = new _ShapeStyle(this)
   @defineProperty('nvSpPr.nvPr.ph') declare placeholder?: PlaceholderShape

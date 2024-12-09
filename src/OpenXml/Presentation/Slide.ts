@@ -18,6 +18,7 @@ export class Slide extends _Slide {
 
   @defineProperty() type = 'slide'
   @defineProperty() style = new _SlideStyle(this)
+  @defineProperty() layoutIndex = 0
 }
 
 export class _SlideStyle extends OXML {
