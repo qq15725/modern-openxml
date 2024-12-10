@@ -1,4 +1,4 @@
-import { OXML, Pptx } from '../../src'
+import { OXML, PPTX, SVGRenderer } from '../../src'
 
 console.log(
   OXML.tagToConstructor,
@@ -12,7 +12,10 @@ input.type = 'file'
 input.onchange = async () => {
   const file = input.files?.[0]
 
-  const pptx = Pptx.parse(new Uint8Array(await file?.arrayBuffer()))
+  const pptx = PPTX.parse(new Uint8Array(await file?.arrayBuffer()))
+
+  const svg = new SVGRenderer().render(pptx)
+  document.body.appendChild(svg)
 
   console.log(pptx, pptx.toJSON())
 }

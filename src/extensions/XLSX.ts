@@ -18,7 +18,7 @@ interface XlsxProps {
   sheets: (ReturnType<typeof Sheet.parse> & { name: string | undefined })[]
 }
 
-export class Xlsx {
+export class XLSX {
   parse(source: Source) {
     const jszip = new Jszip()
     const zip = await jszip.loadAsync(source)

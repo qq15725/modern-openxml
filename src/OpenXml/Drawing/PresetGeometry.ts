@@ -1,3 +1,4 @@
+import type { AdjustValueList } from './AdjustValueList'
 import { defineAttribute, defineChild, defineElement, OXML } from '../../core'
 
 /**
@@ -7,5 +8,5 @@ import { defineAttribute, defineChild, defineElement, OXML } from '../../core'
 export class PresetGeometry extends OXML {
   @defineAttribute('prst') declare prst: string
 
-  @defineChild('a:avLst') declare avLst?: OXML
+  @defineChild('a:avLst') declare avLst?: AdjustValueList
 }

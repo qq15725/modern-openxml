@@ -13,8 +13,6 @@ export class Run extends OXML {
   @defineProperty() style = new _RunStyle(this)
   @defineProperty('_content') declare content: string
 
-  get color(): string | undefined { return this.rPr.solidFill?.srgbClr.val }
-  get textIndent(): string | undefined { return this.rPr.kern }
   protected get _content(): string { return this.t.element.textContent ?? '' }
 }
 

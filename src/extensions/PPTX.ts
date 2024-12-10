@@ -1,12 +1,17 @@
 import type { Zippable } from 'fflate'
 import { unzipSync, zipSync } from 'fflate'
-import { CoreProperties, Relationships, Types } from './OPC'
-import { Theme } from './OpenXml/Drawing'
-import { Properties } from './OpenXml/ExtendedProperties'
-import { Picture, Presentation, PresentationProperties, Slide, SlideLayout, SlideMaster, ViewProperties } from './OpenXml/Presentation'
-import { joinPaths } from './utils'
+import { CoreProperties, Relationships, Types } from '../OPC'
+import { Theme } from '../OpenXml/Drawing'
+import { Properties } from '../OpenXml/ExtendedProperties'
+import { Picture, Presentation, PresentationProperties, Slide, SlideLayout, SlideMaster, ViewProperties } from '../OpenXml/Presentation'
+import { joinPaths } from '../utils'
 
-export class Pptx {
+/**
+ * @link https://learn.microsoft.com/en-us/openspecs/office_standards/ms-pptx/efd8bb2d-d888-4e2e-af25-cad476730c9f
+ */
+export class PPTX {
+  unzipped: { [path: string]: Uint8Array } = {}
+
   declare app: Properties
   declare core: CoreProperties
   themes: Theme[] = []
@@ -24,20 +29,46 @@ export class Pptx {
   get width(): number { return this.presentation.sldSz.cx }
   get height(): number { return this.presentation.sldSz.cy }
 
-  static parse(source: Uint8Array) {
-    const unzipped = unzipSync(source)
-
-    const read = (path: string) => new TextDecoder().decode(unzipped[path])
-    const getRelsPath = (path = '') => {
-      const paths = path.split('/')
-      const name = paths.pop()
-      return {
-        base: paths.join('/'),
-        path: [...paths, '_rels', `${name}.rels`].join('/'),
-      }
+  static getRelsPath(path = ''): { base: string, path: string } {
+    const name = path.split('/').pop()
+    return {
+      base: joinPaths(path, '../'),
+      path: joinPaths(path, '../', '_rels', `${name}.rels`),
     }
+  }
 
-    const pptx = new Pptx()
+  readRid(rId: string, type: string, index = 0): any | undefined {
+    switch (type) {
+      case 'slide':
+        return this.read(this.slidesRels[index][rId].path, 'dataURI')
+      default:
+        return undefined
+    }
+  }
+
+  read(path: string): ArrayBuffer | undefined
+  read(path: string, type: 'string'): string | undefined
+  read(path: string, type: 'dataURI'): string | undefined
+  read(path: string, type?: string): any | undefined {
+    const uint8Array = this.unzipped[path]
+    if (!uint8Array) {
+      return undefined
+    }
+    switch (type) {
+      case 'string':
+        return new TextDecoder().decode(uint8Array)
+      case 'dataURI':
+        return `data:image/png;base64,${btoa(Array.from(uint8Array, byte => String.fromCharCode(byte)).join(''))}`
+      default:
+        return uint8Array.buffer
+    }
+  }
+
+  static parse(source: Uint8Array) {
+    const pptx = new PPTX()
+    pptx.unzipped = unzipSync(source)
+    const read = (path: string): string => pptx.read(path, 'string')!
+    const { getRelsPath } = PPTX
 
     // [Content_Types].xml
     const types = new Types(read('[Content_Types].xml'))
@@ -104,6 +135,7 @@ export class Pptx {
       const slideRels = new Relationships(read(slideRelsPath)).value
       Object.values(slideRels).forEach((rel) => {
         const path = joinPaths(slideRelsBase, rel.target)
+        rel.path = path
         switch (rel.type) {
           // ppt/slideLayout/slideLayout1.xml
           case Relationships.types.slideLayout: {
@@ -112,7 +144,6 @@ export class Pptx {
           }
         }
       })
-
       pptx.slides.push(slide)
       pptx.slidesRels.push(slideRels)
     })
@@ -135,6 +166,7 @@ export class Pptx {
       const slideMasterRels = new Relationships(read(slideMasterRelsPath)).value
       Object.values(slideMasterRels).forEach((rel) => {
         const path = joinPaths(slideMasterRelsBase, rel.target)
+        rel.path = path
         switch (rel.type) {
           case Relationships.types.theme:
             slideMasterMeta.themePath = path

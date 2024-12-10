@@ -1,3 +1,4 @@
+import { parseDomFromString } from '../utils'
 import { deepMerge, getObjectValueByPath, setObjectValueByPath } from './utils'
 
 export type OXMLProto = new (...args: any[]) => OXML
@@ -348,12 +349,7 @@ export class OXML {
   }
 
   fromXML(xml: string): this {
-    const doc = new DOMParser().parseFromString(xml, 'text/xml') as XMLDocument
-    const error = doc.querySelector('parsererror')
-    if (error) {
-      throw new Error(error.textContent ?? 'parser error')
-    }
-    this.element = doc.documentElement
+    this.element = parseDomFromString(xml)
     return this
   }
 

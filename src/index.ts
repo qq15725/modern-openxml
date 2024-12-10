@@ -1,4 +1,5 @@
 export * from './core'
+export * from './extensions'
 export * from './OPC'
 export * from './OpenXml'
-export * from './pptx'
+export * from './renderers'

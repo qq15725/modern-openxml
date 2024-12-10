@@ -1,3 +1,4 @@
+import type { TextAlignmentTypeValues } from './_types'
 import type { Break } from './Break'
 import type { EndParagraphRunProperties } from './EndParagraphRunProperties'
 import type { Field } from './Field'
@@ -16,7 +17,7 @@ export class Paragraph extends OXML {
   @defineProperty() style = new _ParagraphStyle(this)
   @defineProperty('pPr.lvl') declare level?: number
   @defineProperty('pPr.fontAlgn') declare fontAlign?: string
-  @defineProperty('_children') declare children?: (Break | Run | EndParagraphRunProperties)[]
+  @defineProperty('_children') declare children: (Break | Run | EndParagraphRunProperties)[]
 
   get _children(): (Break | Run | EndParagraphRunProperties)[] {
     return Array.from(this.element.children).map((element) => {
@@ -40,8 +41,8 @@ export class _ParagraphStyle extends OXML {
   @defineProperty('_parent.pPr.indent') declare textIndent: number
   @defineProperty('_parent.pPr.lnSpc.spcPct.val') declare lineHeight?: number
 
-  get textAlign() { return this._parent.pPr.algn }
-  get rightToLeft(): string | undefined { return this._parent.pPr.rtl }
+  get textAlign(): TextAlignmentTypeValues | undefined { return this._parent.pPr.algn }
+  get rightToLeft(): boolean | undefined { return this._parent.pPr.rtl }
 
   constructor(
     protected _parent: Paragraph,
