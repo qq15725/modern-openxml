@@ -1,4 +1,3 @@
-import type { TextAlignmentTypeValues } from './_types'
 import type { Break } from './Break'
 import type { EndParagraphRunProperties } from './EndParagraphRunProperties'
 import type { Field } from './Field'
@@ -12,7 +11,7 @@ import { defineChild, defineElement, defineProperty, OXML } from '../../core'
 @defineElement('a:p')
 export class Paragraph extends OXML {
   @defineChild('a:fld') declare fld?: Field
-  @defineChild('a:pPr') declare pPr: ParagraphProperties
+  @defineChild('a:pPr') declare pPr?: ParagraphProperties
 
   @defineProperty() style = new _ParagraphStyle(this)
   @defineProperty('pPr.lvl') declare level?: number
@@ -40,9 +39,26 @@ export class _ParagraphStyle extends OXML {
   @defineProperty('_parent.pPr.marR') declare marginRight?: number
   @defineProperty('_parent.pPr.indent') declare textIndent: number
   @defineProperty('_parent.pPr.lnSpc.spcPct.val') declare lineHeight?: number
+  @defineProperty('_textAlign') declare textAlign?: 'center' | 'start' | 'end'
 
-  get textAlign(): TextAlignmentTypeValues | undefined { return this._parent.pPr.algn }
-  get rightToLeft(): boolean | undefined { return this._parent.pPr.rtl }
+  get rightToLeft(): boolean | undefined { return this._parent.pPr?.rtl }
+
+  protected get _textAlign(): 'center' | 'start' | 'end' | undefined {
+    switch (this._parent.pPr?.algn) {
+      case 'dist':
+      case 'just':
+      case 'justLow':
+      case 'l':
+      case 'thaiDist':
+        return 'start'
+      case 'ctr':
+        return 'center'
+      case 'r':
+        return 'end'
+      default:
+        return undefined
+    }
+  }
 
   constructor(
     protected _parent: Paragraph,
