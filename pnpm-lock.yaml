@@ -11,6 +11,15 @@ importers:
       fflate:
         specifier: ^0.8.2
         version: 0.8.2
+      modern-font:
+        specifier: ^0.3.4
+        version: 0.3.4
+      modern-path2d:
+        specifier: ^0.2.6
+        version: 0.2.6
+      modern-text:
+        specifier: ^0.6.2
+        version: 0.6.2
     devDependencies:
       '@antfu/eslint-config':
         specifier: ^3.7.1
@@ -2275,6 +2284,15 @@ packages:
 
   mlly@1.7.1:
     resolution: {integrity: sha512-rrVRZRELyQzrIUAVMHxP97kv+G786pHmOKzuFII8zDYahFBS7qnHh2AlYSl1GAHhaMPCz6/oHjVMcfFYgFYHgA==}
+
+  modern-font@0.3.4:
+    resolution: {integrity: sha512-fSV8CRYSgCxOTTHb6ZHgo0xI/ns3ExaUaBc3q5GG1MP6n0J+ua3Fz7LN5IDcIRhNbbJ3rus0qIKo8DPudfVGEQ==}
+
+  modern-path2d@0.2.6:
+    resolution: {integrity: sha512-6xd9H3oadG4li3RS+AdqhpzubBf8A1IOx8SKyOcM5q+hBUH7gNnqiIDZUBz/0bYLPxdWjlv1bPnkvXzfhtx6uA==}
+
+  modern-text@0.6.2:
+    resolution: {integrity: sha512-KWPsCN1WUG6waiY7NG0L4II92qStXo5ojVcmplviaqjuhqGI5T5OJA+ifroSh8IBK5+h9r4l8VYJ6noucjt7/w==}
 
   mri@1.2.0:
     resolution: {integrity: sha512-tzzskb3bG8LvYGFF/mDTpq3jpI6Q9wc3LEmBaghu+DdCssd1FakN7Bc0hVNmEyGq1bq3RgfkCb3cmQLpNPOroA==}
@@ -5532,6 +5550,17 @@ snapshots:
       pathe: 1.1.2
       pkg-types: 1.2.0
       ufo: 1.5.4
+
+  modern-font@0.3.4:
+    dependencies:
+      fflate: 0.8.2
+
+  modern-path2d@0.2.6: {}
+
+  modern-text@0.6.2:
+    dependencies:
+      modern-font: 0.3.4
+      modern-path2d: 0.2.6
 
   mri@1.2.0: {}
 

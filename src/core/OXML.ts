@@ -267,7 +267,7 @@ export class OXML {
         case 'rate':
           return Number(value) / 100000
         case 'ST_TextSpacingPercentOrPercentString':
-          return Number(String(value).replace('%', '')) / 100
+          return Number(String(value).replace('%', '')) / 100000
         case 'ST_TextSpacingPoint':
           return Number(value) / 100
         case 'lineHeight':
