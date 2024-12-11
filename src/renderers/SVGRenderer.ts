@@ -144,7 +144,6 @@ export class SVGRenderer {
             )
 
             if (geometry) {
-              console.log(geometry)
               elementG.children!.push(
                 ...geometry.map((path) => {
                   return {
