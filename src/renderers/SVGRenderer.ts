@@ -77,7 +77,7 @@ export class SVGRenderer {
           }
 
           if (element instanceof Shape) {
-            const { paragraphs, style } = element
+            const { paragraphs, style, geometry } = element
 
             const measured = measureText({
               style: {
@@ -142,6 +142,38 @@ export class SVGRenderer {
                   })
               }),
             )
+
+            if (geometry) {
+              console.log(geometry)
+              elementG.children!.push(
+                ...geometry.map((path) => {
+                  return {
+                    tag: 'path',
+                    attrs: {
+                      fill: path.fill ? undefined : 'none',
+                      stroke: path.stroke ? undefined : 'none',
+                      d: path.commands.map((cmd) => {
+                        switch (cmd.type) {
+                          case 'M':
+                            return `M ${cmd.x} ${cmd.y}`
+                          case 'L':
+                            return `L ${cmd.x} ${cmd.y}`
+                          case 'A':
+                            return `A ${cmd.rx} ${cmd.ry} ${cmd.angle} ${cmd.largeArcFlag} ${cmd.sweepFlag} ${cmd.x} ${cmd.y}`
+                          case 'Q':
+                            return `Q ${cmd.x1} ${cmd.y1} ${cmd.x} ${cmd.y}`
+                          case 'C':
+                            return `C ${cmd.x1} ${cmd.y1} ${cmd.x2} ${cmd.y2} ${cmd.x} ${cmd.y}`
+                          case 'Z':
+                          default:
+                            return `Z`
+                        }
+                      }).join(' '),
+                    },
+                  }
+                }),
+              )
+            }
           }
           else if (element instanceof Picture) {
             const { style, src } = element

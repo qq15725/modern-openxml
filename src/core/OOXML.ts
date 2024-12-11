@@ -2,33 +2,33 @@ import { parseDomFromString } from '../utils'
 import { OOXMLValue } from './OOXMLValue'
 import { deepMerge, getObjectValueByPath, setObjectValueByPath } from './utils'
 
-export type OXMLProto = new (...args: any[]) => OOXML
+export type OOXMLProto = new (...args: any[]) => OOXML
 
-export interface OXMLAttributeDefinition {
+export interface OOXMLAttributeDefinition {
   name: string
   alias: string
   type: string
   defaultValue?: any
 }
 
-export interface OXMLPropertyDefinition {
+export interface OOXMLPropertyDefinition {
   name: string
   alias: string
   defaultValue?: any
 }
 
-export interface OXMLChildDefinition {
+export interface OOXMLChildDefinition {
   tag: string
   isArray: boolean
   defaultValue?: any
 }
 
-export interface OXMLDefinition {
+export interface OOXMLDefinition {
   tag?: string
   namespace?: string
-  attributes: Record<string, OXMLAttributeDefinition>
-  properties: Record<string, OXMLPropertyDefinition>
-  children: OXMLChildDefinition[]
+  attributes: Record<string, OOXMLAttributeDefinition>
+  properties: Record<string, OOXMLPropertyDefinition>
+  children: OOXMLChildDefinition[]
 }
 
 export function defineElement(tag: string) {
@@ -141,30 +141,29 @@ export function defineChildren(tag: string, options: Omit<DefineChildUsedOptions
   return defineChild(tag, { ...options, isArray: true })
 }
 
-export class OOXML
-{
-  static tagToConstructor = new Map<string, OXMLProto>()
-  static protoToDefinition = new WeakMap<OXMLProto, OXMLDefinition>()
+export class OOXML {
+  static tagToConstructor = new Map<string, OOXMLProto>()
+  static protoToDefinition = new WeakMap<OOXMLProto, OOXMLDefinition>()
 
-  static getConstructor(tag: string): OXMLProto | undefined {
+  static getConstructor(tag: string): OOXMLProto | undefined {
     return this.tagToConstructor.get(tag)
   }
 
-  static makeDefinition(proto: any): OXMLDefinition {
+  static makeDefinition(proto: any): OOXMLDefinition {
     let definition = OOXML.protoToDefinition.get(proto)
     if (!definition) {
       definition = {
         attributes: {},
         properties: {},
         children: [],
-      } as unknown as OXMLDefinition
+      } as unknown as OOXMLDefinition
       OOXML.protoToDefinition.set(proto, definition)
     }
     return definition
   }
 
-  static getDefinition(proto: any): OXMLDefinition | undefined {
-    let definition: OXMLDefinition | undefined
+  static getDefinition(proto: any): OOXMLDefinition | undefined {
+    let definition: OOXMLDefinition | undefined
     let cur = proto
     while (cur) {
       const _definition = this.protoToDefinition.get(cur)
@@ -206,7 +205,7 @@ export class OOXML
     }
   }
 
-  definition(): OXMLDefinition | undefined {
+  definition(): OOXMLDefinition | undefined {
     return OOXML.getDefinition(this)
   }
 

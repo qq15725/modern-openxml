@@ -1,4 +1,4 @@
-import type { Paragraph } from '../Drawing'
+import type { GeometryPath, Paragraph } from '../Drawing'
 import type { NonVisualShapeProperties } from './NonVisualShapeProperties'
 import type { PlaceholderShape } from './PlaceholderShape'
 import type { ShapeProperties } from './ShapeProperties'
@@ -21,51 +21,19 @@ export class Shape extends OOXML {
   @defineProperty() style = new _ShapeStyle(this)
   @defineProperty('nvSpPr.nvPr.ph') declare placeholder?: PlaceholderShape
   @defineProperty('_paragraphs') declare paragraphs?: Paragraph[]
-  @defineProperty('_geometry') declare geometry?: any
+  @defineProperty('_geometry') declare geometry?: GeometryPath[]
 
   get useParagraphSpacing(): boolean { return !!this.txBody.bodyPr.spcFirstLastPara }
-  get _geometry() {
+  get _geometry(): GeometryPath[] | undefined {
     const { custGeom, prstGeom } = this.spPr
-    if (prstGeom) {
-      const { avLst, prst } = prstGeom
-      // TODO
-      return {
-        prst,
-        adjusts: avLst?.value.map((gd) => {
-          return {
-            name: gd.name,
-            fmla: gd.fmla,
-          }
-        }),
-      }
-    }
-    else if (custGeom) {
-      const { avLst, gdLst, pathLst } = custGeom
-      return {
-        guides: gdLst?.value.map((gd) => {
-          return {
-            name: gd.name,
-            fmla: gd.fmla,
-          }
-        }),
-        adjusts: avLst?.value.map((gd) => {
-          return {
-            name: gd.name,
-            fmla: gd.fmla,
-          }
-        }),
-        paths: pathLst?.value.map((path) => {
-          return {
-            fill: path.fill,
-            stroke: path.stroke,
-            width: path.w,
-            height: path.h,
-            commands: path.commands,
-          }
-        }),
-      }
-    }
-    return undefined
+    // TODO prstGeom
+    return custGeom?.getPaths(
+      this.style.width ?? 0,
+      this.style.height ?? 0,
+      custGeom?.pathLst,
+      custGeom?.avLst,
+      custGeom?.gdLst,
+    )
   }
 
   get _paragraphs(): Paragraph[] | undefined {
@@ -98,11 +66,11 @@ export class _ShapeStyle extends OOXML {
   @defineProperty('_shadow') declare shadow?: string
 
   protected get _scaleX(): number | undefined {
-    return this._parent.spPr.xfrm.flipH ? -1 : 1
+    return this._parent.spPr.xfrm?.flipH ? -1 : 1
   }
 
   protected get _scaleY(): number | undefined {
-    return this._parent.spPr.xfrm.flipV ? -1 : 1
+    return this._parent.spPr.xfrm?.flipV ? -1 : 1
   }
 
   protected get _backgroundColor(): string | undefined {
