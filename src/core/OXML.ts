@@ -240,7 +240,7 @@ export class OXML {
     if (typeof type === 'string') {
       switch (type) {
         case 'boolean':
-          return !!value
+          return Number(value) === 1
         case 'degree':
         case 'ST_Angle':
         case 'ST_PositiveFixedAngle':

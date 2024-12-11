@@ -1,9 +1,9 @@
-import type { OXML } from '../core'
 import type { PPTX } from '../extensions'
 import type { XMLNode } from './XMLGen'
-import { Text } from 'modern-text'
+import { measureText } from 'modern-text'
+import { OXML } from '../core'
 import { Run } from '../OpenXml/Drawing'
-import { GroupShape, Picture, Shape } from '../OpenXml/Presentation'
+import { type ConnectionShape, type GraphicFrame, GroupShape, Picture, Shape } from '../OpenXml/Presentation'
 import { parseDomFromString } from '../utils'
 import { XMLGen } from './XMLGen'
 
@@ -25,13 +25,65 @@ export class SVGRenderer {
         const { elements, style: slideStyle } = slide
         const { backgroundColor } = slideStyle
 
-        function parseElement(element: OXML): XMLNode {
-          if (element instanceof Shape) {
-            const { name, paragraphs, style } = element
-            let dy = 0
+        function parseElement(
+          element: Shape | GroupShape | Picture | ConnectionShape | GraphicFrame,
+          parent?: GroupShape,
+        ): XMLNode | undefined {
+          const { name = '', style = {} } = element
 
-            const measured = new Text({
-              style: style.toJSON(),
+          let {
+            scaleX = 1,
+            scaleY = 1,
+            left = 0,
+            top = 0,
+            width = 0,
+            height = 0,
+            rotate = 0,
+          } = style
+
+          if (parent) {
+            const { childOffsetLeft = 0, childOffsetTop = 0 } = parent.style
+            left -= childOffsetLeft
+            top -= childOffsetTop
+          }
+
+          const transform: string[] = []
+
+          if (left !== 0 || top !== 0) {
+            transform.push(`translate(${left}, ${top})`)
+          }
+
+          if (scaleX !== 1 || scaleY !== 1 || rotate !== 0) {
+            const cx = width / 2
+            const cy = height / 2
+            transform.push(`translate(${cx}, ${cy})`)
+            if (rotate !== 0) {
+              transform.push(`rotate(${rotate})`)
+            }
+            transform.push(`scale(${scaleX}, ${scaleY})`)
+            transform.push(`translate(${-cx}, ${-cy})`)
+          }
+
+          const elementG: XMLNode = {
+            tag: 'g',
+            attrs: {
+              title: name,
+              transform: transform.join(' '),
+            },
+            children: [],
+          }
+
+          if (element instanceof Shape) {
+            const { paragraphs, style } = element
+
+            const options = {
+              style: {
+                paddingLeft: 0.25 * OXML.DPI / 2.54,
+                paddingRight: 0.25 * OXML.DPI / 2.54,
+                paddingTop: 0.13 * OXML.DPI / 2.54,
+                paddingBottom: 0.13 * OXML.DPI / 2.54,
+                ...style.toJSON(),
+              },
               content: paragraphs?.map((p) => {
                 return {
                   ...p.style.toJSON(),
@@ -48,122 +100,67 @@ export class SVGRenderer {
                     .filter(Boolean),
                 }
               }),
-            }).measure()
+            }
 
-            return {
-              tag: 'g',
-              attrs: {
-                title: name,
-                transform: `translate(${style.left}, ${style.top})`,
-              },
-              children: [
-                {
-                  tag: 'rect',
-                  attrs: {
-                    x: 0,
-                    y: 0,
-                    width: style.width,
-                    height: style.height,
-                    fill: 'none',
-                    stroke: 'red',
-                  },
-                },
-                ...measured.paragraphs.map((paragraph) => {
-                  let maxLineHeight = 0
-                  const { computedStyle: pStyle } = paragraph
-                  const res = {
-                    tag: 'g',
-                    attrs: {
-                      transform: `translate(${pStyle.marginLeft ?? 0}, ${pStyle.marginRight ?? 0})`,
-                    },
-                    children: paragraph.fragments
-                      .map((f) => {
-                        const { computedStyle: rStyle, inlineBox } = f
-                        const fontSize = rStyle.fontSize ?? 12
-                        const lineHeight = rStyle.lineHeight ?? pStyle.lineHeight ?? 1
-                        maxLineHeight = Math.max(maxLineHeight, fontSize * lineHeight)
+            const measured = measureText(options)
+
+            elementG.children!.push(
+              ...measured.paragraphs.flatMap((paragraph) => {
+                const { computedStyle: pStyle } = paragraph
+                return paragraph.fragments
+                  .map((f) => {
+                    const { computedStyle: rStyle } = f
+                    return {
+                      tag: 'text',
+                      attrs: {
+                        'fill': rStyle.color,
+                        'font-size': rStyle.fontSize,
+                        'font-family': rStyle.fontFamily,
+                        'letter-spacing': rStyle.letterSpacing,
+                        'font-weight': rStyle.fontWeight,
+                        'font-style': rStyle.fontStyle,
+                        'text-transform': rStyle.textTransform,
+                        'text-decoration': rStyle.textDecoration,
+                        'dominant-baseline': 'middle',
+                        'style': {
+                          'text-indent': pStyle.textIndent,
+                        },
+                      },
+                      children: f.characters.map((c) => {
+                        const { inlineBox, content } = c
                         return {
-                          tag: 'text',
+                          tag: 'tspan',
                           attrs: {
-                            // 'x': inlineBox.left,
-                            // 'y': inlineBox.top,
-                            'fill': rStyle.color,
-                            'font-size': rStyle.fontSize,
-                            'font-family': rStyle.fontFamily,
-                            'letter-spacing': rStyle.letterSpacing,
-                            'font-weight': rStyle.fontWeight,
-                            'font-style': rStyle.fontStyle,
-                            'text-transform': rStyle.textTransform,
-                            'text-decoration': rStyle.textDecoration,
-                            'style': {
-                              'text-indent': pStyle.textIndent,
-                            },
+                            x: inlineBox.left,
+                            y: inlineBox.top + inlineBox.height / 2,
                           },
-                          children: f.characters.map((c) => {
-                            const { inlineBox, content } = c
-                            return {
-                              tag: 'tspan',
-                              attrs: {
-                                'dominant-baseline': 'middle',
-                                'x': inlineBox.left,
-                                'y': inlineBox.top + inlineBox.height / 2,
-                              },
-                              children: [content],
-                            }
-                          }),
+                          children: [content],
                         }
                       }),
-                  }
-
-                  res.children.push({
-                    tag: 'rect',
-                    attrs: {
-                      x: paragraph.lineBox.left,
-                      y: paragraph.lineBox.top,
-                      width: paragraph.lineBox.width,
-                      height: paragraph.lineBox.height,
-                      fill: 'none',
-                      stroke: '#00FF00',
-                    },
+                    }
                   })
-
-                  dy += maxLineHeight
-                  return res
-                }),
-              ],
-            }
+              }),
+            )
           }
           else if (element instanceof Picture) {
-            const { name, style, src } = element
-            return {
-              tag: 'g',
+            const { style, src } = element
+            elementG.children!.push({
+              tag: 'image',
               attrs: {
-                title: name,
-                transform: `translate(${style.left}, ${style.top})`,
+                width: style.width,
+                height: style.height,
+                href: pptx.readRid(src, 'slide', slideIndex),
+                preserveAspectRatio: 'none',
               },
-              children: [
-                {
-                  tag: 'image',
-                  attrs: {
-                    width: style.width,
-                    height: style.height,
-                    href: pptx.readRid(src, 'slide', slideIndex),
-                    preserveAspectRatio: 'none',
-                  },
-                },
-              ],
-            }
+            })
           }
           else if (element instanceof GroupShape) {
-            const { name, elements } = element
-            return {
-              tag: 'g',
-              attrs: {
-                title: name,
-              },
-              children: elements.map(parseElement),
-            }
+            const { elements } = element
+
+            elementG.children!.push(...elements.map(child => parseElement(child, element)))
           }
+
+          return elementG
         }
 
         const top = height * slideIndex
@@ -184,7 +181,7 @@ export class SVGRenderer {
                 fill: backgroundColor,
               },
             },
-            ...elements.map(parseElement),
+            ...elements.map(child => parseElement(child)),
           ],
         }
       }),

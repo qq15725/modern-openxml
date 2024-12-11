@@ -9,5 +9,5 @@ import { _Properties } from './_Properties'
 @defineElement('p:grpSpPr')
 export class GroupShapeProperties extends _Properties {
   @defineChild('a:scene3d') declare scene3d?: OXML
-  @defineChild('a:xfrm') declare xfrm?: Transform2D
+  @defineChild('a:xfrm') declare xfrm: Transform2D
 }

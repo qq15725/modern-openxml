@@ -79,23 +79,31 @@ export class Shape extends OXML {
 export class _ShapeStyle extends OXML {
   @defineProperty('_backgroundColor') declare backgroundColor?: string
   @defineProperty('_backgroundImage') declare backgroundImage?: string
-  @defineProperty('_parent.spPr.xfrm.off.x') declare left: number
-  @defineProperty('_parent.spPr.xfrm.off.y') declare top: number
-  @defineProperty('_parent.spPr.xfrm.ext.cx') declare width: number
-  @defineProperty('_parent.spPr.xfrm.ext.cy') declare height: number
-  @defineProperty('_parent.spPr.xfrm.rot') declare rotate: number
-  @defineProperty('_parent.spPr.xfrm.flipH') declare flipH: boolean
-  @defineProperty('_parent.spPr.xfrm.flipV') declare flipV: boolean
-  @defineProperty('_parent.txBody.bodyPr.lIns') declare paddingLeft: number
-  @defineProperty('_parent.txBody.bodyPr.tIns') declare paddingTop: number
-  @defineProperty('_parent.txBody.bodyPr.rIns') declare paddingRight: number
-  @defineProperty('_parent.txBody.bodyPr.bIns') declare paddingBottom: number
-  @defineProperty('_parent.txBody.bodyPr.rot') declare textRotate: number
+  @defineProperty('_parent.spPr.xfrm.off.x') declare left?: number
+  @defineProperty('_parent.spPr.xfrm.off.y') declare top?: number
+  @defineProperty('_parent.spPr.xfrm.ext.cx') declare width?: number
+  @defineProperty('_parent.spPr.xfrm.ext.cy') declare height?: number
+  @defineProperty('_parent.spPr.xfrm.rot') declare rotate?: number
+  @defineProperty('_scaleX') declare scaleX?: number
+  @defineProperty('_scaleY') declare scaleY?: number
+  @defineProperty('_parent.txBody.bodyPr.lIns') declare paddingLeft?: number
+  @defineProperty('_parent.txBody.bodyPr.tIns') declare paddingTop?: number
+  @defineProperty('_parent.txBody.bodyPr.rIns') declare paddingRight?: number
+  @defineProperty('_parent.txBody.bodyPr.bIns') declare paddingBottom?: number
+  @defineProperty('_parent.txBody.bodyPr.rot') declare textRotate?: number
   @defineProperty('_writingMode') declare writingMode?: 'horizontal-tb' | 'vertical-lr' | 'vertical-rl'
   @defineProperty('_textWrap') declare textWrap?: 'wrap' | 'nowrap'
   @defineProperty('_textAlign') declare textAlign?: 'center' | 'start'
   @defineProperty('_verticalAlign') declare verticalAlign?: 'top' | 'middle' | 'bottom'
   @defineProperty('_shadow') declare shadow?: string
+
+  protected get _scaleX(): number | undefined {
+    return this._parent.spPr.xfrm.flipH ? -1 : 1
+  }
+
+  protected get _scaleY(): number | undefined {
+    return this._parent.spPr.xfrm.flipV ? -1 : 1
+  }
 
   protected get _backgroundColor(): string | undefined {
     return this._parent.spPr.fillColor
@@ -106,14 +114,26 @@ export class _ShapeStyle extends OXML {
   }
 
   protected get _writingMode(): 'horizontal-tb' | 'vertical-lr' | 'vertical-rl' | undefined {
+    switch (this._parent.txBody?.bodyPr.vert) {
+      case 'eaVert':
+      case 'mongolianVert':
+      case 'vert':
+      case 'vert270':
+      case 'wordArtVertRtl':
+      case 'wordArtVert':
+        return 'vertical-rl'
+      case 'horz':
+        return 'horizontal-tb'
+    }
+
     switch (this._parent.txBody?.bodyPr.upright) {
       case true:
         return 'vertical-rl'
       case false:
         return 'horizontal-tb'
-      default:
-        return undefined
     }
+
+    return undefined
   }
 
   protected get _textWrap(): 'wrap' | 'nowrap' | undefined {

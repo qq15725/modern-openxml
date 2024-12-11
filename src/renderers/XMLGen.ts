@@ -57,7 +57,7 @@ export class XMLGen {
           return this.node(child)
         }
       })
-      .join('\n')
+      .join('')
       ?? ''
   }
 
