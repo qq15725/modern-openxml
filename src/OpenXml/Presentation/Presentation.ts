@@ -9,13 +9,13 @@ import type { SlideIdList } from './SlideIdList'
 import type { SlideMasterIdJSON } from './SlideMasterId'
 import type { SlideMasterIdList } from './SlideMasterIdList'
 import type { SlideSize } from './SlideSize'
-import { defineChild, defineElement, defineProperty, OXML } from '../../core'
+import { defineChild, defineElement, defineProperty, OOXML } from '../../core'
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.presentation.presentation
  */
 @defineElement('p:presentation')
-export class Presentation extends OXML {
+export class Presentation extends OOXML {
   attrs = {
     'xmlns': 'http://schemas.openxmlformats.org/presentationml/2006/main',
     'xmlns:a': 'http://schemas.openxmlformats.org/drawingml/2006/main',
@@ -26,21 +26,21 @@ export class Presentation extends OXML {
     'conformance': 'transitional',
   }
 
-  @defineChild('p:custDataLst') declare custDataLst?: OXML
-  @defineChild('p:custShowLst') declare custShowLst?: OXML
+  @defineChild('p:custDataLst') declare custDataLst?: OOXML
+  @defineChild('p:custShowLst') declare custShowLst?: OOXML
   @defineChild('p:defaultTextStyle') declare defaultTextStyle: DefaultTextStyle
   @defineChild('p:embeddedFontLst') declare embeddedFontLst?: EmbeddedFontList
   @defineChild('p:extLst') declare extLst?: ExtensionList
-  @defineChild('p:handoutMasterIdLst') declare handoutMasterIdLst?: OXML
-  @defineChild('p:kinsoku') declare kinsoku?: OXML
-  @defineChild('p:modifyVerifier') declare modifyVerifier?: OXML
+  @defineChild('p:handoutMasterIdLst') declare handoutMasterIdLst?: OOXML
+  @defineChild('p:kinsoku') declare kinsoku?: OOXML
+  @defineChild('p:modifyVerifier') declare modifyVerifier?: OOXML
   @defineChild('p:notesMasterIdLst') declare notesMasterIdLst?: NotesMasterIdList
   @defineChild('p:notesSz') declare notesSz?: NotesSize
-  @defineChild('p:photoAlbum') declare photoAlbum?: OXML
+  @defineChild('p:photoAlbum') declare photoAlbum?: OOXML
   @defineChild('p:sldIdLst') declare sldIdLst: SlideIdList
   @defineChild('p:sldMasterIdLst') declare sldMasterIdLst: SlideMasterIdList
   @defineChild('p:sldSz') declare sldSz: SlideSize
-  @defineChild('p:smartTags') declare smartTags?: OXML
+  @defineChild('p:smartTags') declare smartTags?: OOXML
 
   @defineProperty('sldSz.cx') declare slideWidth: number
   @defineProperty('sldSz.cy') declare slideHeight: number

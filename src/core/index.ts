@@ -1,1 +1,2 @@
-export * from './OXML'
+export * from './OOXMLValue'
+export * from './OOXML'

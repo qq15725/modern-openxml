@@ -1,9 +1,9 @@
-import { defineElement, OXML } from '../../core'
+import { defineElement, OOXML } from '../../core'
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.presentation.timing
  */
 @defineElement('p:timing')
-export class Timing extends OXML {
+export class Timing extends OOXML {
   // TODO
 }

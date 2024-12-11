@@ -1,17 +1,17 @@
 import type { CustomColor } from './CustomColor'
-import { defineElement, OXML } from '../../core'
+import { defineElement, OOXML } from '../../core'
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.drawing.customcolorlist
  */
 @defineElement('a:custClrLst')
-export class CustomColorList extends OXML {
+export class CustomColorList extends OOXML {
   get children(): CustomColor[] {
     return Array.from(this.element.children).map((element) => {
       switch (element.tagName) {
         case 'a:custClr':
         default:
-          return OXML.make(element)
+          return OOXML.make(element)
       }
     }).filter(Boolean) as any[]
   }

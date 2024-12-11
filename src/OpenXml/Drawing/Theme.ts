@@ -1,13 +1,13 @@
 import type { CustomColorList } from './CustomColorList'
 import type { ExtensionList } from './ExtensionList'
 import type { ThemeElements } from './ThemeElements'
-import { defineChild, defineElement, defineProperty, OXML } from '../../core'
+import { defineChild, defineElement, defineProperty, OOXML } from '../../core'
 
 /**
  * @link https://learn.microsoft.com/dotnet/api/documentformat.openxml.drawing.theme
  */
 @defineElement('a:theme')
-export class Theme extends OXML {
+export class Theme extends OOXML {
   attrs = {
     'xmlns:a': 'http://schemas.openxmlformats.org/drawingml/2006/main',
     'name': 'Office Theme',
@@ -15,8 +15,8 @@ export class Theme extends OXML {
 
   @defineChild('a:custClrLst') declare custClrLst?: CustomColorList
   @defineChild('a:extLst') declare extLst?: ExtensionList
-  @defineChild('a:extraClrSchemeLst') declare extraClrSchemeLst?: OXML
-  @defineChild('a:objectDefaults') declare objectDefaults?: OXML
+  @defineChild('a:extraClrSchemeLst') declare extraClrSchemeLst?: OOXML
+  @defineChild('a:objectDefaults') declare objectDefaults?: OOXML
   @defineChild('a:themeElements') declare themeElements?: ThemeElements
 
   @defineProperty('custClrLst') declare customColors?: any

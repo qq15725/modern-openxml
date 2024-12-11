@@ -10,13 +10,13 @@ import type { FollowedHyperlinkColor } from './FollowedHyperlinkColor'
 import type { Hyperlink } from './Hyperlink'
 import type { Light1Color } from './Light1Color'
 import type { Light2Color } from './Light2Color'
-import { defineAttribute, defineChild, defineElement, defineProperty, OXML } from '../../core'
+import { defineAttribute, defineChild, defineElement, defineProperty, OOXML } from '../../core'
 
 /**
  * @link https://learn.microsoft.com/dotnet/api/documentformat.openxml.drawing.colorscheme
  */
 @defineElement('a:clrScheme')
-export class ColorScheme extends OXML {
+export class ColorScheme extends OOXML {
   @defineAttribute('name') declare name?: string
 
   @defineChild('a:dk1') declare dk1?: Dark1Color

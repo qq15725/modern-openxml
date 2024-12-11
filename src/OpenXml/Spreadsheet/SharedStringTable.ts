@@ -1,12 +1,12 @@
 import type { VNode } from '../vnode'
-import { defineElement, OXML } from '../../core'
+import { defineElement, OOXML } from '../../core'
 import { withIndents } from '../utils'
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.spreadsheet.sharedstringtable
  */
 @defineElement('x:sst')
-export class SharedStringTable extends OXML {
+export class SharedStringTable extends OOXML {
   parse(node: VNode) {
     return node.get('sst/si').map(v => v.findEl<Node>('t')?.textContent || '')
   }

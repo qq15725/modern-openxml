@@ -4,9 +4,9 @@ import type { GroupFill } from './GroupFill'
 import type { NoFill } from './NoFill'
 import type { PatternFill } from './PatternFill'
 import type { SolidFill } from './SolidFill'
-import { OXML } from '../../core'
+import { OOXML } from '../../core'
 
-export class _FillStyleList extends OXML {
+export class _FillStyleList extends OOXML {
   get children(): (BlipFill | GradientFill | GroupFill | NoFill | PatternFill | SolidFill)[] {
     return Array.from(this.element.children).map((element) => {
       switch (element.tagName) {
@@ -17,7 +17,7 @@ export class _FillStyleList extends OXML {
         case 'a:pattFill':
         case 'a:solidFill':
         default:
-          return OXML.make(element)
+          return OOXML.make(element)
       }
     }).filter(Boolean) as any[]
   }

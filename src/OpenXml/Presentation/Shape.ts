@@ -4,13 +4,13 @@ import type { PlaceholderShape } from './PlaceholderShape'
 import type { ShapeProperties } from './ShapeProperties'
 import type { ShapeStyle } from './ShapeStyle'
 import type { TextBody } from './TextBody'
-import { defineChild, defineElement, defineProperty, OXML } from '../../core'
+import { defineChild, defineElement, defineProperty, OOXML } from '../../core'
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.presentation.shape
  */
 @defineElement('p:sp')
-export class Shape extends OXML {
+export class Shape extends OOXML {
   @defineChild('p:nvSpPr') declare nvSpPr: NonVisualShapeProperties
   @defineChild('p:spPr') declare spPr: ShapeProperties
   @defineChild('p:txBody') declare txBody: TextBody
@@ -76,7 +76,7 @@ export class Shape extends OXML {
   }
 }
 
-export class _ShapeStyle extends OXML {
+export class _ShapeStyle extends OOXML {
   @defineProperty('_backgroundColor') declare backgroundColor?: string
   @defineProperty('_backgroundImage') declare backgroundImage?: string
   @defineProperty('_parent.spPr.xfrm.off.x') declare left?: number

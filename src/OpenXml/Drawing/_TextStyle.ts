@@ -9,9 +9,9 @@ import type { Level6ParagraphProperties } from './Level6ParagraphProperties'
 import type { Level7ParagraphProperties } from './Level7ParagraphProperties'
 import type { Level8ParagraphProperties } from './Level8ParagraphProperties'
 import type { Level9ParagraphProperties } from './Level9ParagraphProperties'
-import { defineChild, OXML } from '../../core'
+import { defineChild, OOXML } from '../../core'
 
-export class _TextStyle extends OXML {
+export class _TextStyle extends OOXML {
   @defineChild('a:defPPr') declare defPPr?: DefaultParagraphProperties
   @defineChild('a:extLst') declare extLst?: ExtensionList
   @defineChild('a:lvl1pPr') declare lvl1pPr?: Level1ParagraphProperties

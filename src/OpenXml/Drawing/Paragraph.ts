@@ -3,13 +3,13 @@ import type { EndParagraphRunProperties } from './EndParagraphRunProperties'
 import type { Field } from './Field'
 import type { ParagraphProperties } from './ParagraphProperties'
 import type { Run } from './Run'
-import { defineChild, defineElement, defineProperty, OXML } from '../../core'
+import { defineChild, defineElement, defineProperty, OOXML } from '../../core'
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.drawing.paragraph
  */
 @defineElement('a:p')
-export class Paragraph extends OXML {
+export class Paragraph extends OOXML {
   @defineChild('a:fld') declare fld?: Field
   @defineChild('a:pPr') declare pPr?: ParagraphProperties
 
@@ -28,13 +28,13 @@ export class Paragraph extends OXML {
         case 'a:r':
         case 'a:endParaRPr':
         default:
-          return OXML.make(element)
+          return OOXML.make(element)
       }
     }).filter(Boolean) as any
   }
 }
 
-export class _ParagraphStyle extends OXML {
+export class _ParagraphStyle extends OOXML {
   @defineProperty('_parent.pPr.marL') declare marginLeft?: number
   @defineProperty('_parent.pPr.marR') declare marginRight?: number
   @defineProperty('_parent.pPr.indent') declare textIndent: number

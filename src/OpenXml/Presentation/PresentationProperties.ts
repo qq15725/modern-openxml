@@ -2,13 +2,13 @@ import type { ColorMostRecentlyUsed } from './ColorMostRecentlyUsed'
 import type { ExtensionList } from './ExtensionList'
 import type { PrintingProperties } from './PrintingProperties'
 import type { ShowProperties } from './ShowProperties'
-import { defineChild, defineElement, defineProperty, OXML } from '../../core'
+import { defineChild, defineElement, defineProperty, OOXML } from '../../core'
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.presentation.presentationproperties
  */
 @defineElement('p:presentationPr')
-export class PresentationProperties extends OXML {
+export class PresentationProperties extends OOXML {
   attrs = {
     'xmlns': 'http://schemas.openxmlformats.org/presentationml/2006/main',
     'xmlns:a': 'http://schemas.openxmlformats.org/drawingml/2006/main',

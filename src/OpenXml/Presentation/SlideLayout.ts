@@ -1,4 +1,4 @@
-import type { OXML } from '../../core'
+import type { OOXML } from '../../core'
 import type { ColorMapOverride } from './ColorMapOverride'
 import { defineAttribute, defineChild, defineElement } from '../../core'
 import { _Slide } from './_Slide'
@@ -22,5 +22,5 @@ export class SlideLayout extends _Slide {
   @defineAttribute('userDrawn', 'boolean') declare userDrawn?: boolean
 
   @defineChild('p:clrMapOvr') declare clrMapOvr: ColorMapOverride
-  @defineChild('p:hf') declare hf?: OXML
+  @defineChild('p:hf') declare hf?: OOXML
 }

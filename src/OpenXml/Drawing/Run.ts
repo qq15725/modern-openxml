@@ -1,12 +1,12 @@
 import type { RunProperties } from './RunProperties'
 import type { Text } from './Text'
-import { defineChild, defineElement, defineProperty, OXML } from '../../core'
+import { defineChild, defineElement, defineProperty, OOXML } from '../../core'
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.drawing.run
  */
 @defineElement('a:r')
-export class Run extends OXML {
+export class Run extends OOXML {
   @defineChild('a:rPr') declare rPr: RunProperties
   @defineChild('a:t') declare t: Text
 
@@ -16,7 +16,7 @@ export class Run extends OXML {
   protected get _content(): string { return this.t.element.textContent ?? '' }
 }
 
-export class _RunStyle extends OXML {
+export class _RunStyle extends OOXML {
   @defineProperty('_parent.rPr.fillColor') declare color?: string
   @defineProperty('_fontWeight') declare fontWeight?: 700
   @defineProperty('_fontStyle') declare fontStyle?: 'italic'

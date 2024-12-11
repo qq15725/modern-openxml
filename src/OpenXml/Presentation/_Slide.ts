@@ -6,14 +6,14 @@ import type { GroupShape } from './GroupShape'
 import type { Picture } from './Picture'
 import type { Shape } from './Shape'
 import type { Timing } from './Timing'
-import { defineChild, defineProperty, OXML } from '../../core'
+import { defineChild, defineProperty, OOXML } from '../../core'
 
-export class _Slide extends OXML {
+export class _Slide extends OOXML {
   @defineChild('p:cSld') declare cSld: CommonSlideData
   @defineChild('p:extLst') declare extLst: ExtensionList
   @defineChild('p:timing') declare timing: Timing
-  @defineChild('p:transition') declare transition: OXML
-  @defineChild('mc:AlternateContent') declare AlternateContent: OXML
+  @defineChild('p:transition') declare transition: OOXML
+  @defineChild('mc:AlternateContent') declare AlternateContent: OOXML
 
   @defineProperty('cSld.spTree.nvGrpSpPr.cNvPr.name') declare name: string
   @defineProperty('_elements') declare elements: (Shape | GroupShape | Picture | ConnectionShape | GraphicFrame)[]
@@ -31,7 +31,7 @@ export class _Slide extends OXML {
           case 'p:pic':
           case 'p:graphicFrame':
           default:
-            return OXML.make(element)
+            return OOXML.make(element)
         }
       })
       .filter(Boolean) as any[]

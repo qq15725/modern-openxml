@@ -1,7 +1,8 @@
 import { parseDomFromString } from '../utils'
+import { OOXMLValue } from './OOXMLValue'
 import { deepMerge, getObjectValueByPath, setObjectValueByPath } from './utils'
 
-export type OXMLProto = new (...args: any[]) => OXML
+export type OXMLProto = new (...args: any[]) => OOXML
 
 export interface OXMLAttributeDefinition {
   name: string
@@ -33,11 +34,11 @@ export interface OXMLDefinition {
 export function defineElement(tag: string) {
   return (constructor: any) => {
     const proto = constructor.prototype
-    const definition = OXML.makeDefinition(proto)
+    const definition = OOXML.makeDefinition(proto)
     const tagArr = tag.split(':')
     definition.tag = tag
     definition.namespace = tagArr.length > 1 ? tagArr[0] : undefined
-    OXML.tagToConstructor.set(tag, constructor)
+    OOXML.tagToConstructor.set(tag, constructor)
     Object.defineProperty(proto, 'tag', {
       value: tag,
       configurable: true,
@@ -66,14 +67,14 @@ export function defineAttribute(attr: string, options: DefineAttributeUsedOption
     defaultValue,
   } = _options
   return function (proto: any, name: any) {
-    const definition = OXML.makeDefinition(proto)
+    const definition = OOXML.makeDefinition(proto)
     definition.attributes[attr] = { name, alias: attr, type, defaultValue }
     if (isProperty) {
       definition.properties[name] = { name, alias: name }
     }
     Object.defineProperty(proto, name, {
       get() {
-        return (this as OXML).getAttribute(attr)
+        return (this as OOXML).getAttribute(attr)
       },
       configurable: true,
       enumerable: true,
@@ -84,12 +85,12 @@ export function defineAttribute(attr: string, options: DefineAttributeUsedOption
 export function defineProperty(aliasName?: string) {
   return function (proto: any, name: any) {
     const alias = aliasName ?? name
-    const definition = OXML.makeDefinition(proto)
+    const definition = OOXML.makeDefinition(proto)
     definition.properties[alias] = { name, alias }
     if (name !== alias) {
       Object.defineProperty(proto, name, {
         get() {
-          return (this as OXML).offsetGet(alias)
+          return (this as OOXML).offsetGet(alias)
         },
         configurable: true,
         enumerable: true,
@@ -113,7 +114,7 @@ export function defineChild(tag: string, options: DefineChildUsedOptions = {}): 
     defaultValue,
   } = options
   return function (proto: any, name: any) {
-    const definition = OXML.makeDefinition(proto)
+    const definition = OOXML.makeDefinition(proto)
     definition.children.push({ tag, defaultValue, isArray })
     if (isProperty) {
       definition.properties[name] = { name, alias: name }
@@ -121,13 +122,13 @@ export function defineChild(tag: string, options: DefineChildUsedOptions = {}): 
     Object.defineProperty(proto, name, {
       get() {
         if (isText) {
-          return (this as OXML).getChild(tag)?.element.textContent ?? defaultValue
+          return (this as OOXML).getChild(tag)?.element.textContent ?? defaultValue
         }
         else if (isArray) {
-          return (this as OXML).getChildren(tag) ?? defaultValue
+          return (this as OOXML).getChildren(tag) ?? defaultValue
         }
         else {
-          return (this as OXML).getChild(tag) ?? defaultValue
+          return (this as OOXML).getChild(tag) ?? defaultValue
         }
       },
       configurable: true,
@@ -140,8 +141,8 @@ export function defineChildren(tag: string, options: Omit<DefineChildUsedOptions
   return defineChild(tag, { ...options, isArray: true })
 }
 
-export class OXML {
-  static DPI = 72
+export class OOXML
+{
   static tagToConstructor = new Map<string, OXMLProto>()
   static protoToDefinition = new WeakMap<OXMLProto, OXMLDefinition>()
 
@@ -150,14 +151,14 @@ export class OXML {
   }
 
   static makeDefinition(proto: any): OXMLDefinition {
-    let definition = OXML.protoToDefinition.get(proto)
+    let definition = OOXML.protoToDefinition.get(proto)
     if (!definition) {
       definition = {
         attributes: {},
         properties: {},
         children: [],
       } as unknown as OXMLDefinition
-      OXML.protoToDefinition.set(proto, definition)
+      OOXML.protoToDefinition.set(proto, definition)
     }
     return definition
   }
@@ -175,7 +176,7 @@ export class OXML {
     return definition
   }
 
-  static make<T extends OXML = OXML>(source: string | Element): T {
+  static make<T extends OOXML = OOXML>(source: string | Element): T {
     let tag: string
     let element: Element | undefined
     if (typeof source === 'string') {
@@ -185,7 +186,7 @@ export class OXML {
       tag = source.tagName
       element = source
     }
-    return new (this.getConstructor(tag) ?? OXML)(element) as T
+    return new (this.getConstructor(tag) ?? OOXML)(element) as T
   }
 
   declare tag?: string
@@ -206,78 +207,7 @@ export class OXML {
   }
 
   definition(): OXMLDefinition | undefined {
-    return OXML.getDefinition(this)
-  }
-
-  getSetterValue(type: string, value: any): any {
-    switch (type) {
-      case 'boolean':
-        return value ? '1' : '0'
-      case 'degree':
-        return String(Number(value) * 60000)
-      case 'fontSize':
-        return String(Number(value) * 100)
-      case 'number':
-        return String(value)
-      case 'string':
-        return String(value)
-      case 'emu':
-        return String((Number(value) / OXML.DPI) * 914400)
-      case 'dxa':
-        return String((Number(value) / OXML.DPI) * 1440)
-      case 'percentage':
-        return String(Number(value) * 1000)
-      case 'rate':
-        return String(Number(value) * 100000)
-      case 'lineHeight':
-        return String((value * 100000) / 1.2018 - 0.0034)
-      default:
-        throw new Error(`type not found: ${type}`)
-    }
-  }
-
-  getGetterValue(type: any, value: any): any {
-    if (typeof type === 'string') {
-      switch (type) {
-        case 'boolean':
-          return Number(value) === 1
-        case 'degree':
-        case 'ST_Angle':
-        case 'ST_PositiveFixedAngle':
-          return Number(value) / 60000
-        case 'fontSize':
-          return Number(value) / 100
-        case 'number':
-        case 'SByteValue':
-          return Number(value)
-        case 'string':
-        case 'HexBinaryValue':
-        case 'StringValue':
-          return String(value)
-        case 'emu':
-        case 'ST_PositiveCoordinate':
-        case 'ST_Coordinate32':
-        case 'ST_AdjCoordinate':
-          return (Number(value) / 914400) * OXML.DPI
-        case 'dxa':
-          return (Number(value) / 1440) * OXML.DPI
-        case 'percentage':
-        case 'ST_Percentage':
-        case 'CT_PositiveFixedPercentage':
-        case 'rate':
-          return Number(value) / 100000
-        case 'ST_TextSpacingPercentOrPercentString':
-          return Number(String(value).replace('%', '')) / 100000
-        case 'ST_TextSpacingPoint':
-          return Number(value) / 100
-        case 'lineHeight':
-          return (Number(value) / 100000) * 1.2018 + 0.0034
-      }
-    }
-    else if (typeof type === 'object') {
-      return type[value]
-    }
-    throw new Error(`type not found: ${type}`)
+    return OOXML.getDefinition(this)
   }
 
   setAttribute(name: string, value: any): void {
@@ -285,7 +215,7 @@ export class OXML {
     let newValue = value
     if (definition) {
       try {
-        newValue = this.getSetterValue(definition.type, value)
+        newValue = OOXMLValue.stringify(value, definition.type)
       }
       catch (err: any) {
         console.warn(`${this.tag ?? this.element.tagName} ${name} ${err.message}`, definition)
@@ -302,7 +232,7 @@ export class OXML {
     }
     if (definition) {
       try {
-        return this.getGetterValue(definition?.type, value)
+        return OOXMLValue.parse(value, definition?.type)
       }
       catch (err: any) {
         console.warn(`${this.tag ?? this.element.tagName} ${name} ${err.message}`, definition)
@@ -327,25 +257,25 @@ export class OXML {
     return getObjectValueByPath(this, path)
   }
 
-  getChild(tag: string): OXML | undefined {
+  getChild(tag: string): OOXML | undefined {
     const element = Array.from(this.element.children).find((element) => {
       return element.tagName === tag || element.localName === tag
     })
     if (element) {
-      return OXML.make(element)
+      return OOXML.make(element)
     }
     return undefined
   }
 
-  getChildren(tag?: string): OXML[] {
+  getChildren(tag?: string): OOXML[] {
     return Array.from(this.element.children)
       .map((element) => {
         if (!tag || (element.tagName === tag || element.localName === tag)) {
-          return OXML.make(element)
+          return OOXML.make(element)
         }
         return undefined
       })
-      .filter(Boolean) as OXML[]
+      .filter(Boolean) as OOXML[]
   }
 
   fromXML(xml: string): this {
@@ -373,12 +303,12 @@ export class OXML {
     if (definition?.properties) {
       Object.values(definition.properties).forEach((property) => {
         let value = this.offsetGet(property.alias)
-        if (value instanceof OXML) {
+        if (value instanceof OOXML) {
           value = value.toJSON()
         }
         else if (Array.isArray(value)) {
           value = value.map((v) => {
-            if (v instanceof OXML) {
+            if (v instanceof OOXML) {
               return v.toJSON()
             }
             return v

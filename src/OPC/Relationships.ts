@@ -1,11 +1,11 @@
 import type { Relationship } from './Relationship'
-import { defineChildren, defineElement, OXML } from '../core'
+import { defineChildren, defineElement, OOXML } from '../core'
 
 const officeDocument = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships'
 const _package = 'http://schemas.openxmlformats.org/package/2006/relationships'
 
 @defineElement('Relationships')
-export class Relationships extends OXML {
+export class Relationships extends OOXML {
   attrs = {
     xmlns: 'http://schemas.openxmlformats.org/package/2006/relationships',
   }

@@ -2,14 +2,14 @@ import type { ExtensionList } from './ExtensionList'
 import type { NonVisualConnectionShapeProperties } from './NonVisualConnectionShapeProperties'
 import type { ShapeProperties } from './ShapeProperties'
 import type { ShapeStyle } from './ShapeStyle'
-import { defineChild, defineElement, defineProperty, OXML } from '../../core'
+import { defineChild, defineElement, defineProperty, OOXML } from '../../core'
 import { _ShapeStyle } from './Shape'
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.presentation.connectionshape
  */
 @defineElement('p:cxnSp')
-export class ConnectionShape extends OXML {
+export class ConnectionShape extends OOXML {
   @defineChild('p:extLst') declare extLst?: ExtensionList
   @defineChild('p:nvCxnSpPr') declare nvCxnSpPr: NonVisualConnectionShapeProperties
   @defineChild('p:spPr') declare spPr: ShapeProperties

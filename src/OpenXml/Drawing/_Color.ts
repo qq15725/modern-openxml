@@ -4,9 +4,9 @@ import type { RgbColorModelHex } from './RgbColorModelHex'
 import type { RgbColorModelPercentage } from './RgbColorModelPercentage'
 import type { SchemeColor } from './SchemeColor'
 import type { SystemColor } from './SystemColor'
-import { defineChild, OXML } from '../../core'
+import { defineChild, OOXML } from '../../core'
 
-export class _Color extends OXML {
+export class _Color extends OOXML {
   @defineChild('a:hslClr') declare hslClr?: HslColor
   @defineChild('a:prstClr') declare prstClr?: PresetColor
   @defineChild('a:schemeClr') declare schemeClr?: SchemeColor

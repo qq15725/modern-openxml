@@ -1,5 +1,5 @@
 import type { ColorMapOverride } from './ColorMapOverride'
-import { defineChild, defineElement, defineProperty, OXML } from '../../core'
+import { defineChild, defineElement, defineProperty, OOXML } from '../../core'
 import { _Slide } from './_Slide'
 
 /**
@@ -21,7 +21,7 @@ export class Slide extends _Slide {
   @defineProperty() layoutIndex = 0
 }
 
-export class _SlideStyle extends OXML {
+export class _SlideStyle extends OOXML {
   @defineProperty('_backgroundColor') declare backgroundColor?: string
   @defineProperty('_backgroundImage') declare backgroundImage?: string
 

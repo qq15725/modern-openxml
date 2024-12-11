@@ -2,9 +2,9 @@ import type { TextAlignmentTypeValues, TextFontAlignmentValues } from './_types'
 import type { DefaultRunProperties } from './DefaultRunProperties'
 import type { ExtensionList } from './ExtensionList'
 import type { LineSpacing } from './LineSpacing'
-import { defineAttribute, defineChild, OXML } from '../../core'
+import { defineAttribute, defineChild, OOXML } from '../../core'
 
-export class _ParagraphProperties extends OXML {
+export class _ParagraphProperties extends OOXML {
   @defineAttribute('algn') declare algn?: TextAlignmentTypeValues
   @defineAttribute('defTabSz', 'emu') declare defTabSz?: number
   @defineAttribute('eaLnBrk', 'boolean') declare eaLnBrk?: boolean
@@ -17,21 +17,21 @@ export class _ParagraphProperties extends OXML {
   @defineAttribute('marR', 'emu') declare marR?: number
   @defineAttribute('rtl', 'boolean') declare rtl?: boolean
 
-  @defineChild('a:buAutoNum') declare buAutoNum?: OXML
-  @defineChild('a:buBlip') declare buBlip?: OXML
-  @defineChild('a:buChar') declare buChar?: OXML
-  @defineChild('a:buClr') declare buClr?: OXML
-  @defineChild('a:buClrTx') declare buClrTx?: OXML
-  @defineChild('a:buFont') declare buFont?: OXML
-  @defineChild('a:buFontTx') declare buFontTx?: OXML
-  @defineChild('a:buNone') declare buNone?: OXML
-  @defineChild('a:buSzPct') declare buSzPct?: OXML
-  @defineChild('a:buSzPts') declare buSzPts?: OXML
-  @defineChild('a:buSzTx') declare buSzTx?: OXML
+  @defineChild('a:buAutoNum') declare buAutoNum?: OOXML
+  @defineChild('a:buBlip') declare buBlip?: OOXML
+  @defineChild('a:buChar') declare buChar?: OOXML
+  @defineChild('a:buClr') declare buClr?: OOXML
+  @defineChild('a:buClrTx') declare buClrTx?: OOXML
+  @defineChild('a:buFont') declare buFont?: OOXML
+  @defineChild('a:buFontTx') declare buFontTx?: OOXML
+  @defineChild('a:buNone') declare buNone?: OOXML
+  @defineChild('a:buSzPct') declare buSzPct?: OOXML
+  @defineChild('a:buSzPts') declare buSzPts?: OOXML
+  @defineChild('a:buSzTx') declare buSzTx?: OOXML
   @defineChild('a:defRPr') declare defRPr?: DefaultRunProperties
   @defineChild('a:extLst') declare extLst?: ExtensionList
   @defineChild('a:lnSpc') declare lnSpc?: LineSpacing
-  @defineChild('a:spcAft') declare spcAft?: OXML
-  @defineChild('a:spcBef') declare spcBef?: OXML
-  @defineChild('a:tabLst') declare tabLst?: OXML
+  @defineChild('a:spcAft') declare spcAft?: OOXML
+  @defineChild('a:spcBef') declare spcBef?: OOXML
+  @defineChild('a:tabLst') declare tabLst?: OOXML
 }

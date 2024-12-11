@@ -1,4 +1,4 @@
-import { defineChild, type DefineChildUsedOptions, defineElement, OXML } from '../core'
+import { defineChild, type DefineChildUsedOptions, defineElement, OOXML } from '../core'
 
 const options: DefineChildUsedOptions = {
   isText: true,
@@ -6,7 +6,7 @@ const options: DefineChildUsedOptions = {
 }
 
 @defineElement('cp:coreProperties')
-export class CoreProperties extends OXML {
+export class CoreProperties extends OOXML {
   attrs = {
     'xmlns': 'http://schemas.openxmlformats.org/package/2006/metadata/core-properties',
     'xmlns:cp': 'http://schemas.openxmlformats.org/package/2006/metadata/core-properties',

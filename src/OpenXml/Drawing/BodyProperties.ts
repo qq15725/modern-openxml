@@ -5,13 +5,13 @@ import type {
   TextVerticalValues,
   TextWrappingValues,
 } from './_types'
-import { defineAttribute, defineElement, OXML } from '../../core'
+import { defineAttribute, defineElement, OOXML } from '../../core'
 
 /**
  * @link https://learn.microsoft.com/dotnet/api/documentformat.openxml.drawing.bodyproperties
  */
 @defineElement('a:bodyPr')
-export class BodyProperties extends OXML {
+export class BodyProperties extends OOXML {
   @defineAttribute('anchor') declare anchor?: TextAnchoringTypeValues
   @defineAttribute('anchorCtr', 'boolean') declare anchorCtr?: boolean
   @defineAttribute('bIns', 'ST_Coordinate32') declare bIns?: number

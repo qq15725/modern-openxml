@@ -1,9 +1,9 @@
 import type { PPTX } from '../extensions'
 import type { XMLNode } from './XMLGen'
 import { measureText } from 'modern-text'
-import { OXML } from '../core'
+import { OOXMLValue } from '../core'
 import { Run } from '../OpenXml/Drawing'
-import { type ConnectionShape, type GraphicFrame, GroupShape, Picture, Shape } from '../OpenXml/Presentation'
+import { ConnectionShape, GraphicFrame, GroupShape, Picture, Shape } from '../OpenXml/Presentation'
 import { parseDomFromString } from '../utils'
 import { XMLGen } from './XMLGen'
 
@@ -29,7 +29,10 @@ export class SVGRenderer {
           element: Shape | GroupShape | Picture | ConnectionShape | GraphicFrame,
           parent?: GroupShape,
         ): XMLNode | undefined {
-          const { name = '', style = {} } = element
+          const {
+            name = '',
+            style = {},
+          } = element
 
           let {
             scaleX = 1,
@@ -76,12 +79,12 @@ export class SVGRenderer {
           if (element instanceof Shape) {
             const { paragraphs, style } = element
 
-            const options = {
+            const measured = measureText({
               style: {
-                paddingLeft: 0.25 * OXML.DPI / 2.54,
-                paddingRight: 0.25 * OXML.DPI / 2.54,
-                paddingTop: 0.13 * OXML.DPI / 2.54,
-                paddingBottom: 0.13 * OXML.DPI / 2.54,
+                paddingLeft: 0.25 * OOXMLValue.DPI / 2.54,
+                paddingRight: 0.25 * OOXMLValue.DPI / 2.54,
+                paddingTop: 0.13 * OOXMLValue.DPI / 2.54,
+                paddingBottom: 0.13 * OOXMLValue.DPI / 2.54,
                 ...style.toJSON(),
               },
               content: paragraphs?.map((p) => {
@@ -100,9 +103,7 @@ export class SVGRenderer {
                     .filter(Boolean),
                 }
               }),
-            }
-
-            const measured = measureText(options)
+            })
 
             elementG.children!.push(
               ...measured.paragraphs.flatMap((paragraph) => {
@@ -157,7 +158,15 @@ export class SVGRenderer {
           else if (element instanceof GroupShape) {
             const { elements } = element
 
-            elementG.children!.push(...elements.map(child => parseElement(child, element)))
+            elementG.children!.push(
+              ...elements.map(child => parseElement(child, element)),
+            )
+          }
+          else if (element instanceof GraphicFrame) {
+            // TODO
+          }
+          else if (element instanceof ConnectionShape) {
+            // TODO
           }
 
           return elementG

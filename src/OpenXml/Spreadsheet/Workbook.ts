@@ -1,12 +1,12 @@
 import type { VNode } from '../vnode'
-import { defineElement, OXML } from '../../core'
+import { defineElement, OOXML } from '../../core'
 import { Pixel, withAttr, withAttrs, withIndents } from '../utils'
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.spreadsheet.workbook
  */
 @defineElement('x:workbook')
-export class Workbook extends OXML {
+export class Workbook extends OOXML {
   parse(node: VNode) {
     return {
       width: Pixel.decode(node.attr('workbook/bookViews/workbookView/@windowWidth'), 'dxa'),

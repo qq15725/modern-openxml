@@ -1,4 +1,4 @@
-import type { OXML } from '../../core'
+import type { OOXML } from '../../core'
 import type { TextCapsValues, TextStrikeValues, TextUnderlineValues } from './_types'
 import type { ComplexScriptFont } from './ComplexScriptFont'
 import type { EastAsianFont } from './EastAsianFont'
@@ -38,16 +38,16 @@ export class _RunProperties extends _Fill {
   @defineChild('a:effectDag') declare effectDag?: EffectDag
   @defineChild('a:effectLst') declare effectLst?: EffectList
   @defineChild('a:extLst') declare extLst?: ExtensionList
-  @defineChild('a:highlight') declare highlight?: OXML
-  @defineChild('a:hlinkClick') declare hlinkClick?: OXML
-  @defineChild('a:hlinkMouseOver') declare hlinkMouseOver?: OXML
+  @defineChild('a:highlight') declare highlight?: OOXML
+  @defineChild('a:hlinkClick') declare hlinkClick?: OOXML
+  @defineChild('a:hlinkMouseOver') declare hlinkMouseOver?: OOXML
   @defineChild('a:latin') declare latin?: LatinFont
   @defineChild('a:ln') declare ln?: Outline
-  @defineChild('a:rtl') declare rtl?: OXML
+  @defineChild('a:rtl') declare rtl?: OOXML
   @defineChild('a:sym') declare sym?: SymbolFont
-  @defineChild('a:uFill') declare uFill?: OXML
-  @defineChild('a:uFillTx') declare uFillTx?: OXML
-  @defineChild('a:uLn') declare uLn?: OXML
-  @defineChild('a:uLnTx') declare uLnTx?: OXML
+  @defineChild('a:uFill') declare uFill?: OOXML
+  @defineChild('a:uFillTx') declare uFillTx?: OOXML
+  @defineChild('a:uLn') declare uLn?: OOXML
+  @defineChild('a:uLnTx') declare uLnTx?: OOXML
   @defineChild('a:lnSpc') declare lnSpc?: LineSpacing
 }

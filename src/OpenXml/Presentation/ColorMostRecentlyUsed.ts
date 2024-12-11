@@ -1,13 +1,13 @@
 import type { HslColor, PresetColor, RgbColorModelHex, SystemColor } from '../Drawing'
 import type { RgbColorModelPercentage } from '../Drawing/RgbColorModelPercentage'
 import type { SchemeColor } from '../Drawing/SchemeColor'
-import { defineElement, OXML } from '../../core'
+import { defineElement, OOXML } from '../../core'
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.presentation.colormostrecentlyused
  */
 @defineElement('p:clrMru')
-export class ColorMostRecentlyUsed extends OXML {
+export class ColorMostRecentlyUsed extends OOXML {
   get children(): (HslColor | PresetColor | SchemeColor | RgbColorModelPercentage | RgbColorModelHex | SystemColor)[] {
     return Array.from(this.element.children).map((element) => {
       switch (element.tagName) {
@@ -18,7 +18,7 @@ export class ColorMostRecentlyUsed extends OXML {
         case 'a:srgbClr':
         case 'a:sysClr':
         default:
-          return OXML.make(element)
+          return OOXML.make(element)
       }
     }) as any
   }

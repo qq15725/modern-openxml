@@ -1,10 +1,10 @@
-import { defineAttribute, defineElement, OXML } from '../../core'
+import { defineAttribute, defineElement, OOXML } from '../../core'
 
 /**
  * @link https://learn.microsoft.com/dotnet/api/documentformat.openxml.drawing.tile
  */
 @defineElement('a:tile')
-export class Tile extends OXML {
+export class Tile extends OOXML {
   @defineAttribute('sx', 'ST_Percentage') declare sx: number
   @defineAttribute('sy', 'ST_Percentage') declare sy: number
   @defineAttribute('tx', 'ST_Coordinate') declare tx: number

@@ -1,5 +1,5 @@
 import type { Alpha } from './Alpha'
-import { defineAttribute, defineChild, defineElement, OXML } from '../../core'
+import { defineAttribute, defineChild, defineElement, OOXML } from '../../core'
 
 function hexToRgb(hex: string): { r: number, g: number, b: number } | null {
   hex = hex.replace(/^#/, '')
@@ -19,7 +19,7 @@ function hexToRgb(hex: string): { r: number, g: number, b: number } | null {
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.drawing.rgbcolormodelhex
  */
 @defineElement('a:srgbClr')
-export class RgbColorModelHex extends OXML {
+export class RgbColorModelHex extends OOXML {
   @defineAttribute('val') declare val: string
 
   @defineChild('a:alpha') declare alpha?: Alpha

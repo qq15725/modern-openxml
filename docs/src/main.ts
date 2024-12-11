@@ -1,8 +1,8 @@
-import { OXML, PPTX, SVGRenderer } from '../../src'
+import { OOXML, PPTX, SVGRenderer } from '../../src'
 
 console.log(
-  OXML.tagToConstructor,
-  OXML.protoToDefinition,
+  OOXML.tagToConstructor,
+  OOXML.protoToDefinition,
 )
 
 const input = document.createElement('input')

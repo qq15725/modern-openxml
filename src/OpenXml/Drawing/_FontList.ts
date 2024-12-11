@@ -4,9 +4,9 @@ import type { EastAsianFont } from './EastAsianFont'
 import type { ExtensionList } from './ExtensionList'
 import type { Font } from './Font'
 import type { LatinFont } from './LatinFont'
-import { defineChild, defineProperty, OXML } from '../../core'
+import { defineChild, defineProperty, OOXML } from '../../core'
 
-export class _FontList extends OXML {
+export class _FontList extends OOXML {
   @defineChild('a:extLst') declare extLst?: ExtensionList
   @defineChild('a:cs') declare cs?: ComplexScriptFont
   @defineChild('a:ea') declare ea?: EastAsianFont
@@ -27,7 +27,7 @@ export class _FontList extends OXML {
           return undefined
         case 'a:font':
         default:
-          return OXML.make(element)
+          return OOXML.make(element)
       }
     }).filter(Boolean) as any[]
   }

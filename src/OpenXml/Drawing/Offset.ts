@@ -1,10 +1,10 @@
-import { defineAttribute, defineElement, OXML } from '../../core'
+import { defineAttribute, defineElement, OOXML } from '../../core'
 
 /**
  * @link https://learn.microsoft.com/dotnet/api/documentformat.openxml.drawing.offset
  */
 @defineElement('a:off')
-export class Offset extends OXML {
+export class Offset extends OOXML {
   @defineAttribute('x', 'emu') declare x: number
   @defineAttribute('y', 'emu') declare y: number
 }

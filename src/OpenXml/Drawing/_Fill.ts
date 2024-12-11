@@ -4,9 +4,9 @@ import type { GroupFill } from './GroupFill'
 import type { NoFill } from './NoFill'
 import type { PatternFill } from './PatternFill'
 import type { SolidFill } from './SolidFill'
-import { defineChild, OXML } from '../../core'
+import { defineChild, OOXML } from '../../core'
 
-export class _Fill extends OXML {
+export class _Fill extends OOXML {
   @defineChild('a:noFill') declare noFill?: NoFill
   @defineChild('a:blipFill') declare blipFill?: BlipFill
   @defineChild('a:gradFill') declare gradFill?: GradientFill

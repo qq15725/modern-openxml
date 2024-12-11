@@ -4,13 +4,13 @@ import type { GroupShapeProperties } from './GroupShapeProperties'
 import type { NonVisualGroupShapeProperties } from './NonVisualGroupShapeProperties'
 import type { Picture } from './Picture'
 import type { Shape } from './Shape'
-import { defineChild, defineElement, defineProperty, OXML } from '../../core'
+import { defineChild, defineElement, defineProperty, OOXML } from '../../core'
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.presentation.groupshape
  */
 @defineElement('p:grpSp')
-export class GroupShape extends OXML {
+export class GroupShape extends OOXML {
   @defineChild('p:nvGrpSpPr') declare nvGrpSpPr: NonVisualGroupShapeProperties
   @defineChild('p:grpSpPr') declare grpSpPr: GroupShapeProperties
 
@@ -32,14 +32,14 @@ export class GroupShape extends OXML {
           case 'p:pic':
           case 'p:graphicFrame':
           default:
-            return OXML.make(element)
+            return OOXML.make(element)
         }
       })
       .filter(Boolean) as any[]
   }
 }
 
-export class _GroupShapeStyle extends OXML {
+export class _GroupShapeStyle extends OOXML {
   @defineProperty('_parent.grpSpPr.xfrm.off.x') declare left: number
   @defineProperty('_parent.grpSpPr.xfrm.off.y') declare top: number
   @defineProperty('_parent.grpSpPr.xfrm.ext.cx') declare width: number

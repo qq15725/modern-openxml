@@ -1,11 +1,11 @@
 import type { ExtensionList } from '../Drawing'
-import { defineAttribute, defineChild, defineElement, OXML } from '../../core'
+import { defineAttribute, defineChild, defineElement, OOXML } from '../../core'
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.presentation.nonvisualdrawingproperties
  */
 @defineElement('p:cNvPr')
-export class NonVisualDrawingProperties extends OXML {
+export class NonVisualDrawingProperties extends OOXML {
   @defineAttribute('id') declare id?: string
   @defineAttribute('title') declare title?: string
   @defineAttribute('name') declare name?: string
@@ -13,6 +13,6 @@ export class NonVisualDrawingProperties extends OXML {
   @defineAttribute('hidden') declare hidden?: string
 
   @defineChild('a:extLst') declare extLst?: ExtensionList
-  @defineChild('a:hlinkClick') declare hlinkClick?: OXML
-  @defineChild('a:hlinkHover') declare hlinkHover?: OXML
+  @defineChild('a:hlinkClick') declare hlinkClick?: OOXML
+  @defineChild('a:hlinkHover') declare hlinkHover?: OOXML
 }

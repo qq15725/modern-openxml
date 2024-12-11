@@ -1,10 +1,10 @@
-import { defineAttribute, defineElement, OXML } from '../../core'
+import { defineAttribute, defineElement, OOXML } from '../../core'
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.presentation.colormap
  */
 @defineElement('p:clrMap')
-export class ColorMap extends OXML {
+export class ColorMap extends OOXML {
   @defineAttribute('accent1', { isProperty: true }) declare accent1?: string
   @defineAttribute('accent2', { isProperty: true }) declare accent2?: string
   @defineAttribute('accent3', { isProperty: true }) declare accent3?: string

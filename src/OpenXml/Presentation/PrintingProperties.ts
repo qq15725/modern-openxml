@@ -1,11 +1,11 @@
 import type { ExtensionList } from './ExtensionList'
-import { defineAttribute, defineChild, defineElement, OXML } from '../../core'
+import { defineAttribute, defineChild, defineElement, OOXML } from '../../core'
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.presentation.printingproperties
  */
 @defineElement('p:prnPr')
-export class PrintingProperties extends OXML {
+export class PrintingProperties extends OOXML {
   @defineAttribute('clrMode', 'ST_PrintColorMode') declare clrMode?: string
   @defineAttribute('frameSlides', 'boolean') declare frameSlides?: boolean
   @defineAttribute('hiddenSlides', 'boolean') declare hiddenSlides?: boolean

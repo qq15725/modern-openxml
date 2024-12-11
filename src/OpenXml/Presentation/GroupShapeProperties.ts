@@ -1,4 +1,4 @@
-import type { OXML } from '../../core'
+import type { OOXML } from '../../core'
 import type { Transform2D } from '../Drawing'
 import { defineChild, defineElement } from '../../core'
 import { _Properties } from './_Properties'
@@ -8,6 +8,6 @@ import { _Properties } from './_Properties'
  */
 @defineElement('p:grpSpPr')
 export class GroupShapeProperties extends _Properties {
-  @defineChild('a:scene3d') declare scene3d?: OXML
+  @defineChild('a:scene3d') declare scene3d?: OOXML
   @defineChild('a:xfrm') declare xfrm: Transform2D
 }

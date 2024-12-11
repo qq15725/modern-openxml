@@ -3,25 +3,25 @@ import type { GradientFill } from './GradientFill'
 import type { NoFill } from './NoFill'
 import type { PatternFill } from './PatternFill'
 import type { SolidFill } from './SolidFill'
-import { defineChild, defineElement, OXML } from '../../core'
+import { defineChild, defineElement, OOXML } from '../../core'
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.drawing.outline
  */
 @defineElement('a:ln')
-export class Outline extends OXML {
-  @defineChild('a:bevel') declare bevel: OXML
-  @defineChild('a:custDash') declare custDash: OXML
+export class Outline extends OOXML {
+  @defineChild('a:bevel') declare bevel: OOXML
+  @defineChild('a:custDash') declare custDash: OOXML
   @defineChild('a:extLst') declare extLst: ExtensionList
   @defineChild('a:gradFill') declare gradFill: GradientFill
-  @defineChild('a:headEnd') declare headEnd: OXML
-  @defineChild('a:miter') declare miter: OXML
+  @defineChild('a:headEnd') declare headEnd: OOXML
+  @defineChild('a:miter') declare miter: OOXML
   @defineChild('a:noFill') declare noFill: NoFill
   @defineChild('a:pattFill') declare pattFill: PatternFill
-  @defineChild('a:prstDash') declare prstDash: OXML
-  @defineChild('a:round') declare round: OXML
+  @defineChild('a:prstDash') declare prstDash: OOXML
+  @defineChild('a:round') declare round: OOXML
   @defineChild('a:solidFill') declare solidFill: SolidFill
-  @defineChild('a:tailEnd') declare tailEnd: OXML
+  @defineChild('a:tailEnd') declare tailEnd: OOXML
 
   // <a:solidFill>
   //  <a:srgbClr val="transparent">

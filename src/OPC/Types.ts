@@ -1,6 +1,6 @@
 import type { Default } from './Default'
 import type { Override } from './Override'
-import { defineChildren, defineElement, OXML } from '../core'
+import { defineChildren, defineElement, OOXML } from '../core'
 
 const _package = 'application/vnd.openxmlformats-package'
 const officedocument = 'application/vnd.openxmlformats-officedocument'
@@ -9,7 +9,7 @@ const wordprocessingml = `${officedocument}/wordprocessingml`
 const spreadsheetml = `${officedocument}/spreadsheetml`
 
 @defineElement('Types')
-export class Types extends OXML {
+export class Types extends OOXML {
   attrs = {
     xmlns: 'http://schemas.openxmlformats.org/package/2006/content-types',
   }

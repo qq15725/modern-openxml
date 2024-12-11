@@ -1,4 +1,4 @@
-import { defineAttribute, defineElement, OXML } from '../../core'
+import { defineAttribute, defineElement, OOXML } from '../../core'
 
 export interface SlideLayoutIdJSON {
   id: string
@@ -9,7 +9,7 @@ export interface SlideLayoutIdJSON {
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.presentation.slidelayoutid
  */
 @defineElement('p:sldLayoutId')
-export class SlideLayoutId extends OXML {
+export class SlideLayoutId extends OOXML {
   @defineAttribute('id', { isProperty: true }) declare id: string
   @defineAttribute('r:id', { isProperty: true }) declare rId: string
 }

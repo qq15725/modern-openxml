@@ -1,11 +1,11 @@
 import type { Alpha } from './Alpha'
-import { defineAttribute, defineChild, defineElement, OXML } from '../../core'
+import { defineAttribute, defineChild, defineElement, OOXML } from '../../core'
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.drawing.rgbcolormodelpercentage
  */
 @defineElement('a:scrgbClr')
-export class RgbColorModelPercentage extends OXML {
+export class RgbColorModelPercentage extends OOXML {
   @defineAttribute('r', 'ST_Percentage') declare r: number
   @defineAttribute('g', 'ST_Percentage') declare g: number
   @defineAttribute('b', 'ST_Percentage') declare b: number

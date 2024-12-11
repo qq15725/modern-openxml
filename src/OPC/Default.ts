@@ -1,7 +1,7 @@
-import { defineAttribute, defineElement, OXML } from '../core'
+import { defineAttribute, defineElement, OOXML } from '../core'
 
 @defineElement('Default')
-export class Default extends OXML {
+export class Default extends OOXML {
   @defineAttribute('ContentType') declare contentType: string
   @defineAttribute('Extension') declare extension: string
 }

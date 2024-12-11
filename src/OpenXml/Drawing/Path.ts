@@ -1,4 +1,4 @@
-import { defineAttribute, defineElement, OXML } from '../../core'
+import { defineAttribute, defineElement, OOXML } from '../../core'
 import { ArcTo } from './ArcTo'
 import { CloseShapePath } from './CloseShapePath'
 import { CubicBezierCurveTo } from './CubicBezierCurveTo'
@@ -6,19 +6,19 @@ import { LineTo } from './LineTo'
 import { MoveTo } from './MoveTo'
 import { QuadraticBezierCurveTo } from './QuadraticBezierCurveTo'
 
-export type PathCommand =
-  | { type: 'M', x: number, y: number }
-  | { type: 'L', x: number, y: number }
-  | { type: 'A', rx: number, ry: number, angle: number, largeArcFlag: number, sweepFlag: number, x: number, y: number }
-  | { type: 'Q', x1: number, y1: number, x: number, y: number }
-  | { type: 'C', x1: number, y1: number, x2: number, y2: number, x: number, y: number }
+export type RawPathCommand =
+  | { type: 'M', x: string, y: string }
+  | { type: 'L', x: string, y: string }
+  | { type: 'A', rx: string, ry: string, stAng: string, swAng: string, x: string, y: string }
+  | { type: 'Q', x1: string, y1: string, x: string, y: string }
+  | { type: 'C', x1: string, y1: string, x2: string, y2: string, x: string, y: string }
   | { type: 'Z' }
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.drawing.path
  */
 @defineElement('a:path')
-export class Path extends OXML {
+export class Path extends OOXML {
   @defineAttribute('extrusionOk', 'boolean') extrusionOk?: boolean
   @defineAttribute('fill', 'boolean') fill?: boolean
   @defineAttribute('stroke', 'boolean') stroke?: boolean
@@ -35,14 +35,14 @@ export class Path extends OXML {
         case 'a:quadBezTo':
         case 'a:moveTo':
         default:
-          return OXML.make(element)
+          return OOXML.make(element)
       }
     })
   }
 
-  get commands(): PathCommand[] {
-    const commands: PathCommand[] = []
-    let prev = { x: 0, y: 0 }
+  get commands(): RawPathCommand[] {
+    const commands: RawPathCommand[] = []
+    let prev: { x: string, y: string } | undefined
     this.children.forEach((child) => {
       if (child instanceof MoveTo) {
         const { x, y } = child.pt
@@ -55,20 +55,16 @@ export class Path extends OXML {
         prev = { x, y }
       }
       else if (child instanceof ArcTo) {
-        // TODO
         const { hR, wR, stAng, swAng } = child
-        const xAxisRotation = 0
-        const largeArcFlag = Math.abs(swAng) >= Math.PI ? 1 : 0
-        const sweepFlag = swAng > 0 ? 1 : 0
-        commands.push({ type: 'A', rx: wR, ry: hR, xAxisRotation, largeArcFlag, sweepFlag, x: prev.x, y: prev.y })
+        commands.push({ type: 'A', rx: wR, ry: hR, stAng, swAng, x: prev!.x, y: prev!.y })
       }
       else if (child instanceof CubicBezierCurveTo) {
-        const [x1, y1, x2, y2, x, y] = child.value
-        commands.push({ type: 'C', x1, y1, x2, y2, x, y })
+        const [p1, p2, p] = child.value
+        commands.push({ type: 'C', x1: p1.x, y1: p1.y, x2: p2.x, y2: p2.y, x: p.x, y: p.y })
       }
       else if (child instanceof QuadraticBezierCurveTo) {
-        const [x1, y1, x, y] = child.value
-        commands.push({ type: 'Q', x1, y1, x, y })
+        const [p1, p] = child.value
+        commands.push({ type: 'Q', x1: p1.x, y1: p1.y, x: p.x, y: p.y })
       }
       else if (child instanceof CloseShapePath) {
         commands.push({ type: 'Z' })

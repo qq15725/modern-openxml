@@ -1,5 +1,5 @@
 import type { DefineChildUsedOptions } from '../../core'
-import { defineChild, defineElement, OXML } from '../../core'
+import { defineChild, defineElement, OOXML } from '../../core'
 
 const options: DefineChildUsedOptions = {
   isText: true,
@@ -10,7 +10,7 @@ const options: DefineChildUsedOptions = {
  * @link https://learn.microsoft.com/dotnet/api/documentformat.openxml.extendedproperties.properties
  */
 @defineElement('ap:Properties')
-export class Properties extends OXML {
+export class Properties extends OOXML {
   @defineChild('Application', options) declare application?: string
   @defineChild('AppVersion', options) declare appVersion?: string
   @defineChild('Characters', options) declare characters?: string

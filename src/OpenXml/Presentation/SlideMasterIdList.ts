@@ -1,11 +1,11 @@
 import type { SlideMasterId, SlideMasterIdJSON } from './SlideMasterId'
-import { defineChildren, defineElement, OXML } from '../../core'
+import { defineChildren, defineElement, OOXML } from '../../core'
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.presentation.slidemasteridlist
  */
 @defineElement('p:sldMasterIdLst')
-export class SlideMasterIdList extends OXML {
+export class SlideMasterIdList extends OOXML {
   @defineChildren('p:sldMasterId') declare children: SlideMasterId[]
 
   override toJSON(): SlideMasterIdJSON[] {

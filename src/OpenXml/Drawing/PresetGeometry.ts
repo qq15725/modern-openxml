@@ -1,12 +1,10 @@
-import type { AdjustValueList } from './AdjustValueList'
-import { defineAttribute, defineChild, defineElement, OXML } from '../../core'
+import { defineAttribute, defineElement } from '../../core'
+import { _Geometry } from './_Geometry'
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.drawing.presetgeometry
  */
 @defineElement('a:prstGeom')
-export class PresetGeometry extends OXML {
+export class PresetGeometry extends _Geometry {
   @defineAttribute('prst') declare prst: string
-
-  @defineChild('a:avLst') declare avLst?: AdjustValueList
 }

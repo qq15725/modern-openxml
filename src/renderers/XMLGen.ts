@@ -34,7 +34,7 @@ export class XMLGen {
         value = Object.keys(value)
           .map((k) => {
             const v = value[k]
-            if (v === undefined) {
+            if (v === '' || v === null || v === undefined) {
               return undefined
             }
             return `${k}: ${v};`
