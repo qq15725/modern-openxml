@@ -13,7 +13,7 @@ export class SVGRenderer {
 
     const viewBoxHeight = height * slides.length
 
-    const svgString = XMLGen.node({
+    const svgNode = {
       tag: 'svg',
       attrs: {
         xmlns: 'http://www.w3.org/2000/svg',
@@ -56,55 +56,81 @@ export class SVGRenderer {
                 title: name,
                 transform: `translate(${style.left}, ${style.top})`,
               },
-              children: measured.paragraphs.map((paragraph) => {
-                let maxLineHeight = 0
-                const { computedStyle: pStyle } = paragraph
-                const text = {
-                  tag: 'g',
+              children: [
+                {
+                  tag: 'rect',
                   attrs: {
-                    transform: `translate(${pStyle.marginLeft ?? 0}, ${pStyle.marginRight ?? 0})`,
+                    x: 0,
+                    y: 0,
+                    width: style.width,
+                    height: style.height,
+                    fill: 'none',
+                    stroke: 'red',
                   },
-                  children: paragraph.fragments
-                    .map((f) => {
-                      const { computedStyle: rStyle, content, inlineBox } = f
-                      const fontSize = rStyle.fontSize ?? 12
-                      const lineHeight = rStyle.lineHeight ?? pStyle.lineHeight ?? 1
-                      maxLineHeight = Math.max(maxLineHeight, fontSize * lineHeight)
-                      return {
-                        tag: 'text',
-                        attrs: {
-                          'x': inlineBox.left,
-                          'y': inlineBox.top,
-                          'dominant-baseline': 'hanging',
-                          'fill': rStyle.color,
-                          'font-size': rStyle.fontSize,
-                          'font-family': rStyle.fontFamily,
-                          'letter-spacing': rStyle.letterSpacing,
-                          'font-weight': rStyle.fontWeight,
-                          'font-style': rStyle.fontStyle,
-                          'text-transform': rStyle.textTransform,
-                          'text-decoration': rStyle.textDecoration,
-                          'style': {
-                            'text-indent': pStyle.textIndent,
-                          },
-                        },
-                        children: f.characters.map((c) => {
-                          const { inlineBox, content } = c
-                          return {
-                            tag: 'tspan',
-                            attrs: {
-                              x: inlineBox.left,
-                              y: inlineBox.top,
+                },
+                ...measured.paragraphs.map((paragraph) => {
+                  let maxLineHeight = 0
+                  const { computedStyle: pStyle } = paragraph
+                  const res = {
+                    tag: 'g',
+                    attrs: {
+                      transform: `translate(${pStyle.marginLeft ?? 0}, ${pStyle.marginRight ?? 0})`,
+                    },
+                    children: paragraph.fragments
+                      .map((f) => {
+                        const { computedStyle: rStyle, inlineBox } = f
+                        const fontSize = rStyle.fontSize ?? 12
+                        const lineHeight = rStyle.lineHeight ?? pStyle.lineHeight ?? 1
+                        maxLineHeight = Math.max(maxLineHeight, fontSize * lineHeight)
+                        return {
+                          tag: 'text',
+                          attrs: {
+                            // 'x': inlineBox.left,
+                            // 'y': inlineBox.top,
+                            'fill': rStyle.color,
+                            'font-size': rStyle.fontSize,
+                            'font-family': rStyle.fontFamily,
+                            'letter-spacing': rStyle.letterSpacing,
+                            'font-weight': rStyle.fontWeight,
+                            'font-style': rStyle.fontStyle,
+                            'text-transform': rStyle.textTransform,
+                            'text-decoration': rStyle.textDecoration,
+                            'style': {
+                              'text-indent': pStyle.textIndent,
                             },
-                            children: [content],
-                          }
-                        }),
-                      }
-                    }),
-                }
-                dy += maxLineHeight
-                return text
-              }),
+                          },
+                          children: f.characters.map((c) => {
+                            const { inlineBox, content } = c
+                            return {
+                              tag: 'tspan',
+                              attrs: {
+                                'dominant-baseline': 'middle',
+                                'x': inlineBox.left,
+                                'y': inlineBox.top + inlineBox.height / 2,
+                              },
+                              children: [content],
+                            }
+                          }),
+                        }
+                      }),
+                  }
+
+                  res.children.push({
+                    tag: 'rect',
+                    attrs: {
+                      x: paragraph.lineBox.left,
+                      y: paragraph.lineBox.top,
+                      width: paragraph.lineBox.width,
+                      height: paragraph.lineBox.height,
+                      fill: 'none',
+                      stroke: '#00FF00',
+                    },
+                  })
+
+                  dy += maxLineHeight
+                  return res
+                }),
+              ],
             }
           }
           else if (element instanceof Picture) {
@@ -129,7 +155,7 @@ export class SVGRenderer {
             }
           }
           else if (element instanceof GroupShape) {
-            const { name, elements, style } = element
+            const { name, elements } = element
             return {
               tag: 'g',
               attrs: {
@@ -162,7 +188,9 @@ export class SVGRenderer {
           ],
         }
       }),
-    })
+    }
+
+    const svgString = XMLGen.node(svgNode)
 
     return parseDomFromString(svgString)
   }
