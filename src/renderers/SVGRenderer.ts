@@ -32,7 +32,7 @@ export class SVGRenderer {
         ): XMLNode | undefined {
           const {
             name = '',
-            style = {},
+            computedStyle: style = {},
           } = element
 
           let {
@@ -49,7 +49,7 @@ export class SVGRenderer {
           } = style
 
           if (parent) {
-            const { childOffsetLeft = 0, childOffsetTop = 0 } = parent.style
+            const { childOffsetLeft = 0, childOffsetTop = 0 } = parent.computedStyle
             left -= childOffsetLeft
             top -= childOffsetTop
           }
@@ -93,7 +93,7 @@ export class SVGRenderer {
           }
 
           if (element instanceof Shape) {
-            const { paragraphs, style, geometry } = element
+            const { paragraphs, computedStyle: style, geometry } = element
 
             const measured = measureText({
               style: {
@@ -191,7 +191,7 @@ export class SVGRenderer {
             }
           }
           else if (element instanceof Picture) {
-            const { style, src } = element
+            const { computedStyle: style, src } = element
             elementG.children!.push({
               tag: 'image',
               attrs: {

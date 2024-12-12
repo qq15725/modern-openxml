@@ -100,3 +100,16 @@ export type TextUnderlineValues =
   | 'wavyDbl'
   | 'wavyHeavy'
   | 'words'
+
+export type PresetLineDashVal =
+  | 'solid'
+  | 'dot'
+  | 'dash'
+  | 'lgDash'
+  | 'dashDot'
+  | 'lgDashDot'
+  | 'lgDashDotDot'
+  | 'sysDash'
+  | 'sysDot'
+  | 'sysDashDot'
+  | 'sysDashDotDot'

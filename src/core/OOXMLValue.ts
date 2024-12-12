@@ -47,6 +47,7 @@ export class OOXMLValue {
         return String(value)
       case 'emu':
       case 'ST_PositiveCoordinate':
+      case 'ST_LineWidth':
       case 'ST_Coordinate32':
       case 'ST_AdjCoordinate':
         return (Number(value) / 914400) * this.DPI

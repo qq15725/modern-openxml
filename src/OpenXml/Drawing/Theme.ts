@@ -26,23 +26,23 @@ export class Theme extends OOXML {
   @defineChild('a:objectDefaults') declare objectDefaults?: OOXML
   @defineChild('a:themeElements') declare themeElements?: ThemeElements
 
-  get clrScheme(): ColorScheme {
+  get clrScheme(): ColorScheme | undefined {
     return this.themeElements?.clrScheme
   }
 
-  get fillStyleLst(): FillStyleList {
+  get fillStyleLst(): FillStyleList | undefined {
     return this.themeElements?.fmtScheme?.fillStyleLst
   }
 
-  get lnStyleLst(): LineStyleList {
+  get lnStyleLst(): LineStyleList | undefined {
     return this.themeElements?.fmtScheme?.lnStyleLst
   }
 
-  get effectStyleLst(): EffectStyleList {
+  get effectStyleLst(): EffectStyleList | undefined {
     return this.themeElements?.fmtScheme?.effectStyleLst
   }
 
-  get bgFillStyleLst(): BackgroundFillStyleList {
+  get bgFillStyleLst(): BackgroundFillStyleList | undefined {
     return this.themeElements?.fmtScheme?.bgFillStyleLst
   }
 

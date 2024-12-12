@@ -1,4 +1,6 @@
 export * from './_Element'
+export * from './_GroupShapeComputedStyle'
+export * from './_ShapeComputedStyle'
 export * from './ApplicationNonVisualDrawingProperties'
 export * from './Background'
 export * from './BackgroundProperties'
