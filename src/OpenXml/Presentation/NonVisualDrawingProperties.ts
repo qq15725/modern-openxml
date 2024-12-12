@@ -10,7 +10,7 @@ export class NonVisualDrawingProperties extends OOXML {
   @defineAttribute('title') declare title?: string
   @defineAttribute('name') declare name?: string
   @defineAttribute('descr') declare descr?: string
-  @defineAttribute('hidden') declare hidden?: string
+  @defineAttribute('hidden', 'boolean') declare hidden?: boolean
 
   @defineChild('a:extLst') declare extLst?: ExtensionList
   @defineChild('a:hlinkClick') declare hlinkClick?: OOXML

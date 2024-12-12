@@ -10,6 +10,9 @@ import { _Slide } from './_Slide'
  */
 @defineElement('p:sldMaster')
 export class SlideMaster extends _Slide {
+  path?: string
+  themePath?: string
+
   attrs = {
     'xmlns:a': 'http://schemas.openxmlformats.org/drawingml/2006/main',
     'xmlns:r': 'http://schemas.openxmlformats.org/officeDocument/2006/relationships',
@@ -24,4 +27,5 @@ export class SlideMaster extends _Slide {
   @defineChild('p:txStyles') declare txStyles?: TextStyles
 
   @defineProperty('clrMap') declare colorMap?: any
+  @defineProperty() themeIndex = -1
 }

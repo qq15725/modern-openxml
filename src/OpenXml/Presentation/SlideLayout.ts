@@ -1,6 +1,6 @@
 import type { OOXML } from '../../core'
 import type { ColorMapOverride } from './ColorMapOverride'
-import { defineAttribute, defineChild, defineElement } from '../../core'
+import { defineAttribute, defineChild, defineElement, defineProperty } from '../../core'
 import { _Slide } from './_Slide'
 
 /**
@@ -8,6 +8,9 @@ import { _Slide } from './_Slide'
  */
 @defineElement('p:sldLayout')
 export class SlideLayout extends _Slide {
+  path?: string
+  masterPath?: string
+
   attrs = {
     'xmlns:a': 'http://schemas.openxmlformats.org/drawingml/2006/main',
     'xmlns:r': 'http://schemas.openxmlformats.org/officeDocument/2006/relationships',
@@ -23,4 +26,6 @@ export class SlideLayout extends _Slide {
 
   @defineChild('p:clrMapOvr') declare clrMapOvr: ColorMapOverride
   @defineChild('p:hf') declare hf?: OOXML
+
+  @defineProperty() masterIndex = -1
 }

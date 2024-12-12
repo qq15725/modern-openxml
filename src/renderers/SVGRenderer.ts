@@ -9,7 +9,7 @@ import { XMLGen } from './XMLGen'
 
 export class SVGRenderer {
   render(pptx: PPTX): HTMLElement {
-    const { width, height, slides } = pptx
+    const { width, height, slides, slideMasters, slideLayouts } = pptx
 
     const viewBoxHeight = height * slides.length
 
@@ -21,12 +21,13 @@ export class SVGRenderer {
         height: viewBoxHeight,
         viewBox: `0 0 ${width} ${viewBoxHeight}`,
       },
-      children: slides.map((slide, slideIndex) => {
+      children: slides.flatMap((slide, slideIndex) => {
         const { elements, style: slideStyle } = slide
         const { backgroundColor } = slideStyle
 
         function parseElement(
           element: Shape | GroupShape | Picture | ConnectionShape | GraphicFrame,
+          read: (rid: string) => any,
           parent?: GroupShape,
         ): XMLNode | undefined {
           const {
@@ -42,6 +43,9 @@ export class SVGRenderer {
             width = 0,
             height = 0,
             rotate = 0,
+            visibility,
+            backgroundColor,
+            backgroundImage,
           } = style
 
           if (parent) {
@@ -72,8 +76,20 @@ export class SVGRenderer {
             attrs: {
               title: name,
               transform: transform.join(' '),
+              visibility,
             },
             children: [],
+          }
+
+          if (backgroundColor) {
+            elementG.children.push({
+              tag: 'rect',
+              attrs: {
+                width,
+                height,
+                fill: backgroundColor,
+              },
+            })
           }
 
           if (element instanceof Shape) {
@@ -181,7 +197,7 @@ export class SVGRenderer {
               attrs: {
                 width: style.width,
                 height: style.height,
-                href: pptx.readRid(src, 'slide', slideIndex),
+                href: read(src),
                 preserveAspectRatio: 'none',
               },
             })
@@ -190,7 +206,7 @@ export class SVGRenderer {
             const { elements } = element
 
             elementG.children!.push(
-              ...elements.map(child => parseElement(child, element)),
+              ...elements.map(child => parseElement(child, read, element)),
             )
           }
           else if (element instanceof GraphicFrame) {
@@ -205,9 +221,44 @@ export class SVGRenderer {
 
         const top = height * slideIndex
 
-        return {
+        const items: XMLNode[] = []
+        const layout = slideLayouts[slide.layoutIndex]
+        if (layout) {
+          const master = slideMasters[layout.masterIndex]
+          if (master) {
+            items.push({
+              tag: 'g',
+              attrs: {
+                path: master.path,
+                title: master.name,
+                transform: `translate(0, ${top})`,
+              },
+              children: [
+                ...master.elements
+                  .filter(el => !el.placeholder)
+                  .map(child => parseElement(child, rId => pptx.readRid(rId, 'master', layout.masterIndex))),
+              ],
+            })
+          }
+          items.push({
+            tag: 'g',
+            attrs: {
+              path: layout.path,
+              title: layout.name,
+              transform: `translate(0, ${top})`,
+            },
+            children: [
+              ...layout.elements
+                .filter(el => !el.placeholder)
+                .map(child => parseElement(child, rId => pptx.readRid(rId, 'layout', slide.layoutIndex))),
+            ],
+          })
+        }
+        items.push({
           tag: 'g',
           attrs: {
+            path: slide.path,
+            title: slide.name,
             transform: `translate(0, ${top})`,
           },
           children: [
@@ -221,9 +272,13 @@ export class SVGRenderer {
                 fill: backgroundColor,
               },
             },
-            ...elements.map(child => parseElement(child)),
+            ...elements
+              .filter(el => !el.placeholder)
+              .map(child => parseElement(child, rId => pptx.readRid(rId, 'slide', slideIndex))),
           ],
-        }
+        })
+
+        return items
       }),
     }
 

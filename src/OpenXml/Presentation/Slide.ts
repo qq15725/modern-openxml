@@ -7,6 +7,9 @@ import { _Slide } from './_Slide'
  */
 @defineElement('p:sld')
 export class Slide extends _Slide {
+  path?: string
+  layoutPath?: string
+
   attrs = {
     'xmlns': 'http://schemas.openxmlformats.org/presentationml/2006/main',
     'xmlns:a': 'http://schemas.openxmlformats.org/drawingml/2006/main',
@@ -18,7 +21,7 @@ export class Slide extends _Slide {
 
   @defineProperty() type = 'slide'
   @defineProperty() style = new _SlideStyle(this)
-  @defineProperty() layoutIndex = 0
+  @defineProperty() layoutIndex = -1
 }
 
 export class _SlideStyle extends OOXML {

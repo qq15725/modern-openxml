@@ -41,6 +41,10 @@ export class PPTX {
     switch (type) {
       case 'slide':
         return this.read(this.slidesRels[index][rId].path, 'dataURI')
+      case 'layout':
+        return this.read(this.slideLayoutsRels[index][rId].path, 'dataURI')
+      case 'master':
+        return this.read(this.slideMastersRels[index][rId].path, 'dataURI')
       default:
         return undefined
     }
@@ -78,23 +82,26 @@ export class PPTX {
     const rels = new Relationships(read(relsPath)).value
 
     let presentationPath
+    const slidePaths = new Set<string>()
+    const slideMasterPaths = new Set<string>()
     const slideLayoutPaths = new Set<string>()
     const themePaths = new Set<string>()
 
     Object.values(rels).forEach((rel) => {
+      const path = rel.target
       switch (rel.type) {
         // ppt/presentation.xml
         case Relationships.types.presentation:
-          presentationPath = rel.target
+          presentationPath = path
           pptx.presentation = new Presentation(read(presentationPath))
           break
         // doc/app.xml
         case Relationships.types.app:
-          pptx.app = new Properties(read(rel.target))
+          pptx.app = new Properties(read(path))
           break
         // doc/core.xml
         case Relationships.types.core:
-          pptx.core = new CoreProperties(read(rel.target))
+          pptx.core = new CoreProperties(read(path))
           break
         // doc/custom.xml
         case Relationships.types.custom:
@@ -107,39 +114,43 @@ export class PPTX {
     const presentationRels = new Relationships(read(presentationRelsPath)).value
 
     Object.values(presentationRels).forEach((rel) => {
-      const target = joinPaths(presentationRelsBase, rel.target)
+      const path = joinPaths(presentationRelsBase, rel.target)
       switch (rel.type) {
         // ppt/presProps.xml
         case Relationships.types.presProps:
-          pptx.presProps = new PresentationProperties(read(target))
+          pptx.presProps = new PresentationProperties(read(path))
           break
         // ppt/viewProps.xml
         case Relationships.types.viewProps:
-          pptx.viewProps = new ViewProperties(read(target))
+          pptx.viewProps = new ViewProperties(read(path))
           break
       }
     })
 
-    const slideMaps = new Map<string, { slideLayouts: Set<string> }>()
     pptx.presentation.sldIdLst.children.forEach((v) => {
+      slidePaths.add(joinPaths(presentationRelsBase, presentationRels[v.rId].target))
+    })
+
+    pptx.presentation.sldMasterIdLst.children.forEach((v) => {
+      slideMasterPaths.add(joinPaths(presentationRelsBase, presentationRels[v.rId].target))
+    })
+
+    slidePaths.forEach((path) => {
       // ppt/slides/slide1.xml
-      const slidePath = joinPaths(presentationRelsBase, presentationRels[v.rId].target)
-      const slide = new Slide(read(slidePath))
-      const slideMap = {
-        slideLayouts: new Set<string>(),
-      }
-      slideMaps.set(slidePath, slideMap)
+      const slide = new Slide(read(path))
+      slide.path = path
 
       // ppt/slides/_rels/slide1.xml.rels
-      const { base: slideRelsBase, path: slideRelsPath } = getRelsPath(slidePath)
-      const slideRels = new Relationships(read(slideRelsPath)).value
+      const { base: slideRelsBase, path: slideRelsPath } = getRelsPath(path)
+      const slideRels: Record<string, any> = new Relationships(read(slideRelsPath)).value
       Object.values(slideRels).forEach((rel) => {
         const path = joinPaths(slideRelsBase, rel.target)
         rel.path = path
         switch (rel.type) {
           // ppt/slideLayout/slideLayout1.xml
           case Relationships.types.slideLayout: {
-            slideMap.slideLayouts.add(path)
+            slideLayoutPaths.add(path)
+            slide.layoutPath = path
             break
           }
         }
@@ -148,58 +159,73 @@ export class PPTX {
       pptx.slidesRels.push(slideRels)
     })
 
-    const slideMasterMap = new Map<string, {
-      themePath: string | undefined
-      slideLayoutPaths: Set<string>
-    }>()
-    pptx.presentation.sldMasterIdLst.children.forEach((v) => {
-      // slideMasters/slideMaster1.xml
-      const slideMasterPath = joinPaths(presentationRelsBase, presentationRels[v.rId].target)
-      const slideMasterMeta = {
-        themePath: undefined,
-        slideLayoutPaths: new Set<string>(),
-      }
-      slideMasterMap.set(slideMasterPath, slideMasterMeta)
+    slideMasterPaths.forEach((path) => {
+      // ppt/slideMasters/slideMaster1.xml
+      const slideMaster = new SlideMaster(read(path))
+      slideMaster.path = path
 
-      // ppt/slides/_rels/slide1.xml.rels
-      const { base: slideMasterRelsBase, path: slideMasterRelsPath } = getRelsPath(slideMasterPath)
-      const slideMasterRels = new Relationships(read(slideMasterRelsPath)).value
+      // ppt/slideMasters/_rels/slideMaster1.xml.rels
+      const { base: slideMasterRelsBase, path: slideMasterRelsPath } = getRelsPath(path)
+      const slideMasterRels: Record<string, any> = new Relationships(read(slideMasterRelsPath)).value
       Object.values(slideMasterRels).forEach((rel) => {
         const path = joinPaths(slideMasterRelsBase, rel.target)
         rel.path = path
         switch (rel.type) {
           case Relationships.types.theme:
-            slideMasterMeta.themePath = path
+            slideMaster.themePath = path
+            themePaths.add(path)
             break
         }
       })
 
-      const slideMaster = new SlideMaster(read(slideMasterPath))
       slideMaster.sldLayoutIdLst?.children.forEach((v) => {
-        slideMasterMeta.slideLayoutPaths.add(
-          joinPaths(slideMasterRelsBase, slideMasterRels[v.rId].target),
-        )
+        slideLayoutPaths.add(joinPaths(slideMasterRelsBase, slideMasterRels[v.rId].target))
       })
+
       pptx.slideMasters.push(slideMaster)
       pptx.slideMastersRels.push(slideMasterRels)
     })
 
-    slideMasterMap.forEach((meta) => {
-      meta.slideLayoutPaths.forEach((slideLayoutPath) => {
-        slideLayoutPaths.add(slideLayoutPath)
+    slideLayoutPaths.forEach((path) => {
+      // ppt/slides/slideLayout1.xml
+      const slideLayout = new SlideLayout(read(path))
+      slideLayout.path = path
+
+      // ppt/slides/_rels/slideLayout1.xml.rels
+      const { base: slideRelsBase, path: slideRelsPath } = getRelsPath(path)
+      const slideLayoutRels: Record<string, any> = new Relationships(read(slideRelsPath)).value
+      Object.values(slideLayoutRels).forEach((rel) => {
+        const path = joinPaths(slideRelsBase, rel.target)
+        rel.path = path
+        switch (rel.type) {
+          case Relationships.types.slideMaster:
+            slideLayout.masterPath = path
+            break
+        }
       })
 
-      if (meta.themePath) {
-        themePaths.add(meta.themePath)
-      }
-    })
-
-    slideLayoutPaths.forEach((path) => {
-      pptx.slideLayouts.push(new SlideLayout(read(path)))
+      pptx.slideLayouts.push(slideLayout)
+      pptx.slideLayoutsRels.push(slideLayoutRels)
     })
 
     themePaths.forEach((path) => {
-      pptx.themes.push(new Theme(read(path)))
+      // ppt/themes/theme1.xml
+      const theme = new Theme(read(path))
+      theme.path = path
+
+      pptx.themes.push(theme)
+    })
+
+    pptx.slides.forEach((slide) => {
+      slide.layoutIndex = pptx.slideLayouts.findIndex(v => v.path === slide.layoutPath)
+    })
+
+    pptx.slideLayouts.forEach((slide) => {
+      slide.masterIndex = pptx.slideMasters.findIndex(v => v.path === slide.masterPath)
+    })
+
+    pptx.slideMasters.forEach((slide) => {
+      slide.themeIndex = pptx.themes.findIndex(v => v.path === slide.themePath)
     })
 
     return pptx

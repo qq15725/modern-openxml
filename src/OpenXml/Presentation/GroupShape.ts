@@ -11,7 +11,7 @@ import { defineChild, defineElement, defineProperty, OOXML } from '../../core'
  */
 @defineElement('p:grpSp')
 export class GroupShape extends OOXML {
-  @defineChild('p:nvGrpSpPr') declare nvGrpSpPr: NonVisualGroupShapeProperties
+  @defineChild('p:nvGrpSpPr') declare nvGrpSpPr?: NonVisualGroupShapeProperties
   @defineChild('p:grpSpPr') declare grpSpPr: GroupShapeProperties
 
   @defineProperty() type = 'groupShape'
@@ -40,6 +40,7 @@ export class GroupShape extends OOXML {
 }
 
 export class _GroupShapeStyle extends OOXML {
+  @defineProperty('_visibility') declare visibility?: 'hidden'
   @defineProperty('_parent.grpSpPr.xfrm.off.x') declare left: number
   @defineProperty('_parent.grpSpPr.xfrm.off.y') declare top: number
   @defineProperty('_parent.grpSpPr.xfrm.ext.cx') declare width: number
@@ -51,6 +52,10 @@ export class _GroupShapeStyle extends OOXML {
   @defineProperty('_parent.grpSpPr.xfrm.chOff.y') declare childOffsetTop: number
   @defineProperty('_parent.grpSpPr.xfrm.chExt.cx') declare childWidth: number
   @defineProperty('_parent.grpSpPr.xfrm.chExt.cy') declare childHeight: number
+
+  protected get _visibility(): 'hidden' | undefined {
+    return this._parent.nvGrpSpPr?.cNvPr.hidden ? 'hidden' : undefined
+  }
 
   protected get _scaleX(): number | undefined {
     return this._parent.grpSpPr.xfrm.flipH ? -1 : 1

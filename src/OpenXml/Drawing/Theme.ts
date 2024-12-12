@@ -8,6 +8,8 @@ import { defineChild, defineElement, defineProperty, OOXML } from '../../core'
  */
 @defineElement('a:theme')
 export class Theme extends OOXML {
+  path?: string
+
   attrs = {
     'xmlns:a': 'http://schemas.openxmlformats.org/drawingml/2006/main',
     'name': 'Office Theme',

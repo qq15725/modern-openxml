@@ -27,7 +27,7 @@ export class XMLGen {
     }
     return ` ${Object.keys(attrs).map((key) => {
       let value = attrs[key]
-      if (value === undefined) {
+      if (value === '' || value === null || value === undefined) {
         return undefined
       }
       else if (key === 'style') {

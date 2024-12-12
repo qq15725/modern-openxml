@@ -11,7 +11,7 @@ import { defineChild, defineElement, defineProperty, OOXML } from '../../core'
  */
 @defineElement('p:sp')
 export class Shape extends OOXML {
-  @defineChild('p:nvSpPr') declare nvSpPr: NonVisualShapeProperties
+  @defineChild('p:nvSpPr') declare nvSpPr?: NonVisualShapeProperties
   @defineChild('p:spPr') declare spPr: ShapeProperties
   @defineChild('p:txBody') declare txBody: TextBody
   @defineChild('p:style') declare pStyle?: ShapeStyle
@@ -37,7 +37,7 @@ export class Shape extends OOXML {
   }
 
   get _paragraphs(): Paragraph[] | undefined {
-    if (this.nvSpPr.cNvSpPr.txBox) {
+    if (this.nvSpPr?.cNvSpPr.txBox) {
       return this.txBody.pList
     }
     return undefined
@@ -45,6 +45,7 @@ export class Shape extends OOXML {
 }
 
 export class _ShapeStyle extends OOXML {
+  @defineProperty('_visibility') declare visibility?: 'hidden'
   @defineProperty('_backgroundColor') declare backgroundColor?: string
   @defineProperty('_backgroundImage') declare backgroundImage?: string
   @defineProperty('_parent.spPr.xfrm.off.x') declare left?: number
@@ -64,6 +65,10 @@ export class _ShapeStyle extends OOXML {
   @defineProperty('_textAlign') declare textAlign?: 'center' | 'start'
   @defineProperty('_verticalAlign') declare verticalAlign?: 'top' | 'middle' | 'bottom'
   @defineProperty('_shadow') declare shadow?: string
+
+  protected get _visibility(): 'hidden' | undefined {
+    return this._parent.nvSpPr?.cNvPr.hidden ? 'hidden' : undefined
+  }
 
   protected get _scaleX(): number | undefined {
     return this._parent.spPr.xfrm?.flipH ? -1 : 1
