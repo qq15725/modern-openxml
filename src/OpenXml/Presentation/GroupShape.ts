@@ -5,12 +5,13 @@ import type { NonVisualGroupShapeProperties } from './NonVisualGroupShapePropert
 import type { Picture } from './Picture'
 import type { Shape } from './Shape'
 import { defineChild, defineElement, defineProperty, OOXML } from '../../core'
+import { _Element } from './_Element'
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.presentation.groupshape
  */
 @defineElement('p:grpSp')
-export class GroupShape extends OOXML {
+export class GroupShape extends _Element {
   @defineChild('p:nvGrpSpPr') declare nvGrpSpPr?: NonVisualGroupShapeProperties
   @defineChild('p:grpSpPr') declare grpSpPr: GroupShapeProperties
 

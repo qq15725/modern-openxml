@@ -6,7 +6,7 @@ import type { PatternFill } from './PatternFill'
 import type { SolidFill } from './SolidFill'
 import { OOXML } from '../../core'
 
-export class _FillStyleList extends OOXML {
+export class _FillList extends OOXML {
   get children(): (BlipFill | GradientFill | GroupFill | NoFill | PatternFill | SolidFill)[] {
     return Array.from(this.element.children).map((element) => {
       switch (element.tagName) {

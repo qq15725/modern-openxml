@@ -17,7 +17,7 @@ export class Run extends OOXML {
 }
 
 export class _RunStyle extends OOXML {
-  @defineProperty('_parent.rPr.fillColor') declare color?: string
+  @defineProperty('_parent.rPr.color') declare color?: string
   @defineProperty('_fontWeight') declare fontWeight?: 700
   @defineProperty('_fontStyle') declare fontStyle?: 'italic'
   @defineProperty('_fontFamily') declare fontFamily?: string

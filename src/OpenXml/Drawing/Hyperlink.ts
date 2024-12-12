@@ -1,10 +1,10 @@
 import { defineElement } from '../../core'
-import { _Color } from './_Color'
+import { _ColorStyle } from './_ColorStyle'
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.drawing.hyperlink
  */
 @defineElement('a:hlink')
-export class Hyperlink extends _Color {
+export class Hyperlink extends _ColorStyle {
   //
 }

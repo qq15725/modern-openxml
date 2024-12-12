@@ -1,10 +1,10 @@
 import { defineElement } from '../../core'
-import { _Color } from './_Color'
+import { _ColorStyle } from './_ColorStyle'
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.drawing.foregroundcolor
  */
 @defineElement('a:fgClr')
-export class ForegroundColor extends _Color {
+export class ForegroundColor extends _ColorStyle {
   //
 }

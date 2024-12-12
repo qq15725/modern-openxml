@@ -1,3 +1,4 @@
+export * from './_Element'
 export * from './ApplicationNonVisualDrawingProperties'
 export * from './Background'
 export * from './BackgroundProperties'

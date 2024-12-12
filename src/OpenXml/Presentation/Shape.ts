@@ -5,12 +5,13 @@ import type { ShapeProperties } from './ShapeProperties'
 import type { ShapeStyle } from './ShapeStyle'
 import type { TextBody } from './TextBody'
 import { defineChild, defineElement, defineProperty, OOXML } from '../../core'
+import { _Element } from './_Element'
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.presentation.shape
  */
 @defineElement('p:sp')
-export class Shape extends OOXML {
+export class Shape extends _Element {
   @defineChild('p:nvSpPr') declare nvSpPr?: NonVisualShapeProperties
   @defineChild('p:spPr') declare spPr: ShapeProperties
   @defineChild('p:txBody') declare txBody: TextBody
@@ -79,11 +80,11 @@ export class _ShapeStyle extends OOXML {
   }
 
   protected get _backgroundColor(): string | undefined {
-    return this._parent.spPr.fillColor
+    return this._parent.spPr.getFill().color
   }
 
   protected get _backgroundImage(): string | undefined {
-    return this._parent.spPr.fillImage
+    return this._parent.spPr.getFill().image
   }
 
   protected get _writingMode(): 'horizontal-tb' | 'vertical-lr' | 'vertical-rl' | undefined {
@@ -144,7 +145,7 @@ export class _ShapeStyle extends OOXML {
     }
   }
 
-  protected get _shadow() {
+  protected get _shadow(): string | undefined {
     const effectLst = this._parent.spPr.effectLst
     if (!effectLst) {
       return undefined
@@ -154,7 +155,7 @@ export class _ShapeStyle extends OOXML {
       return undefined
     }
     const distance = shdw.dist ?? 0
-    const color = shdw.color ?? 'rgba(0, 0, 0, 1)'
+    const color = shdw.toJSON() ?? 'rgba(0, 0, 0, 1)'
     const blurRadius = shdw.blurRad ?? 0
     const degree = (shdw.dir ?? 0) + 90
     const radian = (degree / 180) * Math.PI

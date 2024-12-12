@@ -1,29 +1,97 @@
-import type { HslColor } from './HslColor'
-import type { PresetColor } from './PresetColor'
-import type { RgbColorModelHex } from './RgbColorModelHex'
-import type { RgbColorModelPercentage } from './RgbColorModelPercentage'
-import type { SchemeColor } from './SchemeColor'
-import type { SystemColor } from './SystemColor'
+import type { Alpha } from './Alpha'
+import type { Theme } from './Theme'
 import { defineChild, OOXML } from '../../core'
 
-export class _Color extends OOXML {
-  @defineChild('a:hslClr') declare hslClr?: HslColor
-  @defineChild('a:prstClr') declare prstClr?: PresetColor
-  @defineChild('a:schemeClr') declare schemeClr?: SchemeColor
-  @defineChild('a:scrgbClr') declare scrgbClr?: RgbColorModelPercentage
-  @defineChild('a:srgbClr') declare srgbClr?: RgbColorModelHex
-  @defineChild('a:sysClr') declare sysClr?: SystemColor
+export interface RGBA {
+  r: number
+  g: number
+  b: number
+  a: number
+}
 
-  get color(): string | undefined {
-    return this.hslClr?.color
-      ?? this.prstClr?.color
-      ?? this.schemeClr?.color
-      ?? this.scrgbClr?.color
-      ?? this.srgbClr?.color
-      ?? this.sysClr?.color
+export type RGB = Omit<RGBA, 'a'>
+
+export abstract class _Color extends OOXML {
+  @defineChild('a:alpha') declare alpha?: Alpha
+
+  get a(): number {
+    return this.alpha?.val ?? 1
   }
 
-  toJSON(): any {
-    return this.color
+  hslToRgb(h: number, s: number, l: number): RGB {
+    h = ((h % 360) + 360) % 360
+    const c = (1 - Math.abs(2 * l - 1)) * s // Chroma
+    const x = c * (1 - Math.abs((h / 60) % 2 - 1)) // Intermediate value
+    const m = l - c / 2 // Adjustment for lightness
+    let r
+    let g
+    let b
+    if (h < 60) {
+      r = c
+      g = x
+      b = 0
+    }
+    else if (h < 120) {
+      r = x
+      g = c
+      b = 0
+    }
+    else if (h < 180) {
+      r = 0
+      g = c
+      b = x
+    }
+    else if (h < 240) {
+      r = 0
+      g = x
+      b = c
+    }
+    else if (h < 300) {
+      r = x
+      g = 0
+      b = c
+    }
+    else {
+      r = c
+      g = 0
+      b = x
+    }
+    r = Math.round((r + m) * 255)
+    g = Math.round((g + m) * 255)
+    b = Math.round((b + m) * 255)
+    return { r, g, b }
+  }
+
+  hexToRgb(hex: string): RGB {
+    const normalizedHex = hex.startsWith('#') ? hex.slice(1) : hex
+    const expandedHex
+      = normalizedHex.length === 3
+        ? normalizedHex
+          .split('')
+          .map(char => char + char)
+          .join('')
+        : normalizedHex
+    if (expandedHex.length !== 6 || !/^[0-9a-f]{6}$/i.test(expandedHex)) {
+      console.warn(`Failed to hexToRgb: ${hex}`)
+      return { r: 0, g: 0, b: 0 }
+    }
+    const r = Number.parseInt(expandedHex.slice(0, 2), 16)
+    const g = Number.parseInt(expandedHex.slice(2, 4), 16)
+    const b = Number.parseInt(expandedHex.slice(4, 6), 16)
+    return { r, g, b }
+  }
+
+  abstract toRGB(theme?: Theme): RGB
+
+  toRGBA(theme?: Theme): RGBA {
+    return {
+      ...this.toRGB(theme),
+      a: this.a,
+    }
+  }
+
+  toRGBAString(theme?: Theme): string {
+    const { r, g, b, a } = this.toRGBA(theme)
+    return `rgba(${r}, ${g}, ${b}, ${a})`
   }
 }

@@ -29,11 +29,11 @@ export class _SlideStyle extends OOXML {
   @defineProperty('_backgroundImage') declare backgroundImage?: string
 
   protected get _backgroundColor(): string | undefined {
-    return this._parent.cSld.bg?.bgPr.fillColor
+    return this._parent.cSld.bg?.bgPr.getFill().color
   }
 
   protected get _backgroundImage(): string | undefined {
-    return this._parent.cSld.bg?.bgPr.fillImage
+    return this._parent.cSld.bg?.bgPr.getFill().image
   }
 
   constructor(

@@ -20,7 +20,7 @@ export class CustomColorList extends OOXML {
     return this.children.map((child) => {
       return {
         name: child.name,
-        color: child.color,
+        color: child.toJSON(),
       }
     })
   }

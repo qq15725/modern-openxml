@@ -2,14 +2,15 @@ import type { BlipFill } from './BlipFill'
 import type { NonVisualPictureProperties } from './NonVisualPictureProperties'
 import type { ShapeProperties } from './ShapeProperties'
 import type { ShapeStyle } from './ShapeStyle'
-import { defineChild, defineElement, defineProperty, OOXML } from '../../core'
+import { defineChild, defineElement, defineProperty } from '../../core'
+import { _Element } from './_Element'
 import { _ShapeStyle } from './Shape'
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.presentation.picture
  */
 @defineElement('p:pic')
-export class Picture extends OOXML {
+export class Picture extends _Element {
   @defineChild('p:blipFill') declare blipFill: BlipFill
   @defineChild('p:nvPicPr') declare nvPicPr: NonVisualPictureProperties
   @defineChild('p:spPr') declare spPr: ShapeProperties

@@ -10,9 +10,9 @@ import type { LineSpacing } from './LineSpacing'
 import type { Outline } from './Outline'
 import type { SymbolFont } from './SymbolFont'
 import { defineAttribute, defineChild } from '../../core'
-import { _Fill } from './_Fill'
+import { _FillStyle } from './_FillStyle'
 
-export class _RunProperties extends _Fill {
+export class _RunProperties extends _FillStyle {
   @defineAttribute('altLang') declare altLang?: string
   @defineAttribute('baseline', 'number') declare baseline?: number
   @defineAttribute('b', 'boolean') declare b?: boolean

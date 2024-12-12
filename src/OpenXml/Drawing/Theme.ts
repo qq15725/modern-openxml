@@ -1,5 +1,10 @@
+import type { BackgroundFillStyleList } from './BackgroundFillStyleList'
+import type { ColorScheme } from './ColorScheme'
 import type { CustomColorList } from './CustomColorList'
+import type { EffectStyleList } from './EffectStyleList'
 import type { ExtensionList } from './ExtensionList'
+import type { FillStyleList } from './FillStyleList'
+import type { LineStyleList } from './LineStyleList'
 import type { ThemeElements } from './ThemeElements'
 import { defineChild, defineElement, defineProperty, OOXML } from '../../core'
 
@@ -20,6 +25,26 @@ export class Theme extends OOXML {
   @defineChild('a:extraClrSchemeLst') declare extraClrSchemeLst?: OOXML
   @defineChild('a:objectDefaults') declare objectDefaults?: OOXML
   @defineChild('a:themeElements') declare themeElements?: ThemeElements
+
+  get clrScheme(): ColorScheme {
+    return this.themeElements?.clrScheme
+  }
+
+  get fillStyleLst(): FillStyleList {
+    return this.themeElements?.fmtScheme?.fillStyleLst
+  }
+
+  get lnStyleLst(): LineStyleList {
+    return this.themeElements?.fmtScheme?.lnStyleLst
+  }
+
+  get effectStyleLst(): EffectStyleList {
+    return this.themeElements?.fmtScheme?.effectStyleLst
+  }
+
+  get bgFillStyleLst(): BackgroundFillStyleList {
+    return this.themeElements?.fmtScheme?.bgFillStyleLst
+  }
 
   @defineProperty('custClrLst') declare customColors?: any
   @defineProperty('themeElements.clrScheme') declare colors?: any

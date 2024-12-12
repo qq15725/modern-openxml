@@ -2,12 +2,13 @@ import type { Transform2D } from '../Drawing'
 import type { ExtensionList } from './ExtensionList'
 import type { NonVisualGraphicFrameProperties } from './NonVisualGraphicFrameProperties'
 import { defineChild, defineElement, defineProperty, OOXML } from '../../core'
+import { _Element } from './_Element'
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.presentation.graphicframe
  */
 @defineElement('p:graphicFrame')
-export class GraphicFrame extends OOXML {
+export class GraphicFrame extends _Element {
   @defineChild('p:extLst') declare extLst?: ExtensionList
   @defineChild('a:graphic') declare graphic?: OOXML
   @defineChild('p:nvGraphicFramePr') declare nvGraphicFramePr: NonVisualGraphicFrameProperties

@@ -6,7 +6,7 @@ import type { Font } from './Font'
 import type { LatinFont } from './LatinFont'
 import { defineChild, defineProperty, OOXML } from '../../core'
 
-export class _FontList extends OOXML {
+export class _FontStyle extends OOXML {
   @defineChild('a:extLst') declare extLst?: ExtensionList
   @defineChild('a:cs') declare cs?: ComplexScriptFont
   @defineChild('a:ea') declare ea?: EastAsianFont

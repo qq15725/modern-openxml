@@ -1,11 +1,11 @@
 import { defineAttribute, defineElement } from '../../core'
-import { _Color } from './_Color'
+import { _ColorStyle } from './_ColorStyle'
 
 /**
  * @link https://learn.microsoft.com/dotnet/api/documentformat.openxml.drawing.outershadow
  */
 @defineElement('a:outerShdw')
-export class OuterShadow extends _Color {
+export class OuterShadow extends _ColorStyle {
   @defineAttribute('algn', 'ST_RectAlignment') declare algn?: number
   @defineAttribute('blurRad', 'ST_PositiveCoordinate') declare blurRad?: number
   @defineAttribute('dir', 'ST_PositiveFixedAngle') declare dir?: number
