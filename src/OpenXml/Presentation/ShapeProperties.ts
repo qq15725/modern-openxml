@@ -13,10 +13,10 @@ import { _Properties } from './_Properties'
  */
 @defineElement('p:spPr')
 export class ShapeProperties extends _Properties {
-  @defineChild('a:scene3d') declare scene3d?: OOXML
   @defineChild('a:xfrm') declare xfrm?: Transform2D
   @defineChild('a:prstGeom') declare prstGeom?: PresetGeometry
   @defineChild('a:custGeom') declare custGeom?: CustomGeometry
   @defineChild('a:ln') declare ln?: Outline
+  @defineChild('a:scene3d') declare scene3d?: OOXML
   @defineChild('a:sp3d') declare sp3d?: OOXML
 }

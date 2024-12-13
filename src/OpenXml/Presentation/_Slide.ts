@@ -8,6 +8,8 @@ import type { Shape } from './Shape'
 import type { Timing } from './Timing'
 import { defineChild, defineProperty, OOXML } from '../../core'
 
+export type SlideElement = Shape | GroupShape | Picture | ConnectionShape | GraphicFrame
+
 export class _Slide extends OOXML {
   @defineChild('p:cSld') declare cSld: CommonSlideData
   @defineChild('p:extLst') declare extLst: ExtensionList
@@ -16,9 +18,9 @@ export class _Slide extends OOXML {
   @defineChild('mc:AlternateContent') declare AlternateContent: OOXML
 
   @defineProperty('cSld.name') declare name?: string
-  @defineProperty('_elements') declare elements: (Shape | GroupShape | Picture | ConnectionShape | GraphicFrame)[]
+  @defineProperty('_elements') declare elements: SlideElement[]
 
-  get _elements(): (Shape | GroupShape | Picture | ConnectionShape | GraphicFrame)[] {
+  get _elements(): SlideElement[] {
     return Array.from(this.cSld.spTree.element.children)
       .map((element) => {
         switch (element.tagName) {

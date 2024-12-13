@@ -6,5 +6,5 @@ import { _ColorStyle } from './_ColorStyle'
  */
 @defineElement('a:fillRef')
 export class FillReference extends _ColorStyle {
-  @defineAttribute('idx') declare idx: string
+  @defineAttribute('idx', 'number') declare idx: number
 }

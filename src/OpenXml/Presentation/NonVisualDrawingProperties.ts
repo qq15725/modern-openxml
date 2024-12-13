@@ -15,4 +15,8 @@ export class NonVisualDrawingProperties extends OOXML {
   @defineChild('a:extLst') declare extLst?: ExtensionList
   @defineChild('a:hlinkClick') declare hlinkClick?: OOXML
   @defineChild('a:hlinkHover') declare hlinkHover?: OOXML
+
+  get visibility(): 'hidden' | undefined {
+    return this.hidden ? 'hidden' : undefined
+  }
 }

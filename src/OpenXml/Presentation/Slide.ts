@@ -1,5 +1,6 @@
 import type { ColorMapOverride } from './ColorMapOverride'
 import { defineChild, defineElement, defineProperty, OOXML } from '../../core'
+import { _FillStyle } from '../Drawing'
 import { _Slide } from './_Slide'
 
 /**
@@ -25,20 +26,19 @@ export class Slide extends _Slide {
 }
 
 export class _SlideStyle extends OOXML {
-  @defineProperty('_backgroundColor') declare backgroundColor?: string
-  @defineProperty('_backgroundImage') declare backgroundImage?: string
-
-  protected get _backgroundColor(): string | undefined {
-    return this._parent.cSld.bg?.bgPr.getFill().color
-  }
-
-  protected get _backgroundImage(): string | undefined {
-    return this._parent.cSld.bg?.bgPr.getFill().image
-  }
+  declare backgroundColor?: string
+  declare backgroundImage?: string
 
   constructor(
     protected _parent: Slide,
   ) {
     super()
+  }
+
+  update(): void {
+    const background = _FillStyle.parseFill(this._parent.cSld.bg?.bgPr.fill)
+
+    this.backgroundColor = background.color
+    this.backgroundImage = background.image
   }
 }

@@ -17,4 +17,12 @@ export class Transform2D extends OOXML {
   @defineChild('a:ext') declare ext: Extents
   @defineChild('a:chOff') declare chOff?: ChildOffset
   @defineChild('a:chExt') declare chExt?: ChildExtents
+
+  get scaleX(): number | undefined {
+    return this.flipH ? -1 : 1
+  }
+
+  get scaleY(): number | undefined {
+    return this.flipV ? -1 : 1
+  }
 }

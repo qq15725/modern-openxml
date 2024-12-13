@@ -26,7 +26,7 @@ export class Shape extends _Element {
   @defineProperty('_geometry') declare geometry?: GeometryPath[]
 
   get _geometry(): GeometryPath[] | undefined {
-    const { custGeom, prstGeom } = this.spPr
+    const { custGeom, prstGeom: _prstGeom } = this.spPr
     // TODO prstGeom
     return custGeom?.getPaths(
       this.computedStyle.width ?? 0,

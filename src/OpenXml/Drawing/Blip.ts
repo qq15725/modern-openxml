@@ -5,5 +5,5 @@ import { defineAttribute, defineElement, OOXML } from '../../core'
  */
 @defineElement('a:blip')
 export class Blip extends OOXML {
-  @defineAttribute('r:embed') declare rEmbed: string
+  @defineAttribute('r:embed') declare rEmbed?: string
 }

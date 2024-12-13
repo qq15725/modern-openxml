@@ -1,12 +1,22 @@
 import type {
-  BlipFill,
+  _Fill,
   EffectReference,
+  EffectStyle,
   FillReference,
+  Font,
   FontReference,
   LineReference,
+  Outline,
   Theme,
 } from '../Drawing'
 import { defineChild, defineElement, OOXML } from '../../core'
+
+export interface ParsedShapeStyle {
+  fill?: _Fill
+  ln?: Outline
+  effect?: EffectStyle
+  font?: Font
+}
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.presentation.shapestyle
@@ -18,19 +28,13 @@ export class ShapeStyle extends OOXML {
   @defineChild('a:effectRef') declare effectRef?: EffectReference
   @defineChild('a:fontRef') declare fontRef?: FontReference
 
-  getFill(theme: Theme) {
-    const { fillRef } = this
-
-    const res = {}
-    if (fillRef) {
-      const fill = theme.fillStyleLst.children[fillRef.idx]
-      if (fill instanceof BlipFill) {
-        //
-      }
-    }
-
+  parse(theme: Theme): ParsedShapeStyle {
+    const { lnRef, fillRef, effectRef, fontRef } = this
     return {
-      color: '',
+      fill: fillRef ? theme.fillStyleLst?.children[fillRef.idx] : undefined,
+      ln: lnRef ? theme.lnStyleLst?.children[lnRef.idx] : undefined,
+      effect: effectRef ? theme.effectStyleLst?.children[effectRef.idx] : undefined,
+      font: fontRef ? theme.majorFonts?.children[fontRef.idx] : undefined,
     }
   }
 }

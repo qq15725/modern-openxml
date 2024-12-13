@@ -7,12 +7,12 @@ import { _Color } from './_Color'
  */
 @defineElement('a:hslClr')
 export class HslColor extends _Color {
-  @defineAttribute('hue', 'ST_PositiveFixedAngle') declare hue: number
-  @defineAttribute('sat', 'ST_Percentage') declare sat: number
-  @defineAttribute('lum', 'ST_Percentage') declare lum: number
+  @defineAttribute('hue', 'ST_PositiveFixedAngle') declare h: number
+  @defineAttribute('sat', 'ST_Percentage') declare s: number
+  @defineAttribute('lum', 'ST_Percentage') declare l: number
 
   override toRGB(): RGB {
-    const { hue: h, sat: s, lum: l } = this
+    const { h, s, l } = this
     return this.hslToRgb(h, s, l)
   }
 }

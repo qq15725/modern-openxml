@@ -1,4 +1,5 @@
 export * from './_Element'
+export * from './_GraphicFrameComputedStyle'
 export * from './_GroupShapeComputedStyle'
 export * from './_ShapeComputedStyle'
 export * from './ApplicationNonVisualDrawingProperties'

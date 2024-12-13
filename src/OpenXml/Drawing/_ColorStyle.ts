@@ -23,7 +23,7 @@ export class _ColorStyle extends OOXML {
       ?? this.sysClr
   }
 
-  toJSON(): any {
+  get rgbaString(): string {
     return this.color?.toRGBAString() ?? '#000000'
   }
 }

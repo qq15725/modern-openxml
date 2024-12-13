@@ -16,4 +16,16 @@ export class BlipFill extends OOXML {
   @defineChild('a:srcRect') declare srcRect?: SourceRectangle
   @defineChild('a:stretch') declare stretch?: Stretch
   @defineChild('a:tile') declare tile?: Tile
+
+  getCanvas(
+    readRId: (rId: string) => ArrayBuffer,
+  ) {
+    const canvas = document.createElement('canvas')
+    const rId = this.blip?.rEmbed
+    if (rId) {
+      const buffer = readRId(rId)
+      // TODO
+    }
+    return canvas
+  }
 }

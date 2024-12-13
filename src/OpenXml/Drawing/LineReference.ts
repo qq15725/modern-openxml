@@ -6,5 +6,5 @@ import { _ColorStyle } from './_ColorStyle'
  */
 @defineElement('a:lnRef')
 export class LineReference extends _ColorStyle {
-  @defineAttribute('idx') declare idx: string
+  @defineAttribute('idx', 'number') declare idx: number
 }

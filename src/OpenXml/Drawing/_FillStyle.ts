@@ -1,11 +1,12 @@
-import type { BlipFill } from './BlipFill'
-import type { GradientFill } from './GradientFill'
-import type { GroupFill } from './GroupFill'
-import type { NoFill } from './NoFill'
-import type { PatternFill } from './PatternFill'
-import type { SolidFill } from './SolidFill'
+import type { _Fill } from './_FillList'
 import type { Theme } from './Theme'
-import { defineChild, OOXML } from '../../core'
+import { OOXML } from '../../core'
+import { BlipFill } from './BlipFill'
+import { GradientFill } from './GradientFill'
+import { GroupFill } from './GroupFill'
+import { NoFill } from './NoFill'
+import { PatternFill } from './PatternFill'
+import { SolidFill } from './SolidFill'
 
 export interface ParsedFill {
   color?: string
@@ -13,34 +14,42 @@ export interface ParsedFill {
 }
 
 export class _FillStyle extends OOXML {
-  @defineChild('a:noFill') declare noFill?: NoFill
-  @defineChild('a:blipFill') declare blipFill?: BlipFill
-  @defineChild('a:gradFill') declare gradFill?: GradientFill
-  @defineChild('a:grpFill') declare grpFill?: GroupFill
-  @defineChild('a:pattFill') declare pattFill?: PatternFill
-  @defineChild('a:solidFill') declare solidFill?: SolidFill
+  get fill(): _Fill | undefined {
+    const element = this.element.children[0]
+    if (element) {
+      switch (element?.tagName) {
+        case 'a:noFill':
+        case 'a:blipFill':
+        case 'a:gradFill':
+        case 'a:grpFill':
+        case 'a:pattFill':
+        case 'a:solidFill':
+        default:
+          return OOXML.make(element)
+      }
+    }
+    return undefined
+  }
 
-  get color(): string | undefined { return this.getFill()?.color }
-
-  getFill(theme?: Theme): ParsedFill {
+  static parseFill(fill?: _Fill, theme?: Theme): ParsedFill {
     const parsed: ParsedFill = {}
-    if (!this.noFill) {
-      if (this.grpFill) {
+    if (fill instanceof NoFill) {
+      if (fill instanceof GroupFill) {
         // TODO
       }
       else {
-        if (this.blipFill) {
+        if (fill instanceof BlipFill) {
           // TODO
-          parsed.image = this.blipFill.blip?.rEmbed
+          parsed.image = fill.blip?.rEmbed
         }
-        if (this.gradFill) {
-          // TODO
-        }
-        else if (this.pattFill) {
+        if (fill instanceof GradientFill) {
           // TODO
         }
-        else if (this.solidFill) {
-          parsed.color = this.solidFill.color?.toRGBAString(theme)
+        else if (fill instanceof PatternFill) {
+          // TODO
+        }
+        else if (fill instanceof SolidFill) {
+          parsed.color = fill.color?.toRGBAString(theme)
         }
       }
     }

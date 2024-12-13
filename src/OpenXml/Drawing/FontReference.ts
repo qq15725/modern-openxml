@@ -6,5 +6,5 @@ import { _ColorStyle } from './_ColorStyle'
  */
 @defineElement('a:fontRef')
 export class FontReference extends _ColorStyle {
-  @defineAttribute('idx') declare idx: string
+  @defineAttribute('idx', 'number') declare idx: number
 }

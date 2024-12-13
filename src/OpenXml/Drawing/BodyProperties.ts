@@ -31,4 +31,62 @@ export class BodyProperties extends OOXML {
   @defineAttribute('vert') declare vert?: TextVerticalValues
   @defineAttribute('vertOverflow') declare vertOverflow?: TextVerticalOverflowValues
   @defineAttribute('wrap') declare wrap?: TextWrappingValues
+
+  get writingMode(): 'horizontal-tb' | 'vertical-lr' | 'vertical-rl' | undefined {
+    switch (this.vert) {
+      case 'eaVert':
+      case 'mongolianVert':
+      case 'vert':
+      case 'vert270':
+      case 'wordArtVertRtl':
+      case 'wordArtVert':
+        return 'vertical-rl'
+      case 'horz':
+        return 'horizontal-tb'
+    }
+
+    switch (this.upright) {
+      case true:
+        return 'vertical-rl'
+      case false:
+        return 'horizontal-tb'
+    }
+
+    return undefined
+  }
+
+  get textWrap(): 'wrap' | 'nowrap' | undefined {
+    switch (this.wrap) {
+      case 'none':
+        return 'nowrap'
+      case 'square':
+        return 'wrap'
+      default:
+        return undefined
+    }
+  }
+
+  get verticalAlign(): 'top' | 'middle' | 'bottom' | undefined {
+    switch (this.anchor) {
+      case 't':
+        return 'top'
+      case 'b':
+        return 'bottom'
+      case 'ctr':
+        return 'middle'
+      default:
+        return undefined
+    }
+  }
+
+  get textAlign(): 'center' | 'start' | undefined {
+    switch (this.anchorCtr) {
+      case true:
+        return 'center'
+      case false:
+        return 'start'
+      default:
+        return undefined
+    }
+  }
 }

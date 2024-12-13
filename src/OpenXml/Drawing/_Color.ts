@@ -11,8 +11,36 @@ export interface RGBA {
 
 export type RGB = Omit<RGBA, 'a'>
 
+// TODO
 export abstract class _Color extends OOXML {
   @defineChild('a:alpha') declare alpha?: Alpha
+  @defineChild('a:alphaMod') declare alphaMod?: OOXML
+  @defineChild('a:alphaOff') declare alphaOff?: OOXML
+  @defineChild('a:blue') declare blue?: OOXML
+  @defineChild('a:blueMod') declare blueMod?: OOXML
+  @defineChild('a:blueOff') declare blueOff?: OOXML
+  @defineChild('a:comp') declare comp?: OOXML
+  @defineChild('a:gamma') declare gamma?: OOXML
+  @defineChild('a:gray') declare gray?: OOXML
+  @defineChild('a:green') declare green?: OOXML
+  @defineChild('a:greenMod') declare greenMod?: OOXML
+  @defineChild('a:greenOff') declare greenOff?: OOXML
+  @defineChild('a:hue') declare hue?: OOXML
+  @defineChild('a:hueMod') declare hueMod?: OOXML
+  @defineChild('a:hueOff') declare hueOff?: OOXML
+  @defineChild('a:inv') declare inv?: OOXML
+  @defineChild('a:invGamma') declare invGamma?: OOXML
+  @defineChild('a:lum') declare lum?: OOXML
+  @defineChild('a:lumMod') declare lumMod?: OOXML
+  @defineChild('a:lumOff') declare lumOff?: OOXML
+  @defineChild('a:red') declare red?: OOXML
+  @defineChild('a:redMod') declare redMod?: OOXML
+  @defineChild('a:redOff') declare redOff?: OOXML
+  @defineChild('a:sat') declare sat?: OOXML
+  @defineChild('a:satMod') declare satMod?: OOXML
+  @defineChild('a:satOff') declare satOff?: OOXML
+  @defineChild('a:shade') declare shade?: OOXML
+  @defineChild('a:tint') declare tint?: OOXML
 
   get a(): number {
     return this.alpha?.val ?? 1
