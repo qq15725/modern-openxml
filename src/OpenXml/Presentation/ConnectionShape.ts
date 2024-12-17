@@ -1,10 +1,11 @@
+import type { GeometryPath } from '../Drawing'
+import type { SlideContext } from './_Slide'
 import type { ExtensionList } from './ExtensionList'
 import type { NonVisualConnectionShapeProperties } from './NonVisualConnectionShapeProperties'
 import type { ShapeProperties } from './ShapeProperties'
 import type { ShapeStyle } from './ShapeStyle'
 import { defineChild, defineElement, filterObjectEmptyAttr, getObjectValueByPath } from '../../core'
-import { _FillStyle, type GeometryPath } from '../Drawing'
-import { _SlideElement, type SlideElementContext } from './_SlideElement'
+import { _SlideElement } from './_SlideElement'
 
 export interface ConnectionShapeJSON {
   type: 'connectionShape'
@@ -47,8 +48,12 @@ export class ConnectionShape extends _SlideElement {
   @defineChild('p:spPr') declare spPr?: ShapeProperties
   @defineChild('p:style') declare style?: ShapeStyle
 
-  override toJSON(ctx: SlideElementContext = {}): ConnectionShapeJSON {
-    const { theme, layout, master } = ctx
+  override hasPh(): boolean {
+    return Boolean(this.nvCxnSpPr?.nvPr?.ph)
+  }
+
+  override toJSON(ctx: SlideContext = {}): ConnectionShapeJSON {
+    const { layout, master } = ctx
 
     // ph
     let _ph: ConnectionShape | undefined
@@ -68,8 +73,8 @@ export class ConnectionShape extends _SlideElement {
 
     const width = inherited('spPr.xfrm.ext.cx')
     const height = inherited('spPr.xfrm.ext.cy')
-    const background = _FillStyle.parseFill(inherited('spPr.fill'), theme)
-    const border = _FillStyle.parseFill(inherited('spPr.ln.fill'), theme)
+    const background = inherited('spPr')?.toFillJSON(ctx)
+    const border = inherited('spPr.ln')?.toFillJSON(ctx)
 
     return filterObjectEmptyAttr({
       type: 'connectionShape',
@@ -91,11 +96,11 @@ export class ConnectionShape extends _SlideElement {
         rotate: inherited('spPr.xfrm.rot'),
         scaleX: inherited('spPr.xfrm.scaleX'),
         scaleY: inherited('spPr.xfrm.scaleY'),
-        backgroundColor: background.color,
-        backgroundImage: background.image,
+        backgroundColor: background?.color,
+        backgroundImage: background?.image,
         borderWidth: inherited('spPr.ln.w'),
-        borderColor: border.color,
-        borderImage: border.image,
+        borderColor: border?.color,
+        borderImage: border?.image,
         shadow: inherited('spPr.effectLst.shadow'),
       },
     })

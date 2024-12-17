@@ -1,18 +1,12 @@
-import type { Theme } from '../Drawing'
-import type { Presentation } from './Presentation'
-import type { SlideLayout } from './SlideLayout'
-import type { SlideMaster } from './SlideMaster'
+import type { SlideContext } from './_Slide'
 import { OOXML } from '../../core'
 
-export interface SlideElementContext {
-  theme?: Theme
-  layout?: SlideLayout
-  master?: SlideMaster
-  presentation?: Presentation
-}
-
 export class _SlideElement extends OOXML {
-  override toJSON(ctx?: SlideElementContext): any {
+  hasPh(): boolean {
+    return false
+  }
+
+  override toJSON(ctx?: SlideContext): any {
     return super.toJSON(ctx)
   }
 }

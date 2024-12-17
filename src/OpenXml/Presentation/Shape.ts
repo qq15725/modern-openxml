@@ -1,14 +1,12 @@
 import type { ParagraphContent } from 'modern-text'
 import type { GeometryPath, ParagraphProperties } from '../Drawing'
-import type { SlideElementContext } from './_SlideElement'
+import type { SlideContext } from './_Slide'
 import type { NonVisualShapeProperties } from './NonVisualShapeProperties'
-import type { PlaceholderShape } from './PlaceholderShape'
 import type { ShapeProperties } from './ShapeProperties'
 import type { ShapeStyle } from './ShapeStyle'
 import type { TextBody } from './TextBody'
-import { defineChild, defineElement, defineProperty, filterObjectEmptyAttr } from '../../core'
-import { getObjectValueByPath } from '../../core/utils'
-import { _FillStyle, Run } from '../Drawing'
+import { defineChild, defineElement, filterObjectEmptyAttr, getObjectValueByPath } from '../../core'
+import { Run } from '../Drawing'
 import { _SlideElement } from './_SlideElement'
 
 export interface ShapeJSON {
@@ -49,13 +47,15 @@ export interface ShapeJSON {
 @defineElement('p:sp')
 export class Shape extends _SlideElement {
   @defineChild('p:nvSpPr') declare nvSpPr?: NonVisualShapeProperties
-  @defineChild('p:spPr') declare spPr: ShapeProperties
+  @defineChild('p:spPr') declare spPr?: ShapeProperties
   @defineChild('p:txBody') declare txBody?: TextBody
   @defineChild('p:style') declare style?: ShapeStyle
 
-  @defineProperty('nvSpPr.nvPr.ph') declare placeholder?: PlaceholderShape
+  override hasPh(): boolean {
+    return Boolean(this.nvSpPr?.nvPr?.ph)
+  }
 
-  override toJSON(ctx: SlideElementContext = {}): ShapeJSON {
+  override toJSON(ctx: SlideContext = {}): ShapeJSON {
     const { theme, layout, presentation, master } = ctx
 
     // ph
@@ -76,8 +76,8 @@ export class Shape extends _SlideElement {
 
     const width = inherited('spPr.xfrm.ext.cx')
     const height = inherited('spPr.xfrm.ext.cy')
-    const background = _FillStyle.parseFill(inherited('spPr.fill'), theme)
-    const border = _FillStyle.parseFill(inherited('spPr.ln.fill'), theme)
+    const background = inherited('spPr')?.toFillJSON(ctx)
+    const border = inherited('spPr.ln')?.toFillJSON(ctx)
 
     return filterObjectEmptyAttr({
       type: 'shape',
@@ -100,11 +100,11 @@ export class Shape extends _SlideElement {
         scaleX: inherited('spPr.xfrm.scaleX'),
         scaleY: inherited('spPr.xfrm.scaleY'),
         shadow: inherited('spPr.effectLst.shadow'),
-        backgroundColor: background.color,
-        backgroundImage: background.image,
+        backgroundColor: background?.color,
+        backgroundImage: background?.image,
         borderWidth: inherited('spPr.ln.w'),
-        borderColor: border.color,
-        borderImage: border.image,
+        borderColor: border?.color,
+        borderImage: border?.image,
         paddingLeft: inherited('txBody.bodyPr.lIns'),
         paddingTop: inherited('txBody.bodyPr.tIns'),
         paddingRight: inherited('txBody.bodyPr.rIns'),
@@ -146,12 +146,12 @@ export class Shape extends _SlideElement {
             textAlign: inheritedPPr('textAlign'),
             fragments: p.children.map((r) => {
               if (r instanceof Run) {
-                const inheritedRPr = (path: string): any => {
+                const inheritedRPr = (path = ''): any => {
                   return r.offsetGet(`rPr.${path}`)
                     ?? inheritedPPr(`defRPr.${path}`)
                 }
-                const fill = _FillStyle.parseFill(inheritedRPr('fill'), theme)
-                const border = _FillStyle.parseFill(inheritedRPr('ln.fill'), theme)
+                const fill = inheritedRPr()?.toFillJSON(ctx)
+                const border = inheritedRPr('ln')?.toFillJSON(ctx)
                 return {
                   fontWeight: inheritedRPr('fontWeight'),
                   fontStyle: inheritedRPr('fontStyle'),
@@ -161,10 +161,10 @@ export class Shape extends _SlideElement {
                   fontSize: inheritedRPr('fontSize'),
                   letterSpacing: inheritedRPr('letterSpacing'),
                   lineHeight: inheritedRPr('lineHeight'),
-                  color: fill.color,
+                  color: fill?.color,
                   borderWidth: inheritedRPr('ln.w'),
-                  borderColor: border.color,
-                  borderImage: border.image,
+                  borderColor: border?.color,
+                  borderImage: border?.image,
                   content: r.content,
                 }
               }

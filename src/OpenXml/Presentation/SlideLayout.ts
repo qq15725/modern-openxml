@@ -1,7 +1,14 @@
 import type { OOXML } from '../../core'
+import type { SlideContext, SlideElementJSON } from './_Slide'
 import type { ColorMapOverride } from './ColorMapOverride'
-import { defineAttribute, defineChild, defineElement, defineProperty } from '../../core'
+import { defineAttribute, defineChild, defineElement } from '../../core'
 import { _Slide } from './_Slide'
+
+export interface SlideLayoutJSON {
+  type: 'slideLayout'
+  masterIndex: number
+  elements: SlideElementJSON[]
+}
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.presentation.slidelayout
@@ -10,6 +17,7 @@ import { _Slide } from './_Slide'
 export class SlideLayout extends _Slide {
   path?: string
   masterPath?: string
+  masterIndex = -1
 
   attrs = {
     'xmlns:a': 'http://schemas.openxmlformats.org/drawingml/2006/main',
@@ -27,5 +35,11 @@ export class SlideLayout extends _Slide {
   @defineChild('p:clrMapOvr') declare clrMapOvr: ColorMapOverride
   @defineChild('p:hf') declare hf?: OOXML
 
-  @defineProperty() masterIndex = -1
+  override toJSON(ctx?: SlideContext): SlideLayoutJSON {
+    return {
+      type: 'slideLayout',
+      masterIndex: this.masterIndex,
+      elements: this.elements.filter(el => !el.hasPh()).map(el => el.toJSON(ctx)),
+    }
+  }
 }

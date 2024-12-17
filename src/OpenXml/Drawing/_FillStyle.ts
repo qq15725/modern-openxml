@@ -8,7 +8,7 @@ import { NoFill } from './NoFill'
 import { PatternFill } from './PatternFill'
 import { SolidFill } from './SolidFill'
 
-export interface ParsedFill {
+export interface FillJSON {
   color?: string
   image?: string
 }
@@ -31,11 +31,13 @@ export class _FillStyle extends OOXML {
   }
 
   get fillColor(): string | undefined {
-    return _FillStyle.parseFill(this.fill).color
+    return this.toFillJSON().color
   }
 
-  static parseFill(fill?: Fill, theme?: Theme): ParsedFill {
-    const parsed: ParsedFill = {}
+  toFillJSON(ctx: { theme?: Theme } = {}): FillJSON {
+    const { theme } = ctx
+    const fill = this.fill
+    const res: FillJSON = {}
     if (!(fill instanceof NoFill)) {
       if (fill instanceof GroupFill) {
         // TODO
@@ -43,7 +45,7 @@ export class _FillStyle extends OOXML {
       else {
         if (fill instanceof BlipFill) {
           // TODO
-          parsed.image = fill.blip?.rEmbed
+          res.image = fill.blip?.rEmbed
         }
         if (fill instanceof GradientFill) {
           // TODO
@@ -52,10 +54,10 @@ export class _FillStyle extends OOXML {
           // TODO
         }
         else if (fill instanceof SolidFill) {
-          parsed.color = fill.color?.toRGBAString(theme)
+          res.color = fill.color?.toRGBAString(theme)
         }
       }
     }
-    return parsed
+    return res
   }
 }

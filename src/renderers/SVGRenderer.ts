@@ -1,33 +1,29 @@
 import type { PPTX } from '../extensions'
-import type { Theme } from '../OpenXml/Drawing'
-import type { GroupShapeJSON, PictureJSON, ShapeJSON, SlideElement, SlideLayout, SlideMaster } from '../OpenXml/Presentation'
+import type {
+  GroupShapeJSON,
+  SlideElementJSON,
+} from '../OpenXml/Presentation'
 import type { XMLNode } from './XMLGen'
 import { measureText } from 'modern-text'
 import { OOXMLValue } from '../core'
-import { ConnectionShape, GraphicFrame, GroupShape, Picture, Shape } from '../OpenXml/Presentation'
 import { parseDomFromString } from '../utils'
 import { XMLGen } from './XMLGen'
 
 export interface ParseElementContext {
   read: (rid: string) => any
   parent?: GroupShapeJSON
-  theme?: Theme
-  layout?: SlideLayout
-  master?: SlideMaster
 }
 
 function parseElement(
-  element: SlideElement,
+  element: SlideElementJSON,
   ctx: ParseElementContext,
 ): XMLNode | undefined {
   const { parent, read } = ctx
 
-  const json = element.toJSON(ctx)
-
   const {
     name = '',
     style,
-  } = json
+  } = element
 
   let {
     scaleX = 1,
@@ -90,8 +86,8 @@ function parseElement(
     })
   }
 
-  if (element instanceof Shape) {
-    const { content, style, geometry } = json as ShapeJSON
+  if (element.type === 'shape') {
+    const { content, style, geometry } = element
 
     const measured = measureText({
       style: {
@@ -173,8 +169,8 @@ function parseElement(
       )
     }
   }
-  else if (element instanceof Picture) {
-    const { style, src } = json as PictureJSON
+  else if (element.type === 'picture') {
+    const { style, src } = element
     elementG.children!.push({
       tag: 'image',
       attrs: {
@@ -185,20 +181,20 @@ function parseElement(
       },
     })
   }
-  else if (element instanceof GroupShape) {
+  else if (element.type === 'groupShape') {
     elementG.children!.push(
       ...element.elements.map((child) => {
         return parseElement(child, {
           ...ctx,
-          parent: json as GroupShapeJSON,
+          parent: element,
         })
       }),
     )
   }
-  else if (element instanceof GraphicFrame) {
+  else if (element.type === 'graphicFrame') {
     // TODO
   }
-  else if (element instanceof ConnectionShape) {
+  else if (element.type === 'connectionShape') {
     // TODO
   }
 
@@ -207,7 +203,7 @@ function parseElement(
 
 export class SVGRenderer {
   render(pptx: PPTX): HTMLElement {
-    const { width, height, slides, slideMasters, slideLayouts, themes } = pptx
+    const { width, height, slides, slideMasters, slideLayouts, themes, presentation } = pptx
 
     const viewBoxHeight = height * slides.length
 
@@ -220,13 +216,18 @@ export class SVGRenderer {
         viewBox: `0 0 ${width} ${viewBoxHeight}`,
       },
       children: slides.flatMap((slide, slideIndex) => {
-        const { elements, style: slideStyle } = slide
-        const { backgroundColor } = slideStyle
         const top = height * slideIndex
         const layout = slideLayouts[slide.layoutIndex]
         const master = slideMasters[layout?.masterIndex]
         const theme = themes[master?.themeIndex]
         const items: XMLNode[] = []
+        const { elements, style: slideStyle } = slide.toJSON({
+          theme,
+          layout,
+          master,
+          presentation,
+        })
+        const { backgroundColor } = slideStyle
 
         if (master) {
           items.push({
@@ -237,13 +238,12 @@ export class SVGRenderer {
               transform: `translate(0, ${top})`,
             },
             children: [
-              ...master.elements
-                .filter(el => !el.placeholder)
+              ...master.toJSON({ theme })
+                .elements
                 .map((child) => {
                   return parseElement(
                     child,
                     {
-                      theme,
                       read: rId => pptx.readRid(rId, 'master', layout.masterIndex),
                     },
                   )
@@ -261,13 +261,12 @@ export class SVGRenderer {
               transform: `translate(0, ${top})`,
             },
             children: [
-              ...layout.elements
-                .filter(el => !el.placeholder)
+              ...layout.toJSON({ theme })
+                .elements
                 .map((child) => {
                   return parseElement(
                     child,
                     {
-                      theme,
                       read: rId => pptx.readRid(rId, 'layout', slide.layoutIndex),
                     },
                   )
@@ -299,9 +298,6 @@ export class SVGRenderer {
                 return parseElement(
                   child,
                   {
-                    theme,
-                    layout,
-                    master,
                     read: rId => pptx.readRid(rId, 'slide', slideIndex),
                   },
                 )

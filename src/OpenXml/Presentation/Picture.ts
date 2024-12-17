@@ -1,11 +1,10 @@
 import type { GeometryPath } from '../Drawing'
-import type { SlideElementContext } from './_SlideElement'
+import type { SlideContext } from './_Slide'
 import type { BlipFill } from './BlipFill'
 import type { NonVisualPictureProperties } from './NonVisualPictureProperties'
 import type { ShapeProperties } from './ShapeProperties'
 import type { ShapeStyle } from './ShapeStyle'
 import { defineChild, defineElement, filterObjectEmptyAttr, getObjectValueByPath } from '../../core'
-import { _FillStyle } from '../Drawing'
 import { _SlideElement } from './_SlideElement'
 
 export interface PictureJSON {
@@ -36,13 +35,17 @@ export interface PictureJSON {
  */
 @defineElement('p:pic')
 export class Picture extends _SlideElement {
-  @defineChild('p:blipFill') declare blipFill: BlipFill
-  @defineChild('p:nvPicPr') declare nvPicPr: NonVisualPictureProperties
-  @defineChild('p:spPr') declare spPr: ShapeProperties
-  @defineChild('p:style') declare style: ShapeStyle
+  @defineChild('p:blipFill') declare blipFill?: BlipFill
+  @defineChild('p:nvPicPr') declare nvPicPr?: NonVisualPictureProperties
+  @defineChild('p:spPr') declare spPr?: ShapeProperties
+  @defineChild('p:style') declare style?: ShapeStyle
 
-  override toJSON(ctx: SlideElementContext = {}): PictureJSON {
-    const { theme, layout, master } = ctx
+  override hasPh(): boolean {
+    return Boolean(this.nvPicPr?.nvPr?.ph)
+  }
+
+  override toJSON(ctx: SlideContext = {}): PictureJSON {
+    const { layout, master } = ctx
 
     // ph
     let _ph: Picture | undefined
@@ -62,8 +65,8 @@ export class Picture extends _SlideElement {
 
     const width = inherited('spPr.xfrm.ext.cx')
     const height = inherited('spPr.xfrm.ext.cy')
-    const background = _FillStyle.parseFill(inherited('spPr.fill'), theme)
-    const border = _FillStyle.parseFill(inherited('spPr.ln.fill'), theme)
+    const background = inherited('spPr')?.toFillJSON(ctx)
+    const border = inherited('spPr.ln')?.toFillJSON(ctx)
 
     return filterObjectEmptyAttr({
       type: 'picture',
@@ -86,11 +89,11 @@ export class Picture extends _SlideElement {
         rotate: inherited('spPr.xfrm.rot'),
         scaleX: inherited('spPr.xfrm.scaleX'),
         scaleY: inherited('spPr.xfrm.scaleY'),
-        backgroundColor: background.color,
-        backgroundImage: background.image,
+        backgroundColor: background?.color,
+        backgroundImage: background?.image,
         borderWidth: inherited('spPr.ln.w'),
-        borderColor: border.color,
-        borderImage: border.image,
+        borderColor: border?.color,
+        borderImage: border?.image,
         shadow: inherited('spPr.effectLst.shadow'),
       },
     })

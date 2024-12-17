@@ -1,10 +1,9 @@
-import type { SlideElement } from './_Slide'
+import type { SlideContext, SlideElement, SlideElementJSON } from './_Slide'
 import type { GroupShapeProperties } from './GroupShapeProperties'
 import type { NonVisualGroupShapeProperties } from './NonVisualGroupShapeProperties'
 import type { Shape } from './Shape'
 import { defineChild, defineElement, filterObjectEmptyAttr, OOXML } from '../../core'
-import { _FillStyle } from '../Drawing'
-import { _SlideElement, type SlideElementContext } from './_SlideElement'
+import { _SlideElement } from './_SlideElement'
 
 export interface GroupShapeJSON {
   type: 'groupShape'
@@ -28,6 +27,7 @@ export interface GroupShapeJSON {
     scaleY?: number
     shadow?: string
   }
+  elements: SlideElementJSON[]
 }
 
 /**
@@ -57,8 +57,12 @@ export class GroupShape extends _SlideElement {
       .filter(Boolean) as any[]
   }
 
-  override toJSON(ctx: SlideElementContext = {}): GroupShapeJSON {
-    const { theme, layout, master } = ctx
+  override hasPh(): boolean {
+    return Boolean(this.nvGrpSpPr?.nvPr?.ph)
+  }
+
+  override toJSON(ctx: SlideContext = {}): GroupShapeJSON {
+    const { layout, master } = ctx
 
     // ph
     let _ph: Shape | undefined
@@ -74,8 +78,8 @@ export class GroupShape extends _SlideElement {
 
     const width = inherited('grpSpPr.xfrm.ext.cx')
     const height = inherited('grpSpPr.xfrm.ext.cy')
-    const background = _FillStyle.parseFill(inherited('grpSpPr.fill'), theme)
-    const border = _FillStyle.parseFill(inherited('grpSpPr.ln.fill'), theme)
+    const background = inherited('grpSpPr')?.toFillJSON(ctx)
+    const border = inherited('grpSpPr.ln')?.toFillJSON(ctx)
 
     return filterObjectEmptyAttr({
       type: 'groupShape',
@@ -93,13 +97,14 @@ export class GroupShape extends _SlideElement {
         rotate: inherited('grpSpPr.xfrm.rot'),
         scaleX: inherited('grpSpPr.xfrm.scaleX'),
         scaleY: inherited('grpSpPr.xfrm.scaleY'),
-        backgroundColor: background.color,
-        backgroundImage: background.image,
+        backgroundColor: background?.color,
+        backgroundImage: background?.image,
         borderWidth: inherited('grpSpPr.ln.w'),
-        borderColor: border.color,
-        borderImage: border.image,
+        borderColor: border?.color,
+        borderImage: border?.image,
         shadow: inherited('grpSpPr.effectLst.shadow'),
       },
+      elements: this.elements.map(el => el.toJSON(ctx)),
     })
   }
 }

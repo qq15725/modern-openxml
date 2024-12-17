@@ -1,9 +1,10 @@
 import type { OOXML } from '../../core'
 import type { Transform2D } from '../Drawing'
+import type { SlideContext } from './_Slide'
 import type { ExtensionList } from './ExtensionList'
 import type { NonVisualGraphicFrameProperties } from './NonVisualGraphicFrameProperties'
 import { defineChild, defineElement, filterObjectEmptyAttr } from '../../core'
-import { _SlideElement, type SlideElementContext } from './_SlideElement'
+import { _SlideElement } from './_SlideElement'
 
 export interface GraphicFrameJSON {
   type: 'graphicFrame'
@@ -30,7 +31,11 @@ export class GraphicFrame extends _SlideElement {
   @defineChild('p:nvGraphicFramePr') declare nvGraphicFramePr?: NonVisualGraphicFrameProperties
   @defineChild('p:xfrm') declare xfrm?: Transform2D
 
-  override toJSON(ctx: SlideElementContext = {}): GraphicFrameJSON {
+  override hasPh(): boolean {
+    return Boolean(this.nvGraphicFramePr?.nvPr?.ph)
+  }
+
+  override toJSON(ctx: SlideContext = {}): GraphicFrameJSON {
     const { layout, master } = ctx
 
     // ph

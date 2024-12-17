@@ -1,15 +1,38 @@
+import type { Theme } from '../Drawing'
 import type { CommonSlideData } from './CommonSlideData'
-import type { ConnectionShape } from './ConnectionShape'
+import type { ConnectionShape, ConnectionShapeJSON } from './ConnectionShape'
 import type { ExtensionList } from './ExtensionList'
-import type { GraphicFrame } from './GraphicFrame'
-import type { GroupShape } from './GroupShape'
-import type { Picture } from './Picture'
+import type { GraphicFrame, GraphicFrameJSON } from './GraphicFrame'
+import type { GroupShape, GroupShapeJSON } from './GroupShape'
+import type { Picture, PictureJSON } from './Picture'
 import type { PlaceholderShape } from './PlaceholderShape'
-import type { Shape } from './Shape'
+import type { Presentation } from './Presentation'
+import type { Shape, ShapeJSON } from './Shape'
+import type { SlideLayout } from './SlideLayout'
+import type { SlideMaster } from './SlideMaster'
 import type { Timing } from './Timing'
 import { defineChild, defineProperty, OOXML } from '../../core'
 
-export type SlideElement = Shape | GroupShape | Picture | ConnectionShape | GraphicFrame
+export interface SlideContext {
+  theme?: Theme
+  layout?: SlideLayout
+  master?: SlideMaster
+  presentation?: Presentation
+}
+
+export type SlideElement =
+  | Shape
+  | GroupShape
+  | Picture
+  | ConnectionShape
+  | GraphicFrame
+
+export type SlideElementJSON =
+  | ShapeJSON
+  | GroupShapeJSON
+  | PictureJSON
+  | ConnectionShapeJSON
+  | GraphicFrameJSON
 
 export class _Slide extends OOXML {
   @defineChild('p:cSld') declare cSld: CommonSlideData
