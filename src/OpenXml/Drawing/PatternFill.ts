@@ -1,3 +1,4 @@
+import type { FillContext, FillJSON } from './_FillList'
 import type { BackgroundColor } from './BackgroundColor'
 import type { ForegroundColor } from './ForegroundColor'
 import { defineAttribute, defineChild, defineElement, OOXML } from '../../core'
@@ -11,4 +12,10 @@ export class PatternFill extends OOXML {
 
   @defineChild('a:bgClr') declare bgClr?: BackgroundColor
   @defineChild('a:fgClr') declare fgClr?: ForegroundColor
+
+  override toJSON(_ctx?: FillContext): FillJSON {
+    return {
+      // TODO
+    }
+  }
 }

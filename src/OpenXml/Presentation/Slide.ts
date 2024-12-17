@@ -32,7 +32,7 @@ export class Slide extends _Slide {
   @defineChild('p:clrMapOvr') declare clrMapOvr: ColorMapOverride
 
   override toJSON(ctx?: SlideContext): SlideJSON {
-    const background = this.cSld.bg?.bgPr?.toFillJSON(ctx)
+    const background = this.cSld.bg?.bgPr?.fill?.toJSON(ctx)
     return filterObjectEmptyAttr({
       type: 'slide',
       layoutIndex: this.layoutIndex,

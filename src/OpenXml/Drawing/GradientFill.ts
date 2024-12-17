@@ -1,3 +1,4 @@
+import type { FillContext, FillJSON } from './_FillList'
 import type { GradientStopList } from './GradientStopList'
 import type { LinearGradientFill } from './LinearGradientFill'
 import type { Path } from './Path'
@@ -13,4 +14,10 @@ export class GradientFill extends OOXML {
   @defineChild('a:lin') lin?: LinearGradientFill
   @defineChild('a:path') path?: Path
   @defineChild('a:tileRect') tileRect?: TileRectangle
+
+  override toJSON(_ctx?: FillContext): FillJSON {
+    return {
+      // TODO
+    }
+  }
 }

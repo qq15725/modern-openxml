@@ -73,8 +73,8 @@ export class ConnectionShape extends _SlideElement {
 
     const width = inherited('spPr.xfrm.ext.cx')
     const height = inherited('spPr.xfrm.ext.cy')
-    const background = inherited('spPr')?.toFillJSON(ctx)
-    const border = inherited('spPr.ln')?.toFillJSON(ctx)
+    const background = inherited('spPr.fill')?.toJSON(ctx)
+    const border = inherited('spPr.ln.fill')?.toJSON(ctx)
 
     return filterObjectEmptyAttr({
       type: 'connectionShape',

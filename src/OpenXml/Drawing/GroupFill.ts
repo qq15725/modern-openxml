@@ -1,3 +1,4 @@
+import type { FillContext, FillJSON } from './_FillList'
 import { defineElement, OOXML } from '../../core'
 
 /**
@@ -5,5 +6,9 @@ import { defineElement, OOXML } from '../../core'
  */
 @defineElement('a:grpFill')
 export class GroupFill extends OOXML {
-  //
+  override toJSON(_ctx?: FillContext): FillJSON {
+    return {
+      // TODO
+    }
+  }
 }

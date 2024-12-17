@@ -1,3 +1,4 @@
+import type { FillContext, FillJSON } from './_FillList'
 import type { Blip } from './Blip'
 import type { SourceRectangle } from './SourceRectangle'
 import type { Stretch } from './Stretch'
@@ -27,5 +28,11 @@ export class BlipFill extends OOXML {
       // TODO
     }
     return canvas
+  }
+
+  override toJSON(_ctx?: FillContext): FillJSON {
+    return {
+      image: this.blip?.rEmbed,
+    }
   }
 }

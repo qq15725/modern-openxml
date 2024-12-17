@@ -1,17 +1,11 @@
 import type { Fill } from './_FillList'
-import type { Theme } from './Theme'
+import type { BlipFill } from './BlipFill'
+import type { GradientFill } from './GradientFill'
+import type { GroupFill } from './GroupFill'
+import type { NoFill } from './NoFill'
+import type { PatternFill } from './PatternFill'
+import type { SolidFill } from './SolidFill'
 import { defineChild, OOXML } from '../../core'
-import { BlipFill } from './BlipFill'
-import { GradientFill } from './GradientFill'
-import { GroupFill } from './GroupFill'
-import { NoFill } from './NoFill'
-import { PatternFill } from './PatternFill'
-import { SolidFill } from './SolidFill'
-
-export interface FillJSON {
-  color?: string
-  image?: string
-}
 
 export class _FillStyle extends OOXML {
   @defineChild('a:noFill') declare noFill?: NoFill
@@ -31,33 +25,10 @@ export class _FillStyle extends OOXML {
   }
 
   get fillColor(): string | undefined {
-    return this.toFillJSON().color
+    return this.fill?.toJSON().color
   }
 
-  toFillJSON(ctx: { theme?: Theme } = {}): FillJSON {
-    const { theme } = ctx
-    const fill = this.fill
-    const res: FillJSON = {}
-    if (!(fill instanceof NoFill)) {
-      if (fill instanceof GroupFill) {
-        // TODO
-      }
-      else {
-        if (fill instanceof BlipFill) {
-          // TODO
-          res.image = fill.blip?.rEmbed
-        }
-        if (fill instanceof GradientFill) {
-          // TODO
-        }
-        else if (fill instanceof PatternFill) {
-          // TODO
-        }
-        else if (fill instanceof SolidFill) {
-          res.color = fill.color?.toRGBAString(theme)
-        }
-      }
-    }
-    return res
+  get fillImage(): string | undefined {
+    return this.fill?.toJSON().image
   }
 }

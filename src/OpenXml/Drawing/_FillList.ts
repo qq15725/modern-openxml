@@ -4,9 +4,25 @@ import type { GroupFill } from './GroupFill'
 import type { NoFill } from './NoFill'
 import type { PatternFill } from './PatternFill'
 import type { SolidFill } from './SolidFill'
+import type { Theme } from './Theme'
 import { OOXML } from '../../core'
 
-export type Fill = BlipFill | GradientFill | GroupFill | NoFill | PatternFill | SolidFill
+export type Fill =
+  | BlipFill
+  | GradientFill
+  | GroupFill
+  | NoFill
+  | PatternFill
+  | SolidFill
+
+export interface FillContext {
+  theme?: Theme
+}
+
+export interface FillJSON {
+  color?: string
+  image?: string
+}
 
 export class _FillList extends OOXML {
   get children(): Fill[] {

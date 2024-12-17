@@ -78,8 +78,8 @@ export class GroupShape extends _SlideElement {
 
     const width = inherited('grpSpPr.xfrm.ext.cx')
     const height = inherited('grpSpPr.xfrm.ext.cy')
-    const background = inherited('grpSpPr')?.toFillJSON(ctx)
-    const border = inherited('grpSpPr.ln')?.toFillJSON(ctx)
+    const background = inherited('grpSpPr.fill')?.toJSON(ctx)
+    const border = inherited('grpSpPr.ln.fill')?.toJSON(ctx)
 
     return filterObjectEmptyAttr({
       type: 'groupShape',

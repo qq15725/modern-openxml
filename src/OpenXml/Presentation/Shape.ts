@@ -76,8 +76,8 @@ export class Shape extends _SlideElement {
 
     const width = inherited('spPr.xfrm.ext.cx')
     const height = inherited('spPr.xfrm.ext.cy')
-    const background = inherited('spPr')?.toFillJSON(ctx)
-    const border = inherited('spPr.ln')?.toFillJSON(ctx)
+    const background = inherited('spPr.fill')?.toJSON(ctx)
+    const border = inherited('spPr.ln.fill')?.toJSON(ctx)
 
     return filterObjectEmptyAttr({
       type: 'shape',
@@ -150,8 +150,8 @@ export class Shape extends _SlideElement {
                   return r.offsetGet(`rPr.${path}`)
                     ?? inheritedPPr(`defRPr.${path}`)
                 }
-                const fill = inheritedRPr()?.toFillJSON(ctx)
-                const border = inheritedRPr('ln')?.toFillJSON(ctx)
+                const fill = inheritedRPr('fill')?.toJSON(ctx)
+                const border = inheritedRPr('ln.fill')?.toJSON(ctx)
                 return {
                   fontWeight: inheritedRPr('fontWeight'),
                   fontStyle: inheritedRPr('fontStyle'),
