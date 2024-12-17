@@ -1,7 +1,7 @@
 import type {
-  _Fill,
+  EffectList,
   EffectReference,
-  EffectStyle,
+  Fill,
   FillReference,
   Font,
   FontReference,
@@ -12,9 +12,9 @@ import type {
 import { defineChild, defineElement, OOXML } from '../../core'
 
 export interface ParsedShapeStyle {
-  fill?: _Fill
+  fill?: Fill
   ln?: Outline
-  effect?: EffectStyle
+  effectLst?: EffectList
   font?: Font
 }
 
@@ -28,13 +28,15 @@ export class ShapeStyle extends OOXML {
   @defineChild('a:effectRef') declare effectRef?: EffectReference
   @defineChild('a:fontRef') declare fontRef?: FontReference
 
-  parse(theme: Theme): ParsedShapeStyle {
+  parse(ctx: { theme?: Theme }): ParsedShapeStyle {
+    const { theme } = ctx
     const { lnRef, fillRef, effectRef, fontRef } = this
     return {
-      fill: fillRef ? theme.fillStyleLst?.children[fillRef.idx] : undefined,
-      ln: lnRef ? theme.lnStyleLst?.children[lnRef.idx] : undefined,
-      effect: effectRef ? theme.effectStyleLst?.children[effectRef.idx] : undefined,
-      font: fontRef ? theme.majorFonts?.children[fontRef.idx] : undefined,
+      fill: fillRef ? theme?.fillStyleLst?.children[fillRef.idx] : undefined,
+      ln: lnRef ? theme?.lnStyleLst?.children[lnRef.idx] : undefined,
+      ...(effectRef ? theme?.effectStyleLst?.children[effectRef.idx] : undefined),
+      // TODO
+      // font: fontRef ? theme.majorFonts?.children[fontRef.idx] : undefined,
     }
   }
 }

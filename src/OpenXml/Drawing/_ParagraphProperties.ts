@@ -34,4 +34,21 @@ export class _ParagraphProperties extends OOXML {
   @defineChild('a:spcAft') declare spcAft?: OOXML
   @defineChild('a:spcBef') declare spcBef?: OOXML
   @defineChild('a:tabLst') declare tabLst?: OOXML
+
+  get textAlign(): 'center' | 'start' | 'end' | undefined {
+    switch (this.algn) {
+      case 'dist':
+      case 'just':
+      case 'justLow':
+      case 'l':
+      case 'thaiDist':
+        return 'start'
+      case 'ctr':
+        return 'center'
+      case 'r':
+        return 'end'
+      default:
+        return undefined
+    }
+  }
 }

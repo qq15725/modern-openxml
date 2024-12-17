@@ -5,6 +5,7 @@ import type { EffectStyleList } from './EffectStyleList'
 import type { ExtensionList } from './ExtensionList'
 import type { FillStyleList } from './FillStyleList'
 import type { LineStyleList } from './LineStyleList'
+import type { ObjectDefaults } from './ObjectDefaults'
 import type { ThemeElements } from './ThemeElements'
 import { defineChild, defineElement, defineProperty, OOXML } from '../../core'
 
@@ -23,7 +24,7 @@ export class Theme extends OOXML {
   @defineChild('a:custClrLst') declare custClrLst?: CustomColorList
   @defineChild('a:extLst') declare extLst?: ExtensionList
   @defineChild('a:extraClrSchemeLst') declare extraClrSchemeLst?: OOXML
-  @defineChild('a:objectDefaults') declare objectDefaults?: OOXML
+  @defineChild('a:objectDefaults') declare objectDefaults?: ObjectDefaults
   @defineChild('a:themeElements') declare themeElements?: ThemeElements
 
   get clrScheme(): ColorScheme | undefined {

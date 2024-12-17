@@ -68,3 +68,21 @@ export function deepMerge(
   }
   return out
 }
+
+export function filterObjectEmptyAttr(obj: any): any {
+  if (typeof obj !== 'object' || !obj) {
+    return obj
+  }
+  if (Array.isArray(obj)) {
+    return obj.map(v => filterObjectEmptyAttr(v))
+  }
+  const newObj: Record<string, any> = {}
+  for (const key in obj) {
+    const value = obj[key]
+    if (value === undefined || value === null) {
+      continue
+    }
+    newObj[key] = filterObjectEmptyAttr(value)
+  }
+  return newObj
+}

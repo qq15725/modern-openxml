@@ -296,19 +296,19 @@ export class OOXML {
     return this.element.outerHTML
   }
 
-  toJSON(): any {
+  toJSON(ctx?: any): any {
     const definition = this.definition()
     const properties: Record<string, any> = {}
     if (definition?.properties) {
       Object.values(definition.properties).forEach((property) => {
         let value = this.offsetGet(property.alias)
         if (value instanceof OOXML) {
-          value = value.toJSON()
+          value = value.toJSON(ctx)
         }
         else if (Array.isArray(value)) {
           value = value.map((v) => {
             if (v instanceof OOXML) {
-              return v.toJSON()
+              return v.toJSON(ctx)
             }
             return v
           })

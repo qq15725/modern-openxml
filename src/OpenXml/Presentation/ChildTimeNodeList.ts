@@ -1,3 +1,6 @@
+import type { Animate } from './Animate'
+import type { AnimateColor } from './AnimateColor'
+import type { AnimateEffect } from './AnimateEffect'
 import type { SequenceTimeNode } from './SequenceTimeNode'
 import { defineChild, defineElement, OOXML } from '../../core'
 
@@ -6,9 +9,9 @@ import { defineChild, defineElement, OOXML } from '../../core'
  */
 @defineElement('p:childTnLst')
 export class ChildTimeNodeList extends OOXML {
-  @defineChild('p:anim') declare anim?: OOXML
-  @defineChild('p:animClr') declare animClr?: OOXML
-  @defineChild('p:animEffect') declare animEffect?: OOXML
+  @defineChild('p:anim') declare anim?: Animate
+  @defineChild('p:animClr') declare animClr?: AnimateColor
+  @defineChild('p:animEffect') declare animEffect?: AnimateEffect
   @defineChild('p:animMotion') declare animMotion?: OOXML
   @defineChild('p:animRot') declare animRot?: OOXML
   @defineChild('p:animScale') declare animScale?: OOXML

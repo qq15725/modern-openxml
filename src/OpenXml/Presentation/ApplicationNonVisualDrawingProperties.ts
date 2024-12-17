@@ -7,8 +7,8 @@ import { defineAttribute, defineChild, defineElement, OOXML } from '../../core'
  */
 @defineElement('p:nvPr')
 export class ApplicationNonVisualDrawingProperties extends OOXML {
-  @defineAttribute('isPhoto') declare isPhoto?: boolean
-  @defineAttribute('userDrawn') declare userDrawn?: boolean
+  @defineAttribute('isPhoto', 'boolean') declare isPhoto?: boolean
+  @defineAttribute('userDrawn', 'boolean') declare userDrawn?: boolean
 
   @defineChild('a:audioCd') declare audioCd?: OOXML
   @defineChild('a:audioFile') declare audioFile?: AudioFromFile

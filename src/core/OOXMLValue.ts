@@ -38,8 +38,12 @@ export class OOXMLValue {
         return Number(value) / 60000
       case 'fontSize':
         return Number(value) / 100
+      case 'int':
+      case 'unsignedInt':
       case 'number':
       case 'SByteValue':
+      case 'ST_TLTimeNodeID':
+      case 'ST_ShapeID':
         return Number(value)
       case 'string':
       case 'HexBinaryValue':
@@ -56,6 +60,7 @@ export class OOXMLValue {
       case 'percentage':
       case 'ST_Percentage':
       case 'CT_PositiveFixedPercentage':
+      case 'ST_PositiveFixedPercentage':
       case 'rate':
         return Number(value) / 100000
       case 'ST_TextSpacingPercentOrPercentString':

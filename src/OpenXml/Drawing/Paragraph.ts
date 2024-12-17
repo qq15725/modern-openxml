@@ -13,7 +13,6 @@ export class Paragraph extends OOXML {
   @defineChild('a:fld') declare fld?: Field
   @defineChild('a:pPr') declare pPr?: ParagraphProperties
 
-  @defineProperty() style = new _ParagraphStyle(this)
   @defineProperty('pPr.lvl') declare level?: number
   @defineProperty('pPr.fontAlgn') declare fontAlign?: string
   @defineProperty('_children') declare children: (Break | Run | EndParagraphRunProperties)[]
@@ -31,38 +30,5 @@ export class Paragraph extends OOXML {
           return OOXML.make(element)
       }
     }).filter(Boolean) as any
-  }
-}
-
-export class _ParagraphStyle extends OOXML {
-  @defineProperty('_parent.pPr.marL') declare marginLeft?: number
-  @defineProperty('_parent.pPr.marR') declare marginRight?: number
-  @defineProperty('_parent.pPr.indent') declare textIndent: number
-  @defineProperty('_parent.pPr.lnSpc.spcPct.val') declare lineHeight?: number
-  @defineProperty('_textAlign') declare textAlign?: 'center' | 'start' | 'end'
-
-  get rightToLeft(): boolean | undefined { return this._parent.pPr?.rtl }
-
-  protected get _textAlign(): 'center' | 'start' | 'end' | undefined {
-    switch (this._parent.pPr?.algn) {
-      case 'dist':
-      case 'just':
-      case 'justLow':
-      case 'l':
-      case 'thaiDist':
-        return 'start'
-      case 'ctr':
-        return 'center'
-      case 'r':
-        return 'end'
-      default:
-        return undefined
-    }
-  }
-
-  constructor(
-    protected _parent: Paragraph,
-  ) {
-    super()
   }
 }

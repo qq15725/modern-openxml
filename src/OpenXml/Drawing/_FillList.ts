@@ -6,10 +6,10 @@ import type { PatternFill } from './PatternFill'
 import type { SolidFill } from './SolidFill'
 import { OOXML } from '../../core'
 
-export type _Fill = BlipFill | GradientFill | GroupFill | NoFill | PatternFill | SolidFill
+export type Fill = BlipFill | GradientFill | GroupFill | NoFill | PatternFill | SolidFill
 
 export class _FillList extends OOXML {
-  get children(): _Fill[] {
+  get children(): Fill[] {
     return Array.from(this.element.children).map((element) => {
       switch (element.tagName) {
         case 'a:blipFill':

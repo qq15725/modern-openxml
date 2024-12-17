@@ -1,6 +1,6 @@
-import type { _Fill } from './_FillList'
+import type { Fill } from './_FillList'
 import type { Theme } from './Theme'
-import { OOXML } from '../../core'
+import { defineChild, OOXML } from '../../core'
 import { BlipFill } from './BlipFill'
 import { GradientFill } from './GradientFill'
 import { GroupFill } from './GroupFill'
@@ -14,26 +14,29 @@ export interface ParsedFill {
 }
 
 export class _FillStyle extends OOXML {
-  get fill(): _Fill | undefined {
-    const element = this.element.children[0]
-    if (element) {
-      switch (element?.tagName) {
-        case 'a:noFill':
-        case 'a:blipFill':
-        case 'a:gradFill':
-        case 'a:grpFill':
-        case 'a:pattFill':
-        case 'a:solidFill':
-        default:
-          return OOXML.make(element)
-      }
-    }
-    return undefined
+  @defineChild('a:noFill') declare noFill?: NoFill
+  @defineChild('a:blipFill') declare blipFill?: BlipFill
+  @defineChild('a:gradFill') declare gradFill?: GradientFill
+  @defineChild('a:grpFill') declare grpFill?: GroupFill
+  @defineChild('a:pattFill') declare pattFill?: PatternFill
+  @defineChild('a:solidFill') declare solidFill?: SolidFill
+
+  get fill(): Fill | undefined {
+    return this.noFill
+      ?? this.blipFill
+      ?? this.gradFill
+      ?? this.grpFill
+      ?? this.pattFill
+      ?? this.solidFill
   }
 
-  static parseFill(fill?: _Fill, theme?: Theme): ParsedFill {
+  get fillColor(): string | undefined {
+    return _FillStyle.parseFill(this.fill).color
+  }
+
+  static parseFill(fill?: Fill, theme?: Theme): ParsedFill {
     const parsed: ParsedFill = {}
-    if (fill instanceof NoFill) {
+    if (!(fill instanceof NoFill)) {
       if (fill instanceof GroupFill) {
         // TODO
       }

@@ -4,6 +4,7 @@ import type { ExtensionList } from './ExtensionList'
 import type { GraphicFrame } from './GraphicFrame'
 import type { GroupShape } from './GroupShape'
 import type { Picture } from './Picture'
+import type { PlaceholderShape } from './PlaceholderShape'
 import type { Shape } from './Shape'
 import type { Timing } from './Timing'
 import { defineChild, defineProperty, OOXML } from '../../core'
@@ -37,5 +38,9 @@ export class _Slide extends OOXML {
         }
       })
       .filter(Boolean) as any[]
+  }
+
+  findPh(ph: PlaceholderShape): SlideElement | undefined {
+    return this.elements?.find(el => ph.isEqual(el))
   }
 }

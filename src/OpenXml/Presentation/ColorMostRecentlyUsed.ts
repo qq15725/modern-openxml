@@ -1,6 +1,4 @@
-import type { HslColor, PresetColor, RgbColorModelHex, SystemColor } from '../Drawing'
-import type { RgbColorModelPercentage } from '../Drawing/RgbColorModelPercentage'
-import type { SchemeColor } from '../Drawing/SchemeColor'
+import type { HslColor, PresetColor, RgbColorModelHex, RgbColorModelPercentage, SchemeColor, SystemColor } from '../Drawing'
 import { defineElement, OOXML } from '../../core'
 
 /**

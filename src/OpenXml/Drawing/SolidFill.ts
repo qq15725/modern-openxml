@@ -6,5 +6,5 @@ import { _ColorStyle } from './_ColorStyle'
  */
 @defineElement('a:solidFill')
 export class SolidFill extends _ColorStyle {
-  //
+
 }

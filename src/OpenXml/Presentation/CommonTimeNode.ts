@@ -1,4 +1,5 @@
 import type { ChildTimeNodeList } from './ChildTimeNodeList'
+import type { StartConditionList } from './StartConditionList'
 import { defineAttribute, defineChild, defineElement, OOXML } from '../../core'
 
 /**
@@ -6,34 +7,37 @@ import { defineAttribute, defineChild, defineElement, OOXML } from '../../core'
  */
 @defineElement('p:cTn')
 export class CommonTimeNode extends OOXML {
-  @defineAttribute('accel') declare accel?: any
-  @defineAttribute('afterEffect') declare afterEffect?: any
-  @defineAttribute('autoRev') declare autoRev?: any
-  @defineAttribute('bldLvl') declare bldLvl?: any
-  @defineAttribute('decel') declare decel?: any
-  @defineAttribute('display') declare display?: any
-  @defineAttribute('dur') declare dur?: any
-  @defineAttribute('evtFilter') declare evtFilter?: any
-  @defineAttribute('fill') declare fill?: any
-  @defineAttribute('grpId') declare grpId?: any
-  @defineAttribute('id') declare id?: any
-  @defineAttribute('masterRel') declare masterRel?: any
-  @defineAttribute('nodePh') declare nodePh?: any
-  @defineAttribute('nodeType') declare nodeType?: string
-  @defineAttribute('presetClass') declare presetClass?: any
-  @defineAttribute('presetID') declare presetID?: any
-  @defineAttribute('presetSubtype') declare presetSubtype?: any
-  @defineAttribute('repeatCount') declare repeatCount?: any
-  @defineAttribute('repeatDur') declare repeatDur?: any
-  @defineAttribute('restart') declare restart?: any
-  @defineAttribute('spd') declare spd?: any
-  @defineAttribute('syncBehavior') declare syncBehavior?: any
-  @defineAttribute('tmFilter') declare tmFilter?: any
+  @defineAttribute('accel', 'ST_PositiveFixedPercentage') declare accel?: number
+  @defineAttribute('afterEffect', 'boolean') declare afterEffect?: boolean
+  @defineAttribute('autoRev', 'boolean') declare autoRev?: boolean
+  @defineAttribute('bldLvl', 'int') declare bldLvl?: number
+  @defineAttribute('decel', 'ST_PositiveFixedPercentage') declare decel?: number
+  @defineAttribute('display', 'boolean') declare display?: boolean
+  // 'indefinite' | 'prev' | 0 | number
+  @defineAttribute('dur', 'ST_TLTime') declare dur?: string
+  @defineAttribute('evtFilter') declare evtFilter?: string
+  @defineAttribute('fill', 'ST_TLTimeNodeFillType') declare fill?: 'none' | 'freeze' | 'hold' | 'transition'
+  @defineAttribute('grpId', 'unsignedInt') declare grpId?: number
+  @defineAttribute('id', 'ST_TLTimeNodeID') declare id?: number
+  @defineAttribute('masterRel', 'ST_TLTimeNodeMasterRelation') declare masterRel?: 'none' | 'sameClick' | 'lastClick' | 'nextClick'
+  @defineAttribute('nodePh', 'boolean') declare nodePh?: boolean
+  @defineAttribute('nodeType', 'ST_TLTimeNodeType') declare nodeType?: 'tm' | 'par' | 'seq' | 'excl' | 'anim' | 'clickEffect' | 'withEffect' | 'afterEffect' | 'repeat' | 'childDefault'
+  @defineAttribute('presetClass', 'ST_TLTimeNodePresetClassType') declare presetClass?: 'entr' | 'exit' | 'emph' | 'path' | 'verb'
+  @defineAttribute('presetID', 'int') declare presetID?: number
+  @defineAttribute('presetSubtype', 'int') declare presetSubtype?: number
+  // 'indefinite' | 'prev' | 0 | number
+  @defineAttribute('repeatCount', 'ST_TLTime') declare repeatCount?: any
+  // 'indefinite' | 'prev' | 0 | number
+  @defineAttribute('repeatDur', 'ST_TLTime') declare repeatDur?: any
+  @defineAttribute('restart', 'ST_TLTimeNodeRestartType') declare restart?: 'never' | 'whenNotActive' | 'always'
+  @defineAttribute('spd', 'ST_Percentage') declare spd?: number
+  @defineAttribute('syncBehavior', 'ST_TLTimeNodeSyncType') declare syncBehavior?: 'start' | 'end' | 'mid' | 'after' | 'before'
+  @defineAttribute('tmFilter') declare tmFilter?: string
 
   @defineChild('p:childTnLst') declare childTnLst?: ChildTimeNodeList
   @defineChild('p:endCondLst') declare endCondLst?: OOXML
   @defineChild('p:endSync') declare endSync?: OOXML
   @defineChild('p:iterate') declare iterate?: OOXML
-  @defineChild('p:stCondLst') declare stCondLst?: OOXML
+  @defineChild('p:stCondLst') declare stCondLst?: StartConditionList
   @defineChild('p:subTnLst') declare subTnLst?: OOXML
 }

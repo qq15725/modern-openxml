@@ -9,7 +9,7 @@ import type { LatinFont } from './LatinFont'
 import type { LineSpacing } from './LineSpacing'
 import type { Outline } from './Outline'
 import type { SymbolFont } from './SymbolFont'
-import { defineAttribute, defineChild } from '../../core'
+import { defineAttribute, defineChild, defineProperty } from '../../core'
 import { _FillStyle } from './_FillStyle'
 
 export class _RunProperties extends _FillStyle {
@@ -50,4 +50,54 @@ export class _RunProperties extends _FillStyle {
   @defineChild('a:uLn') declare uLn?: OOXML
   @defineChild('a:uLnTx') declare uLnTx?: OOXML
   @defineChild('a:lnSpc') declare lnSpc?: LineSpacing
+
+  @defineProperty('sz') declare fontSize?: number
+  @defineProperty('spc') declare letterSpacing?: number
+  @defineProperty('lnSpc.spcPct.val') declare lineHeight?: number
+
+  get fontFamily(): string | undefined {
+    return this.cs?.typeface
+      ?? this.ea?.typeface
+      ?? this.latin?.typeface
+      ?? this.sym?.typeface
+  }
+
+  get fontWeight(): 700 | undefined {
+    switch (this.b) {
+      case true:
+        return 700
+      default:
+        return undefined
+    }
+  }
+
+  get fontStyle(): 'italic' | undefined {
+    switch (this.i) {
+      case true:
+        return 'italic'
+      default:
+        return undefined
+    }
+  }
+
+  get textTransform(): 'uppercase' | 'lowercase' | undefined {
+    switch (this.cap) {
+      case 'all':
+        return 'uppercase'
+      case 'small':
+        return 'lowercase'
+      case 'none':
+      default:
+        return undefined
+    }
+  }
+
+  get textDecoration(): 'underline' | undefined {
+    if (this.u && this.u !== 'none') {
+      return 'underline'
+    }
+    else {
+      return undefined
+    }
+  }
 }
