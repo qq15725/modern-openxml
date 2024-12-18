@@ -1,5 +1,5 @@
 import type { ParagraphContent } from 'modern-text'
-import type { CustomGeometry, type Fill, GeometryPath, ParagraphProperties, PresetGeometry } from '../Drawing'
+import type { CustomGeometry, Fill, GeometryPath, ParagraphProperties, PresetGeometry } from '../Drawing'
 import type { SlideContext } from './_Slide'
 import type { NonVisualShapeProperties } from './NonVisualShapeProperties'
 import type { ShapeProperties } from './ShapeProperties'
@@ -81,8 +81,14 @@ export class Shape extends _SlideElement {
     let background
     let border
     let geometry
-    const fill = inherited<Fill>('spPr.fill')?.toJSON(ctx)
-    const stroke = inherited<Fill>('spPr.ln.fill')?.toJSON(ctx)
+    const fill = inherited<Fill>('spPr.fill')?.toJSON({
+      ...ctx,
+      color: this.spPr?.fill ? undefined : this.style?.fillRef?.color,
+    })
+    const stroke = inherited<Fill>('spPr.ln.fill')?.toJSON({
+      ...ctx,
+      color: this.spPr?.ln?.fill ? undefined : this.style?.lnRef?.color,
+    })
     if (prstGeom?.prst === 'rect') {
       background = fill
       border = stroke

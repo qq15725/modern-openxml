@@ -7,7 +7,7 @@ import type { PatternFill } from './PatternFill'
 import type { SolidFill } from './SolidFill'
 import { defineChild, OOXML } from '../../core'
 
-export class _FillStyle extends OOXML {
+export abstract class _FillStyle extends OOXML {
   @defineChild('a:noFill') declare noFill?: NoFill
   @defineChild('a:blipFill') declare blipFill?: BlipFill
   @defineChild('a:gradFill') declare gradFill?: GradientFill

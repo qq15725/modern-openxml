@@ -12,7 +12,7 @@ import type { SymbolFont } from './SymbolFont'
 import { defineAttribute, defineChild, defineProperty } from '../../core'
 import { _FillStyle } from './_FillStyle'
 
-export class _RunProperties extends _FillStyle {
+export abstract class _RunProperties extends _FillStyle {
   @defineAttribute('altLang') declare altLang?: string
   @defineAttribute('baseline', 'number') declare baseline?: number
   @defineAttribute('b', 'boolean') declare b?: boolean

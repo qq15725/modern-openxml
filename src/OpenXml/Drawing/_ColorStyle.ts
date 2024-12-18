@@ -14,7 +14,7 @@ export type Color =
   | RgbColorModelHex
   | SystemColor
 
-export class _ColorStyle extends OOXML {
+export abstract class _ColorStyle extends OOXML {
   @defineChild('a:hslClr') declare hslClr?: HslColor
   @defineChild('a:prstClr') declare prstClr?: PresetColor
   @defineChild('a:schemeClr') declare schemeClr?: SchemeColor

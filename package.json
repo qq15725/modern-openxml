@@ -56,7 +56,7 @@
   "dependencies": {
     "fflate": "^0.8.2",
     "modern-font": "^0.3.4",
-    "modern-path2d": "^0.2.6",
+    "modern-path2d": "^0.2.7",
     "modern-text": "^0.7.1"
   },
   "devDependencies": {

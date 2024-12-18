@@ -26,7 +26,7 @@ export interface FillJSON {
   image?: string
 }
 
-export class _FillList extends OOXML {
+export abstract class _FillList extends OOXML {
   get children(): Fill[] {
     return Array.from(this.element.children).map((element) => {
       switch (element.tagName) {

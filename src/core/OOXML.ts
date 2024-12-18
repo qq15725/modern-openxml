@@ -147,6 +147,7 @@ export class OOXML {
 
   static getConstructor(tag: string): OOXMLProto | undefined {
     return this.tagToConstructor.get(tag)
+      ?? this.tagToConstructor.get(`a:${tag}`)
   }
 
   static makeDefinition(proto: any): OOXMLDefinition {
@@ -257,8 +258,10 @@ export class OOXML {
   }
 
   getChild(tag: string): OOXML | undefined {
+    const tagName = tag
+    const localName = tag?.split(':')[1]
     const element = Array.from(this.element.children).find((element) => {
-      return element.tagName === tag || element.localName === tag
+      return element.tagName === tagName || element.localName === localName
     })
     if (element) {
       return OOXML.make(element)
@@ -267,9 +270,11 @@ export class OOXML {
   }
 
   getChildren(tag?: string): OOXML[] {
+    const tagName = tag
+    const localName = tag?.split(':')[1]
     return Array.from(this.element.children)
       .map((element) => {
-        if (!tag || (element.tagName === tag || element.localName === tag)) {
+        if (!tagName || (element.tagName === tagName || element.localName === localName)) {
           return OOXML.make(element)
         }
         return undefined

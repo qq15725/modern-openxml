@@ -4,6 +4,7 @@ import type {
   SlideElementJSON,
 } from '../OpenXml/Presentation'
 import type { XMLNode } from './XMLGen'
+import { pathCommandsToPathData } from 'modern-path2d'
 import { measureText } from 'modern-text'
 import { OOXMLValue } from '../core'
 import { parseDomFromString } from '../utils'
@@ -146,23 +147,7 @@ function parseElement(
             attrs: {
               fill: path.fill,
               stroke: path.stroke,
-              d: path.commands.map((cmd) => {
-                switch (cmd.type) {
-                  case 'M':
-                    return `M ${cmd.x} ${cmd.y}`
-                  case 'L':
-                    return `L ${cmd.x} ${cmd.y}`
-                  case 'A':
-                    return `A ${cmd.rx} ${cmd.ry} ${cmd.angle} ${cmd.largeArcFlag} ${cmd.sweepFlag} ${cmd.x} ${cmd.y}`
-                  case 'Q':
-                    return `Q ${cmd.x1} ${cmd.y1} ${cmd.x} ${cmd.y}`
-                  case 'C':
-                    return `C ${cmd.x1} ${cmd.y1} ${cmd.x2} ${cmd.y2} ${cmd.x} ${cmd.y}`
-                  case 'Z':
-                  default:
-                    return `Z`
-                }
-              }).join(' '),
+              d: pathCommandsToPathData(path.commands),
             },
           }
         }),
@@ -195,7 +180,23 @@ function parseElement(
     // TODO
   }
   else if (element.type === 'connectionShape') {
-    // TODO
+    const { geometry } = element
+
+    if (geometry) {
+      elementG.children!.push(
+        ...geometry.map((path) => {
+          return {
+            tag: 'path',
+            attrs: {
+              'fill': path.fill,
+              'stroke': path.stroke,
+              'stroke-width': path.strokeWidth,
+              'd': pathCommandsToPathData(path.commands),
+            },
+          }
+        }),
+      )
+    }
   }
 
   return elementG

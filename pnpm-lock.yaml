@@ -15,8 +15,8 @@ importers:
         specifier: ^0.3.4
         version: 0.3.4
       modern-path2d:
-        specifier: ^0.2.6
-        version: 0.2.6
+        specifier: ^0.2.7
+        version: 0.2.7
       modern-text:
         specifier: ^0.7.1
         version: 0.7.1
@@ -2288,8 +2288,8 @@ packages:
   modern-font@0.3.4:
     resolution: {integrity: sha512-fSV8CRYSgCxOTTHb6ZHgo0xI/ns3ExaUaBc3q5GG1MP6n0J+ua3Fz7LN5IDcIRhNbbJ3rus0qIKo8DPudfVGEQ==}
 
-  modern-path2d@0.2.6:
-    resolution: {integrity: sha512-6xd9H3oadG4li3RS+AdqhpzubBf8A1IOx8SKyOcM5q+hBUH7gNnqiIDZUBz/0bYLPxdWjlv1bPnkvXzfhtx6uA==}
+  modern-path2d@0.2.7:
+    resolution: {integrity: sha512-0EAB6E05d8WKwF+t1dtlkHEz9kkvVroEcxIGLOwAi4hYr3WN3aDMdHN2fodXrjL9sKSR+Mbi+M3R1aY1zqWdlg==}
 
   modern-text@0.7.1:
     resolution: {integrity: sha512-C0iV9gQqu9R43G2K66r1OE/JjXlcKmg8pZTqa6ED7Qkqz/UUYcn2GquArWFIZNcYv9RIR9Zzc8QFG39+YS4pKA==}
@@ -5555,12 +5555,12 @@ snapshots:
     dependencies:
       fflate: 0.8.2
 
-  modern-path2d@0.2.6: {}
+  modern-path2d@0.2.7: {}
 
   modern-text@0.7.1:
     dependencies:
       modern-font: 0.3.4
-      modern-path2d: 0.2.6
+      modern-path2d: 0.2.7
 
   mri@1.2.0: {}
 

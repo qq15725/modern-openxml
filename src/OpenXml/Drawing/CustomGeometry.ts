@@ -4,7 +4,7 @@ import type { PathList } from './PathList'
 import type { Rectangle } from './Rectangle'
 import type { ShapeGuideList } from './ShapeGuideList'
 import { defineChild, defineElement } from '../../core'
-import { _Geometry } from './_Geometry'
+import { _Geometry, type GeometryGetPathsOptions, type GeometryPath } from './_Geometry'
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.drawing.customgeometry
@@ -16,4 +16,13 @@ export class CustomGeometry extends _Geometry {
   @defineChild('a:gdLst') declare gdLst?: ShapeGuideList
   @defineChild('a:pathLst') declare pathLst?: PathList
   @defineChild('a:rect') declare rect?: Rectangle
+
+  override getPaths(options: GeometryGetPathsOptions): GeometryPath[] {
+    return super.getPaths({
+      avLst: this.avLst,
+      gdLst: this.gdLst,
+      pathLst: this.pathLst,
+      ...options,
+    })
+  }
 }

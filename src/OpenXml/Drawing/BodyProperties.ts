@@ -79,12 +79,12 @@ export class BodyProperties extends OOXML {
     }
   }
 
-  get textAlign(): 'center' | 'start' | undefined {
+  get textAlign(): 'left' | 'center' | undefined {
     switch (this.anchorCtr) {
+      case false:
+        return 'left'
       case true:
         return 'center'
-      case false:
-        return 'start'
       default:
         return undefined
     }

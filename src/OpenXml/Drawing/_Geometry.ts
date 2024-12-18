@@ -19,17 +19,19 @@ export type GeometryPathCommand =
 export interface GeometryGetPathsOptions {
   width: number
   height: number
-  pathLst?: PathList
-  avLst?: AdjustValueList
-  gdLst?: ShapeGuideList
   fill?: string
   stroke?: string
+  strokeWidth?: number
+  avLst?: AdjustValueList
+  gdLst?: ShapeGuideList
+  pathLst?: PathList
 }
 
 export interface GeometryPath {
   commands: GeometryPathCommand[]
   fill: string
   stroke: string
+  strokeWidth: number
 }
 
 function parseVariables(
@@ -37,8 +39,8 @@ function parseVariables(
   height: number,
   vars: string[][],
 ): Record<string, number> {
-  width = OOXMLValue.parse(width, 'emu')
-  height = OOXMLValue.parse(height, 'emu')
+  width = Number(OOXMLValue.stringify(width, 'emu'))
+  height = Number(OOXMLValue.stringify(height, 'emu'))
 
   const max = Math.max(width, height)
   const min = Math.min(width, height)
@@ -182,11 +184,20 @@ function getEllipsePoint(a: number, b: number, theta: number): { x: number, y: n
   }
 }
 
-export class _Geometry extends OOXML {
+export abstract class _Geometry extends OOXML {
   @defineChild('a:avLst') declare avLst?: AdjustValueList
 
   getPaths(options: GeometryGetPathsOptions): GeometryPath[] {
-    const { width, height, pathLst, avLst, gdLst, fill, stroke } = options
+    const {
+      width,
+      height,
+      pathLst,
+      avLst,
+      gdLst,
+      fill,
+      stroke,
+      strokeWidth = 0,
+    } = options
 
     const av = avLst?.value.map(gd => ({ name: gd.name, fmla: gd.fmla })) ?? []
     const gd = gdLst?.value.map(gd => ({ name: gd.name, fmla: gd.fmla })) ?? []
@@ -215,7 +226,7 @@ export class _Geometry extends OOXML {
       const rateX = w ? width / w : 1
       const rateY = h ? height / h : 1
 
-      function convert(value: string | number, isX: boolean, type: 'pixel' | 'degree' = 'pixel'): number {
+      function convert(value: string | number, isX: boolean, type: 'emu' | 'degree' = 'emu'): number {
         let newValue: number
         value = variables[value] ?? value
         if (Number.isNaN(value)) {
@@ -227,7 +238,7 @@ export class _Geometry extends OOXML {
           )
         }
         else {
-          if (type === 'pixel') {
+          if (type === 'emu') {
             newValue = OOXMLValue.parse(value, 'emu')
           }
           else {
@@ -314,6 +325,7 @@ export class _Geometry extends OOXML {
       return {
         fill: (needsFill ? fill : undefined) ?? 'none',
         stroke: (needsStroke ? stroke : undefined) ?? 'none',
+        strokeWidth,
         commands,
       }
     }) ?? []

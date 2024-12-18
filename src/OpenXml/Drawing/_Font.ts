@@ -11,7 +11,7 @@ export interface FontJSON {
   typeface?: string
 }
 
-export class _Font extends OOXML {
+export abstract class _Font extends OOXML {
   @defineAttribute('charset', { ...options, type: 'SByteValue' }) declare charset?: number
   @defineAttribute('panose', { ...options, type: 'HexBinaryValue' }) declare panose?: string
   @defineAttribute('pitchFamily', { ...options, type: 'SByteValue' }) declare pitchFamily?: number

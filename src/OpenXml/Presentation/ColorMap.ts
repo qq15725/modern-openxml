@@ -1,5 +1,5 @@
 import { defineElement } from '../../core'
-import { ColorMap as _ColorMap } from '../Drawing'
+import { _ColorMap } from '../Drawing'
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.presentation.colormap

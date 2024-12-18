@@ -4,7 +4,7 @@ import type { ExtensionList } from './ExtensionList'
 import type { LineSpacing } from './LineSpacing'
 import { defineAttribute, defineChild, OOXML } from '../../core'
 
-export class _ParagraphProperties extends OOXML {
+export abstract class _ParagraphProperties extends OOXML {
   @defineAttribute('algn') declare algn?: TextAlignmentTypeValues
   @defineAttribute('defTabSz', 'emu') declare defTabSz?: number
   @defineAttribute('eaLnBrk', 'boolean') declare eaLnBrk?: boolean
@@ -35,18 +35,19 @@ export class _ParagraphProperties extends OOXML {
   @defineChild('a:spcBef') declare spcBef?: OOXML
   @defineChild('a:tabLst') declare tabLst?: OOXML
 
-  get textAlign(): 'center' | 'start' | 'end' | undefined {
+  get textAlign(): 'left' | 'right' | 'center' | 'justify' | undefined {
     switch (this.algn) {
-      case 'dist':
-      case 'just':
-      case 'justLow':
       case 'l':
-      case 'thaiDist':
-        return 'start'
+        return 'left'
+      case 'r':
+        return 'right'
       case 'ctr':
         return 'center'
-      case 'r':
-        return 'end'
+      case 'dist':
+      case 'thaiDist':
+      case 'just':
+      case 'justLow':
+        return 'justify'
       default:
         return undefined
     }
