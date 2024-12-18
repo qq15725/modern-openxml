@@ -29,12 +29,20 @@ export class ShapeStyle extends OOXML {
   @defineChild('a:fontRef') declare fontRef?: FontReference
 
   parse(ctx: { theme?: Theme }): ParsedShapeStyle {
-    const { theme } = ctx
     const { lnRef, fillRef, effectRef, fontRef } = this
+    const { theme } = ctx
     return {
-      fill: fillRef ? theme?.fillStyleLst?.children[fillRef.idx] : undefined,
-      ln: lnRef ? theme?.lnStyleLst?.children[lnRef.idx] : undefined,
-      ...(effectRef ? theme?.effectStyleLst?.children[effectRef.idx] : undefined),
+      ln: lnRef
+        ? theme?.themeElements?.fmtScheme?.lnStyleLst?.children[lnRef.idx]
+        : undefined,
+      fill: fillRef
+        ? theme?.themeElements?.fmtScheme?.fillStyleLst?.children[fillRef.idx]
+        : undefined,
+      ...(
+        effectRef
+          ? theme?.themeElements?.fmtScheme?.effectStyleLst?.children[effectRef.idx]
+          : undefined
+      ),
       // TODO
       // font: fontRef ? theme.majorFonts?.children[fontRef.idx] : undefined,
     }

@@ -1,5 +1,5 @@
 import type { ParagraphContent } from 'modern-text'
-import type { GeometryPath, ParagraphProperties } from '../Drawing'
+import type { CustomGeometry, type Fill, GeometryPath, ParagraphProperties, PresetGeometry } from '../Drawing'
 import type { SlideContext } from './_Slide'
 import type { NonVisualShapeProperties } from './NonVisualShapeProperties'
 import type { ShapeProperties } from './ShapeProperties'
@@ -68,7 +68,7 @@ export class Shape extends _SlideElement {
     // style
     const _style = this.style?.parse(ctx)
 
-    const inherited = (path: string): any => {
+    const inherited = <T = any>(path: string): T | undefined => {
       return this.offsetGet(path)
         ?? getObjectValueByPath(_style, path.replace('spPr.', ''))
         ?? _ph?.offsetGet(path)
@@ -76,20 +76,35 @@ export class Shape extends _SlideElement {
 
     const width = inherited('spPr.xfrm.ext.cx')
     const height = inherited('spPr.xfrm.ext.cy')
-    const background = inherited('spPr.fill')?.toJSON(ctx)
-    const border = inherited('spPr.ln.fill')?.toJSON(ctx)
+    const prstGeom = inherited<PresetGeometry>('spPr.prstGeom')
+    const custGeom = inherited<CustomGeometry>('spPr.custGeom')
+    let background
+    let border
+    let geometry
+    const fill = inherited<Fill>('spPr.fill')?.toJSON(ctx)
+    const stroke = inherited<Fill>('spPr.ln.fill')?.toJSON(ctx)
+    if (prstGeom?.prst === 'rect') {
+      background = fill
+      border = stroke
+    }
+    else {
+      // TODO
+      // prstGeom
+      geometry = custGeom?.getPaths({
+        width: width ?? 0,
+        height: height ?? 0,
+        pathLst: inherited('spPr.custGeom.pathLst'),
+        avLst: inherited('spPr.custGeom.avLst'),
+        gdLst: inherited('spPr.custGeom.gdLst'),
+        fill: fill?.color,
+        stroke: stroke?.color,
+      })
+    }
 
     return filterObjectEmptyAttr({
       type: 'shape',
       name: inherited('nvSpPr.cNvPr.name'),
-      // TODO prstGeom
-      geometry: inherited('spPr.custGeom')?.getPaths(
-        width ?? 0,
-        height ?? 0,
-        inherited('spPr.custGeom.pathLst'),
-        inherited('spPr.custGeom.avLst'),
-        inherited('spPr.custGeom.gdLst'),
-      ),
+      geometry,
       style: {
         visibility: inherited('nvSpPr.cNvPr.visibility'),
         left: inherited('spPr.xfrm.off.x'),

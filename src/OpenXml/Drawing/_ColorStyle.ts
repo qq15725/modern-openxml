@@ -6,6 +6,14 @@ import type { SchemeColor } from './SchemeColor'
 import type { SystemColor } from './SystemColor'
 import { defineChild, OOXML } from '../../core'
 
+export type Color =
+  | HslColor
+  | PresetColor
+  | SchemeColor
+  | RgbColorModelPercentage
+  | RgbColorModelHex
+  | SystemColor
+
 export class _ColorStyle extends OOXML {
   @defineChild('a:hslClr') declare hslClr?: HslColor
   @defineChild('a:prstClr') declare prstClr?: PresetColor
@@ -14,7 +22,7 @@ export class _ColorStyle extends OOXML {
   @defineChild('a:srgbClr') declare srgbClr?: RgbColorModelHex
   @defineChild('a:sysClr') declare sysClr?: SystemColor
 
-  get color(): HslColor | PresetColor | SchemeColor | RgbColorModelPercentage | RgbColorModelHex | SystemColor | undefined {
+  get color(): Color | undefined {
     return this.hslClr
       ?? this.prstClr
       ?? this.schemeClr

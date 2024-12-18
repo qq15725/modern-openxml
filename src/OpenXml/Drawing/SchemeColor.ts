@@ -12,7 +12,15 @@ export class SchemeColor extends _Color {
   @defineAttribute('val') declare val: string
 
   override toRGB(theme?: Theme): RGB {
-    const colorStyle = (theme as any)?.clrScheme[this.val] as _ColorStyle | undefined
+    let key = this.val
+    const clrScheme = theme?.themeElements?.clrScheme
+    let colorStyle: _ColorStyle | undefined = (clrScheme as any)?.[key]
+    if (!colorStyle) {
+      const clrMap = theme?.extraClrSchemeLst?.extraClrScheme?.clrMap
+      const clrScheme = theme?.extraClrSchemeLst?.extraClrScheme?.clrScheme
+      key = (clrMap as any)?.[key]
+      colorStyle = (clrScheme as any)?.[key]
+    }
     return colorStyle?.color?.toRGB() ?? { r: 0, g: 0, b: 0 }
   }
 }

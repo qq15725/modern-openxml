@@ -144,8 +144,8 @@ function parseElement(
           return {
             tag: 'path',
             attrs: {
-              fill: path.fill ? undefined : 'none',
-              stroke: path.stroke ? undefined : 'none',
+              fill: path.fill,
+              stroke: path.stroke,
               d: path.commands.map((cmd) => {
                 switch (cmd.type) {
                   case 'M':

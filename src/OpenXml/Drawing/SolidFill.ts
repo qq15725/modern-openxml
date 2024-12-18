@@ -7,9 +7,14 @@ import { _ColorStyle } from './_ColorStyle'
  */
 @defineElement('a:solidFill')
 export class SolidFill extends _ColorStyle {
-  override toJSON(ctx?: FillContext): FillJSON {
+  override toJSON(ctx: FillContext = {}): FillJSON {
+    const {
+      color = this.color,
+      theme,
+    } = ctx
+
     return {
-      color: this.color?.toRGBAString(ctx?.theme),
+      color: color?.toRGBAString(theme),
     }
   }
 }

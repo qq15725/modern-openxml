@@ -1,3 +1,4 @@
+import type { Color } from './_ColorStyle'
 import type { BlipFill } from './BlipFill'
 import type { GradientFill } from './GradientFill'
 import type { GroupFill } from './GroupFill'
@@ -17,6 +18,7 @@ export type Fill =
 
 export interface FillContext {
   theme?: Theme
+  color?: Color
 }
 
 export interface FillJSON {

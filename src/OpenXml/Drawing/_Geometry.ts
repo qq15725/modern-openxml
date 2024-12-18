@@ -16,10 +16,20 @@ export type GeometryPathCommand =
   | { type: 'C', x1: number, y1: number, x2: number, y2: number, x: number, y: number }
   | { type: 'Z' }
 
+export interface GeometryGetPathsOptions {
+  width: number
+  height: number
+  pathLst?: PathList
+  avLst?: AdjustValueList
+  gdLst?: ShapeGuideList
+  fill?: string
+  stroke?: string
+}
+
 export interface GeometryPath {
   commands: GeometryPathCommand[]
-  fill: boolean | undefined
-  stroke: boolean | undefined
+  fill: string
+  stroke: string
 }
 
 function parseVariables(
@@ -175,25 +185,23 @@ function getEllipsePoint(a: number, b: number, theta: number): { x: number, y: n
 export class _Geometry extends OOXML {
   @defineChild('a:avLst') declare avLst?: AdjustValueList
 
-  getPaths(
-    width: number,
-    height: number,
-    pathLst?: PathList,
-    avLst?: AdjustValueList,
-    gdLst?: ShapeGuideList,
-  ): GeometryPath[] {
-    const av = avLst?.value.map(gd => ({ name: gd.name, fmla: gd.fmla }))
-    const gd = gdLst?.value.map(gd => ({ name: gd.name, fmla: gd.fmla }))
+  getPaths(options: GeometryGetPathsOptions): GeometryPath[] {
+    const { width, height, pathLst, avLst, gdLst, fill, stroke } = options
+
+    const av = avLst?.value.map(gd => ({ name: gd.name, fmla: gd.fmla })) ?? []
+    const gd = gdLst?.value.map(gd => ({ name: gd.name, fmla: gd.fmla })) ?? []
 
     const prestVars = [...av, ...gd].reduce(
       (vars, gd) => {
         const name = gd.name
         const fmla = gd.fmla
-        if (name && fmla)
-          vars[fmla.startsWith('val ') ? 0 : 1].push([name, fmla])
+        if (name && fmla) {
+          const index = fmla.startsWith('val ') ? 0 : 1
+          vars[index].push([name, fmla])
+        }
         return vars
       },
-      [[], []] as string[][],
+      [[], []] as string[][][],
     )
 
     const variables = parseVariables(width, height, [
@@ -202,7 +210,7 @@ export class _Geometry extends OOXML {
     ])
 
     return pathLst?.value.map((path) => {
-      const { w, h, children, fill, stroke } = path
+      const { w, h, children, fill: needsFill = true, stroke: needsStroke = true } = path
 
       const rateX = w ? width / w : 1
       const rateY = h ? height / h : 1
@@ -259,9 +267,9 @@ export class _Geometry extends OOXML {
           const sweepFlag = swAng > 0 ? 1 : 0
           return {
             type: 'A',
-            wr,
-            hr,
-            xAxisRotation,
+            rx: wr,
+            ry: hr,
+            angle: xAxisRotation,
             largeArcFlag,
             sweepFlag,
             x: currentPoint.x,
@@ -304,8 +312,8 @@ export class _Geometry extends OOXML {
       })
 
       return {
-        fill,
-        stroke,
+        fill: (needsFill ? fill : undefined) ?? 'none',
+        stroke: (needsStroke ? stroke : undefined) ?? 'none',
         commands,
       }
     }) ?? []
