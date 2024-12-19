@@ -21,14 +21,13 @@
 ## Usage
 
 ```ts
-import { Pptx } from 'modern-openxml'
+import { PPTX } from 'modern-openxml'
 
 // parse
 fetch('you.pptx')
   .then(rep => rep.arrayBuffer())
-  .then(buffer => {
-    const pptx = Pptx.parse(new Uint8Array(buffer))
+  .then((buffer) => {
+    const pptx = new PPTX(buffer)
     console.log(pptx.toJSON())
   })
 ```
-

@@ -15,9 +15,12 @@
     "url": "https://github.com/qq15725/modern-openxml/issues"
   },
   "keywords": [
-    "starter",
-    "template",
-    "typescript"
+    "OpenXML",
+    "typescript",
+    "OPC",
+    "pptx",
+    "xlsx",
+    "docx"
   ],
   "sideEffects": false,
   "exports": {
@@ -87,6 +90,6 @@
     "pre-commit": "pnpm lint-staged"
   },
   "lint-staged": {
-    "*": "eslint ./src"
+    "*": "eslint ./src --fix"
   }
 }
