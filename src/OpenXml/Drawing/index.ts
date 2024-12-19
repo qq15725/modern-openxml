@@ -1,3 +1,4 @@
+export * from './_BlipFill'
 export * from './_Color'
 export * from './_ColorMap'
 export * from './_ColorStyle'

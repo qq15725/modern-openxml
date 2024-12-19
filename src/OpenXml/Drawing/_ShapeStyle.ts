@@ -23,7 +23,7 @@ export abstract class _ShapeStyle extends OOXML {
   @defineChild('a:fontRef') declare fontRef?: FontReference
 
   parse(ctx: { theme?: Theme }): ParsedShapeStyle {
-    const { lnRef, fillRef, effectRef, fontRef } = this
+    const { lnRef, fillRef, effectRef } = this
     const { theme } = ctx
     const effect = effectRef
       ? theme?.themeElements?.fmtScheme?.effectStyleLst?.children[effectRef.idx]

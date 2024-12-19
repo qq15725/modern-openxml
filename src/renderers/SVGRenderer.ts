@@ -36,7 +36,6 @@ function parseElement(
     rotate = 0,
     visibility,
     backgroundColor,
-    backgroundImage,
   } = style as Record<string, any>
 
   if (parent) {

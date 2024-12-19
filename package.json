@@ -21,6 +21,16 @@
   ],
   "sideEffects": false,
   "exports": {
+    "./presetShapeDefinitions": {
+      "types": "./assets/presetShapeDefinitions.d.ts",
+      "import": "./assets/presetShapeDefinitions.js",
+      "require": "./assets/presetShapeDefinitions.js"
+    },
+    "./presetTextWarpDefinitions": {
+      "types": "./assets/presetTextWarpDefinitions.d.ts",
+      "import": "./assets/presetTextWarpDefinitions.js",
+      "require": "./assets/presetTextWarpDefinitions.js"
+    },
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.mjs",
@@ -32,30 +42,21 @@
   "types": "./dist/index.d.ts",
   "browser": "./dist/index.js",
   "typesVersions": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.cjs"
-    },
-    "./presetShapeDefinitions": {
-      "types": "./assets/presetShapeDefinitions.d.ts",
-      "import": "./assets/presetShapeDefinitions.js",
-      "require": "./assets/presetShapeDefinitions.js"
-    },
-    "./presetTextWarpDefinitions": {
-      "types": "./assets/presetTextWarpDefinitions.d.ts",
-      "import": "./assets/presetTextWarpDefinitions.js",
-      "require": "./assets/presetTextWarpDefinitions.js"
+    "*": {
+      "*": [
+        "./dist/*",
+        "./dist/index.d.ts"
+      ]
     }
   },
   "files": [
-    "dist",
-    "assets"
+    "assets",
+    "dist"
   ],
   "scripts": {
     "build": "vite build && unbuild",
     "dev": "vite docs",
-    "lint": "eslint .",
+    "lint": "eslint ./src",
     "version": "conventional-changelog -p angular -i CHANGELOG.md -s && git add CHANGELOG.md",
     "release": "bumpp package.json --commit \"release: v%s\" --push --all --tag",
     "start": "esno src/index.ts",
@@ -86,6 +87,6 @@
     "pre-commit": "pnpm lint-staged"
   },
   "lint-staged": {
-    "*": "echo 1"
+    "*": "eslint ./src"
   }
 }
