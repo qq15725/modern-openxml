@@ -3,7 +3,7 @@ import type { ExtensionList } from './ExtensionList'
 import type { ExtraColorSchemeList } from './ExtraColorSchemeList'
 import type { ObjectDefaults } from './ObjectDefaults'
 import type { ThemeElements } from './ThemeElements'
-import { defineChild, defineElement, defineProperty, OOXML } from '../../core'
+import { defineChild, defineElement, OOXML } from '../../core'
 
 /**
  * @link https://learn.microsoft.com/dotnet/api/documentformat.openxml.drawing.theme
@@ -22,13 +22,4 @@ export class Theme extends OOXML {
   @defineChild('a:extraClrSchemeLst') declare extraClrSchemeLst?: ExtraColorSchemeList
   @defineChild('a:objectDefaults') declare objectDefaults?: ObjectDefaults
   @defineChild('a:themeElements') declare themeElements?: ThemeElements
-
-  @defineProperty('custClrLst') declare customColors?: any
-  @defineProperty('themeElements.clrScheme') declare colors?: any
-  @defineProperty('themeElements.fontScheme.majorFont') declare majorFonts?: any
-  @defineProperty('themeElements.fontScheme.minorFont') declare minorFonts?: any
-  @defineProperty('themeElements.fmtScheme.fillStyleLst.children') declare fills?: any[]
-  @defineProperty('themeElements.fmtScheme.lnStyleLst.children') declare outlines?: any[]
-  @defineProperty('themeElements.fmtScheme.effectStyleLst.children') declare effects?: any[]
-  @defineProperty('themeElements.fmtScheme.bgFillStyleLst.children') declare backgroundFills?: any
 }

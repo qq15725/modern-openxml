@@ -253,23 +253,23 @@ export class OOXML {
     return setObjectValueByPath(this, path, value)
   }
 
-  offsetGet(path: string): any | undefined {
+  offsetGet<T = any>(path: string): T | undefined {
     return getObjectValueByPath(this, path)
   }
 
-  getChild(tag: string): OOXML | undefined {
+  getChild<T = OOXML>(tag: string): T | undefined {
     const tagName = tag
     const localName = tag?.split(':')[1]
     const element = Array.from(this.element.children).find((element) => {
       return element.tagName === tagName || element.localName === localName
     })
     if (element) {
-      return OOXML.make(element)
+      return OOXML.make(element) as T
     }
     return undefined
   }
 
-  getChildren(tag?: string): OOXML[] {
+  getChildren<T = OOXML>(tag?: string): T[] {
     const tagName = tag
     const localName = tag?.split(':')[1]
     return Array.from(this.element.children)
@@ -279,7 +279,7 @@ export class OOXML {
         }
         return undefined
       })
-      .filter(Boolean) as OOXML[]
+      .filter(Boolean) as T[]
   }
 
   fromXML(xml: string): this {

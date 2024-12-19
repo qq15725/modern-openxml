@@ -1,4 +1,4 @@
-import type { HslColor, PresetColor, RgbColorModelHex, RgbColorModelPercentage, SchemeColor, SystemColor } from '../Drawing'
+import type { Color, Theme } from '../Drawing'
 import { defineElement, OOXML } from '../../core'
 
 /**
@@ -6,7 +6,7 @@ import { defineElement, OOXML } from '../../core'
  */
 @defineElement('p:clrMru')
 export class ColorMostRecentlyUsed extends OOXML {
-  get children(): (HslColor | PresetColor | SchemeColor | RgbColorModelPercentage | RgbColorModelHex | SystemColor)[] {
+  get children(): Color[] {
     return Array.from(this.element.children).map((element) => {
       switch (element.tagName) {
         case 'a:hslClr':
@@ -21,7 +21,7 @@ export class ColorMostRecentlyUsed extends OOXML {
     }) as any
   }
 
-  get colors(): string[] {
-    return this.children.map(child => child.color).filter(Boolean) as string[]
+  toJSON(ctx?: { theme?: Theme }): string[] {
+    return this.children.map(child => child.toJSON(ctx))
   }
 }

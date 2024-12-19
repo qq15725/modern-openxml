@@ -1,4 +1,4 @@
-import type { GeometryPath } from '../Drawing'
+import type { CustomGeometry, Fill, GeometryPath, PresetGeometry } from '../Drawing'
 import type { SlideContext } from './_Slide'
 import type { BlipFill } from './BlipFill'
 import type { NonVisualPictureProperties } from './NonVisualPictureProperties'
@@ -57,7 +57,7 @@ export class Picture extends _SlideElement {
     // style
     const _style = this.style?.toJSON(ctx)
 
-    const inherited = (path: string): any => {
+    const inherited = <T = any>(path: string): T | undefined => {
       return this.offsetGet(path)
         ?? getObjectValueByPath(_style, path.replace('spPr.', ''))
         ?? _ph?.offsetGet(path)
@@ -65,21 +65,41 @@ export class Picture extends _SlideElement {
 
     const width = inherited('spPr.xfrm.ext.cx')
     const height = inherited('spPr.xfrm.ext.cy')
-    const background = inherited('spPr.fill')?.toJSON(ctx)
-    const border = inherited('spPr.ln.fill')?.toJSON(ctx)
+    const prstGeom = inherited<PresetGeometry>('spPr.prstGeom')
+    const custGeom = inherited<CustomGeometry>('spPr.custGeom')
+    let background
+    let border
+    let borderWidth
+    let geometry
+    const fill = inherited<Fill>('spPr.fill')?.toJSON({
+      ...ctx,
+      color: this.spPr?.fill ? undefined : this.style?.fillRef?.color,
+    })
+    const stroke = inherited<Fill>('spPr.ln.fill')?.toJSON({
+      ...ctx,
+      color: this.spPr?.ln?.fill ? undefined : this.style?.lnRef?.color,
+    })
+    const strokeWidth = inherited('spPr.ln.w')
+    if (prstGeom?.prst === 'rect') {
+      background = fill
+      border = stroke
+      borderWidth = strokeWidth
+    }
+    else {
+      geometry = (prstGeom ?? custGeom)?.getPaths({
+        width: width || strokeWidth,
+        height: height || strokeWidth,
+        fill: fill?.color,
+        stroke: stroke?.color,
+        strokeWidth,
+      })
+    }
 
     return filterObjectEmptyAttr({
       type: 'picture',
       name: inherited('nvPicPr.cNvPr.name'),
       src: inherited('blipFill.blip.rEmbed'),
-      // TODO prstGeom
-      geometry: inherited('spPr.custGeom')?.getPaths(
-        width ?? 0,
-        height ?? 0,
-        inherited('spPr.custGeom.pathLst'),
-        inherited('spPr.custGeom.avLst'),
-        inherited('spPr.custGeom.gdLst'),
-      ),
+      geometry,
       style: {
         visibility: inherited('nvPicPr.cNvPr.visibility'),
         left: inherited('spPr.xfrm.off.x'),
@@ -91,7 +111,7 @@ export class Picture extends _SlideElement {
         scaleY: inherited('spPr.xfrm.scaleY'),
         backgroundColor: background?.color,
         backgroundImage: background?.image,
-        borderWidth: inherited('spPr.ln.w'),
+        borderWidth,
         borderColor: border?.color,
         borderImage: border?.image,
         shadow: inherited('spPr.effectLst.shadow'),

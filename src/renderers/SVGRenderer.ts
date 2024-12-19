@@ -262,7 +262,7 @@ export class SVGRenderer {
               transform: `translate(0, ${top})`,
             },
             children: [
-              ...layout.toJSON({ theme })
+              ...layout.toJSON({ master, theme })
                 .elements
                 .map((child) => {
                   return parseElement(

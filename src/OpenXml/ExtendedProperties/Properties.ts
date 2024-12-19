@@ -6,6 +6,36 @@ const options: DefineChildUsedOptions = {
   isProperty: true,
 }
 
+export interface PropertiesJSON {
+  application?: string
+  appVersion?: string
+  characters?: string
+  charactersWithSpaces?: string
+  company?: string
+  digSig?: string
+  docSecurity?: string
+  headingPairs?: string
+  hiddenSlides?: string
+  hLinks?: string
+  hyperlinkBase?: string
+  hyperlinksChanged?: string
+  lines?: string
+  linksUpToDate?: string
+  manager?: string
+  mMClips?: string
+  notes?: string
+  pages?: string
+  paragraphs?: string
+  presentationFormat?: string
+  scaleCrop?: string
+  sharedDoc?: string
+  slides?: string
+  template?: string
+  titlesOfParts?: string
+  totalTime?: string
+  words?: string
+}
+
 /**
  * @link https://learn.microsoft.com/dotnet/api/documentformat.openxml.extendedproperties.properties
  */
@@ -38,4 +68,8 @@ export class Properties extends OOXML {
   @defineChild('TitlesOfParts', options) declare titlesOfParts?: string
   @defineChild('TotalTime', options) declare totalTime?: string
   @defineChild('Words', options) declare words?: string
+
+  override toJSON(): PropertiesJSON {
+    return super.toJSON()
+  }
 }

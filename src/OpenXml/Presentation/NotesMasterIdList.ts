@@ -1,4 +1,4 @@
-import type { NotesMasterId, NotesMasterIdJSON } from './NotesMasterId'
+import type { NotesMasterId } from './NotesMasterId'
 import { defineChildren, defineElement, OOXML } from '../../core'
 
 /**
@@ -7,8 +7,4 @@ import { defineChildren, defineElement, OOXML } from '../../core'
 @defineElement('p:notesMasterIdLst')
 export class NotesMasterIdList extends OOXML {
   @defineChildren('p:notesMasterId') declare children: NotesMasterId[]
-
-  override toJSON(): NotesMasterIdJSON[] {
-    return this.children.map(child => child.toJSON())
-  }
 }

@@ -11,11 +11,13 @@ input.accept = '.pptx'
 input.type = 'file'
 input.onchange = async () => {
   const file = input.files?.[0]
-
-  const pptx = PPTX.parse(new Uint8Array(await file?.arrayBuffer()))
-
+  const pptx = new PPTX(await file?.arrayBuffer())
   const svg = new SVGRenderer().render(pptx)
   document.body.appendChild(svg)
-
   console.log(pptx, pptx.toJSON())
+}
+
+function exportPPTX() {
+  const pptx = new PPTX()
+  pptx.app
 }

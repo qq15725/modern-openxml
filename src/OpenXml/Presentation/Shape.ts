@@ -80,6 +80,7 @@ export class Shape extends _SlideElement {
     const custGeom = inherited<CustomGeometry>('spPr.custGeom')
     let background
     let border
+    let borderWidth
     let geometry
     const fill = inherited<Fill>('spPr.fill')?.toJSON({
       ...ctx,
@@ -89,21 +90,19 @@ export class Shape extends _SlideElement {
       ...ctx,
       color: this.spPr?.ln?.fill ? undefined : this.style?.lnRef?.color,
     })
+    const strokeWidth = inherited('spPr.ln.w')
     if (prstGeom?.prst === 'rect') {
       background = fill
       border = stroke
+      borderWidth = strokeWidth
     }
     else {
-      // TODO
-      // prstGeom
-      geometry = custGeom?.getPaths({
-        width: width ?? 0,
-        height: height ?? 0,
-        pathLst: inherited('spPr.custGeom.pathLst'),
-        avLst: inherited('spPr.custGeom.avLst'),
-        gdLst: inherited('spPr.custGeom.gdLst'),
+      geometry = (prstGeom ?? custGeom)?.getPaths({
+        width: width || strokeWidth,
+        height: height || strokeWidth,
         fill: fill?.color,
         stroke: stroke?.color,
+        strokeWidth,
       })
     }
 
@@ -123,7 +122,7 @@ export class Shape extends _SlideElement {
         shadow: inherited('spPr.effectLst.shadow'),
         backgroundColor: background?.color,
         backgroundImage: background?.image,
-        borderWidth: inherited('spPr.ln.w'),
+        borderWidth,
         borderColor: border?.color,
         borderImage: border?.image,
         paddingLeft: inherited('txBody.bodyPr.lIns'),

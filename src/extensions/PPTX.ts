@@ -1,10 +1,44 @@
 import type { Zippable } from 'fflate'
+import type { CorePropertiesJSON } from '../OPC'
+import type { PropertiesJSON } from '../OpenXml/ExtendedProperties'
+import type {
+  PresentationJSON,
+  PresentationPropertiesJSON,
+  SlideJSON,
+  SlideLayoutJSON,
+  SlideMasterJSON,
+} from '../OpenXml/Presentation'
 import { unzipSync, zipSync } from 'fflate'
 import { CoreProperties, Relationships, Types } from '../OPC'
 import { Theme } from '../OpenXml/Drawing'
 import { Properties } from '../OpenXml/ExtendedProperties'
-import { Picture, Presentation, PresentationProperties, Slide, SlideLayout, SlideMaster, ViewProperties } from '../OpenXml/Presentation'
+import {
+  Picture,
+  Presentation,
+  PresentationProperties,
+  Slide,
+  SlideLayout,
+  SlideMaster,
+  ViewProperties,
+} from '../OpenXml/Presentation'
 import { joinPaths } from '../utils'
+
+export interface PPTXJSON {
+  app?: PropertiesJSON
+  core?: CorePropertiesJSON
+  presentation?: PresentationJSON
+  presProps?: PresentationPropertiesJSON
+  // viewProps?: any
+  slideMasters: SlideMasterJSON[]
+  slideLayouts: SlideLayoutJSON[]
+  slides: SlideJSON[]
+  // themes: any[]
+}
+
+export type PPTXSource =
+  | ArrayBuffer
+  | Uint8Array
+  | PPTXJSON
 
 /**
  * @link https://learn.microsoft.com/en-us/openspecs/office_standards/ms-pptx/efd8bb2d-d888-4e2e-af25-cad476730c9f
@@ -34,6 +68,18 @@ export class PPTX {
     return {
       base: joinPaths(path, '../'),
       path: joinPaths(path, '../', '_rels', `${name}.rels`),
+    }
+  }
+
+  constructor(source: PPTXSource = {}) {
+    if (ArrayBuffer.isView(source)) {
+      this._parseBuffer(source.buffer)
+    }
+    else if (source instanceof ArrayBuffer) {
+      this._parseBuffer(source)
+    }
+    else {
+      this._parseJSON(source)
     }
   }
 
@@ -68,14 +114,13 @@ export class PPTX {
     }
   }
 
-  static parse(source: Uint8Array) {
-    const pptx = new PPTX()
-    pptx.unzipped = unzipSync(source)
-    const read = (path: string): string => pptx.read(path, 'string')!
+  protected _parseBuffer(source: ArrayBuffer): void {
+    this.unzipped = unzipSync(new Uint8Array(source))
+    const read = (path: string): string => this.read(path, 'string')!
     const { getRelsPath } = PPTX
 
     // [Content_Types].xml
-    const types = new Types(read('[Content_Types].xml'))
+    const _types = new Types(read('[Content_Types].xml'))
 
     // _rels/.rels
     const { path: relsPath } = getRelsPath()
@@ -93,15 +138,15 @@ export class PPTX {
         // ppt/presentation.xml
         case Relationships.types.presentation:
           presentationPath = path
-          pptx.presentation = new Presentation(read(presentationPath))
+          this.presentation = new Presentation(read(presentationPath))
           break
         // doc/app.xml
         case Relationships.types.app:
-          pptx.app = new Properties(read(path))
+          this.app = new Properties(read(path))
           break
         // doc/core.xml
         case Relationships.types.core:
-          pptx.core = new CoreProperties(read(path))
+          this.core = new CoreProperties(read(path))
           break
         // doc/custom.xml
         case Relationships.types.custom:
@@ -118,20 +163,20 @@ export class PPTX {
       switch (rel.type) {
         // ppt/presProps.xml
         case Relationships.types.presProps:
-          pptx.presProps = new PresentationProperties(read(path))
+          this.presProps = new PresentationProperties(read(path))
           break
         // ppt/viewProps.xml
         case Relationships.types.viewProps:
-          pptx.viewProps = new ViewProperties(read(path))
+          this.viewProps = new ViewProperties(read(path))
           break
       }
     })
 
-    pptx.presentation.sldIdLst.children.forEach((v) => {
+    this.presentation.sldIdLst.children.forEach((v) => {
       slidePaths.add(joinPaths(presentationRelsBase, presentationRels[v.rId].target))
     })
 
-    pptx.presentation.sldMasterIdLst.children.forEach((v) => {
+    this.presentation.sldMasterIdLst.children.forEach((v) => {
       slideMasterPaths.add(joinPaths(presentationRelsBase, presentationRels[v.rId].target))
     })
 
@@ -155,8 +200,8 @@ export class PPTX {
           }
         }
       })
-      pptx.slides.push(slide)
-      pptx.slidesRels.push(slideRels)
+      this.slides.push(slide)
+      this.slidesRels.push(slideRels)
     })
 
     slideMasterPaths.forEach((path) => {
@@ -182,8 +227,8 @@ export class PPTX {
         slideLayoutPaths.add(joinPaths(slideMasterRelsBase, slideMasterRels[v.rId].target))
       })
 
-      pptx.slideMasters.push(slideMaster)
-      pptx.slideMastersRels.push(slideMasterRels)
+      this.slideMasters.push(slideMaster)
+      this.slideMastersRels.push(slideMasterRels)
     })
 
     slideLayoutPaths.forEach((path) => {
@@ -204,8 +249,8 @@ export class PPTX {
         }
       })
 
-      pptx.slideLayouts.push(slideLayout)
-      pptx.slideLayoutsRels.push(slideLayoutRels)
+      this.slideLayouts.push(slideLayout)
+      this.slideLayoutsRels.push(slideLayoutRels)
     })
 
     themePaths.forEach((path) => {
@@ -213,22 +258,40 @@ export class PPTX {
       const theme = new Theme(read(path))
       theme.path = path
 
-      pptx.themes.push(theme)
+      this.themes.push(theme)
     })
 
-    pptx.slides.forEach((slide) => {
-      slide.layoutIndex = pptx.slideLayouts.findIndex(v => v.path === slide.layoutPath)
+    this.slides.forEach((slide) => {
+      slide.layoutIndex = this.slideLayouts.findIndex(v => v.path === slide.layoutPath)
     })
 
-    pptx.slideLayouts.forEach((slide) => {
-      slide.masterIndex = pptx.slideMasters.findIndex(v => v.path === slide.masterPath)
+    this.slideLayouts.forEach((slide) => {
+      slide.masterIndex = this.slideMasters.findIndex(v => v.path === slide.masterPath)
     })
 
-    pptx.slideMasters.forEach((slide) => {
-      slide.themeIndex = pptx.themes.findIndex(v => v.path === slide.themePath)
+    this.slideMasters.forEach((slide) => {
+      slide.themeIndex = this.themes.findIndex(v => v.path === slide.themePath)
     })
+  }
 
-    return pptx
+  protected _parseJSON(JSON: Partial<PPTXJSON> = {}): void {
+    const {
+      app,
+      core,
+      presProps,
+      presentation,
+      slideMasters = [],
+      slideLayouts = [],
+      slides = [],
+    } = JSON
+
+    this.app = new Properties(app)
+    this.core = new CoreProperties(core)
+    this.presProps = new PresentationProperties(presProps)
+    this.presentation = new Presentation(presentation)
+    this.slideMasters = slideMasters.map(JSON => new SlideMaster(JSON))
+    this.slideLayouts = slideLayouts.map(JSON => new SlideLayout(JSON))
+    this.slides = slides.map(JSON => new Slide(JSON))
   }
 
   toZippable(): Zippable {
@@ -236,8 +299,7 @@ export class PPTX {
     const slideLayouts = this.slideLayouts.map((slide, index) => [`slideLayout${index + 1}.xml`, slide] as const)
     const slideMasters = this.slideMasters.map((slide, index) => [`slideMaster${index + 1}.xml`, slide] as const)
     const themes = this.themes.map((theme, index) => [`theme${index + 1}.xml`, theme] as const)
-
-    const data = {
+    return {
       'docProps': {
         'app.xml': this.app.toXML(),
         'core.xml': this.core.toXML(),
@@ -295,27 +357,45 @@ export class PPTX {
       },
       '[Content_Types].xml': '',
     }
-
-    return data
   }
 
   toBuffer(): ArrayBuffer {
     return zipSync(this.toZippable()).buffer
   }
 
-  toJSON() {
+  toJSON(): PPTXJSON {
     return {
-      width: this.width,
-      height: this.height,
       app: this.app?.toJSON(),
       core: this.core?.toJSON(),
-      themes: this.themes.map(v => v.toJSON()),
-      slideMasters: this.slideMasters.map(v => v.toJSON()),
-      slideLayouts: this.slideLayouts.map(v => v.toJSON()),
-      slides: this.slides.map(v => v.toJSON()),
       presentation: this.presentation?.toJSON(),
       presProps: this.presProps?.toJSON(),
-      viewProps: this.viewProps?.toJSON(),
+      // viewProps: this.viewProps?.toJSON(),
+      // themes: this.themes.map(v => v.toJSON()),
+      slideMasters: this.slideMasters.map((master) => {
+        const theme = this.themes[master?.themeIndex]
+        return master.toJSON({
+          theme,
+        })
+      }),
+      slideLayouts: this.slideLayouts.map((layout) => {
+        const master = this.slideMasters[layout?.masterIndex]
+        const theme = this.themes[master?.themeIndex]
+        return layout.toJSON({
+          master,
+          theme,
+        })
+      }),
+      slides: this.slides.map((slide) => {
+        const layout = this.slideLayouts[slide.layoutIndex]
+        const master = this.slideMasters[layout?.masterIndex]
+        const theme = this.themes[master?.themeIndex]
+        return slide.toJSON({
+          presentation: this.presentation,
+          layout,
+          master,
+          theme,
+        })
+      }),
     }
   }
 }

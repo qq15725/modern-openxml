@@ -1,3 +1,4 @@
+import type { ColorMapJSON } from '../Drawing'
 import type { SlideContext, SlideElementJSON } from './_Slide'
 import type { ColorMap } from './ColorMap'
 import type { HeaderFooter } from './HeaderFooter'
@@ -9,7 +10,7 @@ import { _Slide } from './_Slide'
 export interface SlideMasterJSON {
   type: 'slideMaster'
   themeIndex: number
-  colorMap?: Record<string, any>
+  colorMap?: ColorMapJSON
   elements: SlideElementJSON[]
 }
 
@@ -41,7 +42,7 @@ export class SlideMaster extends _Slide {
     return {
       type: 'slideMaster',
       themeIndex: this.themeIndex,
-      colorMap: this.clrMap?.toJSON(ctx),
+      colorMap: this.clrMap?.toJSON(),
       elements: this.elements.filter(el => !el.hasPh()).map(el => el.toJSON(ctx)),
     }
   }

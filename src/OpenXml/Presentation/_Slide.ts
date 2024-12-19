@@ -14,10 +14,10 @@ import type { Timing } from './Timing'
 import { defineChild, defineProperty, OOXML } from '../../core'
 
 export interface SlideContext {
-  theme?: Theme
+  presentation?: Presentation
   layout?: SlideLayout
   master?: SlideMaster
-  presentation?: Presentation
+  theme?: Theme
 }
 
 export type SlideElement =

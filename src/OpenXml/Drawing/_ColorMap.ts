@@ -1,16 +1,39 @@
 import { defineAttribute, OOXML } from '../../core'
 
+export interface ColorMapJSON {
+  accent1?: string
+  accent2?: string
+  accent3?: string
+  accent4?: string
+  accent5?: string
+  accent6?: string
+  bg1?: string
+  bg2?: string
+  folHlink?: string
+  hlink?: string
+  tx1?: string
+  tx2?: string
+}
+
+const options = {
+  isProperty: true,
+}
+
 export abstract class _ColorMap extends OOXML {
-  @defineAttribute('accent1', { isProperty: true }) declare accent1?: string
-  @defineAttribute('accent2', { isProperty: true }) declare accent2?: string
-  @defineAttribute('accent3', { isProperty: true }) declare accent3?: string
-  @defineAttribute('accent4', { isProperty: true }) declare accent4?: string
-  @defineAttribute('accent5', { isProperty: true }) declare accent5?: string
-  @defineAttribute('accent6', { isProperty: true }) declare accent6?: string
-  @defineAttribute('bg1', { isProperty: true }) declare bg1?: string
-  @defineAttribute('bg2', { isProperty: true }) declare bg2?: string
-  @defineAttribute('folHlink', { isProperty: true }) declare folHlink?: string
-  @defineAttribute('hlink', { isProperty: true }) declare hlink?: string
-  @defineAttribute('tx1', { isProperty: true }) declare tx1?: string
-  @defineAttribute('tx2', { isProperty: true }) declare tx2?: string
+  @defineAttribute('accent1', options) declare accent1?: string
+  @defineAttribute('accent2', options) declare accent2?: string
+  @defineAttribute('accent3', options) declare accent3?: string
+  @defineAttribute('accent4', options) declare accent4?: string
+  @defineAttribute('accent5', options) declare accent5?: string
+  @defineAttribute('accent6', options) declare accent6?: string
+  @defineAttribute('bg1', options) declare bg1?: string
+  @defineAttribute('bg2', options) declare bg2?: string
+  @defineAttribute('folHlink', options) declare folHlink?: string
+  @defineAttribute('hlink', options) declare hlink?: string
+  @defineAttribute('tx1', options) declare tx1?: string
+  @defineAttribute('tx2', options) declare tx2?: string
+
+  override toJSON(): ColorMapJSON {
+    return super.toJSON()
+  }
 }

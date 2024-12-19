@@ -102,6 +102,7 @@ export class ConnectionShape extends _SlideElement {
         strokeWidth,
       })
     }
+
     return filterObjectEmptyAttr({
       type: 'connectionShape',
       name: inherited('nvCxnSpPr.cNvPr.name'),

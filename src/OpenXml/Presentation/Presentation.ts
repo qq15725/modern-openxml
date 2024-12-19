@@ -1,15 +1,17 @@
 import type { DefaultTextStyle } from './DefaultTextStyle'
 import type { EmbeddedFontList } from './EmbeddedFontList'
 import type { ExtensionList } from './ExtensionList'
-import type { NotesMasterIdJSON } from './NotesMasterId'
 import type { NotesMasterIdList } from './NotesMasterIdList'
 import type { NotesSize } from './NotesSize'
-import type { SlideIdJSON } from './SlideId'
 import type { SlideIdList } from './SlideIdList'
-import type { SlideMasterIdJSON } from './SlideMasterId'
 import type { SlideMasterIdList } from './SlideMasterIdList'
 import type { SlideSize } from './SlideSize'
 import { defineChild, defineElement, defineProperty, OOXML } from '../../core'
+
+export interface PresentationJSON {
+  slideWidth: number
+  slideHeight: number
+}
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.presentation.presentation
@@ -44,9 +46,8 @@ export class Presentation extends OOXML {
 
   @defineProperty('sldSz.cx') declare slideWidth: number
   @defineProperty('sldSz.cy') declare slideHeight: number
-  @defineProperty('notesSz.cx') declare notesWidth: number
-  @defineProperty('notesSz.cy') declare notesHeight: number
-  @defineProperty('sldIdLst') declare slides: SlideIdJSON[]
-  @defineProperty('sldMasterIdLst') declare slideMasters: SlideMasterIdJSON[]
-  @defineProperty('notesMasterIdLst') declare notesMasters: NotesMasterIdJSON[]
+
+  override toJSON(): PresentationJSON {
+    return super.toJSON()
+  }
 }

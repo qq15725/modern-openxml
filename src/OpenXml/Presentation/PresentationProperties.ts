@@ -4,6 +4,10 @@ import type { PrintingProperties } from './PrintingProperties'
 import type { ShowProperties } from './ShowProperties'
 import { defineChild, defineElement, defineProperty, OOXML } from '../../core'
 
+export interface PresentationPropertiesJSON {
+  colorMostRecentlyUsed?: string[]
+}
+
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.presentation.presentationproperties
  */
@@ -23,5 +27,9 @@ export class PresentationProperties extends OOXML {
   @defineChild('p:prnPr') declare prnPr?: PrintingProperties
   @defineChild('p:showPr') declare showPr?: ShowProperties
 
-  @defineProperty('clrMru.colors') declare colorMostRecentlyUsed?: string[]
+  @defineProperty('clrMru') declare colorMostRecentlyUsed?: string[]
+
+  override toJSON(): PresentationPropertiesJSON {
+    return super.toJSON()
+  }
 }

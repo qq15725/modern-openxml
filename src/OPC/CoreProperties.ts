@@ -1,5 +1,18 @@
 import { defineChild, type DefineChildUsedOptions, defineElement, OOXML } from '../core'
 
+export interface CorePropertiesJSON {
+  title?: string
+  creator?: string
+  subject?: string
+  description?: string
+  created?: string
+  modified?: string
+  keywords?: string
+  language?: string
+  lastModifiedBy?: string
+  revision?: string
+}
+
 const options: DefineChildUsedOptions = {
   isText: true,
   isProperty: true,
@@ -25,4 +38,8 @@ export class CoreProperties extends OOXML {
   @defineChild('cp:language', options) declare language?: string
   @defineChild('cp:lastModifiedBy', options) declare lastModifiedBy?: string
   @defineChild('cp:revision', options) declare revision?: string
+
+  override toJSON(): CorePropertiesJSON {
+    return super.toJSON()
+  }
 }

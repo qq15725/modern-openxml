@@ -2,6 +2,8 @@ import type { Alpha } from './Alpha'
 import type { Theme } from './Theme'
 import { defineChild, OOXML } from '../../core'
 
+export type ColorJSON = string
+
 export interface RGBA {
   r: number
   g: number
@@ -121,5 +123,9 @@ export abstract class _Color extends OOXML {
   toRGBAString(theme?: Theme): string {
     const { r, g, b, a } = this.toRGBA(theme)
     return `rgba(${r}, ${g}, ${b}, ${a})`
+  }
+
+  override toJSON(ctx?: { theme?: Theme }): ColorJSON {
+    return this.toRGBAString(ctx?.theme)
   }
 }
