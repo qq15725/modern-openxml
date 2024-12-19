@@ -6,19 +6,20 @@ import { defineElement, OOXML } from '../../core'
  */
 @defineElement('p:clrMru')
 export class ColorMostRecentlyUsed extends OOXML {
-  get children(): Color[] {
-    return Array.from(this.element.children).map((element) => {
-      switch (element.tagName) {
-        case 'a:hslClr':
-        case 'a:prstClr':
-        case 'a:schemeClr':
-        case 'a:scrgbClr':
-        case 'a:srgbClr':
-        case 'a:sysClr':
+  override get children(): Color[] {
+    return super.children.filter((child) => {
+      switch (child.tag) {
+        case 'hslClr':
+        case 'prstClr':
+        case 'schemeClr':
+        case 'scrgbClr':
+        case 'srgbClr':
+        case 'sysClr':
+          return true
         default:
-          return OOXML.make(element)
+          return false
       }
-    }) as any
+    }) as any[]
   }
 
   toJSON(ctx?: { theme?: Theme }): string[] {

@@ -204,7 +204,16 @@ function parseElement(
 
 export class SVGRenderer {
   render(pptx: PPTX): HTMLElement {
-    const { width, height, slides, slideMasters, slideLayouts, themes, presentation } = pptx
+    const {
+      width,
+      height,
+      slides,
+      slideMasters,
+      slideLayouts,
+      themes,
+      presentation,
+      presetShapeDefinitions,
+    } = pptx
 
     const viewBoxHeight = height * slides.length
 
@@ -227,6 +236,7 @@ export class SVGRenderer {
           layout,
           master,
           presentation,
+          presetShapeDefinitions,
         })
         const { backgroundColor } = slideStyle
 
@@ -239,7 +249,10 @@ export class SVGRenderer {
               transform: `translate(0, ${top})`,
             },
             children: [
-              ...master.toJSON({ theme })
+              ...master.toJSON({
+                theme,
+                presetShapeDefinitions,
+              })
                 .elements
                 .map((child) => {
                   return parseElement(
@@ -262,7 +275,11 @@ export class SVGRenderer {
               transform: `translate(0, ${top})`,
             },
             children: [
-              ...layout.toJSON({ master, theme })
+              ...layout.toJSON({
+                master,
+                theme,
+                presetShapeDefinitions,
+              })
                 .elements
                 .map((child) => {
                   return parseElement(

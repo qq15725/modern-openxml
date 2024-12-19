@@ -1,4 +1,4 @@
-import type { Theme } from '../Drawing'
+import type { PresetShapeDefinitions, Theme } from '../Drawing'
 import type { CommonSlideData } from './CommonSlideData'
 import type { ConnectionShape, ConnectionShapeJSON } from './ConnectionShape'
 import type { ExtensionList } from './ExtensionList'
@@ -14,6 +14,7 @@ import type { Timing } from './Timing'
 import { defineChild, defineProperty, OOXML } from '../../core'
 
 export interface SlideContext {
+  presetShapeDefinitions?: PresetShapeDefinitions
   presentation?: Presentation
   layout?: SlideLayout
   master?: SlideMaster
@@ -34,33 +35,32 @@ export type SlideElementJSON =
   | ConnectionShapeJSON
   | GraphicFrameJSON
 
-export class _Slide extends OOXML {
-  @defineChild('p:cSld') declare cSld: CommonSlideData
-  @defineChild('p:extLst') declare extLst: ExtensionList
-  @defineChild('p:timing') declare timing: Timing
-  @defineChild('p:transition') declare transition: OOXML
-  @defineChild('mc:AlternateContent') declare AlternateContent: OOXML
+export abstract class _Slide extends OOXML {
+  @defineChild('p:cSld', { required: true }) declare cSld: CommonSlideData
+  @defineChild('p:extLst') declare extLst?: ExtensionList
+  @defineChild('p:timing') declare timing?: Timing
+  @defineChild('p:transition') declare transition?: OOXML
+  @defineChild('mc:AlternateContent') declare AlternateContent?: OOXML
 
   @defineProperty('cSld.name') declare name?: string
   @defineProperty('_elements') declare elements: SlideElement[]
 
   get _elements(): SlideElement[] {
-    return Array.from(this.cSld.spTree.element.children)
-      .map((element) => {
-        switch (element.tagName) {
-          case 'p:nvGrpSpPr':
-          case 'p:grpSpPr':
-            return undefined
-          case 'p:sp':
-          case 'p:grpSp':
-          case 'p:cxnSp':
-          case 'p:pic':
-          case 'p:graphicFrame':
+    return this.cSld.spTree.children
+      .filter((element) => {
+        switch (element.tag) {
+          case 'sp':
+          case 'grpSp':
+          case 'cxnSp':
+          case 'pic':
+          case 'graphicFrame':
+            return true
+          case 'nvGrpSpPr':
+          case 'grpSpPr':
           default:
-            return OOXML.make(element)
+            return false
         }
-      })
-      .filter(Boolean) as any[]
+      }) as SlideElement[]
   }
 
   findPh(ph: PlaceholderShape): SlideElement | undefined {

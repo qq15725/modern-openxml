@@ -1,11 +1,6 @@
 import type { DefineChildUsedOptions } from '../../core'
 import { defineChild, defineElement, OOXML } from '../../core'
 
-const options: DefineChildUsedOptions = {
-  isText: true,
-  isProperty: true,
-}
-
 export interface PropertiesJSON {
   application?: string
   appVersion?: string
@@ -34,6 +29,11 @@ export interface PropertiesJSON {
   titlesOfParts?: string
   totalTime?: string
   words?: string
+}
+
+const options: DefineChildUsedOptions = {
+  isText: true,
+  isProperty: true,
 }
 
 /**

@@ -6,14 +6,8 @@ import { defineElement, OOXML } from '../../core'
  */
 @defineElement('a:custClrLst')
 export class CustomColorList extends OOXML {
-  get children(): CustomColor[] {
-    return Array.from(this.element.children).map((element) => {
-      switch (element.tagName) {
-        case 'a:custClr':
-        default:
-          return OOXML.make(element)
-      }
-    }).filter(Boolean) as any[]
+  override get children(): CustomColor[] {
+    return super.children.filter(child => child.tag === 'custClr') as any[]
   }
 
   override toJSON(): any {

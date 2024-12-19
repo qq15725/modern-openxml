@@ -1,4 +1,4 @@
-import type { GroupShape } from './GroupShape'
+import type { GroupShapeProperties } from './GroupShapeProperties'
 import type { NonVisualGroupShapeProperties } from './NonVisualGroupShapeProperties'
 import { defineChild, defineElement, OOXML } from '../../core'
 
@@ -7,6 +7,6 @@ import { defineChild, defineElement, OOXML } from '../../core'
  */
 @defineElement('p:spTree')
 export class ShapeTree extends OOXML {
-  @defineChild('p:nvGrpSpPr') declare nvGrpSpPr: NonVisualGroupShapeProperties
-  @defineChild('p:grpSpPr') declare grpSpPr: GroupShape
+  @defineChild('p:nvGrpSpPr') declare nvGrpSpPr?: NonVisualGroupShapeProperties
+  @defineChild('p:grpSpPr') declare grpSpPr?: GroupShapeProperties
 }

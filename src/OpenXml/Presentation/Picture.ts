@@ -87,6 +87,7 @@ export class Picture extends _SlideElement {
     }
     else {
       geometry = (prstGeom ?? custGeom)?.getPaths({
+        ...ctx,
         width: width || strokeWidth,
         height: height || strokeWidth,
         fill: fill?.color,

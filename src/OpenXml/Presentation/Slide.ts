@@ -5,6 +5,7 @@ import { _Slide } from './_Slide'
 
 export interface SlideJSON {
   type: 'slide'
+  name?: string
   layoutIndex: number
   style: {
     backgroundColor?: string

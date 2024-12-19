@@ -1,5 +1,5 @@
 import type { Relationship } from './Relationship'
-import { defineChildren, defineElement, OOXML } from '../core'
+import { defineElement, OOXML } from '../core'
 
 const officeDocument = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships'
 const _package = 'http://schemas.openxmlformats.org/package/2006/relationships'
@@ -30,9 +30,16 @@ export class Relationships extends OOXML {
     commentAuthors: `${officeDocument}/commentAuthors`,
   }
 
-  @defineChildren('Relationship') declare children: Relationship[]
+  override get children(): Relationship[] {
+    return super.children.filter(child => child.tag === 'Relationship') as any[]
+  }
 
   get value(): Record<string, { type: string, target: string }> {
-    return Object.fromEntries(this.children.map(v => [v.id, { type: v.type, target: v.target }]))
+    return Object.fromEntries(
+      this.children.map(v => [v.id, {
+        type: v.type,
+        target: v.target,
+      }]),
+    )
   }
 }

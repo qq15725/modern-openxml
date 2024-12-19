@@ -1,4 +1,3 @@
-import type { Zippable } from 'fflate'
 import type { CorePropertiesJSON } from '../OPC'
 import type { PropertiesJSON } from '../OpenXml/ExtendedProperties'
 import type {
@@ -8,12 +7,11 @@ import type {
   SlideLayoutJSON,
   SlideMasterJSON,
 } from '../OpenXml/Presentation'
-import { unzipSync, zipSync } from 'fflate'
+import { unzipSync } from 'fflate'
 import { CoreProperties, Relationships, Types } from '../OPC'
-import { Theme } from '../OpenXml/Drawing'
+import { PresetShapeDefinitions, Theme } from '../OpenXml/Drawing'
 import { Properties } from '../OpenXml/ExtendedProperties'
 import {
-  Picture,
   Presentation,
   PresentationProperties,
   Slide,
@@ -35,10 +33,14 @@ export interface PPTXJSON {
   // themes: any[]
 }
 
+export interface PPTXOptions {
+  presetShapeDefinitions?: string
+}
+
 export type PPTXSource =
   | ArrayBuffer
   | Uint8Array
-  | PPTXJSON
+  | Partial<PPTXJSON>
 
 /**
  * @link https://learn.microsoft.com/en-us/openspecs/office_standards/ms-pptx/efd8bb2d-d888-4e2e-af25-cad476730c9f
@@ -59,6 +61,7 @@ export class PPTX {
   declare presentation: Presentation
   declare presProps: PresentationProperties
   declare viewProps: ViewProperties
+  presetShapeDefinitions?: PresetShapeDefinitions
 
   get width(): number { return this.presentation.sldSz.cx }
   get height(): number { return this.presentation.sldSz.cy }
@@ -71,7 +74,7 @@ export class PPTX {
     }
   }
 
-  constructor(source: PPTXSource = {}) {
+  constructor(source: PPTXSource = {}, options?: PPTXOptions) {
     if (ArrayBuffer.isView(source)) {
       this._parseBuffer(source.buffer)
     }
@@ -80,6 +83,12 @@ export class PPTX {
     }
     else {
       this._parseJSON(source)
+    }
+
+    if (options?.presetShapeDefinitions) {
+      this.presetShapeDefinitions = new PresetShapeDefinitions(
+        options.presetShapeDefinitions,
+      )
     }
   }
 
@@ -288,79 +297,11 @@ export class PPTX {
     this.app = new Properties(app)
     this.core = new CoreProperties(core)
     this.presProps = new PresentationProperties(presProps)
+    this.viewProps = new ViewProperties()
     this.presentation = new Presentation(presentation)
     this.slideMasters = slideMasters.map(JSON => new SlideMaster(JSON))
     this.slideLayouts = slideLayouts.map(JSON => new SlideLayout(JSON))
     this.slides = slides.map(JSON => new Slide(JSON))
-  }
-
-  toZippable(): Zippable {
-    const slides = this.slides.map((slide, index) => [`slide${index + 1}.xml`, slide] as const)
-    const slideLayouts = this.slideLayouts.map((slide, index) => [`slideLayout${index + 1}.xml`, slide] as const)
-    const slideMasters = this.slideMasters.map((slide, index) => [`slideMaster${index + 1}.xml`, slide] as const)
-    const themes = this.themes.map((theme, index) => [`theme${index + 1}.xml`, theme] as const)
-    return {
-      'docProps': {
-        'app.xml': this.app.toXML(),
-        'core.xml': this.core.toXML(),
-      },
-      'ppt': {
-        'presentation.xml': this.presentation.toXML(),
-        'presProps.xml': this.presProps.toXML(),
-        'viewProps.xml': this.viewProps.toXML(),
-        'theme': Object.fromEntries(themes),
-        'slideLayouts': {
-          ...Object.fromEntries(slideLayouts),
-          _rels: Object.fromEntries(slideLayouts.map(([name], index) => {
-            return [`${name}.rels`, new Relationships([
-              { target: `../slideMasters/${slideMasters[index][0]}`, type: 'slideMaster' },
-            ])]
-          })),
-        },
-        'slideMaster': {
-          ...Object.fromEntries(slideMasters),
-          _rels: Object.fromEntries(slideMasters.map(([name], index) => {
-            return [`${name}.rels`, new Relationships([
-              { target: `../slideLayouts/${slideLayouts[index][0]}`, type: 'slideLayout' },
-              { target: `../theme/${themes[index][0]}`, type: 'theme' },
-            ])]
-          })),
-        },
-        'slides': {
-          ...Object.fromEntries(slides),
-          _rels: Object.fromEntries(slides.map(([name, slide]) => {
-            // TODO slideRefs
-            const slideRefs: string[] = []
-            slide.elements.forEach((el) => {
-              if (el instanceof Picture) {
-                // el.embed
-              }
-            })
-            return [`${name}.rels`, new Relationships([
-              ...slideRefs,
-              { target: `../slideLayouts/${slideLayouts[0][0]}`, type: 'slideLayout' },
-            ])]
-          })),
-        },
-        '_rels': {
-          'presentation.xml.rels': new Relationships([
-            //
-          ]),
-        },
-      },
-      '_rels': {
-        '.rels': new Relationships([
-          { target: 'ppt/presentation.xml', type: 'presentation' },
-          { target: 'ppt/presProps.xml', type: 'presProps' },
-          { target: 'ppt/viewProps.xml', type: 'viewProps' },
-        ]),
-      },
-      '[Content_Types].xml': '',
-    }
-  }
-
-  toBuffer(): ArrayBuffer {
-    return zipSync(this.toZippable()).buffer
   }
 
   toJSON(): PPTXJSON {
@@ -374,6 +315,7 @@ export class PPTX {
       slideMasters: this.slideMasters.map((master) => {
         const theme = this.themes[master?.themeIndex]
         return master.toJSON({
+          presetShapeDefinitions: this.presetShapeDefinitions,
           theme,
         })
       }),
@@ -381,6 +323,7 @@ export class PPTX {
         const master = this.slideMasters[layout?.masterIndex]
         const theme = this.themes[master?.themeIndex]
         return layout.toJSON({
+          presetShapeDefinitions: this.presetShapeDefinitions,
           master,
           theme,
         })
@@ -390,6 +333,7 @@ export class PPTX {
         const master = this.slideMasters[layout?.masterIndex]
         const theme = this.themes[master?.themeIndex]
         return slide.toJSON({
+          presetShapeDefinitions: this.presetShapeDefinitions,
           presentation: this.presentation,
           layout,
           master,

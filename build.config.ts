@@ -8,5 +8,12 @@ export default defineBuildConfig({
   clean: false,
   rollup: {
     emitCJS: true,
+    esbuild: {
+      tsconfigRaw: {
+        compilerOptions: {
+          experimentalDecorators: true,
+        },
+      },
+    },
   },
 })

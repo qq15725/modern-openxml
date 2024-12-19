@@ -4,7 +4,7 @@ import type { ColorMap } from './ColorMap'
 import type { HeaderFooter } from './HeaderFooter'
 import type { SlideLayoutIdList } from './SlideLayoutIdList'
 import type { TextStyles } from './TextStyles'
-import { defineAttribute, defineChild, defineElement, defineProperty } from '../../core'
+import { defineAttribute, defineChild, defineElement } from '../../core'
 import { _Slide } from './_Slide'
 
 export interface SlideMasterJSON {
@@ -35,8 +35,6 @@ export class SlideMaster extends _Slide {
   @defineChild('p:hf') declare hf?: HeaderFooter
   @defineChild('p:sldLayoutIdLst') declare sldLayoutIdLst?: SlideLayoutIdList
   @defineChild('p:txStyles') declare txStyles?: TextStyles
-
-  @defineProperty('clrMap') declare colorMap?: any
 
   override toJSON(ctx?: SlideContext): SlideMasterJSON {
     return {

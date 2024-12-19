@@ -32,15 +32,25 @@
   "types": "./dist/index.d.ts",
   "browser": "./dist/index.js",
   "typesVersions": {
-    "*": {
-      "*": [
-        "./dist/*",
-        "./dist/index.d.ts"
-      ]
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    },
+    "./presetShapeDefinitions": {
+      "types": "./assets/presetShapeDefinitions.d.ts",
+      "import": "./assets/presetShapeDefinitions.js",
+      "require": "./assets/presetShapeDefinitions.js"
+    },
+    "./presetTextWarpDefinitions": {
+      "types": "./assets/presetTextWarpDefinitions.d.ts",
+      "import": "./assets/presetTextWarpDefinitions.js",
+      "require": "./assets/presetTextWarpDefinitions.js"
     }
   },
   "files": [
-    "dist"
+    "dist",
+    "assets"
   ],
   "scripts": {
     "build": "vite build && unbuild",

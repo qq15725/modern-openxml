@@ -46,8 +46,8 @@ export interface ShapeJSON {
  */
 @defineElement('p:sp')
 export class Shape extends _SlideElement {
-  @defineChild('p:nvSpPr') declare nvSpPr?: NonVisualShapeProperties
-  @defineChild('p:spPr') declare spPr?: ShapeProperties
+  @defineChild('p:nvSpPr', { required: true }) declare nvSpPr: NonVisualShapeProperties
+  @defineChild('p:spPr', { required: true }) declare spPr: ShapeProperties
   @defineChild('p:txBody') declare txBody?: TextBody
   @defineChild('p:style') declare style?: ShapeStyle
 
@@ -98,6 +98,7 @@ export class Shape extends _SlideElement {
     }
     else {
       geometry = (prstGeom ?? custGeom)?.getPaths({
+        ...ctx,
         width: width || strokeWidth,
         height: height || strokeWidth,
         fill: fill?.color,

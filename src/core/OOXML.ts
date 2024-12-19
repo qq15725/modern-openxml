@@ -35,12 +35,17 @@ export function defineElement(tag: string) {
   return (constructor: any) => {
     const proto = constructor.prototype
     const definition = OOXML.makeDefinition(proto)
-    const tagArr = tag.split(':')
-    definition.tag = tag
-    definition.namespace = tagArr.length > 1 ? tagArr[0] : undefined
+    const [namespace, localName] = tag.split(':')
+    if (localName) {
+      definition.tag = localName
+      definition.namespace = namespace
+    }
+    else {
+      definition.tag = namespace
+    }
     OOXML.tagToConstructor.set(tag, constructor)
     Object.defineProperty(proto, 'tag', {
-      value: tag,
+      value: definition.tag,
       configurable: true,
       enumerable: true,
     })
@@ -104,6 +109,7 @@ export interface DefineChildUsedOptions {
   isArray?: boolean
   isProperty?: boolean
   defaultValue?: any
+  required?: boolean
 }
 
 export function defineChild(tag: string, options: DefineChildUsedOptions = {}): any {
@@ -192,18 +198,41 @@ export class OOXML {
   declare tag?: string
   declare element: Element
 
-  get textContent(): string { return this.element.textContent ?? '' }
-  set textContent(val: string) {
-    this.element.textContent = val
+  get children(): OOXML[] {
+    return this.getChildren()
   }
 
-  constructor(source?: string | Element) {
+  get textContent(): string { return this.element.textContent ?? '' }
+  set textContent(val: string) { this.element.textContent = val }
+
+  constructor(source: string | Element | Record<string, any> = {}) {
     if (typeof source === 'string') {
-      this.fromXML(source)
+      this.element = parseDomFromString(source)
     }
-    else if (source) {
-      this.fromElement(source)
+    else if (source.nodeType === 1) {
+      this.element = source as Element
     }
+    else {
+      this._parseJSON(source)
+    }
+  }
+
+  protected _parseJSON(JSON: Record<string, any>): void {
+    const definition = this.definition()
+
+    if (!definition)
+      return
+
+    const {
+      tag,
+    } = definition
+
+    if (!tag)
+      return
+
+    this.element = document.createElement(tag)
+
+    console.warn('TODO', JSON)
   }
 
   definition(): OOXMLDefinition | undefined {
@@ -280,21 +309,6 @@ export class OOXML {
         return undefined
       })
       .filter(Boolean) as T[]
-  }
-
-  fromXML(xml: string): this {
-    this.element = parseDomFromString(xml)
-    return this
-  }
-
-  fromElement(element: Element): this {
-    this.element = element
-    return this
-  }
-
-  fromJSON(_props: Record<string, any>): this {
-    // document.createElement('')
-    return this
   }
 
   toXML(): string {

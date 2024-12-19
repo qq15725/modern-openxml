@@ -15,20 +15,19 @@ export class Paragraph extends OOXML {
 
   @defineProperty('pPr.lvl') declare level?: number
   @defineProperty('pPr.fontAlgn') declare fontAlign?: string
-  @defineProperty('_children') declare children: (Break | Run | EndParagraphRunProperties)[]
 
-  get _children(): (Break | Run | EndParagraphRunProperties)[] {
-    return Array.from(this.element.children).map((element) => {
-      switch (element.tagName) {
-        case 'a:fld':
-        case 'a:pPr':
-          return undefined
-        case 'a:br':
-        case 'a:r':
-        case 'a:endParaRPr':
+  override get children(): (Break | Run | EndParagraphRunProperties)[] {
+    return super.children.filter((child) => {
+      switch (child.tag) {
+        case 'fld':
+        case 'pPr':
+          return false
+        case 'br':
+        case 'r':
+        case 'endParaRPr':
         default:
-          return OOXML.make(element)
+          return true
       }
-    }).filter(Boolean) as any
+    }) as any
   }
 }

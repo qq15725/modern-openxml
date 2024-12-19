@@ -14,5 +14,5 @@ export class CommonSlideData extends OOXML {
   @defineChild('p:controls') declare controls?: OOXML
   @defineChild('p:custDataLst') declare custDataLst?: OOXML
   @defineChild('p:extLst') declare extLst?: ExtensionList
-  @defineChild('p:spTree') declare spTree: ShapeTree
+  @defineChild('p:spTree', { required: true }) declare spTree: ShapeTree
 }
