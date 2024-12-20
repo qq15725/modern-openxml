@@ -59,6 +59,7 @@ export class OOXMLValue {
         return (Number(value) / 1440) * this.DPI
       case 'percentage':
       case 'ST_Percentage':
+      case 'ST_PositivePercentage':
       case 'CT_PositiveFixedPercentage':
       case 'ST_PositiveFixedPercentage':
       case 'rate':

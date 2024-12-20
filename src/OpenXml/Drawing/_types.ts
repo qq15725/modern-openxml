@@ -113,3 +113,13 @@ export type PresetLineDashVal =
   | 'sysDot'
   | 'sysDashDot'
   | 'sysDashDotDot'
+
+/**
+ * @link https://learn.microsoft.com/dotnet/api/documentformat.openxml.drawing.blipcompressionvalues
+ */
+export type BlipCompressionValues =
+  | 'email'
+  | 'hqprint'
+  | 'none'
+  | 'print'
+  | 'screen'

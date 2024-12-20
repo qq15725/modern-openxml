@@ -1,11 +1,10 @@
-import type { Color } from './_ColorStyle'
+import type { BlipFillJSON } from './_BlipFill'
 import type { BlipFill } from './BlipFill'
-import type { GradientFill } from './GradientFill'
-import type { GroupFill } from './GroupFill'
-import type { NoFill } from './NoFill'
-import type { PatternFill } from './PatternFill'
-import type { SolidFill } from './SolidFill'
-import type { Theme } from './Theme'
+import type { GradientFill, GradientFillJSON } from './GradientFill'
+import type { GroupFill, GroupFillJSON } from './GroupFill'
+import type { NoFill, NoFillJSON } from './NoFill'
+import type { PatternFill, PatternFillJSON } from './PatternFill'
+import type { SolidFill, SolidFillJSON } from './SolidFill'
 import { OOXML } from '../../core'
 
 export type Fill =
@@ -16,15 +15,13 @@ export type Fill =
   | PatternFill
   | SolidFill
 
-export interface FillContext {
-  theme?: Theme
-  color?: Color
-}
-
-export interface FillJSON {
-  color?: string
-  image?: string
-}
+export type FillJSON =
+  | BlipFillJSON
+  | GradientFillJSON
+  | GroupFillJSON
+  | NoFillJSON
+  | PatternFillJSON
+  | SolidFillJSON
 
 export abstract class _FillList extends OOXML {
   get children(): Fill[] {

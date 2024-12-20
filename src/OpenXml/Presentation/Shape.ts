@@ -1,11 +1,13 @@
 import type { ParagraphContent } from 'modern-text'
 import type {
+  BlipFillJSON,
   CustomGeometry,
+  CustomGeometryJSON,
   Fill,
-  GeometryJSON,
   ParagraphProperties,
   PresetGeometry,
   PresetGeometryJSON,
+  SolidFill,
 } from '../Drawing'
 import type { SlideContext } from './_Slide'
 import type { NonVisualShapeProperties } from './NonVisualShapeProperties'
@@ -14,14 +16,17 @@ import type { ShapeProperties } from './ShapeProperties'
 import type { ShapeStyle } from './ShapeStyle'
 import type { TextBody } from './TextBody'
 import { defineChild, defineElement, filterObjectEmptyAttr, getObjectValueByPath } from '../../core'
-import { Run } from '../Drawing'
+import {
+  Run,
+} from '../Drawing'
 import { _SlideElement } from './_SlideElement'
 
 export interface ShapeJSON {
   type: 'shape'
   name?: string
   placeholderShape?: PlaceholderShapeJSON
-  geometry?: GeometryJSON | PresetGeometryJSON
+  geometry?: PresetGeometryJSON | CustomGeometryJSON
+  background?: BlipFillJSON
   style: {
     visibility?: 'hidden'
     left?: number
@@ -29,12 +34,11 @@ export interface ShapeJSON {
     width?: number
     height?: number
     rotate?: number
-    backgroundColor?: string
-    backgroundImage?: string
-    borderColor?: string
-    borderImage?: string
     scaleX?: number
     scaleY?: number
+    shadow?: string
+    backgroundColor?: string
+    borderColor?: string
     borderWidth?: number
     paddingLeft?: number
     paddingTop?: number
@@ -45,7 +49,6 @@ export interface ShapeJSON {
     textWrap?: 'wrap' | 'nowrap'
     textAlign?: 'center' | 'start'
     verticalAlign?: 'top' | 'middle' | 'bottom'
-    shadow?: string
   }
   content?: ParagraphContent[]
 }
@@ -83,36 +86,79 @@ export class Shape extends _SlideElement {
         ?? _ph?.offsetGet(path)
     }
 
-    const width = inherited('spPr.xfrm.ext.cx')
-    const height = inherited('spPr.xfrm.ext.cy')
-    const prstGeom = inherited<PresetGeometry>('spPr.prstGeom')
-    const custGeom = inherited<CustomGeometry>('spPr.custGeom')
-    let background
-    let border
-    let borderWidth
-    let geometry
+    const style: ShapeJSON['style'] = {
+      visibility: inherited('nvSpPr.cNvPr.visibility'),
+      left: inherited('spPr.xfrm.off.x'),
+      top: inherited('spPr.xfrm.off.y'),
+      width: inherited('spPr.xfrm.ext.cx'),
+      height: inherited('spPr.xfrm.ext.cy'),
+      rotate: inherited('spPr.xfrm.rot'),
+      scaleX: inherited('spPr.xfrm.scaleX'),
+      scaleY: inherited('spPr.xfrm.scaleY'),
+      shadow: inherited('spPr.effectLst.shadow'),
+      paddingLeft: inherited('txBody.bodyPr.lIns'),
+      paddingTop: inherited('txBody.bodyPr.tIns'),
+      paddingRight: inherited('txBody.bodyPr.rIns'),
+      paddingBottom: inherited('txBody.bodyPr.bIns'),
+      textRotate: inherited('txBody.bodyPr.rot'),
+      writingMode: inherited('txBody.bodyPr.writingMode'),
+      textWrap: inherited('txBody.bodyPr.textWrap'),
+      textAlign: inherited('txBody.bodyPr.textAlign'),
+      verticalAlign: inherited('txBody.bodyPr.verticalAlign'),
+      backgroundColor: undefined,
+      borderWidth: undefined,
+      borderColor: undefined,
+    }
+
     const fill = inherited<Fill>('spPr.fill')?.toJSON({
       ...ctx,
-      color: this.spPr?.fill ? undefined : this.style?.fillRef?.color,
+      color: this.spPr?.hasFill
+        ? undefined
+        : this.style?.fillRef?.color,
     })
-    const stroke = inherited<Fill>('spPr.ln.fill')?.toJSON({
+
+    let fillColor
+    let background: BlipFillJSON | undefined
+    switch (fill?.type) {
+      case 'solidFill':
+        fillColor = fill.color
+        break
+      case 'blipFill':
+        background = fill
+        break
+    }
+
+    const outlineFill = inherited<Fill>('spPr.ln.fill')?.toJSON({
       ...ctx,
-      color: this.spPr?.ln?.fill ? undefined : this.style?.lnRef?.color,
+      color: this.spPr?.ln?.hasFill
+        ? undefined
+        : this.style?.lnRef?.color,
     })
-    const strokeWidth = inherited('spPr.ln.w')
-    if (prstGeom?.prst === 'rect') {
-      background = fill
-      border = stroke
-      borderWidth = strokeWidth
+
+    let outlineColor
+    switch (outlineFill?.type) {
+      case 'solidFill':
+        outlineColor = outlineFill.color
+        break
+    }
+
+    const prstGeom = inherited<PresetGeometry>('spPr.prstGeom')
+    const custGeom = inherited<CustomGeometry>('spPr.custGeom')
+    let geometry
+    const outlineWidth = inherited('spPr.ln.w')
+    if (prstGeom?.prst === 'rect' && !prstGeom?.avLst?.value.length) {
+      style.backgroundColor = fillColor
+      style.borderColor = outlineColor
+      style.borderWidth = outlineWidth
     }
     else {
       geometry = (prstGeom ?? custGeom)?.toJSON({
         ...ctx,
-        width: width || strokeWidth,
-        height: height || strokeWidth,
-        fill: fill?.color,
-        stroke: stroke?.color,
-        strokeWidth,
+        width: style.width || outlineWidth,
+        height: style.height || outlineWidth,
+        fill: fillColor,
+        stroke: outlineColor,
+        strokeWidth: outlineWidth,
       })
     }
 
@@ -121,31 +167,8 @@ export class Shape extends _SlideElement {
       name: inherited('nvSpPr.cNvPr.name'),
       placeholderShape: ph?.toJSON(),
       geometry,
-      style: {
-        visibility: inherited('nvSpPr.cNvPr.visibility'),
-        left: inherited('spPr.xfrm.off.x'),
-        top: inherited('spPr.xfrm.off.y'),
-        width,
-        height,
-        rotate: inherited('spPr.xfrm.rot'),
-        scaleX: inherited('spPr.xfrm.scaleX'),
-        scaleY: inherited('spPr.xfrm.scaleY'),
-        shadow: inherited('spPr.effectLst.shadow'),
-        backgroundColor: background?.color,
-        backgroundImage: background?.image,
-        borderWidth,
-        borderColor: border?.color,
-        borderImage: border?.image,
-        paddingLeft: inherited('txBody.bodyPr.lIns'),
-        paddingTop: inherited('txBody.bodyPr.tIns'),
-        paddingRight: inherited('txBody.bodyPr.rIns'),
-        paddingBottom: inherited('txBody.bodyPr.bIns'),
-        textRotate: inherited('txBody.bodyPr.rot'),
-        writingMode: inherited('txBody.bodyPr.writingMode'),
-        textWrap: inherited('txBody.bodyPr.textWrap'),
-        textAlign: inherited('txBody.bodyPr.textAlign'),
-        verticalAlign: inherited('txBody.bodyPr.verticalAlign'),
-      },
+      background,
+      style,
       content: this.nvSpPr?.cNvSpPr.txBox
         ? this.txBody?.pList.map((p) => {
           const lvl = p.pPr?.lvl
@@ -177,12 +200,10 @@ export class Shape extends _SlideElement {
             textAlign: inheritedPPr('textAlign'),
             fragments: p.children.map((r) => {
               if (r instanceof Run) {
-                const inheritedRPr = (path = ''): any => {
+                const inheritedRPr = <T>(path = ''): T | undefined => {
                   return r.offsetGet(`rPr.${path}`)
-                    ?? inheritedPPr(`defRPr.${path}`)
+                    ?? inheritedPPr(`defRPr.${path}`) as T
                 }
-                const fill = inheritedRPr('fill')?.toJSON(ctx)
-                const border = inheritedRPr('ln.fill')?.toJSON(ctx)
                 return {
                   fontWeight: inheritedRPr('fontWeight'),
                   fontStyle: inheritedRPr('fontStyle'),
@@ -192,10 +213,9 @@ export class Shape extends _SlideElement {
                   fontSize: inheritedRPr('fontSize'),
                   letterSpacing: inheritedRPr('letterSpacing'),
                   lineHeight: inheritedRPr('lineHeight'),
-                  color: fill?.color,
+                  color: inheritedRPr<SolidFill>('fill')?.toJSON(ctx)?.color,
                   borderWidth: inheritedRPr('ln.w'),
-                  borderColor: border?.color,
-                  borderImage: border?.image,
+                  borderColor: inheritedRPr<SolidFill>('ln.fill')?.toJSON(ctx)?.color,
                   content: r.content,
                 }
               }

@@ -24,11 +24,7 @@ export abstract class _FillStyle extends OOXML {
       ?? this.solidFill
   }
 
-  get fillColor(): string | undefined {
-    return this.fill?.toJSON().color
-  }
-
-  get fillImage(): string | undefined {
-    return this.fill?.toJSON().image
+  get hasFill(): boolean {
+    return Boolean(this.fill)
   }
 }

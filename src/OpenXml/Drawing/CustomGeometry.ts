@@ -7,6 +7,10 @@ import type { ShapeGuideList } from './ShapeGuideList'
 import { defineChild, defineElement } from '../../core'
 import { _Geometry } from './_Geometry'
 
+export interface CustomGeometryJSON {
+  paths: GeometryPath[]
+}
+
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.drawing.customgeometry
  */
@@ -25,5 +29,11 @@ export class CustomGeometry extends _Geometry {
       pathLst: this.pathLst,
       ...ctx,
     })
+  }
+
+  override toJSON(ctx: GeometryContext): CustomGeometryJSON {
+    return {
+      paths: this.getPaths(ctx),
+    }
   }
 }

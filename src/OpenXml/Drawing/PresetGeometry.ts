@@ -1,4 +1,4 @@
-import type { GeometryContext, GeometryJSON, GeometryPath } from './_Geometry'
+import type { GeometryContext, GeometryPath } from './_Geometry'
 import type { PresetShapeDefinitions } from './PresetShapeDefinitions'
 import { defineAttribute, defineElement } from '../../core'
 import { _Geometry } from './_Geometry'
@@ -7,8 +7,9 @@ export interface PresetGeometryContext extends GeometryContext {
   presetShapeDefinitions?: PresetShapeDefinitions
 }
 
-export interface PresetGeometryJSON extends GeometryJSON {
+export interface PresetGeometryJSON {
   preset: string
+  paths: GeometryPath[]
 }
 
 /**
@@ -29,7 +30,7 @@ export class PresetGeometry extends _Geometry {
   override toJSON(ctx: PresetGeometryContext): PresetGeometryJSON {
     return {
       preset: this.prst,
-      ...super.toJSON(ctx),
+      paths: this.getPaths(ctx),
     }
   }
 }

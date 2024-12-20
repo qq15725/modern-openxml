@@ -34,6 +34,7 @@ function parseElement(
     width = 0,
     height = 0,
     rotate = 0,
+    opacity,
     visibility,
     backgroundColor,
   } = style as Record<string, any>
@@ -42,7 +43,7 @@ function parseElement(
     const {
       childOffsetLeft = 0,
       childOffsetTop = 0,
-    } = parent.style
+    } = parent
 
     left -= childOffsetLeft
     top -= childOffsetTop
@@ -71,6 +72,7 @@ function parseElement(
       title: name,
       transform: transform.join(' '),
       visibility,
+      opacity,
     },
     children: [],
   }

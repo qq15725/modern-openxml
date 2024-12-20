@@ -34,10 +34,6 @@ export interface GeometryPath {
   strokeWidth: number
 }
 
-export interface GeometryJSON {
-  paths: GeometryPath[]
-}
-
 function parseVariables(
   width: number,
   height: number,
@@ -333,11 +329,5 @@ export abstract class _Geometry extends OOXML {
         commands,
       }
     }) ?? []
-  }
-
-  override toJSON(ctx: GeometryContext): GeometryJSON {
-    return {
-      paths: this.getPaths(ctx),
-    }
   }
 }

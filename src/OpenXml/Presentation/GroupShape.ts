@@ -1,3 +1,4 @@
+import type { BlipFillJSON, Fill } from '../Drawing'
 import type { SlideContext, SlideElement, SlideElementJSON } from './_Slide'
 import type { GroupShapeProperties } from './GroupShapeProperties'
 import type { NonVisualGroupShapeProperties } from './NonVisualGroupShapeProperties'
@@ -10,16 +11,17 @@ export interface GroupShapeJSON {
   type: 'groupShape'
   name?: string
   placeholderShape?: PlaceholderShapeJSON
+  childOffsetLeft?: number
+  childOffsetTop?: number
+  childWidth?: number
+  childHeight?: number
+  background?: BlipFillJSON
   style: {
     visibility?: 'hidden'
     left?: number
     top?: number
     width?: number
     height?: number
-    childOffsetLeft?: number
-    childOffsetTop?: number
-    childWidth?: number
-    childHeight?: number
     rotate?: number
     backgroundColor?: string
     backgroundImage?: string
@@ -73,38 +75,54 @@ export class GroupShape extends _SlideElement {
       _ph = (layout?.findPh(ph) ?? master?.findPh(ph)) as Shape | undefined
     }
 
-    const inherited = (path: string): any => {
+    const inherited = <T>(path: string): T | undefined => {
       return this.offsetGet(path)
-        ?? _ph?.offsetGet(path)
+        ?? _ph?.offsetGet(path) as T
     }
 
-    const width = inherited('grpSpPr.xfrm.ext.cx')
-    const height = inherited('grpSpPr.xfrm.ext.cy')
-    const background = inherited('grpSpPr.fill')?.toJSON(ctx)
-    const border = inherited('grpSpPr.ln.fill')?.toJSON(ctx)
+    const fill = inherited<Fill>('grpSpPr.fill')?.toJSON(ctx)
+
+    let fillColor
+    let background: BlipFillJSON | undefined
+    switch (fill?.type) {
+      case 'solidFill':
+        fillColor = fill.color
+        break
+      case 'blipFill':
+        background = fill
+        break
+    }
+
+    const outlineFill = inherited<Fill>('grpSpPr.ln.fill')?.toJSON(ctx)
+
+    let outlineColor
+    switch (outlineFill?.type) {
+      case 'solidFill':
+        outlineColor = outlineFill.color
+        break
+    }
 
     return filterObjectEmptyAttr({
       type: 'groupShape',
       name: inherited('nvGrpSpPr.cNvPr.name'),
       placeholderShape: ph?.toJSON(),
+      childOffsetLeft: inherited('grpSpPr.xfrm.chOff.x'),
+      childOffsetTop: inherited('grpSpPr.xfrm.chOff.y'),
+      childWidth: inherited('grpSpPr.xfrm.chExt.cx'),
+      childHeight: inherited('grpSpPr.xfrm.chExt.cy'),
+      background,
       style: {
         visibility: inherited('nvGrpSpPr.cNvPr.visibility'),
         left: inherited('grpSpPr.xfrm.off.x'),
         top: inherited('grpSpPr.xfrm.off.y'),
-        width,
-        height,
-        childOffsetLeft: inherited('grpSpPr.xfrm.chOff.x'),
-        childOffsetTop: inherited('grpSpPr.xfrm.chOff.y'),
-        childWidth: inherited('grpSpPr.xfrm.chExt.cx'),
-        childHeight: inherited('grpSpPr.xfrm.chExt.cy'),
+        width: inherited('grpSpPr.xfrm.ext.cx'),
+        height: inherited('grpSpPr.xfrm.ext.cy'),
         rotate: inherited('grpSpPr.xfrm.rot'),
         scaleX: inherited('grpSpPr.xfrm.scaleX'),
         scaleY: inherited('grpSpPr.xfrm.scaleY'),
-        backgroundColor: background?.color,
-        backgroundImage: background?.image,
+        backgroundColor: fillColor,
         borderWidth: inherited('grpSpPr.ln.w'),
-        borderColor: border?.color,
-        borderImage: border?.image,
+        borderColor: outlineColor,
         shadow: inherited('grpSpPr.effectLst.shadow'),
       },
       elements: this.elements.map(el => el.toJSON(ctx)),

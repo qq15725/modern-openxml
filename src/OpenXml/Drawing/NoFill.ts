@@ -1,12 +1,17 @@
-import type { FillContext, FillJSON } from './_FillList'
 import { defineElement, OOXML } from '../../core'
+
+export interface NoFillJSON {
+  type: 'noFill'
+}
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.drawing.nofill
  */
 @defineElement('a:noFill')
 export class NoFill extends OOXML {
-  override toJSON(_ctx?: FillContext): FillJSON {
-    return {}
+  override toJSON(): NoFillJSON {
+    return {
+      type: 'noFill',
+    }
   }
 }

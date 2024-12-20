@@ -12,7 +12,7 @@ export interface PlaceholderShapeJSON {
 }
 
 /**
- * https://learn.microsoft.com/dotnet/api/documentformat.openxml.presentation.placeholdershape
+ * @link https://learn.microsoft.com/dotnet/api/documentformat.openxml.presentation.placeholdershape
  */
 @defineElement('p:ph')
 export class PlaceholderShape extends OOXML {
