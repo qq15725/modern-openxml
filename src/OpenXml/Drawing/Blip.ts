@@ -10,7 +10,7 @@ import { defineAttribute, defineChild, defineElement, OOXML } from '../../core'
 @defineElement('a:blip')
 export class Blip extends OOXML {
   @defineAttribute('cstate') declare cstate?: BlipCompressionValues
-  @defineAttribute('r:embed') declare rEmbed?: string
+  @defineAttribute('r:embed') declare rEmbed: string
   @defineAttribute('r:link') declare rLink?: string
 
   @defineChild('a:alphaBiLevel') declare alphaBiLevel?: OOXML

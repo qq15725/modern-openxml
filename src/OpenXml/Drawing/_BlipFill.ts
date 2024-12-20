@@ -8,7 +8,7 @@ export interface BlipFillJSON {
   type: 'blipFill'
   rotateWithShape?: boolean
   dpi?: number
-  src?: string
+  src: string
   opacity?: number
   sourceRectangle?: SourceRectangleJSON
 }
@@ -17,7 +17,7 @@ export class _BlipFill extends OOXML {
   @defineAttribute('rotWithShape', 'boolean') declare rotWithShape?: boolean
   @defineAttribute('dpi', 'number') declare dpi?: number
 
-  @defineChild('a:blip') declare blip?: Blip
+  @defineChild('a:blip') declare blip: Blip
   @defineChild('a:srcRect') declare srcRect?: SourceRectangle
   @defineChild('a:stretch') declare stretch?: Stretch
   @defineChild('a:tile') declare tile?: Tile
@@ -28,7 +28,7 @@ export class _BlipFill extends OOXML {
       type: 'blipFill',
       rotateWithShape: this.rotWithShape,
       dpi: this.dpi,
-      src: this.blip?.rEmbed,
+      src: this.blip.rEmbed,
       opacity: this.blip?.alphaModFix?.amt,
       sourceRectangle: sourceRectangle
         && Object.keys(sourceRectangle).length > 0

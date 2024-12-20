@@ -27,6 +27,7 @@ export interface ShapeJSON {
   placeholderShape?: PlaceholderShapeJSON
   geometry?: PresetGeometryJSON | CustomGeometryJSON
   background?: BlipFillJSON
+  content?: ParagraphContent[]
   style: {
     visibility?: 'hidden'
     left?: number
@@ -50,7 +51,6 @@ export interface ShapeJSON {
     textAlign?: 'center' | 'start'
     verticalAlign?: 'top' | 'middle' | 'bottom'
   }
-  content?: ParagraphContent[]
 }
 
 /**

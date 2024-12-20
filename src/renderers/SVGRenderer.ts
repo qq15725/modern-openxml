@@ -34,7 +34,6 @@ function parseElement(
     width = 0,
     height = 0,
     rotate = 0,
-    opacity,
     visibility,
     backgroundColor,
   } = style as Record<string, any>
@@ -72,7 +71,6 @@ function parseElement(
       title: name,
       transform: transform.join(' '),
       visibility,
-      opacity,
     },
     children: [],
   }
@@ -156,13 +154,14 @@ function parseElement(
     }
   }
   else if (element.type === 'picture') {
-    const { style, src } = element
+    const { style, image } = element
     elementG.children!.push({
       tag: 'image',
       attrs: {
         width: style.width,
         height: style.height,
-        href: read(src!),
+        href: read(image.src),
+        opacity: image.opacity,
         preserveAspectRatio: 'none',
       },
     })

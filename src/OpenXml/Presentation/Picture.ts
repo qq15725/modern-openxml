@@ -16,11 +16,12 @@ import { defineChild, defineElement, filterObjectEmptyAttr, getObjectValueByPath
 
 import { _SlideElement } from './_SlideElement'
 
-export interface PictureJSON extends Omit<BlipFillJSON, 'type' | 'opacity'> {
+export interface PictureJSON {
   type: 'picture'
   name?: string
   placeholderShape?: PlaceholderShapeJSON
   geometry?: PresetGeometryJSON | CustomGeometryJSON
+  image: BlipFillJSON
   background?: BlipFillJSON
   style: {
     visibility?: 'hidden'
@@ -35,7 +36,6 @@ export interface PictureJSON extends Omit<BlipFillJSON, 'type' | 'opacity'> {
     backgroundColor?: string
     borderColor?: string
     borderWidth?: number
-    opacity?: number
   }
 }
 
@@ -44,7 +44,7 @@ export interface PictureJSON extends Omit<BlipFillJSON, 'type' | 'opacity'> {
  */
 @defineElement('p:pic')
 export class Picture extends _SlideElement {
-  @defineChild('p:blipFill') declare blipFill?: BlipFill
+  @defineChild('p:blipFill', { required: true }) declare blipFill: BlipFill
   @defineChild('p:nvPicPr') declare nvPicPr?: NonVisualPictureProperties
   @defineChild('p:spPr') declare spPr?: ShapeProperties
   @defineChild('p:style') declare style?: ShapeStyle
@@ -85,7 +85,6 @@ export class Picture extends _SlideElement {
       backgroundColor: undefined,
       borderWidth: undefined,
       borderColor: undefined,
-      opacity: undefined,
     }
 
     const fill = inherited<Fill>('spPr.fill')?.toJSON({
@@ -140,16 +139,12 @@ export class Picture extends _SlideElement {
       })
     }
 
-    const blipFill = inherited<BlipFill>('blipFill')!.toJSON()
-
-    style.opacity = blipFill.opacity
-
     return filterObjectEmptyAttr({
-      ...blipFill,
       type: 'picture',
       name: inherited('nvPicPr.cNvPr.name'),
       placeholderShape: ph?.toJSON(),
       geometry,
+      image: inherited<BlipFill>('blipFill')!.toJSON(),
       background,
       style,
     } as PictureJSON)
