@@ -24,12 +24,9 @@
 import { PPTX } from 'modern-openxml'
 import presetShapeDefinitions from 'modern-openxml/presetShapeDefinitions'
 
-fetch('example.pptx')
-  .then(rep => rep.arrayBuffer())
-  .then((buffer) => {
-    const pptx = new PPTX(buffer, { presetShapeDefinitions })
-    console.log(pptx.toJSON())
-  })
+// buffer is PPTX file arrayBuffer
+const pptx = new PPTX(buffer, { presetShapeDefinitions })
+console.log(pptx.toJSON())
 ```
 
 ## PPTX to SVG
@@ -38,12 +35,9 @@ fetch('example.pptx')
 import { PPTX, PPTXToSVGRenderer } from 'modern-openxml'
 import presetShapeDefinitions from 'modern-openxml/presetShapeDefinitions'
 
-fetch('example.pptx')
-  .then(rep => rep.arrayBuffer())
-  .then((buffer) => {
-    const pptx = new PPTX(buffer, { presetShapeDefinitions })
-    const svgRenderer = new PPTXToSVGRenderer(pptx)
-    document.body.appendChild(svgRenderer.toSVG())
-    console.log(svgRenderer.toSVGString())
-  })
+// buffer is PPTX file arrayBuffer
+const pptx = new PPTX(buffer, { presetShapeDefinitions })
+const svgRenderer = new PPTXToSVGRenderer(pptx)
+document.body.appendChild(svgRenderer.toSVG())
+console.log(svgRenderer.toSVGString())
 ```
