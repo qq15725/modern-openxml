@@ -140,7 +140,7 @@ function parseElement(
 
     if (geometry) {
       elementG.children!.push(
-        ...geometry.map((path) => {
+        ...geometry.paths.map((path) => {
           return {
             tag: 'path',
             attrs: {
@@ -183,7 +183,7 @@ function parseElement(
 
     if (geometry) {
       elementG.children!.push(
-        ...geometry.map((path) => {
+        ...geometry.paths.map((path) => {
           return {
             tag: 'path',
             attrs: {
