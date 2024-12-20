@@ -1,7 +1,8 @@
-import type { CustomGeometry, Fill, GeometryPath, PresetGeometry } from '../Drawing'
+import type { CustomGeometry, Fill, GeometryJSON, PresetGeometry, PresetGeometryJSON } from '../Drawing'
 import type { SlideContext } from './_Slide'
 import type { BlipFill } from './BlipFill'
 import type { NonVisualPictureProperties } from './NonVisualPictureProperties'
+import type { PlaceholderShapeJSON } from './PlaceholderShape'
 import type { ShapeProperties } from './ShapeProperties'
 import type { ShapeStyle } from './ShapeStyle'
 import { defineChild, defineElement, filterObjectEmptyAttr, getObjectValueByPath } from '../../core'
@@ -11,7 +12,8 @@ export interface PictureJSON {
   type: 'picture'
   name?: string
   src?: string
-  geometry?: GeometryPath[]
+  placeholderShape?: PlaceholderShapeJSON
+  geometry?: GeometryJSON | PresetGeometryJSON
   style: {
     visibility?: 'hidden'
     left?: number
@@ -86,7 +88,7 @@ export class Picture extends _SlideElement {
       borderWidth = strokeWidth
     }
     else {
-      geometry = (prstGeom ?? custGeom)?.getPaths({
+      geometry = (prstGeom ?? custGeom)?.toJSON({
         ...ctx,
         width: width || strokeWidth,
         height: height || strokeWidth,
@@ -101,6 +103,7 @@ export class Picture extends _SlideElement {
       name: inherited('nvPicPr.cNvPr.name'),
       src: inherited('blipFill.blip.rEmbed'),
       geometry,
+      placeholderShape: ph?.toJSON(),
       style: {
         visibility: inherited('nvPicPr.cNvPr.visibility'),
         left: inherited('spPr.xfrm.off.x'),
@@ -117,6 +120,6 @@ export class Picture extends _SlideElement {
         borderImage: border?.image,
         shadow: inherited('spPr.effectLst.shadow'),
       },
-    })
+    } as PictureJSON)
   }
 }

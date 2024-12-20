@@ -16,7 +16,7 @@ export type GeometryPathCommand =
   | { type: 'C', x1: number, y1: number, x2: number, y2: number, x: number, y: number }
   | { type: 'Z' }
 
-export interface GeometryGetPathsOptions {
+export interface GeometryContext {
   width: number
   height: number
   fill?: string
@@ -32,6 +32,10 @@ export interface GeometryPath {
   fill: string
   stroke: string
   strokeWidth: number
+}
+
+export interface GeometryJSON {
+  paths: GeometryPath[]
 }
 
 function parseVariables(
@@ -187,7 +191,7 @@ function getEllipsePoint(a: number, b: number, theta: number): { x: number, y: n
 export abstract class _Geometry extends OOXML {
   @defineChild('a:avLst') declare avLst?: AdjustValueList
 
-  getPaths(options: GeometryGetPathsOptions): GeometryPath[] {
+  getPaths(ctx: GeometryContext): GeometryPath[] {
     const {
       width,
       height,
@@ -197,7 +201,7 @@ export abstract class _Geometry extends OOXML {
       fill,
       stroke,
       strokeWidth = 0,
-    } = options
+    } = ctx
 
     const av = avLst?.value.map(gd => ({ name: gd.name, fmla: gd.fmla })) ?? []
     const gd = gdLst?.value.map(gd => ({ name: gd.name, fmla: gd.fmla })) ?? []
@@ -329,5 +333,11 @@ export abstract class _Geometry extends OOXML {
         commands,
       }
     }) ?? []
+  }
+
+  override toJSON(ctx: GeometryContext): GeometryJSON {
+    return {
+      paths: this.getPaths(ctx),
+    }
   }
 }

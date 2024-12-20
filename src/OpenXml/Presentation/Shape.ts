@@ -1,7 +1,15 @@
 import type { ParagraphContent } from 'modern-text'
-import type { CustomGeometry, Fill, GeometryPath, ParagraphProperties, PresetGeometry } from '../Drawing'
+import type {
+  CustomGeometry,
+  Fill,
+  GeometryJSON,
+  ParagraphProperties,
+  PresetGeometry,
+  PresetGeometryJSON,
+} from '../Drawing'
 import type { SlideContext } from './_Slide'
 import type { NonVisualShapeProperties } from './NonVisualShapeProperties'
+import type { PlaceholderShapeJSON } from './PlaceholderShape'
 import type { ShapeProperties } from './ShapeProperties'
 import type { ShapeStyle } from './ShapeStyle'
 import type { TextBody } from './TextBody'
@@ -12,7 +20,8 @@ import { _SlideElement } from './_SlideElement'
 export interface ShapeJSON {
   type: 'shape'
   name?: string
-  geometry?: GeometryPath[]
+  placeholderShape?: PlaceholderShapeJSON
+  geometry?: GeometryJSON | PresetGeometryJSON
   style: {
     visibility?: 'hidden'
     left?: number
@@ -97,7 +106,7 @@ export class Shape extends _SlideElement {
       borderWidth = strokeWidth
     }
     else {
-      geometry = (prstGeom ?? custGeom)?.getPaths({
+      geometry = (prstGeom ?? custGeom)?.toJSON({
         ...ctx,
         width: width || strokeWidth,
         height: height || strokeWidth,
@@ -110,6 +119,7 @@ export class Shape extends _SlideElement {
     return filterObjectEmptyAttr({
       type: 'shape',
       name: inherited('nvSpPr.cNvPr.name'),
+      placeholderShape: ph?.toJSON(),
       geometry,
       style: {
         visibility: inherited('nvSpPr.cNvPr.visibility'),

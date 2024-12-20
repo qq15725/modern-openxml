@@ -3,12 +3,14 @@ import type { Transform2D } from '../Drawing'
 import type { SlideContext } from './_Slide'
 import type { ExtensionList } from './ExtensionList'
 import type { NonVisualGraphicFrameProperties } from './NonVisualGraphicFrameProperties'
+import type { PlaceholderShapeJSON } from './PlaceholderShape'
 import { defineChild, defineElement, filterObjectEmptyAttr } from '../../core'
 import { _SlideElement } from './_SlideElement'
 
 export interface GraphicFrameJSON {
   type: 'graphicFrame'
   name?: string
+  placeholderShape?: PlaceholderShapeJSON
   style: {
     visibility?: 'hidden'
     left?: number
@@ -53,6 +55,7 @@ export class GraphicFrame extends _SlideElement {
     return filterObjectEmptyAttr({
       type: 'graphicFrame',
       name: inherited('nvGraphicFramePr.cNvPr.name'),
+      placeholderShape: ph?.toJSON(),
       style: {
         visibility: inherited('nvGraphicFramePr.cNvPr.visibility'),
         left: inherited('xfrm.off.x'),
@@ -63,6 +66,6 @@ export class GraphicFrame extends _SlideElement {
         scaleX: inherited('xfrm.scaleX'),
         scaleY: inherited('xfrm.scaleY'),
       },
-    })
+    } as GraphicFrameJSON)
   }
 }

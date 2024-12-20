@@ -1,7 +1,16 @@
-import type { GeometryGetPathsOptions, GeometryPath } from './_Geometry'
+import type { GeometryContext, GeometryJSON, GeometryPath } from './_Geometry'
 import type { PresetShapeDefinitions } from './PresetShapeDefinitions'
 import { defineAttribute, defineElement } from '../../core'
 import { _Geometry } from './_Geometry'
+
+export interface PresetGeometryContext extends GeometryContext {
+  presetShapeDefinitions?: PresetShapeDefinitions
+}
+
+export interface PresetGeometryJSON extends GeometryJSON {
+  preset: string
+}
+
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.drawing.presetgeometry
  */
@@ -9,15 +18,18 @@ import { _Geometry } from './_Geometry'
 export class PresetGeometry extends _Geometry {
   @defineAttribute('prst') declare prst: string
 
-  override getPaths(
-    options: GeometryGetPathsOptions & {
-      presetShapeDefinitions?: PresetShapeDefinitions
-    },
-  ): GeometryPath[] {
+  override getPaths(ctx: PresetGeometryContext): GeometryPath[] {
     return super.getPaths({
-      ...options?.presetShapeDefinitions?.get(this.prst),
+      ...ctx?.presetShapeDefinitions?.get(this.prst),
       avLst: this.avLst,
-      ...options,
+      ...ctx,
     })
+  }
+
+  override toJSON(ctx: PresetGeometryContext): PresetGeometryJSON {
+    return {
+      preset: this.prst,
+      ...super.toJSON(ctx),
+    }
   }
 }

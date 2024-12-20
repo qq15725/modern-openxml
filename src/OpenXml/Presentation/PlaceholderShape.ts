@@ -6,6 +6,11 @@ import { GroupShape } from './GroupShape'
 import { Picture } from './Picture'
 import { Shape } from './Shape'
 
+export interface PlaceholderShapeJSON {
+  type?: string
+  index?: string
+}
+
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.presentation.placeholdershape
  */
@@ -37,5 +42,9 @@ export class PlaceholderShape extends OOXML {
       return ph.type === this.type && ph.idx === this.idx
     }
     return false
+  }
+
+  override toJSON(): PlaceholderShapeJSON {
+    return super.toJSON()
   }
 }

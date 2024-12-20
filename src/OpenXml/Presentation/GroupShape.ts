@@ -1,6 +1,7 @@
 import type { SlideContext, SlideElement, SlideElementJSON } from './_Slide'
 import type { GroupShapeProperties } from './GroupShapeProperties'
 import type { NonVisualGroupShapeProperties } from './NonVisualGroupShapeProperties'
+import type { PlaceholderShapeJSON } from './PlaceholderShape'
 import type { Shape } from './Shape'
 import { defineChild, defineElement, filterObjectEmptyAttr, OOXML } from '../../core'
 import { _SlideElement } from './_SlideElement'
@@ -8,6 +9,7 @@ import { _SlideElement } from './_SlideElement'
 export interface GroupShapeJSON {
   type: 'groupShape'
   name?: string
+  placeholderShape?: PlaceholderShapeJSON
   style: {
     visibility?: 'hidden'
     left?: number
@@ -84,6 +86,7 @@ export class GroupShape extends _SlideElement {
     return filterObjectEmptyAttr({
       type: 'groupShape',
       name: inherited('nvGrpSpPr.cNvPr.name'),
+      placeholderShape: ph?.toJSON(),
       style: {
         visibility: inherited('nvGrpSpPr.cNvPr.visibility'),
         left: inherited('grpSpPr.xfrm.off.x'),

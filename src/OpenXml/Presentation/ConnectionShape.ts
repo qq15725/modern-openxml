@@ -1,7 +1,8 @@
-import type { CustomGeometry, Fill, GeometryPath, PresetGeometry } from '../Drawing'
+import type { CustomGeometry, Fill, GeometryJSON, PresetGeometry, PresetGeometryJSON } from '../Drawing'
 import type { SlideContext } from './_Slide'
 import type { ExtensionList } from './ExtensionList'
 import type { NonVisualConnectionShapeProperties } from './NonVisualConnectionShapeProperties'
+import type { PlaceholderShapeJSON } from './PlaceholderShape'
 import type { ShapeProperties } from './ShapeProperties'
 import type { ShapeStyle } from './ShapeStyle'
 import { defineChild, defineElement, filterObjectEmptyAttr, getObjectValueByPath } from '../../core'
@@ -10,7 +11,8 @@ import { _SlideElement } from './_SlideElement'
 export interface ConnectionShapeJSON {
   type: 'connectionShape'
   name?: string
-  geometry?: GeometryPath[]
+  placeholderShape?: PlaceholderShapeJSON
+  geometry?: GeometryJSON | PresetGeometryJSON
   style: {
     visibility?: 'hidden'
     left?: number
@@ -94,7 +96,7 @@ export class ConnectionShape extends _SlideElement {
       borderWidth = strokeWidth
     }
     else {
-      geometry = (prstGeom ?? custGeom)?.getPaths({
+      geometry = (prstGeom ?? custGeom)?.toJSON({
         ...ctx,
         width: width || strokeWidth,
         height: height || strokeWidth,
@@ -107,6 +109,7 @@ export class ConnectionShape extends _SlideElement {
     return filterObjectEmptyAttr({
       type: 'connectionShape',
       name: inherited('nvCxnSpPr.cNvPr.name'),
+      placeholderShape: ph?.toJSON(),
       geometry,
       style: {
         visibility: inherited('nvCxnSpPr.cNvPr.visibility'),
@@ -124,6 +127,6 @@ export class ConnectionShape extends _SlideElement {
         borderImage: border?.image,
         shadow: inherited('spPr.effectLst.shadow'),
       },
-    })
+    } as ConnectionShapeJSON)
   }
 }
