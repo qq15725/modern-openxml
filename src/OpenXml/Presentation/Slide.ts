@@ -1,3 +1,4 @@
+import type { BlipFillJSON } from '../Drawing'
 import type { SlideContext, SlideElementJSON } from './_Slide'
 import type { ColorMapOverride } from './ColorMapOverride'
 import { defineChild, defineElement, filterObjectEmptyAttr } from '../../core'
@@ -7,9 +8,9 @@ export interface SlideJSON {
   type: 'slide'
   name?: string
   layoutIndex: number
+  background?: BlipFillJSON
   style: {
     backgroundColor?: string
-    backgroundImage?: string
   }
   elements: SlideElementJSON[]
 }
@@ -33,13 +34,23 @@ export class Slide extends _Slide {
   @defineChild('p:clrMapOvr') declare clrMapOvr: ColorMapOverride
 
   override toJSON(ctx?: SlideContext): SlideJSON {
-    const background = this.cSld.bg?.bgPr?.fill?.toJSON(ctx)
+    let background
+    let backgroundColor
+    const fill = this.cSld.bg?.bgPr?.fill?.toJSON(ctx)
+    switch (fill?.type) {
+      case 'solidFill':
+        backgroundColor = fill.color
+        break
+      case 'blipFill':
+        background = fill
+        break
+    }
     return filterObjectEmptyAttr({
       type: 'slide',
       layoutIndex: this.layoutIndex,
+      background,
       style: {
-        backgroundColor: background?.color,
-        backgroundImage: background?.image,
+        backgroundColor,
       },
       elements: this.elements.map(el => el.toJSON(ctx)),
     })
