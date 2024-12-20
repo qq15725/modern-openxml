@@ -1,3 +1,21 @@
+## [0.0.2](https://github.com/qq15725/modern-openxml/compare/v0.0.1...v0.0.2) (2024-12-20)
+
+
+### Bug Fixes
+
+* parse geometry by SVGRenderer ([6bfb57f](https://github.com/qq15725/modern-openxml/commit/6bfb57fb44d0bbd125c7a10a11e0c955028cbe6f))
+
+
+### Features
+
+* add image prop to PictureJSON ([932ff31](https://github.com/qq15725/modern-openxml/commit/932ff31ed78fd08ddb8d825ed62fbd4b9358205e))
+* export placeholderShape prop in SlideElementJSON ([be9f412](https://github.com/qq15725/modern-openxml/commit/be9f41213e39d771c124ce36c549f304c9e06daf))
+* parse background in SlideElement ([d4eb7fe](https://github.com/qq15725/modern-openxml/commit/d4eb7fe8305b6672b65d63966d10e3c1e926d7f2))
+* parse slide background ([dc3d4a0](https://github.com/qq15725/modern-openxml/commit/dc3d4a0fb918ba677f221682dd4188b73e4028b0))
+* PPTXToSVGRenderer ([6f889c5](https://github.com/qq15725/modern-openxml/commit/6f889c5f081ddfa0cea81c00e4e02f9ee1564e8e))
+
+
+
 ## 0.0.1 (2024-12-19)
 
 
