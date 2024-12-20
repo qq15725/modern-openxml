@@ -202,8 +202,16 @@ function parseElement(
   return elementG
 }
 
-export class SVGRenderer {
-  render(pptx: PPTX): HTMLElement {
+export class PPTXToSVGRenderer {
+  constructor(
+    public pptx: PPTX,
+  ) {
+    //
+  }
+
+  toSVGString(): string {
+    const pptx = this.pptx
+
     const {
       width,
       height,
@@ -327,8 +335,10 @@ export class SVGRenderer {
       }),
     }
 
-    const svgString = XMLGen.node(svgNode)
+    return XMLGen.node(svgNode)
+  }
 
-    return parseDomFromString(svgString)
+  toSVG(): HTMLElement {
+    return parseDomFromString(this.toSVGString())
   }
 }

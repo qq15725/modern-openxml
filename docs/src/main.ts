@@ -1,7 +1,7 @@
 import { presetShapeDefinitions } from '../../assets/presetShapeDefinitions.js'
-import { OOXML, PPTX, SVGRenderer } from '../../src'
+import { OOXML, PPTX, PPTXToSVGRenderer } from '../../src'
 
-console.log(
+console.warn(
   OOXML.tagToConstructor,
   OOXML.protoToDefinition,
 )
@@ -15,7 +15,10 @@ input.onchange = async () => {
   const pptx = new PPTX(await file?.arrayBuffer(), {
     presetShapeDefinitions,
   })
-  const svg = new SVGRenderer().render(pptx)
-  document.body.appendChild(svg)
-  console.log(pptx, pptx.toJSON())
+
+  console.warn(pptx, pptx.toJSON())
+
+  document.body.appendChild(
+    new PPTXToSVGRenderer(pptx).toSVG(),
+  )
 }

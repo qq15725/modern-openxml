@@ -1,1 +1,1 @@
-export * from './SVGRenderer'
+export * from './PPTXToSVGRenderer'
