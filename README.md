@@ -18,13 +18,12 @@
   </a>
 </p>
 
-## Usage
+## PPTX to JSON
 
 ```ts
 import { PPTX } from 'modern-openxml'
 import presetShapeDefinitions from 'modern-openxml/presetShapeDefinitions'
 
-// parse
 fetch('example.pptx')
   .then(rep => rep.arrayBuffer())
   .then((buffer) => {
