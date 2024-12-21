@@ -76,7 +76,7 @@ export class PPTX {
 
   constructor(source: PPTXSource = {}, options?: PPTXOptions) {
     if (ArrayBuffer.isView(source)) {
-      this._parseBuffer(source.buffer)
+      this._parseBuffer(source.buffer as ArrayBuffer)
     }
     else if (source instanceof ArrayBuffer) {
       this._parseBuffer(source)
