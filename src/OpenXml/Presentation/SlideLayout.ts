@@ -1,11 +1,13 @@
 import type { OOXML } from '../../core'
 import type { SlideContext, SlideElementJSON } from './_Slide'
 import type { ColorMapOverride } from './ColorMapOverride'
-import { defineAttribute, defineChild, defineElement } from '../../core'
+import { defineAttribute, defineChild, defineElement, filterObjectEmptyAttr } from '../../core'
 import { _Slide } from './_Slide'
 
 export interface SlideLayoutJSON {
   type: 'slideLayout'
+  path?: string
+  masterPath?: string
   masterIndex: number
   elements: SlideElementJSON[]
 }
@@ -36,10 +38,12 @@ export class SlideLayout extends _Slide {
   @defineChild('p:hf') declare hf?: OOXML
 
   override toJSON(ctx?: SlideContext): SlideLayoutJSON {
-    return {
+    return filterObjectEmptyAttr({
       type: 'slideLayout',
+      path: this.path,
+      masterPath: this.masterPath,
       masterIndex: this.masterIndex,
       elements: this.elements.filter(el => !el.hasPh()).map(el => el.toJSON(ctx)),
-    }
+    })
   }
 }

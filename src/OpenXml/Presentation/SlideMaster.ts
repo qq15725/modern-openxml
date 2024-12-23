@@ -9,6 +9,8 @@ import { _Slide } from './_Slide'
 
 export interface SlideMasterJSON {
   type: 'slideMaster'
+  path?: string
+  themePath?: string
   themeIndex: number
   colorMap?: ColorMapJSON
   elements: SlideElementJSON[]
@@ -39,6 +41,8 @@ export class SlideMaster extends _Slide {
   override toJSON(ctx?: SlideContext): SlideMasterJSON {
     return {
       type: 'slideMaster',
+      path: this.path,
+      themePath: this.themePath,
       themeIndex: this.themeIndex,
       colorMap: this.clrMap?.toJSON(),
       elements: this.elements.filter(el => !el.hasPh()).map(el => el.toJSON(ctx)),

@@ -2,7 +2,7 @@
   "name": "modern-openxml",
   "type": "module",
   "version": "0.0.2",
-  "packageManager": "pnpm@9.9.0",
+  "packageManager": "pnpm@9.15.1",
   "description": "OpenXML for JavaScript",
   "author": "wxm",
   "license": "MIT",
@@ -70,21 +70,21 @@
   "dependencies": {
     "fflate": "^0.8.2",
     "modern-font": "^0.3.4",
-    "modern-path2d": "^0.2.7",
-    "modern-text": "^0.7.1"
+    "modern-path2d": "^1.0.0",
+    "modern-text": "^1.0.0"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^3.7.1",
-    "@types/node": "^22.6.1",
-    "bumpp": "^9.5.2",
+    "@antfu/eslint-config": "^3.12.0",
+    "@types/node": "^22.10.2",
+    "bumpp": "^9.9.2",
     "conventional-changelog-cli": "^5.0.0",
-    "eslint": "^9.11.1",
-    "lint-staged": "^15.2.10",
+    "eslint": "^9.17.0",
+    "lint-staged": "^15.2.11",
     "simple-git-hooks": "^2.11.1",
     "typescript": "^5.7.2",
     "unbuild": "^3.0.1",
-    "vite": "^5.4.7",
-    "vitest": "^2.1.1"
+    "vite": "^6.0.5",
+    "vitest": "^2.1.8"
   },
   "simple-git-hooks": {
     "pre-commit": "pnpm lint-staged"

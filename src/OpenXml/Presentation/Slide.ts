@@ -7,6 +7,8 @@ import { _Slide } from './_Slide'
 export interface SlideJSON {
   type: 'slide'
   name?: string
+  path?: string
+  layoutPath?: string
   layoutIndex: number
   background?: BlipFillJSON
   style: {
@@ -47,6 +49,8 @@ export class Slide extends _Slide {
     }
     return filterObjectEmptyAttr({
       type: 'slide',
+      path: this.path,
+      layoutPath: this.layoutPath,
       layoutIndex: this.layoutIndex,
       background,
       style: {
