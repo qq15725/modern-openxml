@@ -97,9 +97,9 @@ export abstract class _Color extends OOXML {
     const expandedHex
       = normalizedHex.length === 3
         ? normalizedHex
-          .split('')
-          .map(char => char + char)
-          .join('')
+            .split('')
+            .map(char => char + char)
+            .join('')
         : normalizedHex
     if (expandedHex.length !== 6 || !/^[0-9a-f]{6}$/i.test(expandedHex)) {
       console.warn(`Failed to hexToRgb: ${hex}`)
