@@ -1,26 +1,20 @@
+import type { IDOCElement } from 'modern-idoc'
 import type { OOXML } from '../../core'
 import type { Transform2D } from '../Drawing'
 import type { SlideContext } from './_Slide'
 import type { ExtensionList } from './ExtensionList'
 import type { NonVisualGraphicFrameProperties } from './NonVisualGraphicFrameProperties'
-import type { PlaceholderShapeJSON } from './PlaceholderShape'
-import { defineChild, defineElement, filterObjectEmptyAttr } from '../../core'
+import type { IDOCPlaceholderShape } from './PlaceholderShape'
+import { clearEmptyAttrs, defineChild, defineElement } from '../../core'
 import { _SlideElement } from './_SlideElement'
 
-export interface GraphicFrameJSON {
+export interface IDOCGraphicFrameElementMeta {
   type: 'graphicFrame'
-  name?: string
-  placeholderShape?: PlaceholderShapeJSON
-  style: {
-    visibility?: 'hidden'
-    left?: number
-    top?: number
-    width?: number
-    height?: number
-    rotate?: number
-    scaleX?: number
-    scaleY?: number
-  }
+  placeholderShape?: IDOCPlaceholderShape
+}
+
+export interface IDOCGraphicFrameElement extends IDOCElement {
+  meta: IDOCGraphicFrameElementMeta
 }
 
 /**
@@ -37,7 +31,7 @@ export class GraphicFrame extends _SlideElement {
     return Boolean(this.nvGraphicFramePr?.nvPr?.ph)
   }
 
-  override toJSON(ctx: SlideContext = {}): GraphicFrameJSON {
+  override toIDOC(ctx: SlideContext = {}): IDOCGraphicFrameElement {
     const { layout, master } = ctx
 
     // ph
@@ -52,10 +46,8 @@ export class GraphicFrame extends _SlideElement {
         ?? _ph?.offsetGet(path)
     }
 
-    return filterObjectEmptyAttr({
-      type: 'graphicFrame',
+    return clearEmptyAttrs({
       name: inherited('nvGraphicFramePr.cNvPr.name'),
-      placeholderShape: ph?.toJSON(),
       style: {
         visibility: inherited('nvGraphicFramePr.cNvPr.visibility'),
         left: inherited('xfrm.off.x'),
@@ -66,6 +58,10 @@ export class GraphicFrame extends _SlideElement {
         scaleX: inherited('xfrm.scaleX'),
         scaleY: inherited('xfrm.scaleY'),
       },
-    } as GraphicFrameJSON)
+      meta: {
+        type: 'graphicFrame',
+        placeholderShape: ph?.toIDOC(),
+      },
+    })
   }
 }

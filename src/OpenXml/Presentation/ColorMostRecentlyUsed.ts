@@ -22,7 +22,7 @@ export class ColorMostRecentlyUsed extends OOXML {
     }) as any[]
   }
 
-  toJSON(ctx?: { theme?: Theme }): string[] {
-    return this.children.map(child => child.toJSON(ctx))
+  toIDOC(ctx?: { theme?: Theme }): string[] {
+    return this.children.map(child => child.toIDOC(ctx))
   }
 }

@@ -1,10 +1,9 @@
-import type { BlipFillJSON } from './_BlipFill'
 import type { BlipFill } from './BlipFill'
-import type { GradientFill, GradientFillJSON } from './GradientFill'
-import type { GroupFill, GroupFillJSON } from './GroupFill'
-import type { NoFill, NoFillJSON } from './NoFill'
-import type { PatternFill, PatternFillJSON } from './PatternFill'
-import type { SolidFill, SolidFillJSON } from './SolidFill'
+import type { GradientFill } from './GradientFill'
+import type { GroupFill } from './GroupFill'
+import type { NoFill } from './NoFill'
+import type { PatternFill } from './PatternFill'
+import type { SolidFill } from './SolidFill'
 import { OOXML } from '../../core'
 
 export type Fill =
@@ -14,14 +13,6 @@ export type Fill =
   | NoFill
   | PatternFill
   | SolidFill
-
-export type FillJSON =
-  | BlipFillJSON
-  | GradientFillJSON
-  | GroupFillJSON
-  | NoFillJSON
-  | PatternFillJSON
-  | SolidFillJSON
 
 export abstract class _FillList extends OOXML {
   get children(): Fill[] {

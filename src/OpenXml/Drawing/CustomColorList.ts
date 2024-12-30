@@ -10,11 +10,11 @@ export class CustomColorList extends OOXML {
     return super.children.filter(child => child.tag === 'custClr') as any[]
   }
 
-  override toJSON(): any {
+  override toIDOC(): any {
     return this.children.map((child) => {
       return {
         name: child.name,
-        color: child.toJSON(),
+        color: child.toIDOC(),
       }
     })
   }

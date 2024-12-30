@@ -1,11 +1,12 @@
-import type { CorePropertiesJSON } from '../OPC'
-import type { PropertiesJSON } from '../OpenXml/ExtendedProperties'
+import type { IDOCDocument } from 'modern-idoc'
+import type { toIDOCCoreProperties } from '../OPC'
+import type { IDOCProperties } from '../OpenXml/ExtendedProperties'
 import type {
-  PresentationJSON,
-  PresentationPropertiesJSON,
-  SlideJSON,
-  SlideLayoutJSON,
-  SlideMasterJSON,
+  IDOCPresentation,
+  IDOCPresentationProperties,
+  IDOCSlideElement,
+  IDOCSlideLayoutElement,
+  IDOCSlideMasterElement,
 } from '../OpenXml/Presentation'
 import { unzipSync } from 'fflate'
 import { CoreProperties, Relationships, Types } from '../OPC'
@@ -21,16 +22,20 @@ import {
 } from '../OpenXml/Presentation'
 import { joinPaths } from '../utils'
 
-export interface PPTXJSON {
-  app?: PropertiesJSON
-  core?: CorePropertiesJSON
-  presentation?: PresentationJSON
-  presProps?: PresentationPropertiesJSON
+export interface IDOCPPTXMeta {
+  app?: IDOCProperties
+  core?: toIDOCCoreProperties
+  presentation?: IDOCPresentation
+  presProps?: IDOCPresentationProperties
   // viewProps?: any
-  slideMasters: SlideMasterJSON[]
-  slideLayouts: SlideLayoutJSON[]
-  slides: SlideJSON[]
   // themes: any[]
+  slideMasters: IDOCSlideMasterElement[]
+  slideLayouts: IDOCSlideLayoutElement[]
+}
+
+export interface IDOCPPTX extends IDOCDocument {
+  children: IDOCSlideElement[]
+  meta: IDOCPPTXMeta
 }
 
 export interface PPTXOptions {
@@ -40,7 +45,7 @@ export interface PPTXOptions {
 export type PPTXSource =
   | ArrayBuffer
   | Uint8Array
-  | Partial<PPTXJSON>
+  | Partial<IDOCPPTX>
 
 /**
  * @link https://learn.microsoft.com/en-us/openspecs/office_standards/ms-pptx/efd8bb2d-d888-4e2e-af25-cad476730c9f
@@ -82,7 +87,7 @@ export class PPTX {
       this._parseBuffer(source)
     }
     else {
-      this._parseJSON(source)
+      this._parseIDOC(source)
     }
 
     if (options?.presetShapeDefinitions) {
@@ -283,7 +288,12 @@ export class PPTX {
     })
   }
 
-  protected _parseJSON(JSON: Partial<PPTXJSON> = {}): void {
+  protected _parseIDOC(doc: Partial<IDOCPPTX> = {}): void {
+    const {
+      meta = {} as IDOCPPTXMeta,
+      children: slides = [],
+    } = doc
+
     const {
       app,
       core,
@@ -291,55 +301,60 @@ export class PPTX {
       presentation,
       slideMasters = [],
       slideLayouts = [],
-      slides = [],
-    } = JSON
+    } = meta
 
     this.app = new Properties(app)
     this.core = new CoreProperties(core)
     this.presProps = new PresentationProperties(presProps)
     this.viewProps = new ViewProperties()
     this.presentation = new Presentation(presentation)
-    this.slideMasters = slideMasters.map(JSON => new SlideMaster(JSON))
-    this.slideLayouts = slideLayouts.map(JSON => new SlideLayout(JSON))
-    this.slides = slides.map(JSON => new Slide(JSON))
+    this.slideMasters = slideMasters.map(doc => new SlideMaster(doc))
+    this.slideLayouts = slideLayouts.map(doc => new SlideLayout(doc))
+    this.slides = slides.map(doc => new Slide(doc))
   }
 
-  toJSON(): PPTXJSON {
+  toIDOC(): IDOCPPTX {
+    const slideMasters = this.slideMasters.map((master) => {
+      const theme = this.themes[master?.themeIndex]
+      return master.toIDOC({
+        presetShapeDefinitions: this.presetShapeDefinitions,
+        theme,
+      })
+    })
+    const slideLayouts = this.slideLayouts.map((layout) => {
+      const master = this.slideMasters[layout?.masterIndex]
+      const theme = this.themes[master?.themeIndex]
+      return layout.toIDOC({
+        presetShapeDefinitions: this.presetShapeDefinitions,
+        master,
+        theme,
+      })
+    })
+    const slides = this.slides.map((slide) => {
+      const layout = this.slideLayouts[slide.layoutIndex]
+      const master = this.slideMasters[layout?.masterIndex]
+      const theme = this.themes[master?.themeIndex]
+      return slide.toIDOC({
+        presetShapeDefinitions: this.presetShapeDefinitions,
+        presentation: this.presentation,
+        layout,
+        master,
+        theme,
+      })
+    })
+
     return {
-      app: this.app?.toJSON(),
-      core: this.core?.toJSON(),
-      presentation: this.presentation?.toJSON(),
-      presProps: this.presProps?.toJSON(),
-      // viewProps: this.viewProps?.toJSON(),
-      // themes: this.themes.map(v => v.toJSON()),
-      slideMasters: this.slideMasters.map((master) => {
-        const theme = this.themes[master?.themeIndex]
-        return master.toJSON({
-          presetShapeDefinitions: this.presetShapeDefinitions,
-          theme,
-        })
-      }),
-      slideLayouts: this.slideLayouts.map((layout) => {
-        const master = this.slideMasters[layout?.masterIndex]
-        const theme = this.themes[master?.themeIndex]
-        return layout.toJSON({
-          presetShapeDefinitions: this.presetShapeDefinitions,
-          master,
-          theme,
-        })
-      }),
-      slides: this.slides.map((slide) => {
-        const layout = this.slideLayouts[slide.layoutIndex]
-        const master = this.slideMasters[layout?.masterIndex]
-        const theme = this.themes[master?.themeIndex]
-        return slide.toJSON({
-          presetShapeDefinitions: this.presetShapeDefinitions,
-          presentation: this.presentation,
-          layout,
-          master,
-          theme,
-        })
-      }),
+      meta: {
+        app: this.app?.toIDOC(),
+        core: this.core?.toIDOC(),
+        presentation: this.presentation?.toIDOC(),
+        presProps: this.presProps?.toIDOC(),
+        // viewProps: this.viewProps?.toIDOC(),
+        // themes: this.themes.map(v => v.toIDOC()),
+        slideMasters,
+        slideLayouts,
+      },
+      children: slides,
     }
   }
 }

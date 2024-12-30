@@ -1,20 +1,19 @@
-import type { BlipFillJSON } from '../Drawing'
-import type { SlideContext, SlideElementJSON } from './_Slide'
+import type { IDOCElement } from 'modern-idoc'
+import type { IDOCSlideChildElement, SlideContext } from './_Slide'
 import type { ColorMapOverride } from './ColorMapOverride'
-import { defineChild, defineElement, filterObjectEmptyAttr } from '../../core'
+import { clearEmptyAttrs, defineChild, defineElement } from '../../core'
 import { _Slide } from './_Slide'
 
-export interface SlideJSON {
+export interface IDOCSlideElementMeta {
   type: 'slide'
-  name?: string
   path?: string
   layoutPath?: string
   layoutIndex: number
-  background?: BlipFillJSON
-  style: {
-    backgroundColor?: string
-  }
-  elements: SlideElementJSON[]
+}
+
+export interface IDOCSlideElement extends IDOCElement {
+  children: IDOCSlideChildElement[]
+  meta: IDOCSlideElementMeta
 }
 
 /**
@@ -35,28 +34,16 @@ export class Slide extends _Slide {
 
   @defineChild('p:clrMapOvr') declare clrMapOvr: ColorMapOverride
 
-  override toJSON(ctx?: SlideContext): SlideJSON {
-    let background
-    let backgroundColor
-    const fill = this.cSld.bg?.bgPr?.fill?.toJSON(ctx)
-    switch (fill?.type) {
-      case 'solidFill':
-        backgroundColor = fill.color
-        break
-      case 'blipFill':
-        background = fill
-        break
-    }
-    return filterObjectEmptyAttr({
-      type: 'slide',
-      path: this.path,
-      layoutPath: this.layoutPath,
-      layoutIndex: this.layoutIndex,
-      background,
-      style: {
-        backgroundColor,
+  override toIDOC(ctx?: SlideContext): IDOCSlideElement {
+    return clearEmptyAttrs({
+      fill: this.cSld.bg?.bgPr?.fill?.toIDOC(ctx),
+      children: this.elements.map(el => el.toIDOC(ctx)),
+      meta: {
+        type: 'slide',
+        path: this.path,
+        layoutPath: this.layoutPath,
+        layoutIndex: this.layoutIndex,
       },
-      elements: this.elements.map(el => el.toJSON(ctx)),
     })
   }
 }

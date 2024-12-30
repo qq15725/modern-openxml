@@ -1,10 +1,10 @@
 import type { PPTX } from '../extensions'
 import type {
-  GroupShapeJSON,
-  SlideElementJSON,
+  IDOCGroupShapeElement,
+  IDOCSlideChildElement,
 } from '../OpenXml/Presentation'
 import type { XMLNode } from './XMLGen'
-import { pathCommandsToPathData } from 'modern-path2d'
+import { normalizeElement } from 'modern-idoc'
 import { measureText } from 'modern-text'
 import { OOXMLValue } from '../core'
 import { parseDomFromString } from '../utils'
@@ -12,11 +12,11 @@ import { XMLGen } from './XMLGen'
 
 export interface ParseElementContext {
   read: (rid: string) => any
-  parent?: GroupShapeJSON
+  parent?: IDOCGroupShapeElement
 }
 
 function parseElement(
-  element: SlideElementJSON,
+  element: IDOCSlideChildElement,
   ctx: ParseElementContext,
 ): XMLNode | undefined {
   const { parent, read } = ctx
@@ -24,7 +24,15 @@ function parseElement(
   const {
     name = '',
     style,
-  } = element
+    image,
+    // video,
+    text,
+    geometry,
+    // fill,
+    // stroke,
+    // meta,
+    children,
+  } = normalizeElement(element)
 
   let {
     scaleX = 1,
@@ -43,17 +51,14 @@ function parseElement(
       childOffsetLeft = 0,
       childOffsetTop = 0,
     } = parent
-
     left -= childOffsetLeft
     top -= childOffsetTop
   }
 
   const transform: string[] = []
-
   if (left !== 0 || top !== 0) {
     transform.push(`translate(${left}, ${top})`)
   }
-
   if (scaleX !== 1 || scaleY !== 1 || rotate !== 0) {
     const cx = width / 2
     const cy = height / 2
@@ -86,10 +91,9 @@ function parseElement(
     })
   }
 
-  if (element.type === 'shape') {
-    const { content, style, geometry } = element
-
+  if (text) {
     const measured = measureText({
+      ...text,
       style: {
         paddingLeft: 0.25 * OOXMLValue.DPI / 2.54,
         paddingRight: 0.25 * OOXMLValue.DPI / 2.54,
@@ -97,7 +101,6 @@ function parseElement(
         paddingBottom: 0.13 * OOXMLValue.DPI / 2.54,
         ...style,
       },
-      content,
     })
 
     elementG.children!.push(
@@ -137,66 +140,55 @@ function parseElement(
           })
       }),
     )
+  }
 
-    if (geometry) {
-      elementG.children!.push(
-        ...geometry.paths.map((path) => {
+  if (geometry) {
+    elementG.children!.push(
+      ...geometry.data.map((path) => {
+        if (typeof path === 'string') {
+          return {
+            tag: 'path',
+            attrs: {
+              d: path,
+            },
+          }
+        }
+        else {
           return {
             tag: 'path',
             attrs: {
               fill: path.fill,
               stroke: path.stroke,
-              d: pathCommandsToPathData(path.commands),
+              d: path.data,
             },
           }
-        }),
-      )
-    }
+        }
+      }),
+    )
   }
-  else if (element.type === 'picture') {
-    const { style, image } = element
+
+  if (image) {
     elementG.children!.push({
       tag: 'image',
       attrs: {
-        width: style.width,
-        height: style.height,
-        href: read(image.src),
+        width,
+        height,
+        href: read(image.url),
         opacity: image.opacity,
         preserveAspectRatio: 'none',
       },
     })
   }
-  else if (element.type === 'groupShape') {
+
+  if (children) {
     elementG.children!.push(
-      ...element.elements.map((child) => {
-        return parseElement(child, {
+      ...children.map((child) => {
+        return parseElement(child as any, {
           ...ctx,
-          parent: element,
+          parent: element as any,
         })
       }),
     )
-  }
-  else if (element.type === 'graphicFrame') {
-    // TODO
-  }
-  else if (element.type === 'connectionShape') {
-    const { geometry } = element
-
-    if (geometry) {
-      elementG.children!.push(
-        ...geometry.paths.map((path) => {
-          return {
-            tag: 'path',
-            attrs: {
-              'fill': path.fill,
-              'stroke': path.stroke,
-              'stroke-width': path.strokeWidth,
-              'd': pathCommandsToPathData(path.commands),
-            },
-          }
-        }),
-      )
-    }
   }
 
   return elementG
@@ -239,14 +231,18 @@ export class PPTXToSVGRenderer {
         const master = slideMasters[layout?.masterIndex]
         const theme = themes[master?.themeIndex]
         const items: XMLNode[] = []
-        const { elements, style: slideStyle } = slide.toJSON({
-          theme,
-          layout,
-          master,
-          presentation,
-          presetShapeDefinitions,
-        })
-        const { backgroundColor } = slideStyle
+        const {
+          children = [],
+          fill,
+        } = normalizeElement(
+          slide.toIDOC({
+            theme,
+            layout,
+            master,
+            presentation,
+            presetShapeDefinitions,
+          }),
+        )
 
         if (master) {
           items.push({
@@ -257,11 +253,11 @@ export class PPTXToSVGRenderer {
               transform: `translate(0, ${top})`,
             },
             children: [
-              ...master.toJSON({
+              ...master.toIDOC({
                 theme,
                 presetShapeDefinitions,
               })
-                .elements
+                .children
                 .map((child) => {
                   return parseElement(
                     child,
@@ -283,12 +279,12 @@ export class PPTXToSVGRenderer {
               transform: `translate(0, ${top})`,
             },
             children: [
-              ...layout.toJSON({
+              ...layout.toIDOC({
                 master,
                 theme,
                 presetShapeDefinitions,
               })
-                .elements
+                .children
                 .map((child) => {
                   return parseElement(
                     child,
@@ -309,20 +305,20 @@ export class PPTXToSVGRenderer {
             transform: `translate(0, ${top})`,
           },
           children: [
-            backgroundColor && {
+            fill?.color && {
               tag: 'rect',
               attrs: {
                 x: 0,
                 y: 0,
                 width,
                 height,
-                fill: backgroundColor,
+                fill: fill.color,
               },
             },
-            ...elements
+            ...children
               .map((child) => {
                 return parseElement(
-                  child,
+                  child as any,
                   {
                     read: rId => pptx.readRid(rId, 'slide', slideIndex),
                   },

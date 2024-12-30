@@ -70,8 +70,9 @@
   "dependencies": {
     "fflate": "^0.8.2",
     "modern-font": "^0.3.4",
+    "modern-idoc": "^0.1.2",
     "modern-path2d": "^1.0.0",
-    "modern-text": "^1.0.0"
+    "modern-text": "^1.0.4"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^3.12.0",

@@ -1,5 +1,7 @@
+import type { IDOCGeometryDeclaration } from 'modern-idoc'
 import type { GeometryContext, GeometryPath } from './_Geometry'
 import type { PresetShapeDefinitions } from './PresetShapeDefinitions'
+import { pathCommandsToPathData } from 'modern-path2d'
 import { defineAttribute, defineElement } from '../../core'
 import { _Geometry } from './_Geometry'
 
@@ -7,9 +9,8 @@ export interface PresetGeometryContext extends GeometryContext {
   presetShapeDefinitions?: PresetShapeDefinitions
 }
 
-export interface PresetGeometryJSON {
+export interface IDOCPresetGeometry extends IDOCGeometryDeclaration {
   preset: string
-  paths: GeometryPath[]
 }
 
 /**
@@ -27,10 +28,16 @@ export class PresetGeometry extends _Geometry {
     })
   }
 
-  override toJSON(ctx: PresetGeometryContext): PresetGeometryJSON {
+  override toIDOC(ctx: PresetGeometryContext): IDOCPresetGeometry {
     return {
       preset: this.prst,
-      paths: this.getPaths(ctx),
+      data: this.getPaths(ctx).map((path) => {
+        const { commands, ...props } = path
+        return {
+          ...props,
+          data: pathCommandsToPathData(commands),
+        }
+      }),
     }
   }
 }

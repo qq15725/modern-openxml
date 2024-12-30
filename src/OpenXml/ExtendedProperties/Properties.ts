@@ -1,7 +1,7 @@
 import type { DefineChildUsedOptions } from '../../core'
 import { defineChild, defineElement, OOXML } from '../../core'
 
-export interface PropertiesJSON {
+export interface IDOCProperties {
   application?: string
   appVersion?: string
   characters?: string
@@ -69,7 +69,7 @@ export class Properties extends OOXML {
   @defineChild('TotalTime', options) declare totalTime?: string
   @defineChild('Words', options) declare words?: string
 
-  override toJSON(): PropertiesJSON {
-    return super.toJSON()
+  override toIDOC(): IDOCProperties {
+    return super.toIDOC()
   }
 }

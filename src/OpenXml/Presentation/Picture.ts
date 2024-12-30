@@ -1,42 +1,26 @@
+import type { IDOCElement, IDOCImageProp, IDOCStyleProp } from 'modern-idoc'
 import type {
-  BlipFillJSON,
   CustomGeometry,
-  CustomGeometryJSON,
   Fill,
   PresetGeometry,
-  PresetGeometryJSON,
 } from '../Drawing'
 import type { SlideContext } from './_Slide'
 import type { BlipFill } from './BlipFill'
 import type { NonVisualPictureProperties } from './NonVisualPictureProperties'
-import type { PlaceholderShapeJSON } from './PlaceholderShape'
+import type { IDOCPlaceholderShape } from './PlaceholderShape'
 import type { ShapeProperties } from './ShapeProperties'
 import type { ShapeStyle } from './ShapeStyle'
-import { defineChild, defineElement, filterObjectEmptyAttr, getObjectValueByPath } from '../../core'
+import { clearEmptyAttrs, defineChild, defineElement, getObjectValueByPath } from '../../core'
 
 import { _SlideElement } from './_SlideElement'
 
-export interface PictureJSON {
+export interface IDOCPictureElementMeta {
   type: 'picture'
-  name?: string
-  placeholderShape?: PlaceholderShapeJSON
-  geometry?: PresetGeometryJSON | CustomGeometryJSON
-  image: BlipFillJSON
-  background?: BlipFillJSON
-  style: {
-    visibility?: 'hidden'
-    left?: number
-    top?: number
-    width?: number
-    height?: number
-    rotate?: number
-    scaleX?: number
-    scaleY?: number
-    shadow?: string
-    backgroundColor?: string
-    borderColor?: string
-    borderWidth?: number
-  }
+  placeholderShape?: IDOCPlaceholderShape
+}
+
+export interface IDOCPictureElement extends IDOCElement {
+  meta: IDOCPictureElementMeta
 }
 
 /**
@@ -53,7 +37,7 @@ export class Picture extends _SlideElement {
     return Boolean(this.nvPicPr?.nvPr?.ph)
   }
 
-  override toJSON(ctx: SlideContext = {}): PictureJSON {
+  override toIDOC(ctx: SlideContext = {}): IDOCPictureElement {
     const { layout, master } = ctx
 
     // ph
@@ -64,7 +48,7 @@ export class Picture extends _SlideElement {
     }
 
     // style
-    const _style = this.style?.toJSON(ctx)
+    const _style = this.style?.parse(ctx)
 
     const inherited = <T = any>(path: string): T | undefined => {
       return this.offsetGet(path)
@@ -72,7 +56,7 @@ export class Picture extends _SlideElement {
         ?? _ph?.offsetGet(path)
     }
 
-    const style: PictureJSON['style'] = {
+    const style: IDOCStyleProp = {
       visibility: inherited('nvPicPr.cNvPr.visibility'),
       left: inherited('spPr.xfrm.off.x'),
       top: inherited('spPr.xfrm.off.y'),
@@ -87,66 +71,51 @@ export class Picture extends _SlideElement {
       borderColor: undefined,
     }
 
-    const fill = inherited<Fill>('spPr.fill')?.toJSON({
+    const fill = inherited<Fill>('spPr.fill')?.toIDOC({
       ...ctx,
       color: this.spPr?.hasFill
         ? undefined
         : this.style?.fillRef?.color,
     })
 
-    let fillColor
-    let background: BlipFillJSON | undefined
-    switch (fill?.type) {
-      case 'solidFill':
-        fillColor = fill.color
-        break
-      case 'blipFill':
-        background = fill
-        break
-    }
-
-    const outlineFill = inherited<Fill>('spPr.ln.fill')?.toJSON({
+    const storke = inherited<Fill>('spPr.ln.fill')?.toIDOC({
       ...ctx,
       color: this.spPr?.ln?.hasFill
         ? undefined
         : this.style?.lnRef?.color,
     })
 
-    let outlineColor
-    switch (outlineFill?.type) {
-      case 'solidFill':
-        outlineColor = outlineFill.color
-        break
-    }
-
     const prstGeom = inherited<PresetGeometry>('spPr.prstGeom')
     const custGeom = inherited<CustomGeometry>('spPr.custGeom')
     let geometry
     const outlineWidth = inherited('spPr.ln.w')
     if (prstGeom?.prst === 'rect' && !prstGeom?.avLst?.value.length) {
-      style.backgroundColor = fillColor
-      style.borderColor = outlineColor
+      // style.backgroundColor = fillColor
+      // style.borderColor = outlineColor
       style.borderWidth = outlineWidth
     }
     else {
-      geometry = (prstGeom ?? custGeom)?.toJSON({
+      geometry = (prstGeom ?? custGeom)?.toIDOC({
         ...ctx,
         width: style.width || outlineWidth,
         height: style.height || outlineWidth,
-        fill: fillColor,
-        stroke: outlineColor,
+        // fill: fillColor,
+        // stroke: outlineColor,
         strokeWidth: outlineWidth,
       })
     }
 
-    return filterObjectEmptyAttr({
-      type: 'picture',
+    return clearEmptyAttrs({
       name: inherited('nvPicPr.cNvPr.name'),
-      placeholderShape: ph?.toJSON(),
       geometry,
-      image: inherited<BlipFill>('blipFill')!.toJSON(),
-      background,
+      image: inherited<BlipFill>('blipFill')!.toIDOC() as IDOCImageProp,
+      fill,
+      storke,
       style,
-    } as PictureJSON)
+      meta: {
+        type: 'picture',
+        placeholderShape: ph?.toIDOC(),
+      },
+    })
   }
 }

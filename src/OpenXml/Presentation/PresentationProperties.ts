@@ -4,7 +4,7 @@ import type { PrintingProperties } from './PrintingProperties'
 import type { ShowProperties } from './ShowProperties'
 import { defineChild, defineElement, defineProperty, OOXML } from '../../core'
 
-export interface PresentationPropertiesJSON {
+export interface IDOCPresentationProperties {
   colorMostRecentlyUsed?: string[]
 }
 
@@ -29,7 +29,7 @@ export class PresentationProperties extends OOXML {
 
   @defineProperty('clrMru') declare colorMostRecentlyUsed?: string[]
 
-  override toJSON(): PresentationPropertiesJSON {
-    return super.toJSON()
+  override toIDOC(): IDOCPresentationProperties {
+    return super.toIDOC()
   }
 }

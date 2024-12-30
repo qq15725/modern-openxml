@@ -1,6 +1,7 @@
-import { defineChild, type DefineChildUsedOptions, defineElement, OOXML } from '../core'
+import type { DefineChildUsedOptions } from '../core'
+import { defineChild, defineElement, OOXML } from '../core'
 
-export interface CorePropertiesJSON {
+export interface toIDOCCoreProperties {
   title?: string
   creator?: string
   subject?: string
@@ -39,7 +40,7 @@ export class CoreProperties extends OOXML {
   @defineChild('cp:lastModifiedBy', options) declare lastModifiedBy?: string
   @defineChild('cp:revision', options) declare revision?: string
 
-  override toJSON(): CorePropertiesJSON {
-    return super.toJSON()
+  override toIDOC(): toIDOCCoreProperties {
+    return super.toIDOC()
   }
 }

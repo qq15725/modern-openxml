@@ -1,15 +1,13 @@
+import type { IDOCGeometryDeclaration } from 'modern-idoc'
 import type { GeometryContext, GeometryPath } from './_Geometry'
 import type { AdjustHandleList } from './AdjustHandleList'
 import type { ConnectionSiteList } from './ConnectionSiteList'
 import type { PathList } from './PathList'
 import type { Rectangle } from './Rectangle'
 import type { ShapeGuideList } from './ShapeGuideList'
+import { pathCommandsToPathData } from 'modern-path2d'
 import { defineChild, defineElement } from '../../core'
 import { _Geometry } from './_Geometry'
-
-export interface CustomGeometryJSON {
-  paths: GeometryPath[]
-}
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.drawing.customgeometry
@@ -31,9 +29,15 @@ export class CustomGeometry extends _Geometry {
     })
   }
 
-  override toJSON(ctx: GeometryContext): CustomGeometryJSON {
+  override toIDOC(ctx: GeometryContext): IDOCGeometryDeclaration {
     return {
-      paths: this.getPaths(ctx),
+      data: this.getPaths(ctx).map((path) => {
+        const { commands, ...props } = path
+        return {
+          ...props,
+          data: pathCommandsToPathData(commands),
+        }
+      }),
     }
   }
 }

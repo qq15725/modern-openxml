@@ -6,7 +6,7 @@ export abstract class _SlideElement extends OOXML {
     return false
   }
 
-  override toJSON(ctx?: SlideContext): any {
-    return super.toJSON(ctx)
+  toIDOC(ctx?: SlideContext): any {
+    return super.toIDOC(ctx)
   }
 }

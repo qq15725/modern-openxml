@@ -1,13 +1,13 @@
 import type { PresetShapeDefinitions, Theme } from '../Drawing'
 import type { CommonSlideData } from './CommonSlideData'
-import type { ConnectionShape, ConnectionShapeJSON } from './ConnectionShape'
+import type { ConnectionShape, IDOCConnectionShapeElement } from './ConnectionShape'
 import type { ExtensionList } from './ExtensionList'
-import type { GraphicFrame, GraphicFrameJSON } from './GraphicFrame'
-import type { GroupShape, GroupShapeJSON } from './GroupShape'
-import type { Picture, PictureJSON } from './Picture'
+import type { GraphicFrame, IDOCGraphicFrameElement } from './GraphicFrame'
+import type { GroupShape, IDOCGroupShapeElement } from './GroupShape'
+import type { IDOCPictureElement, Picture } from './Picture'
 import type { PlaceholderShape } from './PlaceholderShape'
 import type { Presentation } from './Presentation'
-import type { Shape, ShapeJSON } from './Shape'
+import type { IDOCShapeElement, Shape } from './Shape'
 import type { SlideLayout } from './SlideLayout'
 import type { SlideMaster } from './SlideMaster'
 import type { Timing } from './Timing'
@@ -28,12 +28,12 @@ export type SlideElement =
   | ConnectionShape
   | GraphicFrame
 
-export type SlideElementJSON =
-  | ShapeJSON
-  | GroupShapeJSON
-  | PictureJSON
-  | ConnectionShapeJSON
-  | GraphicFrameJSON
+export type IDOCSlideChildElement =
+  | IDOCShapeElement
+  | IDOCGroupShapeElement
+  | IDOCPictureElement
+  | IDOCConnectionShapeElement
+  | IDOCGraphicFrameElement
 
 export abstract class _Slide extends OOXML {
   @defineChild('p:cSld', { required: true }) declare cSld: CommonSlideData
@@ -43,9 +43,8 @@ export abstract class _Slide extends OOXML {
   @defineChild('mc:AlternateContent') declare AlternateContent?: OOXML
 
   @defineProperty('cSld.name') declare name?: string
-  @defineProperty('_elements') declare elements: SlideElement[]
 
-  get _elements(): SlideElement[] {
+  get elements(): SlideElement[] {
     return this.cSld.spTree.children
       .filter((element) => {
         switch (element.tag) {

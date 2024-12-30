@@ -6,7 +6,7 @@ import { GroupShape } from './GroupShape'
 import { Picture } from './Picture'
 import { Shape } from './Shape'
 
-export interface PlaceholderShapeJSON {
+export interface IDOCPlaceholderShape {
   type?: string
   index?: string
 }
@@ -44,7 +44,7 @@ export class PlaceholderShape extends OOXML {
     return false
   }
 
-  override toJSON(): PlaceholderShapeJSON {
-    return super.toJSON()
+  override toIDOC(): IDOCPlaceholderShape {
+    return super.toIDOC()
   }
 }

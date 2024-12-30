@@ -16,7 +16,7 @@ input.onchange = async () => {
     presetShapeDefinitions,
   })
 
-  console.warn(pptx, pptx.toJSON())
+  console.warn(pptx, pptx.toIDOC())
 
   document.body.appendChild(
     new PPTXToSVGRenderer(pptx).toSVG(),

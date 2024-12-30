@@ -1,10 +1,7 @@
+import type { IDOCFillProp } from 'modern-idoc'
 import type { BackgroundColor } from './BackgroundColor'
 import type { ForegroundColor } from './ForegroundColor'
 import { defineAttribute, defineChild, defineElement, OOXML } from '../../core'
-
-export interface PatternFillJSON {
-  type: 'patternFill'
-}
 
 /**
  * https://learn.microsoft.com/dotnet/api/documentformat.openxml.drawing.patternfill
@@ -16,9 +13,7 @@ export class PatternFill extends OOXML {
   @defineChild('a:bgClr') declare bgClr?: BackgroundColor
   @defineChild('a:fgClr') declare fgClr?: ForegroundColor
 
-  override toJSON(): PatternFillJSON {
-    return {
-      type: 'patternFill',
-    }
+  override toIDOC(): IDOCFillProp {
+    return 'none'
   }
 }

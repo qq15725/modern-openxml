@@ -1,6 +1,6 @@
 import { defineAttribute, defineElement, defineProperty, OOXML } from '../../core'
 
-export interface SourceRectangleJSON {
+export interface IDOCSourceRectangle {
   bottom?: number
   left?: number
   top?: number
@@ -22,7 +22,7 @@ export class SourceRectangle extends OOXML {
   @defineProperty('t') declare top?: number
   @defineProperty('r') declare right?: number
 
-  override toJSON(): SourceRectangleJSON {
-    return super.toJSON()
+  override toIDOC(): IDOCSourceRectangle {
+    return super.toIDOC()
   }
 }

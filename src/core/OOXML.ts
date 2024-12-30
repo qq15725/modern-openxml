@@ -213,11 +213,11 @@ export class OOXML {
       this.element = source as Element
     }
     else {
-      this._parseJSON(source)
+      this._parseIDOC(source)
     }
   }
 
-  protected _parseJSON(JSON: Record<string, any>): void {
+  protected _parseIDOC(idoc: Record<string, any>): void {
     const definition = this.definition()
 
     if (!definition)
@@ -232,7 +232,7 @@ export class OOXML {
 
     this.element = document.createElement(tag)
 
-    console.warn('TODO', JSON)
+    console.warn('TODO', idoc)
   }
 
   definition(): OOXMLDefinition | undefined {
@@ -315,19 +315,19 @@ export class OOXML {
     return this.element.outerHTML
   }
 
-  toJSON(ctx?: any): any {
+  toIDOC(ctx?: any): any {
     const definition = this.definition()
     const properties: Record<string, any> = {}
     if (definition?.properties) {
       Object.values(definition.properties).forEach((property) => {
         let value = this.offsetGet(property.alias)
         if (value instanceof OOXML) {
-          value = value.toJSON(ctx)
+          value = value.toIDOC(ctx)
         }
         else if (Array.isArray(value)) {
           value = value.map((v) => {
             if (v instanceof OOXML) {
-              return v.toJSON(ctx)
+              return v.toIDOC(ctx)
             }
             return v
           })

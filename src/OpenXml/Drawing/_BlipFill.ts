@@ -1,16 +1,14 @@
+import type { IDOCFillDeclaration } from 'modern-idoc'
 import type { Blip } from './Blip'
-import type { SourceRectangle, SourceRectangleJSON } from './SourceRectangle'
+import type { IDOCSourceRectangle, SourceRectangle } from './SourceRectangle'
 import type { Stretch } from './Stretch'
 import type { Tile } from './Tile'
 import { defineAttribute, defineChild, OOXML } from '../../core'
 
-export interface BlipFillJSON {
-  type: 'blipFill'
+export interface IDOCBlipFill extends IDOCFillDeclaration {
   rotateWithShape?: boolean
   dpi?: number
-  src: string
-  opacity?: number
-  sourceRectangle?: SourceRectangleJSON
+  sourceRectangle?: IDOCSourceRectangle
 }
 
 export class _BlipFill extends OOXML {
@@ -22,13 +20,12 @@ export class _BlipFill extends OOXML {
   @defineChild('a:stretch') declare stretch?: Stretch
   @defineChild('a:tile') declare tile?: Tile
 
-  override toJSON(): BlipFillJSON {
-    const sourceRectangle = this.srcRect?.toJSON()
+  override toIDOC(): IDOCBlipFill {
+    const sourceRectangle = this.srcRect?.toIDOC()
     return {
-      type: 'blipFill',
       rotateWithShape: this.rotWithShape,
       dpi: this.dpi,
-      src: this.blip.rEmbed,
+      url: this.blip.rEmbed,
       opacity: this.blip?.alphaModFix?.amt,
       sourceRectangle: sourceRectangle
         && Object.keys(sourceRectangle).length > 0

@@ -1,19 +1,24 @@
-import type { ColorMapJSON } from '../Drawing'
-import type { SlideContext, SlideElementJSON } from './_Slide'
+import type { IDOCElement } from 'modern-idoc'
+import type { IDOCColorMap } from '../Drawing'
+import type { IDOCSlideChildElement, SlideContext } from './_Slide'
 import type { ColorMap } from './ColorMap'
 import type { HeaderFooter } from './HeaderFooter'
 import type { SlideLayoutIdList } from './SlideLayoutIdList'
 import type { TextStyles } from './TextStyles'
-import { defineAttribute, defineChild, defineElement } from '../../core'
+import { clearEmptyAttrs, defineAttribute, defineChild, defineElement } from '../../core'
 import { _Slide } from './_Slide'
 
-export interface SlideMasterJSON {
+export interface IDOCSlideMasterElementMeta {
   type: 'slideMaster'
   path?: string
   themePath?: string
   themeIndex: number
-  colorMap?: ColorMapJSON
-  elements: SlideElementJSON[]
+  colorMap?: IDOCColorMap
+}
+
+export interface IDOCSlideMasterElement extends IDOCElement {
+  children: IDOCSlideChildElement[]
+  meta: IDOCSlideMasterElementMeta
 }
 
 /**
@@ -38,14 +43,16 @@ export class SlideMaster extends _Slide {
   @defineChild('p:sldLayoutIdLst') declare sldLayoutIdLst?: SlideLayoutIdList
   @defineChild('p:txStyles') declare txStyles?: TextStyles
 
-  override toJSON(ctx?: SlideContext): SlideMasterJSON {
-    return {
-      type: 'slideMaster',
-      path: this.path,
-      themePath: this.themePath,
-      themeIndex: this.themeIndex,
-      colorMap: this.clrMap?.toJSON(),
-      elements: this.elements.filter(el => !el.hasPh()).map(el => el.toJSON(ctx)),
-    }
+  override toIDOC(ctx?: SlideContext): IDOCSlideMasterElement {
+    return clearEmptyAttrs({
+      children: this.elements.map(el => el.toIDOC(ctx)),
+      meta: {
+        type: 'slideMaster',
+        path: this.path,
+        themePath: this.themePath,
+        themeIndex: this.themeIndex,
+        colorMap: this.clrMap?.toIDOC(),
+      },
+    })
   }
 }

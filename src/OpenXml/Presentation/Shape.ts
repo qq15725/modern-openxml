@@ -1,56 +1,30 @@
-import type { ParagraphContent } from 'modern-text'
+import type { IDOCElement, IDOCStyleProp } from 'modern-idoc'
 import type {
-  BlipFillJSON,
   CustomGeometry,
-  CustomGeometryJSON,
   Fill,
   ParagraphProperties,
   PresetGeometry,
-  PresetGeometryJSON,
   SolidFill,
 } from '../Drawing'
 import type { SlideContext } from './_Slide'
 import type { NonVisualShapeProperties } from './NonVisualShapeProperties'
-import type { PlaceholderShapeJSON } from './PlaceholderShape'
+import type { IDOCPlaceholderShape } from './PlaceholderShape'
 import type { ShapeProperties } from './ShapeProperties'
 import type { ShapeStyle } from './ShapeStyle'
 import type { TextBody } from './TextBody'
-import { defineChild, defineElement, filterObjectEmptyAttr, getObjectValueByPath } from '../../core'
+import { clearEmptyAttrs, defineChild, defineElement, getObjectValueByPath } from '../../core'
 import {
   Run,
 } from '../Drawing'
 import { _SlideElement } from './_SlideElement'
 
-export interface ShapeJSON {
+export interface IDOCShapeElementMeta {
   type: 'shape'
-  name?: string
-  placeholderShape?: PlaceholderShapeJSON
-  geometry?: PresetGeometryJSON | CustomGeometryJSON
-  background?: BlipFillJSON
-  content?: ParagraphContent[]
-  style: {
-    visibility?: 'hidden'
-    left?: number
-    top?: number
-    width?: number
-    height?: number
-    rotate?: number
-    scaleX?: number
-    scaleY?: number
-    shadow?: string
-    backgroundColor?: string
-    borderColor?: string
-    borderWidth?: number
-    paddingLeft?: number
-    paddingTop?: number
-    paddingRight?: number
-    paddingBottom?: number
-    textRotate?: number
-    writingMode?: 'horizontal-tb' | 'vertical-lr' | 'vertical-rl'
-    textWrap?: 'wrap' | 'nowrap'
-    textAlign?: 'center' | 'start'
-    verticalAlign?: 'top' | 'middle' | 'bottom'
-  }
+  placeholderShape?: IDOCPlaceholderShape
+}
+
+export interface IDOCShapeElement extends IDOCElement {
+  meta?: IDOCShapeElementMeta
 }
 
 /**
@@ -67,7 +41,7 @@ export class Shape extends _SlideElement {
     return Boolean(this.nvSpPr?.nvPr?.ph)
   }
 
-  override toJSON(ctx: SlideContext = {}): ShapeJSON {
+  override toIDOC(ctx: SlideContext = {}): IDOCShapeElement {
     const { theme, layout, presentation, master } = ctx
 
     // ph
@@ -86,7 +60,7 @@ export class Shape extends _SlideElement {
         ?? _ph?.offsetGet(path)
     }
 
-    const style: ShapeJSON['style'] = {
+    const style: IDOCStyleProp = {
       visibility: inherited('nvSpPr.cNvPr.visibility'),
       left: inherited('spPr.xfrm.off.x'),
       top: inherited('spPr.xfrm.off.y'),
@@ -100,7 +74,7 @@ export class Shape extends _SlideElement {
       paddingTop: inherited('txBody.bodyPr.tIns'),
       paddingRight: inherited('txBody.bodyPr.rIns'),
       paddingBottom: inherited('txBody.bodyPr.bIns'),
-      textRotate: inherited('txBody.bodyPr.rot'),
+      // textRotate: inherited('txBody.bodyPr.rot'),
       writingMode: inherited('txBody.bodyPr.writingMode'),
       textWrap: inherited('txBody.bodyPr.textWrap'),
       textAlign: inherited('txBody.bodyPr.textAlign'),
@@ -110,66 +84,46 @@ export class Shape extends _SlideElement {
       borderColor: undefined,
     }
 
-    const fill = inherited<Fill>('spPr.fill')?.toJSON({
+    const fill = inherited<Fill>('spPr.fill')?.toIDOC({
       ...ctx,
       color: this.spPr?.hasFill
         ? undefined
         : this.style?.fillRef?.color,
     })
 
-    let fillColor
-    let background: BlipFillJSON | undefined
-    switch (fill?.type) {
-      case 'solidFill':
-        fillColor = fill.color
-        break
-      case 'blipFill':
-        background = fill
-        break
-    }
-
-    const outlineFill = inherited<Fill>('spPr.ln.fill')?.toJSON({
+    const stroke = inherited<Fill>('spPr.ln.fill')?.toIDOC({
       ...ctx,
       color: this.spPr?.ln?.hasFill
         ? undefined
         : this.style?.lnRef?.color,
     })
 
-    let outlineColor
-    switch (outlineFill?.type) {
-      case 'solidFill':
-        outlineColor = outlineFill.color
-        break
-    }
-
     const prstGeom = inherited<PresetGeometry>('spPr.prstGeom')
     const custGeom = inherited<CustomGeometry>('spPr.custGeom')
     let geometry
     const outlineWidth = inherited('spPr.ln.w')
     if (prstGeom?.prst === 'rect' && !prstGeom?.avLst?.value.length) {
-      style.backgroundColor = fillColor
-      style.borderColor = outlineColor
-      style.borderWidth = outlineWidth
+      // style.backgroundColor = fillColor
+      // style.borderColor = outlineColor
+      // style.borderWidth = outlineWidth
     }
     else {
-      geometry = (prstGeom ?? custGeom)?.toJSON({
+      geometry = (prstGeom ?? custGeom)?.toIDOC({
         ...ctx,
         width: style.width || outlineWidth,
         height: style.height || outlineWidth,
-        fill: fillColor,
-        stroke: outlineColor,
-        strokeWidth: outlineWidth,
+        // stroke: outlineColor,
+        // strokeWidth: outlineWidth,
       })
     }
 
-    return filterObjectEmptyAttr({
-      type: 'shape',
+    return clearEmptyAttrs({
       name: inherited('nvSpPr.cNvPr.name'),
-      placeholderShape: ph?.toJSON(),
       geometry,
-      background,
+      fill,
+      stroke,
       style,
-      content: this.nvSpPr?.cNvSpPr.txBox
+      text: this.nvSpPr?.cNvSpPr.txBox
         ? this.txBody?.pList.map((p) => {
           const lvl = p.pPr?.lvl
           const hasLvl = lvl !== undefined
@@ -213,17 +167,23 @@ export class Shape extends _SlideElement {
                   fontSize: inheritedRPr('fontSize'),
                   letterSpacing: inheritedRPr('letterSpacing'),
                   lineHeight: inheritedRPr('lineHeight'),
-                  color: inheritedRPr<SolidFill>('fill')?.toJSON(ctx)?.color,
+                  color: inheritedRPr<SolidFill>('fill')?.toIDOC(ctx)?.color,
                   borderWidth: inheritedRPr('ln.w'),
-                  borderColor: inheritedRPr<SolidFill>('ln.fill')?.toJSON(ctx)?.color,
+                  borderColor: inheritedRPr<SolidFill>('ln.fill')?.toIDOC(ctx)?.color,
                   content: r.content,
                 }
               }
-              return {}
+              return {
+                content: '',
+              }
             }),
           }
         })
         : undefined,
+      meta: {
+        type: 'shape',
+        placeholderShape: ph?.toIDOC(),
+      },
     })
   }
 }

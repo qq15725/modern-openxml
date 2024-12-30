@@ -1,6 +1,6 @@
 import { defineAttribute, defineElement, OOXML } from '../../core'
 
-export interface SlideLayoutIdJSON {
+export interface IDOCSlideLayoutId {
   id: string
   rId: string
 }

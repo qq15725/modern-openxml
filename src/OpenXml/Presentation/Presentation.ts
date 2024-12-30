@@ -8,7 +8,7 @@ import type { SlideMasterIdList } from './SlideMasterIdList'
 import type { SlideSize } from './SlideSize'
 import { defineChild, defineElement, defineProperty, OOXML } from '../../core'
 
-export interface PresentationJSON {
+export interface IDOCPresentation {
   slideWidth: number
   slideHeight: number
 }
@@ -47,7 +47,7 @@ export class Presentation extends OOXML {
   @defineProperty('sldSz.cx') declare slideWidth: number
   @defineProperty('sldSz.cy') declare slideHeight: number
 
-  override toJSON(): PresentationJSON {
-    return super.toJSON()
+  override toIDOC(): IDOCPresentation {
+    return super.toIDOC()
   }
 }

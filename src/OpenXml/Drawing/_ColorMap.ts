@@ -1,6 +1,6 @@
 import { defineAttribute, OOXML } from '../../core'
 
-export interface ColorMapJSON {
+export interface IDOCColorMap {
   accent1?: string
   accent2?: string
   accent3?: string
@@ -33,7 +33,7 @@ export abstract class _ColorMap extends OOXML {
   @defineAttribute('tx1', options) declare tx1?: string
   @defineAttribute('tx2', options) declare tx2?: string
 
-  override toJSON(): ColorMapJSON {
-    return super.toJSON()
+  override toIDOC(): IDOCColorMap {
+    return super.toIDOC()
   }
 }

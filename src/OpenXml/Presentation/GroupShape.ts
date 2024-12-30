@@ -1,37 +1,25 @@
-import type { BlipFillJSON, Fill } from '../Drawing'
-import type { SlideContext, SlideElement, SlideElementJSON } from './_Slide'
+import type { IDOCElement } from 'modern-idoc'
+import type { Fill } from '../Drawing'
+import type { IDOCSlideChildElement, SlideContext, SlideElement } from './_Slide'
 import type { GroupShapeProperties } from './GroupShapeProperties'
 import type { NonVisualGroupShapeProperties } from './NonVisualGroupShapeProperties'
-import type { PlaceholderShapeJSON } from './PlaceholderShape'
+import type { IDOCPlaceholderShape } from './PlaceholderShape'
 import type { Shape } from './Shape'
-import { defineChild, defineElement, filterObjectEmptyAttr, OOXML } from '../../core'
+import { clearEmptyAttrs, defineChild, defineElement, OOXML } from '../../core'
 import { _SlideElement } from './_SlideElement'
 
-export interface GroupShapeJSON {
+export interface IDOCGroupShapeMeta {
   type: 'groupShape'
-  name?: string
-  placeholderShape?: PlaceholderShapeJSON
+  placeholderShape?: IDOCPlaceholderShape
+}
+
+export interface IDOCGroupShapeElement extends IDOCElement {
   childOffsetLeft?: number
   childOffsetTop?: number
   childWidth?: number
   childHeight?: number
-  background?: BlipFillJSON
-  style: {
-    visibility?: 'hidden'
-    left?: number
-    top?: number
-    width?: number
-    height?: number
-    rotate?: number
-    backgroundColor?: string
-    backgroundImage?: string
-    borderColor?: string
-    borderImage?: string
-    scaleX?: number
-    scaleY?: number
-    shadow?: string
-  }
-  elements: SlideElementJSON[]
+  children: IDOCSlideChildElement[]
+  meta: IDOCGroupShapeMeta
 }
 
 /**
@@ -65,7 +53,7 @@ export class GroupShape extends _SlideElement {
     return Boolean(this.nvGrpSpPr?.nvPr?.ph)
   }
 
-  override toJSON(ctx: SlideContext = {}): GroupShapeJSON {
+  override toIDOC(ctx: SlideContext = {}): IDOCGroupShapeElement {
     const { layout, master } = ctx
 
     // ph
@@ -80,37 +68,17 @@ export class GroupShape extends _SlideElement {
         ?? _ph?.offsetGet(path) as T
     }
 
-    const fill = inherited<Fill>('grpSpPr.fill')?.toJSON(ctx)
+    const fill = inherited<Fill>('grpSpPr.fill')?.toIDOC(ctx)
+    const stroke = inherited<Fill>('grpSpPr.ln.fill')?.toIDOC(ctx)
 
-    let fillColor
-    let background: BlipFillJSON | undefined
-    switch (fill?.type) {
-      case 'solidFill':
-        fillColor = fill.color
-        break
-      case 'blipFill':
-        background = fill
-        break
-    }
-
-    const outlineFill = inherited<Fill>('grpSpPr.ln.fill')?.toJSON(ctx)
-
-    let outlineColor
-    switch (outlineFill?.type) {
-      case 'solidFill':
-        outlineColor = outlineFill.color
-        break
-    }
-
-    return filterObjectEmptyAttr({
-      type: 'groupShape',
+    return clearEmptyAttrs({
       name: inherited('nvGrpSpPr.cNvPr.name'),
-      placeholderShape: ph?.toJSON(),
       childOffsetLeft: inherited('grpSpPr.xfrm.chOff.x'),
       childOffsetTop: inherited('grpSpPr.xfrm.chOff.y'),
       childWidth: inherited('grpSpPr.xfrm.chExt.cx'),
       childHeight: inherited('grpSpPr.xfrm.chExt.cy'),
-      background,
+      fill,
+      stroke,
       style: {
         visibility: inherited('nvGrpSpPr.cNvPr.visibility'),
         left: inherited('grpSpPr.xfrm.off.x'),
@@ -120,12 +88,14 @@ export class GroupShape extends _SlideElement {
         rotate: inherited('grpSpPr.xfrm.rot'),
         scaleX: inherited('grpSpPr.xfrm.scaleX'),
         scaleY: inherited('grpSpPr.xfrm.scaleY'),
-        backgroundColor: fillColor,
         borderWidth: inherited('grpSpPr.ln.w'),
-        borderColor: outlineColor,
         shadow: inherited('grpSpPr.effectLst.shadow'),
       },
-      elements: this.elements.map(el => el.toJSON(ctx)),
+      children: this.elements.map(el => el.toIDOC(ctx)),
+      meta: {
+        type: 'groupShape',
+        placeholderShape: ph?.toIDOC(),
+      },
     })
   }
 }

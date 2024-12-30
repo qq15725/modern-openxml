@@ -1,4 +1,4 @@
-import type { SlideLayoutId, SlideLayoutIdJSON } from './SlideLayoutId'
+import type { IDOCSlideLayoutId, SlideLayoutId } from './SlideLayoutId'
 import { defineElement, OOXML } from '../../core'
 
 /**
@@ -10,7 +10,7 @@ export class SlideLayoutIdList extends OOXML {
     return super.children.filter(child => child.tag === 'sldLayoutId') as any[]
   }
 
-  override toJSON(): SlideLayoutIdJSON[] {
-    return this.children.map(child => child.toJSON())
+  override toIDOC(): IDOCSlideLayoutId[] {
+    return this.children.map(child => child.toIDOC())
   }
 }
