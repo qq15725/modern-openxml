@@ -100,7 +100,7 @@ function parseElement(
         paddingTop: 0.13 * OOXMLValue.DPI / 2.54,
         paddingBottom: 0.13 * OOXMLValue.DPI / 2.54,
         ...style,
-      },
+      } as any,
     })
 
     elementG.children!.push(
