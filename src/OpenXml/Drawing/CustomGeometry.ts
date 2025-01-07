@@ -5,7 +5,7 @@ import type { ConnectionSiteList } from './ConnectionSiteList'
 import type { PathList } from './PathList'
 import type { Rectangle } from './Rectangle'
 import type { ShapeGuideList } from './ShapeGuideList'
-import { pathCommandsToPathData } from 'modern-path2d'
+import { svgPathCommandsToData } from 'modern-path2d'
 import { defineChild, defineElement } from '../../core'
 import { _Geometry } from './_Geometry'
 
@@ -35,7 +35,7 @@ export class CustomGeometry extends _Geometry {
         const { commands, ...props } = path
         return {
           ...props,
-          data: pathCommandsToPathData(commands),
+          data: svgPathCommandsToData(commands),
         }
       }),
     }

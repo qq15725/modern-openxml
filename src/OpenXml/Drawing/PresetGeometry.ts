@@ -1,7 +1,7 @@
 import type { IDOCGeometryDeclaration } from 'modern-idoc'
 import type { GeometryContext, GeometryPath } from './_Geometry'
 import type { PresetShapeDefinitions } from './PresetShapeDefinitions'
-import { pathCommandsToPathData } from 'modern-path2d'
+import { svgPathCommandsToData } from 'modern-path2d'
 import { defineAttribute, defineElement } from '../../core'
 import { _Geometry } from './_Geometry'
 
@@ -35,7 +35,7 @@ export class PresetGeometry extends _Geometry {
         const { commands, ...props } = path
         return {
           ...props,
-          data: pathCommandsToPathData(commands),
+          data: svgPathCommandsToData(commands),
         }
       }),
     }
