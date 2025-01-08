@@ -71,13 +71,13 @@
     "fflate": "^0.8.2",
     "modern-font": "^0.3.5",
     "modern-idoc": "^0.1.5",
-    "modern-path2d": "^1.2.2",
-    "modern-text": "^1.2.0"
+    "modern-path2d": "^1.2.6",
+    "modern-text": "^1.2.1"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^3.12.1",
+    "@antfu/eslint-config": "^3.12.2",
     "@types/node": "^22.10.5",
-    "bumpp": "^9.9.2",
+    "bumpp": "^9.9.3",
     "conventional-changelog-cli": "^5.0.0",
     "eslint": "^9.17.0",
     "lint-staged": "^15.3.0",
