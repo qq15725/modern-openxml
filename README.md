@@ -21,23 +21,24 @@
 ## PPTX to JSON
 
 ```ts
-import { PPTX } from 'modern-openxml'
+import { decodePPTX } from 'modern-openxml'
 import presetShapeDefinitions from 'modern-openxml/presetShapeDefinitions'
 
 // buffer is PPTX file arrayBuffer
-const pptx = new PPTX(buffer, { presetShapeDefinitions })
-console.log(pptx.toJSON())
+const pptx = await decodePPTX(new Uint8Array(buffer), { presetShapeDefinitions })
+console.log(pptx)
 ```
 
 ## PPTX to SVG
 
 ```ts
-import { PPTX, PPTXToSVGRenderer } from 'modern-openxml'
+import { decodePPTX, pptxToSVG } from 'modern-openxml'
 import presetShapeDefinitions from 'modern-openxml/presetShapeDefinitions'
 
 // buffer is PPTX file arrayBuffer
-const pptx = new PPTX(buffer, { presetShapeDefinitions })
-const svgRenderer = new PPTXToSVGRenderer(pptx)
-document.body.appendChild(svgRenderer.toSVG())
-console.log(svgRenderer.toSVGString())
+const pptx = await decodePPTX(new Uint8Array(buffer), { presetShapeDefinitions })
+const svgXML = pptxToSVG(pptx)
+const svgDOM = new DOMParser().parseFromString(svgXML, 'application/xml').documentElement
+document.body.appendChild(svgDOM)
+console.log(svgXML)
 ```

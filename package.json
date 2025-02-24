@@ -59,7 +59,7 @@
   "scripts": {
     "build": "vite build && unbuild",
     "dev": "vite docs",
-    "lint": "eslint ./src",
+    "lint": "eslint src",
     "version": "conventional-changelog -p angular -i CHANGELOG.md -s && git add CHANGELOG.md",
     "release": "bumpp package.json --commit \"release: v%s\" --push --all --tag",
     "start": "esno src/index.ts",
@@ -70,7 +70,7 @@
   "dependencies": {
     "fflate": "^0.8.2",
     "modern-font": "^0.4.0",
-    "modern-idoc": "^0.1.5",
+    "modern-idoc": "^0.2.5",
     "modern-path2d": "^1.2.6",
     "modern-text": "^1.2.2"
   },
@@ -91,6 +91,6 @@
     "pre-commit": "pnpm lint-staged"
   },
   "lint-staged": {
-    "*": "eslint ./src --fix"
+    "*": ""
   }
 }

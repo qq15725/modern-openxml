@@ -1,5 +1,2 @@
-export * from './core'
-export * from './extensions'
-export * from './OPC'
-export * from './OpenXml'
-export * from './renderers'
+export * from './ooxml'
+export * from './render'

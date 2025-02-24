@@ -1,0 +1,6 @@
+export * from './core'
+export * from './doc-props'
+export * from './drawing'
+export * from './pptx'
+export * from './presentation'
+export * from './utils'
