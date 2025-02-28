@@ -61,24 +61,6 @@ export function parseFill(fill?: OOXMLNode, ctx?: Record<string, any>): FillDecl
 export function parseBlipFill(fill?: OOXMLNode, ctx?: Record<string, any>): ImageFillDeclaration | undefined {
   if (!fill)
     return undefined
-  const srcRectNode = fill.find('a:srcRect')
-  const srcRect = srcRectNode
-    ? clearUndef({
-        top: srcRectNode.attr<number>('@t', 'ST_Percentage'),
-        right: srcRectNode.attr<number>('@r', 'ST_Percentage'),
-        bottom: srcRectNode.attr<number>('@b', 'ST_Percentage'),
-        left: srcRectNode.attr<number>('@l', 'ST_Percentage'),
-      })
-    : undefined
-  const fillRectNode = fill.find('a:stretch/a:fillRect')
-  const fillRect = fillRectNode
-    ? clearUndef({
-        top: fillRectNode.attr<number>('@t', 'ST_Percentage'),
-        right: fillRectNode.attr<number>('@r', 'ST_Percentage'),
-        bottom: fillRectNode.attr<number>('@b', 'ST_Percentage'),
-        left: fillRectNode.attr<number>('@l', 'ST_Percentage'),
-      })
-    : undefined
   const tileNode = fill.find('a:tile')
   const tile = tileNode
     ? clearUndef({
@@ -109,20 +91,39 @@ export function parseBlipFill(fill?: OOXMLNode, ctx?: Record<string, any>): Imag
     dpi: fill.attr<number>('@dpi', 'number'),
     image,
     opacity: fill.attr<number>('a:blip/a:alphaModFix/@amt', 'ST_PositivePercentage'),
-    srcRect: srcRect && Object.keys(srcRect).length > 0 ? srcRect : undefined,
-    fillRect: fillRect && Object.keys(fillRect).length > 0 ? fillRect : undefined,
     tile: tile && Object.keys(tile).length > 0 ? tile : undefined,
   }
 }
 
 // p:BlipFill
 export function parsePBlipFill(fill?: OOXMLNode, ctx?: Record<string, any>): ImageDeclaration | undefined {
-  const blipFill = parseBlipFill(fill, ctx)
-  if (!blipFill)
+  if (!fill)
     return undefined
+  const srcRectNode = fill.find('a:srcRect')
+  const srcRect = srcRectNode
+    ? clearUndef({
+        top: srcRectNode.attr<number>('@t', 'ST_Percentage'),
+        right: srcRectNode.attr<number>('@r', 'ST_Percentage'),
+        bottom: srcRectNode.attr<number>('@b', 'ST_Percentage'),
+        left: srcRectNode.attr<number>('@l', 'ST_Percentage'),
+      })
+    : undefined
+  const embed = fill.attr('a:blip/a:extLst//a:ext/asvg:svgBlip/@r:embed')
+    ?? fill.attr('a:blip/@r:embed')!
+
+  let image
+  if (ctx?.drawing) {
+    image = ctx?.drawing.rels.find((v: any) => v.id === embed)?.path
+  }
+  else {
+    image = ctx?.rels?.find((v: any) => v.id === embed)?.path
+  }
+  image = image ?? embed
+
   return {
-    url: blipFill.image,
-    opacity: blipFill.opacity,
+    src: image,
+    opacity: fill.attr<number>('a:blip/a:alphaModFix/@amt', 'ST_PositivePercentage'),
+    srcRect: srcRect && Object.keys(srcRect).length > 0 ? srcRect : undefined,
   }
 }
 
@@ -170,7 +171,7 @@ export function stringifyFill(fill?: FillDeclaration | ImageDeclaration, isPic =
   if (_fill.type === 'image' || isPic) {
     const tagName = isPic ? 'p:blipFill' : 'a:blipFill'
     const url = (_fill as ImageFillDeclaration).image
-      ?? _image.url
+      ?? _image.src
     return `<${tagName}>
   <a:blip${withAttrs([withAttr('r:embed', url)])}>
     ${withIndents([

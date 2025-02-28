@@ -22,7 +22,7 @@ function xmlToDOM(xml: string): HTMLElement {
 
 async function testPPTX(): Promise<void> {
   for (const [key] of Object.entries(import.meta.glob('../test/fixtures/*.pptx', { query: '?raw' }))) {
-    if (!key.endsWith('notes.pptx'))
+    if (!key.endsWith('billFill.srcRect.pptx'))
       continue
     const filename = key.split('/').pop()
     const source = await fetch(filename!).then(rep => rep.arrayBuffer())
