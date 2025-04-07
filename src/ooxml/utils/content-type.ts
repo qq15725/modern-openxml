@@ -32,7 +32,7 @@ const CONTENT_TYPES = [
   [/\.fntdata$/i, 'font', 'fntdata'],
 ] as const
 
-export function pathToContentType(path: string): string | undefined {
+export function pathToContentType(path: string): [string, string | null] | undefined {
   for (const [RE, contentType, extension] of CONTENT_TYPES) {
     if (RE.test(path))
       return [contentType, extension]
