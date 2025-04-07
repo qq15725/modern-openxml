@@ -1,3 +1,19 @@
+# [0.1.0](https://github.com/qq15725/modern-openxml/compare/v0.0.6...v0.1.0) (2025-04-07)
+
+
+### Bug Fixes
+
+* lint ([898ffda](https://github.com/qq15725/modern-openxml/commit/898ffdae09408b1f1d1b275fc516348fd0d67288))
+
+
+### Features
+
+* update ([7044d81](https://github.com/qq15725/modern-openxml/commit/7044d81dd6dfbd75bf6f9bcc516902d1fac35cd2))
+* update ([677c0af](https://github.com/qq15725/modern-openxml/commit/677c0af41b1f8a2b4029fed12b3f9d3a8d9b0b85))
+* update billFill ([71f3f05](https://github.com/qq15725/modern-openxml/commit/71f3f05684c9bbf74eb02a787cb49f16674c2ef4))
+
+
+
 ## [0.0.6](https://github.com/qq15725/modern-openxml/compare/v0.0.5...v0.0.6) (2025-01-09)
 
 
