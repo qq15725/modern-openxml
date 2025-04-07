@@ -1,7 +1,4 @@
-import type {
-  IDOCElementDeclaration,
-  StyleDeclaration,
-} from 'modern-idoc'
+import type { IDOCElementDeclaration, StyleProperty } from 'modern-idoc'
 import type { OOXMLNode, OOXMLQueryType } from '../core'
 import type { NonVisualDrawingProperties } from './non-visual-drawing-properties'
 import {
@@ -14,13 +11,15 @@ import { parseNonVisualProperties } from './non-visual-properties'
 import { parseShapeProperties, stringifyShapeProperties } from './shape-properties'
 import { parseTextBody, stringifyTextBody } from './text-body'
 
+export type ShapeMeta = NonVisualDrawingProperties['meta'] & {
+  type: 'shape'
+  placeholderType?: string
+  placeholderIndex?: string
+}
+
 export interface Shape extends IDOCElementDeclaration {
-  style: Partial<StyleDeclaration>
-  meta: NonVisualDrawingProperties['meta'] & {
-    type: 'shape'
-    placeholderType?: string
-    placeholderIndex?: string
-  }
+  style: StyleProperty
+  meta: ShapeMeta
 }
 
 // p:sp

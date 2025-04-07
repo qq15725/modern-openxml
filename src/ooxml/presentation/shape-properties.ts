@@ -1,9 +1,9 @@
 import type {
-  ColorFillDeclaration,
   FillDeclaration,
   GeometryDeclaration,
   OutlineDeclaration,
   ShadowDeclaration,
+  SolidFillDeclaration,
 } from 'modern-idoc'
 import type { OOXMLNode, OOXMLQueryType } from '../core'
 import type { Transform2d } from './transform2d'
@@ -33,7 +33,7 @@ export function parseShapeProperties(spPr?: OOXMLNode, ctx?: any): ShapeProperti
 
   const query = ctx?.query ?? spPr.query
 
-  let fill = (parseFill(query(`${fillXPath}`), ctx) ?? {}) as ColorFillDeclaration
+  let fill = (parseFill(query(`${fillXPath}`), ctx) ?? {}) as SolidFillDeclaration
   if (!spPr.find(`${fillXPath}`)) {
     const fillRef = spPr.find('../p:style/a:fillRef')
     const fillRefIdx = Number(fillRef?.attr('@idx', 'number') ?? 1)

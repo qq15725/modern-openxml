@@ -17,7 +17,8 @@ function parseElement(
   const {
     name = '',
     style,
-    image,
+    background,
+    foreground,
     // video,
     text,
     geometry,
@@ -69,6 +70,19 @@ function parseElement(
     children: [],
   }
 
+  if (background) {
+    elementG.children!.push({
+      tag: 'image',
+      attrs: {
+        width,
+        height,
+        href: background.src,
+        opacity: background.opacity,
+        preserveAspectRatio: 'none',
+      },
+    })
+  }
+
   if (backgroundColor) {
     elementG.children!.push({
       tag: 'rect',
@@ -80,40 +94,30 @@ function parseElement(
     })
   }
 
-  if (geometry) {
+  if (geometry?.paths) {
     elementG.children!.push(
-      ...geometry.data.map((path) => {
-        if (typeof path === 'string') {
-          return {
-            tag: 'path',
-            attrs: {
-              d: path,
-            },
-          }
-        }
-        else {
-          return {
-            tag: 'path',
-            attrs: {
-              'fill': path.fill,
-              'stroke': path.stroke,
-              'stroke-width': path.strokeWidth,
-              'd': path.data,
-            },
-          }
+      ...geometry.paths.map((path) => {
+        return {
+          tag: 'path',
+          attrs: {
+            'fill': path.fill,
+            'stroke': path.stroke,
+            'stroke-width': path.strokeWidth,
+            'd': path.data,
+          },
         }
       }),
     )
   }
 
-  if (image) {
+  if (foreground) {
     elementG.children!.push({
       tag: 'image',
       attrs: {
         width,
         height,
-        href: image.url,
-        opacity: image.opacity,
+        href: foreground.src,
+        opacity: foreground.opacity,
         preserveAspectRatio: 'none',
       },
     })

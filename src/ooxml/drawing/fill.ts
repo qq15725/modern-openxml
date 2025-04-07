@@ -1,4 +1,4 @@
-import type { FillDeclaration, ImageDeclaration, ImageFillDeclaration } from 'modern-idoc'
+import type { FillDeclaration, TextureFillDeclaration } from 'modern-idoc'
 import type { OOXMLNode } from '../core'
 import { OOXMLValue } from '../core'
 import {
@@ -36,12 +36,10 @@ export function parseFill(fill?: OOXMLNode, ctx?: Record<string, any>): FillDecl
     }
     case 'a:solidFill':
       return {
-        type: 'color',
         color: parseColor(fill, ctx)!,
       }
     case 'a:gradFill':
       return {
-        type: 'color',
         color: parseGradientFill(fill, ctx)!,
       }
     case 'a:grpFill':
@@ -58,7 +56,7 @@ export function parseFill(fill?: OOXMLNode, ctx?: Record<string, any>): FillDecl
 }
 
 // a:BlipFill
-export function parseBlipFill(fill?: OOXMLNode, ctx?: Record<string, any>): ImageFillDeclaration | undefined {
+export function parseBlipFill(fill?: OOXMLNode, ctx?: Record<string, any>): TextureFillDeclaration | undefined {
   if (!fill)
     return undefined
   const tileNode = fill.find('a:tile')
@@ -76,27 +74,26 @@ export function parseBlipFill(fill?: OOXMLNode, ctx?: Record<string, any>): Imag
   const embed = fill.attr('a:blip/a:extLst//a:ext/asvg:svgBlip/@r:embed')
     ?? fill.attr('a:blip/@r:embed')!
 
-  let image
+  let src
   if (ctx?.drawing) {
-    image = ctx?.drawing.rels.find((v: any) => v.id === embed)?.path
+    src = ctx?.drawing.rels.find((v: any) => v.id === embed)?.path
   }
   else {
-    image = ctx?.rels?.find((v: any) => v.id === embed)?.path
+    src = ctx?.rels?.find((v: any) => v.id === embed)?.path
   }
-  image = image ?? embed
+  src = src ?? embed
 
   return {
-    type: 'image',
     rotateWithShape: fill.attr<boolean>('@rotWithShape', 'boolean'),
     dpi: fill.attr<number>('@dpi', 'number'),
-    image,
+    src,
     opacity: fill.attr<number>('a:blip/a:alphaModFix/@amt', 'ST_PositivePercentage'),
     tile: tile && Object.keys(tile).length > 0 ? tile : undefined,
   }
 }
 
 // p:BlipFill
-export function parsePBlipFill(fill?: OOXMLNode, ctx?: Record<string, any>): ImageDeclaration | undefined {
+export function parsePBlipFill(fill?: OOXMLNode, ctx?: Record<string, any>): FillDeclaration | undefined {
   if (!fill)
     return undefined
   const srcRectNode = fill.find('a:srcRect')
@@ -161,16 +158,16 @@ function parseGradientFill(gradFill?: OOXMLNode, ctx?: any): string | undefined 
   ].join(',')})`
 }
 
-export function stringifyFill(fill?: FillDeclaration | ImageDeclaration, isPic = false): string | undefined {
+export function stringifyFill(fill?: FillDeclaration | FillDeclaration, isPic = false): string | undefined {
   if (!fill)
     return undefined
 
   const _fill = fill as FillDeclaration
-  const _image = fill as ImageDeclaration
+  const _image = fill as FillDeclaration
 
-  if (_fill.type === 'image' || isPic) {
+  if (!!_fill.src || isPic) {
     const tagName = isPic ? 'p:blipFill' : 'a:blipFill'
-    const url = (_fill as ImageFillDeclaration).image
+    const url = _fill.src
       ?? _image.src
     return `<${tagName}>
   <a:blip${withAttrs([withAttr('r:embed', url)])}>
@@ -186,8 +183,8 @@ export function stringifyFill(fill?: FillDeclaration | ImageDeclaration, isPic =
   </a:stretch>
 </${tagName}>`
   }
-  else if (_fill.type === 'color') {
-    return stringifyColor(_fill.color ?? '#FFFFFF')
+  else if (_fill.color) {
+    return stringifyColor(String(_fill.color ?? '#FFFFFF'))
   }
   return undefined
 }

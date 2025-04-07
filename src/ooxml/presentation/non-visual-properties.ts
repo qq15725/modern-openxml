@@ -1,11 +1,10 @@
-import type { AudioDeclaration, VideoDeclaration } from 'modern-idoc'
 import type { OOXMLNode } from '../core'
 import type { Placeholder } from './placeholder'
 import { parsePlaceholder } from './placeholder'
 
 export interface NonVisualProperties {
-  audio?: AudioDeclaration
-  video?: VideoDeclaration
+  audio?: any
+  video?: any
   placeholder?: Placeholder
 }
 

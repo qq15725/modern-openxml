@@ -2,13 +2,15 @@ import type { StyleDeclaration } from 'modern-idoc'
 import type { OOXMLNode } from '../core'
 import { withAttr, withAttrs } from '../utils'
 
+export interface NonVisualDrawingPropertiesMeta {
+  id?: string
+  desc?: string
+  click?: string // pptaction://media
+}
+
 export interface NonVisualDrawingProperties {
   name?: string
-  meta: {
-    id?: string
-    desc?: string
-    click?: string // pptaction://media
-  }
+  meta: NonVisualDrawingPropertiesMeta
   style: Partial<StyleDeclaration>
 }
 

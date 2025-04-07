@@ -1,5 +1,5 @@
 import type { Unzipped } from 'fflate'
-import type { ImageDeclaration, StyleProp } from 'modern-idoc'
+import type { IDOCDocumentDeclaration, StyleProperty, TextureFillDeclaration } from 'modern-idoc'
 import type { Theme } from './drawing'
 import type {
   Slide,
@@ -36,43 +36,71 @@ import {
   withXmlHeader,
 } from './utils'
 
-export interface PPTX {
+export interface PPTXMeta {
+  cover?: TextureFillDeclaration
+  themes: Theme[]
+  slideLayouts: SlideLayout[]
+  slideMasters: SlideMaster[]
+}
+
+export interface PPTX extends IDOCDocumentDeclaration {
   style: {
     width: number
     height: number
   }
   children: Slide[]
-  meta: {
-    cover?: ImageDeclaration
-    themes: Theme[]
-    slideLayouts: SlideLayout[]
-    slideMasters: SlideMaster[]
-  }
+  meta: PPTXMeta
 }
 
-export interface PPTXOptions {
+export interface PPTXDecodeOptions {
   presetShapeDefinitions?: string
+  upload?: (input: string, file: { src: string }, source: PPTX | Slide | SlideLayout | SlideMaster | SlideElement) => any | Promise<any>
+  progress?: (progress: number, total: number, cached: boolean) => void
 }
 
 export interface EncodeingPPTX {
-  style?: StyleProp
+  style?: StyleProperty
   children?: Omit<Slide, 'layoutId' | 'masterId'>[]
   meta?: {
-    cover?: ImageDeclaration
+    cover?: TextureFillDeclaration
     themes?: Theme[]
     slideLayouts?: SlideLayout[]
     slideMasters?: SlideMaster[]
   }
 }
 
-const resolvePath = (path: string): string => (path.startsWith('/') ? path.substring(1) : path)
-const file = (zip: Record<string, any>, path?: string): any | undefined => (path ? zip[resolvePath(path)] : undefined)
-
-export async function decodePPTX(source: Uint8Array, options: PPTXOptions = {}): Promise<PPTX> {
+export async function decodePPTX(source: Uint8Array, options: PPTXDecodeOptions = {}): Promise<PPTX> {
   const unzipped: Unzipped = unzipSync(source)
 
   const createNode = (xml?: string): OOXMLNode => OOXMLNode.fromXML(xml, namespaces)
-  const readNode = async (path?: string): Promise<OOXMLNode> => createNode(new TextDecoder().decode(await file(unzipped, path)))
+  const resolvePath = (path: string): string => (path.startsWith('/') ? path.substring(1) : path)
+  const readFile = (path?: string, type?: 'text' | 'base64'): any | undefined => {
+    const uint8Array = path ? unzipped[resolvePath(path)] : undefined
+    if (uint8Array) {
+      switch (type) {
+        case 'text':
+          return new TextDecoder().decode(uint8Array)
+        case 'base64':
+          // eslint-disable-next-line node/prefer-global/buffer
+          if (typeof Buffer !== 'undefined') {
+            // eslint-disable-next-line node/prefer-global/buffer
+            return Buffer.from(uint8Array).toString('base64')
+          }
+          else if (typeof btoa !== 'undefined') {
+            let binary = ''
+            for (let i = 0; i < uint8Array.length; i++) {
+              binary += String.fromCharCode(uint8Array[i])
+            }
+            return btoa(binary)
+          }
+          else {
+            throw new TypeError('Failed readFile to base64')
+          }
+      }
+    }
+    return uint8Array
+  }
+  const readNode = (path?: string): OOXMLNode => createNode(readFile(path, 'text'))
   const getRelsPath = (path = ''): string => {
     const paths = path.split('/')
     const name = paths.pop()
@@ -84,22 +112,22 @@ export async function decodePPTX(source: Uint8Array, options: PPTXOptions = {}):
     : undefined
 
   // [Content_Types].xml
-  const contentTypes = parseTypes((await readNode('[Content_Types].xml'))!)
+  const contentTypes = parseTypes(readNode('[Content_Types].xml')!)
 
   // _rels/.rels
   const relsPath = getRelsPath()
-  const relsNode = (await readNode(relsPath))!
+  const relsNode = readNode(relsPath)!
   const rels = parseRelationships(relsNode, relsPath, contentTypes)
 
   // ppt/presentation.xml
   const presentationPath = rels.find(v => v.type === 'presentation')?.path
-  const presentationNode = (await readNode(presentationPath))!
+  const presentationNode = readNode(presentationPath)!
   const presentation = parsePresentation(presentationNode)!
 
   // ppt/_rels/presentation.xml.rels
   const presentationRelsPath = getRelsPath(presentationPath)
   const presentationRels = parseRelationships(
-    (await readNode(presentationRelsPath))!,
+    readNode(presentationRelsPath)!,
     presentationRelsPath,
     contentTypes,
   )
@@ -116,7 +144,7 @@ export async function decodePPTX(source: Uint8Array, options: PPTXOptions = {}):
       slideMasters: [],
       // docProps/thumbnail.jpeg
       cover: {
-        url: relsNode.attr(
+        src: relsNode.attr(
           'Relationships/Relationship[@Type="http://schemas.openxmlformats.org/package/2006/relationships/metadata/thumbnail"]/@Target',
         )!,
       },
@@ -130,35 +158,35 @@ export async function decodePPTX(source: Uint8Array, options: PPTXOptions = {}):
 
     // ppt/slides/_rels/slideX.xml.rels
     const slideRelsPath = getRelsPath(slidePath)
-    const slideRels = parseRelationships((await readNode(slideRelsPath))!, slideRelsPath, contentTypes)
+    const slideRels = parseRelationships(readNode(slideRelsPath)!, slideRelsPath, contentTypes)
 
     // ppt/slideLayouts/_rels/slideX.xml.rels
     const layoutPath = slideRels.find(v => v.type === 'slideLayout')!.path
     const layoutRelsPath = getRelsPath(layoutPath)
-    const layoutRels = parseRelationships((await readNode(layoutRelsPath))!, layoutRelsPath, contentTypes)
+    const layoutRels = parseRelationships(readNode(layoutRelsPath)!, layoutRelsPath, contentTypes)
 
     // ppt/slideMasters/_rels/slideX.xml.rels
     const masterPath = layoutRels.find(v => v.type === 'slideMaster')!.path
     const masterRelsPath = getRelsPath(masterPath)
-    const masterRels = parseRelationships((await readNode(masterRelsPath))!, masterRelsPath, contentTypes)
+    const masterRels = parseRelationships(readNode(masterRelsPath)!, masterRelsPath, contentTypes)
 
     // ppt/theme/themeX.xml
     const themePath = masterRels.find(v => v.type === 'theme')?.path
 
-    const themeNode = await readNode(themePath)
-    const layoutNode = (await readNode(layoutPath))!
-    const masterNode = (await readNode(masterPath))!
-    const slideNode = (await readNode(slidePath))!
+    const themeNode = readNode(themePath)
+    const layoutNode = readNode(layoutPath)!
+    const masterNode = readNode(masterPath)!
+    const slideNode = readNode(slidePath)!
 
     const drawingRels = await Promise.all(
       slideRels
         .filter(v => v.type === 'diagramDrawing')
         .map(async (rel) => {
           const relsPath = getRelsPath(rel.path)
-          const rels = parseRelationships(await readNode(relsPath), relsPath, contentTypes)
+          const rels = parseRelationships(readNode(relsPath), relsPath, contentTypes)
           return {
             ...rel,
-            node: (await readNode(rel.path))!,
+            node: readNode(rel.path)!,
             rels,
           }
         }),
@@ -168,10 +196,10 @@ export async function decodePPTX(source: Uint8Array, options: PPTXOptions = {}):
         .filter(v => v.type === 'diagramData')
         .map(async (rel) => {
           const relsPath = getRelsPath(rel.path)
-          const rels = parseRelationships(await readNode(relsPath), relsPath, contentTypes)
+          const rels = parseRelationships(readNode(relsPath), relsPath, contentTypes)
           return {
             ...rel,
-            node: (await readNode(rel.path))!,
+            node: readNode(rel.path)!,
             rels,
           }
         }),
@@ -223,27 +251,88 @@ export async function decodePPTX(source: Uint8Array, options: PPTXOptions = {}):
       pptx.meta.slideMasters.push(master)
     }
   }
+
   pptx.meta.themes = pptx.meta.themes.filter(Boolean)
+
+  async function _uploadFiles(): Promise<void> {
+    const {
+      progress,
+      upload = (input) => {
+        return `data:image/png;base64,${input}`
+      },
+    } = options
+    const cache = new Map<string, Promise<any>>()
+    let current = 0
+
+    function flatMapSlide(slide: Slide | SlideLayout | SlideMaster): Promise<any>[] {
+      return [
+        slide.background?.src && _upload(slide.background!, slide),
+        ...slide.children.flatMap(function flatMapEl(el: SlideElement): any[] {
+          return [
+            el.background?.src && _upload(el.background, el),
+            el.foreground?.src && _upload(el.foreground, el),
+            el.audio?.src && _upload(el.audio, el),
+            el.video?.src && _upload(el.video, el),
+            // @ts-expect-error flatMapEl
+            ...(el.children?.flatMap(el => flatMapEl(el as any)) ?? []),
+          ]
+        }),
+      ].filter(Boolean)
+    }
+
+    const tasks = [
+      pptx.meta.cover?.src && _upload(pptx.meta.cover!, pptx),
+      ...pptx.children.flatMap(flatMapSlide),
+      ...pptx.meta.slideLayouts.flatMap(flatMapSlide),
+      ...pptx.meta.slideMasters.flatMap(flatMapSlide),
+    ].filter(Boolean) as Promise<any>[]
+
+    async function _upload(file: any, source: PPTX | Slide | SlideLayout | SlideMaster | SlideElement): Promise<void> {
+      const key = JSON.stringify({ ...file, width: (source as any).width, height: (source as any).height })
+      let promise: Promise<any>
+      const cached = cache.has(key)
+      if (cached) {
+        promise = cache.get(key)!
+      }
+      else {
+        promise = upload?.(readFile(file.src, 'base64'), file as any, source)
+        cache.set(key, promise)
+      }
+      const output = await promise
+      progress?.(++current, tasks.length, cached)
+      if (output) {
+        file.src = output
+      }
+    }
+
+    await Promise.all(tasks)
+  }
+
+  await _uploadFiles()
+
   return clearUndef(pptx)
 }
 
 export async function encodePPTX(pptx: EncodeingPPTX): Promise<Uint8Array> {
+  const _pptx = { ...pptx } as PPTX
+
   const unzipped: Unzipped = {}
   const add = (path: string, content: string): void => {
     unzipped[path] = new TextEncoder().encode(withXmlHeader(compressXml(content)))
   }
   const cache = new Map<any, string>()
-  const addMedia = async (file: any, refs: string[], fileName: string, fileExt: string): Promise<string> => {
-    const cacheKey = SUPPORTS_CRYPTO_SUBTLE && file instanceof Blob
-      ? await hashBlob(file)
+  const addMedia = async (file: any, refs: string[], fileName: string, fileExt: string): Promise<void> => {
+    const src = file.src
+    const cacheKey = SUPPORTS_CRYPTO_SUBTLE && src instanceof Blob
+      ? await hashBlob(src)
       : null
     let name: string
     if (cacheKey && cache.has(cacheKey)) {
       name = cache.get(cacheKey)!
     }
     else {
-      const ext = IN_BROWSER && file instanceof Blob
-        ? MINES_TO_EXT[file.type]
+      const ext = IN_BROWSER && src instanceof Blob
+        ? MINES_TO_EXT[src.type]
         : fileExt
       name = `${fileName}${cache.size + 1}.${ext}`
       if (cacheKey) {
@@ -252,47 +341,28 @@ export async function encodePPTX(pptx: EncodeingPPTX): Promise<Uint8Array> {
       else {
         cache.set(name, name)
       }
-      unzipped[`ppt/media/${name}`] = file
+      unzipped[`ppt/media/${name}`] = src
     }
     refs.push(`../media/${name}`)
-    return `rId${refs.length}`
+    file.src = `rId${refs.length}`
   }
-
-  const stringifyImage = async (file: any, refs: string[]): Promise<any> => addMedia(file, refs, 'image', 'png')
-  const stringifyAudio = async (file: any, refs: string[]): Promise<any> => addMedia(file, refs, 'media', 'mp3')
 
   // slides
   const slides = await Promise.all(
     (pptx.children ?? [])?.map(async (slide) => {
       const slideRefs: string[] = []
 
-      const deepMapElements = <T>(elements: SlideElement[], cb: (el: SlideElement) => T): T[] =>
-        elements.flatMap(el => [
-          cb(el),
-          ...(el.meta.type === 'group-shape' ? deepMapElements((el.children as any), cb) : []),
-        ])
+      const uploadRefs = <T>(el: Slide | SlideElement): T[] =>
+        [
+          el.background?.src && addMedia(el.background, slideRefs, 'image', 'png'),
+          el.foreground?.src && addMedia(el.foreground, slideRefs, 'image', 'png'),
+          el.fill?.src && addMedia(el.fill, slideRefs, 'image', 'png'),
+          el.audio?.src && addMedia(el.audio, slideRefs, 'media', 'mp3'),
+          el.video?.src && addMedia(el.video, slideRefs, 'media', 'mp4'),
+          ...(el.children ?? []).flatMap(el => uploadRefs(el as SlideElement)),
+        ].filter(Boolean) as T[]
 
-      const imageElements = (): any =>
-        deepMapElements(slide.children, (el) => {
-          return el.image?.url
-            && (async () => (el.image!.url = await stringifyImage(el.image!.url, slideRefs)))()
-        })
-
-      const audioElements = (): any =>
-        deepMapElements(slide.children, (el) => {
-          return (
-            el.meta.type === 'picture'
-            && el.audio
-            && (async () => (el.audio = await stringifyAudio((el.audio as any).src, slideRefs)))()
-          )
-        })
-
-      await Promise.all([
-        slide.image?.url
-        && (async () => (slide.image!.url = await stringifyImage(slide.image!.url, slideRefs)))(),
-        ...imageElements(),
-        ...audioElements(),
-      ].filter(Boolean))
+      await Promise.all(uploadRefs(slide))
 
       return { slide, slideRefs }
     }),
@@ -302,7 +372,7 @@ export async function encodePPTX(pptx: EncodeingPPTX): Promise<Uint8Array> {
   add(
     'ppt/presentation.xml',
     stringifyPresentation(
-      pptx,
+      _pptx,
       slides.map((_, i) => `rId${i + 1}`),
       [`rId${slides.length + 1}`],
     ),

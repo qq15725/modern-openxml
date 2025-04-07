@@ -1,15 +1,18 @@
-import type { IDOCElementDeclaration } from 'modern-idoc'
+import type { IDOCElementDeclaration, StyleProperty } from 'modern-idoc'
 import type { OOXMLNode, OOXMLQueryType } from '../core'
 import { parseNonVisualDrawingProperties } from './non-visual-drawing-properties'
 import { parseNonVisualProperties } from './non-visual-properties'
 import { parseShapeProperties } from './shape-properties'
 
+export interface ConnectionShapeMeta {
+  type: 'connection-shape'
+  placeholderType?: string
+  placeholderIndex?: string
+}
+
 export interface ConnectionShape extends IDOCElementDeclaration {
-  meta: {
-    type: 'connection-shape'
-    placeholderType?: string
-    placeholderIndex?: string
-  }
+  style: StyleProperty
+  meta: ConnectionShapeMeta
 }
 
 // p:cxnSp

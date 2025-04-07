@@ -26,7 +26,7 @@ export function parsePlaceholder(ph?: OOXMLNode, ctx?: any): Placeholder | undef
       .join(' and ')
     const path = `p:cSld/p:spTree/p:sp/p:nvSpPr/p:nvPr/p:ph[${required}]/ancestor::p:sp`
     node = ctx?.layout?.node?.find(path)
-    ?? ctx?.master?.node?.find(path)
+      ?? ctx?.master?.node?.find(path)
   }
 
   return {

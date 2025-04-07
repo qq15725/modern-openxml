@@ -24,13 +24,15 @@ export type SlideElement =
   | GroupShape
   | GraphicFrame
 
+export interface SlideMeta {
+  id: string
+  layoutId: string
+  masterId: string
+}
+
 export interface Slide extends IDOCElementDeclaration, Transition, Timing {
   children: SlideElement[]
-  meta: {
-    id: string
-    layoutId: string
-    masterId: string
-  }
+  meta: SlideMeta
 }
 
 export function parseElement(node: OOXMLNode, ctx: any): SlideElement | undefined {
@@ -55,7 +57,7 @@ export function parseSlide(slide: OOXMLNode, id: string, ctx: any): Slide {
   return {
     ...parseTiming(slide.find('p:timing')),
     ...parseTransition(slide.find('mc:AlternateContent')),
-    fill: parseBackground(slide.find('p:cSld/p:bg'), ctx),
+    background: parseBackground(slide.find('p:cSld/p:bg'), ctx),
     children: slide
       .get('p:cSld/p:spTree/*')
       .map(node => parseElement(node, ctx))

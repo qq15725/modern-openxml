@@ -18,7 +18,7 @@ export interface SlideLayout extends IDOCElementDeclaration {
 
 export function parseSlideLayout(slide: OOXMLNode, id: string, ctx: any): SlideLayout {
   return {
-    fill: parseBackground(slide.find('p:cSld/p:bg'), ctx),
+    background: parseBackground(slide.find('p:cSld/p:bg'), ctx),
     children: slide
       .get('p:cSld/p:spTree/*')
       .map(item => parseElement(item, ctx))

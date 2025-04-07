@@ -1,9 +1,9 @@
-import type { IDOCElementDeclaration, StyleDeclaration } from 'modern-idoc'
+import type { IDOCElementDeclaration, StyleProperty } from 'modern-idoc'
 import type { OOXMLNode, OOXMLQueryType } from '../core'
+import type { NonVisualDrawingProperties } from './non-visual-drawing-properties'
 import type { SlideElement } from './slide'
 import { withIndents } from '../utils'
 import {
-  type NonVisualDrawingProperties,
   parseNonVisualDrawingProperties,
   stringifyNonVisualDrawingProperties,
 } from './non-visual-drawing-properties'
@@ -11,14 +11,16 @@ import { parseNonVisualProperties } from './non-visual-properties'
 import { parseShapeProperties } from './shape-properties'
 import { stringifyTransform2d } from './transform2d'
 
+export type GroupShapeMeta = NonVisualDrawingProperties['meta'] & {
+  type: 'group-shape'
+  placeholderType?: string
+  placeholderIndex?: string
+}
+
 export interface GroupShape extends IDOCElementDeclaration {
+  style: StyleProperty
   children: SlideElement[]
-  style: Partial<StyleDeclaration>
-  meta: NonVisualDrawingProperties['meta'] & {
-    type: 'group-shape'
-    placeholderType?: string
-    placeholderIndex?: string
-  }
+  meta: GroupShapeMeta
 }
 
 export function parseGroupShape(node: OOXMLNode, ctx: any, parseElement: any): GroupShape {

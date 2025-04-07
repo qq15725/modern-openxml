@@ -1,4 +1,4 @@
-import type { ColorFillDeclaration, OutlineDeclaration } from 'modern-idoc'
+import type { OutlineDeclaration, SolidFillDeclaration } from 'modern-idoc'
 import type { OOXMLNode } from '../core'
 import { OOXMLValue } from '../core'
 import { withAttr, withAttrs, withIndents } from '../utils'
@@ -41,7 +41,7 @@ export function parseOutline(node?: OOXMLNode, ctx?: any): OutlineDeclaration | 
 
   const query = ctx?.query ?? node.query
   const prstDash = node.attr('a:prstDash/@val') as DashType
-  const fill = parseFill(query(fillXPath), ctx) as ColorFillDeclaration
+  const fill = parseFill(query(fillXPath), ctx) as SolidFillDeclaration
   const style = prstDash
     ? prstDash !== DashType.SOLID ? 'dashed' : 'solid'
     : undefined
@@ -107,7 +107,7 @@ export function stringifyOutline(ln?: OutlineDeclaration): string | undefined {
   return `<a:ln${withAttrs([
     withAttr('w', OOXMLValue.encode(ln.width, 'ST_LineWidth')),
   ])}>
-    ${ln.width ? withIndents(stringifyColor(ln.color)) : '<a:noFill/>'}
+    ${ln.width ? withIndents(stringifyColor(String(ln.color))) : '<a:noFill/>'}
 </a:ln>`
 
 // TODO

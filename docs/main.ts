@@ -7,8 +7,7 @@ input.accept = '.pptx'
 input.type = 'file'
 input.onchange = async () => {
   const file = input.files?.[0]
-  const pptx = await decodePPTX(new Uint8Array(await file!.arrayBuffer()), { presetShapeDefinitions })
-  console.warn(pptx)
+  parsePPTX(new Uint8Array(await file!.arrayBuffer()))
 }
 
 function xmlToDOM(xml: string): HTMLElement {
@@ -20,18 +19,22 @@ function xmlToDOM(xml: string): HTMLElement {
   return doc.documentElement
 }
 
+async function parsePPTX(source: Uint8Array): Promise<void> {
+  const pptx = await decodePPTX(source, { presetShapeDefinitions })
+  console.warn(pptx)
+  document.body.append(
+    xmlToDOM(pptxToSVG(pptx)),
+  )
+}
+
 async function testPPTX(): Promise<void> {
   for (const [key] of Object.entries(import.meta.glob('../test/fixtures/*.pptx', { query: '?raw' }))) {
     if (!key.endsWith('billFill.srcRect.pptx'))
       continue
     const filename = key.split('/').pop()
     const source = await fetch(filename!).then(rep => rep.arrayBuffer())
-    const pptx = await decodePPTX(new Uint8Array(source), { presetShapeDefinitions })
+    parsePPTX(new Uint8Array(source))
     console.warn(filename)
-    console.warn(pptx)
-    document.body.append(
-      xmlToDOM(pptxToSVG(pptx)),
-    )
   }
 }
 

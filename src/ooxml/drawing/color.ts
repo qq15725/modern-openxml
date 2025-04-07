@@ -237,11 +237,8 @@ export function stringifyColor(color?: string): string {
     degree = degree ? (degree + 270) % 360 : degree
     const ang = OOXMLValue.encode(degree, 'positiveFixedAngle')
     const matched = str
-      // 去除角度部分
       .replace(deg, '')
-      // 匹配颜色和位置
       .matchAll(/(#|rgba|rgb)(.+?) ([\d.]+%)/gi)
-    // 还原颜色
     const gs = Array.from(matched).map((res) => {
       let color = res[2]
       if (color.startsWith('(')) {
@@ -274,7 +271,6 @@ function _stringifyColor(color: string): string {
   }
   if (color.startsWith('#')) {
     color = color.substring(1)
-    // 适配多种hex格式
     if (color.length === 3 || color.length === 4) {
       color = color
         .split('')

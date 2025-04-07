@@ -1,5 +1,5 @@
 import type {
-  ColorFillDeclaration,
+  SolidFillDeclaration,
   StyleDeclaration,
   TextAlign,
   TextDeclaration,
@@ -104,7 +104,7 @@ export function parseTextBody(txBody?: OOXMLNode, ctx?: Record<string, any>): Te
                   ?? queryPPr(`a:defRPr/${path}`, type)
                 ) as T
               }
-              const fill = parseFill(queryRPr(fillXPath), ctx) as ColorFillDeclaration | undefined
+              const fill = parseFill(queryRPr(fillXPath), ctx) as SolidFillDeclaration | undefined
               const outline = parseOutline(queryRPr('a:ln'), ctx)
               return {
                 fontWeight: queryRPr('@b', 'boolean') ? 700 : undefined,
@@ -151,7 +151,7 @@ export function stringifyTextBody(txBody?: TextBody): string | undefined {
         withAttr('spc', OOXMLValue.encode(r.letterSpacing, 'fontSize')),
       ])}>
   ${withIndents([
-    stringifyColor(r.color),
+    stringifyColor(String(r.color)),
     isUserFont(fontLatin) && `<a:latin typeface="${fixTypeface(fontLatin)}" />`,
     isUserFont(fontEastasian) && `<a:ea typeface="${fixTypeface(fontEastasian)}" />`,
     isUserFont(fontSymbol) && `<a:sym typeface="${fixTypeface(fontSymbol)}" />`,

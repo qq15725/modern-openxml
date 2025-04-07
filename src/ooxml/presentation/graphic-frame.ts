@@ -1,18 +1,22 @@
-import type { IDOCElementDeclaration } from 'modern-idoc'
+import type { IDOCElementDeclaration, StyleProperty } from 'modern-idoc'
 import type { OOXMLNode } from '../core'
 import type { GroupShape } from './group-shape'
+import type { SlideElement } from './slide'
 import { parseNonVisualDrawingProperties } from './non-visual-drawing-properties'
 import { parseNonVisualProperties } from './non-visual-properties'
-import { parseElement, type SlideElement } from './slide'
+import { parseElement } from './slide'
 import { parseTransform2d } from './transform2d'
 
+export interface GraphicFrameMeta {
+  type: 'graphic-frame'
+  placeholderType?: string
+  placeholderIndex?: string
+}
+
 export interface GraphicFrame extends IDOCElementDeclaration {
+  style: StyleProperty
+  meta: GraphicFrameMeta
   children: SlideElement[]
-  meta: {
-    type: 'graphic-frame'
-    placeholderType?: string
-    placeholderIndex?: string
-  }
 }
 
 export function parseGraphicFrame(node?: OOXMLNode, ctx?: any): GraphicFrame | undefined {

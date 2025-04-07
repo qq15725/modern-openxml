@@ -38,7 +38,7 @@ export function parseGeometry(geom?: OOXMLNode, ctx?: Record<string, any>): Geom
       }
       return {
         name: preset,
-        data: getPaths(ctx as any).map((path) => {
+        paths: getPaths(ctx as any).map((path) => {
           const { commands, ...props } = path
           return {
             ...props,
@@ -55,7 +55,7 @@ export function parseGeometry(geom?: OOXMLNode, ctx?: Record<string, any>): Geom
         pathLst: custGeom.find('a:pathLst'),
       }
       return {
-        data: getPaths(ctx as any).map((path) => {
+        paths: getPaths(ctx as any).map((path) => {
           const { commands, ...props } = path
           return {
             ...props,

@@ -1,4 +1,4 @@
-import type { IDOCElementDeclaration, StyleDeclaration } from 'modern-idoc'
+import type { IDOCElementDeclaration, StyleProperty } from 'modern-idoc'
 import type { OOXMLNode, OOXMLQueryType } from '../core'
 import type { NonVisualDrawingProperties } from './non-visual-drawing-properties'
 import { parsePBlipFill, stringifyFill } from '../drawing'
@@ -7,13 +7,15 @@ import { parseNonVisualDrawingProperties, stringifyNonVisualDrawingProperties } 
 import { parseNonVisualProperties, stringifyNonVisualProperties } from './non-visual-properties'
 import { parseShapeProperties, stringifyShapeProperties } from './shape-properties'
 
+export type PictureMeta = NonVisualDrawingProperties['meta'] & {
+  type: 'picture'
+  placeholderType?: string
+  placeholderIndex?: string
+}
+
 export interface Picture extends IDOCElementDeclaration {
-  style: Partial<StyleDeclaration>
-  meta: NonVisualDrawingProperties['meta'] & {
-    type: 'picture'
-    placeholderType?: string
-    placeholderIndex?: string
-  }
+  style: StyleProperty
+  meta: PictureMeta
 }
 
 // p:pic
@@ -43,7 +45,7 @@ export function parsePicture(node?: OOXMLNode, ctx?: any): Picture | undefined {
       ...cNvPr?.style,
       ...spPr?.style,
     },
-    image: parsePBlipFill(query('p:blipFill'), ctx),
+    foreground: parsePBlipFill(query('p:blipFill'), ctx),
     meta: {
       ...cNvPr?.meta,
       type: 'picture',
@@ -56,7 +58,7 @@ export function parsePicture(node?: OOXMLNode, ctx?: any): Picture | undefined {
 export function stringifyPicture(pic: Picture): string {
   const cNvPr = stringifyNonVisualDrawingProperties(pic)
   const nvPr = stringifyNonVisualProperties(pic)
-  const pBlipFill = stringifyFill(pic.image, true)
+  const pBlipFill = stringifyFill(pic.foreground, true)
   const spPr = stringifyShapeProperties(pic as any, true)
 
   return `<p:pic>
