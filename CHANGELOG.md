@@ -1,3 +1,12 @@
+## [0.1.2](https://github.com/qq15725/modern-openxml/compare/v0.1.1...v0.1.2) (2025-04-08)
+
+
+### Bug Fixes
+
+* export ([e7dd221](https://github.com/qq15725/modern-openxml/commit/e7dd221ebfc0c3d0a1730306c4503a2750dcd854))
+
+
+
 ## [0.1.1](https://github.com/qq15725/modern-openxml/compare/v0.1.0...v0.1.1) (2025-04-07)
 
 
