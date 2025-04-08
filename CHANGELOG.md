@@ -1,3 +1,12 @@
+## [0.1.4](https://github.com/qq15725/modern-openxml/compare/v0.1.3...v0.1.4) (2025-04-08)
+
+
+### Features
+
+* supports more decodeing source ([7633877](https://github.com/qq15725/modern-openxml/commit/7633877bd3155e43b3d62dec40f5c9588647ec63))
+
+
+
 ## [0.1.3](https://github.com/qq15725/modern-openxml/compare/v0.1.2...v0.1.3) (2025-04-08)
 
 
