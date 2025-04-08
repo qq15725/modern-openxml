@@ -29,16 +29,8 @@
       "import": "./dist/index.mjs",
       "require": "./dist/index.cjs"
     },
-    "./presetShapeDefinitions": {
-      "types": "./assets/presetShapeDefinitions.d.ts",
-      "import": "./assets/presetShapeDefinitions.js",
-      "require": "./assets/presetShapeDefinitions.js"
-    },
-    "./presetTextWarpDefinitions": {
-      "types": "./assets/presetTextWarpDefinitions.d.ts",
-      "import": "./assets/presetTextWarpDefinitions.js",
-      "require": "./assets/presetTextWarpDefinitions.js"
-    }
+    "./presetShapeDefinitions": "./assets/presetShapeDefinitions.js",
+    "./presetTextWarpDefinitions": "./assets/presetTextWarpDefinitions.js"
   },
   "main": "./dist/index.mjs",
   "module": "./dist/index.mjs",
