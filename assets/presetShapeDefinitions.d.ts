@@ -1,1 +1,3 @@
-﻿export const presetShapeDefinitions: string
+﻿const presetShapeDefinitions: string
+
+export default presetShapeDefinitions

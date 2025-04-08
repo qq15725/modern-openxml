@@ -1,1 +1,3 @@
-export const presetTextWarpDefinitions: string
+const presetTextWarpDefinitions: string
+
+export default presetTextWarpDefinitions

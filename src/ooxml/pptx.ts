@@ -58,7 +58,7 @@ export interface PPTXDecodeOptions {
   progress?: (progress: number, total: number, cached: boolean) => void
 }
 
-export interface EncodeingPPTX {
+export interface EncodeingSource {
   style?: StyleProperty
   children?: Omit<Slide, 'layoutId' | 'masterId'>[]
   meta?: {
@@ -69,8 +69,50 @@ export interface EncodeingPPTX {
   }
 }
 
-export async function decodePPTX(source: Uint8Array, options: PPTXDecodeOptions = {}): Promise<PPTX> {
-  const unzipped: Unzipped = unzipSync(source)
+export type DecodeingSource = string | number[] | Uint8Array | ArrayBuffer | Blob | NodeJS.ReadableStream
+
+async function parseSource(source: DecodeingSource): Promise<Uint8Array> {
+  if (typeof source === 'string') {
+    return new TextEncoder().encode(source)
+  }
+  else if (Array.isArray(source)) {
+    return new Uint8Array(source)
+  }
+  else if (source instanceof Uint8Array) {
+    return source
+  }
+  else if (source instanceof ArrayBuffer) {
+    return new Uint8Array(source)
+  }
+  else if (source instanceof Blob) {
+    const arrayBuffer = await source.arrayBuffer()
+    return new Uint8Array(arrayBuffer)
+  }
+  else if (isNodeReadableStream(source)) {
+    const chunks: Uint8Array[] = []
+    for await (const chunk of source) {
+      chunks.push(typeof chunk === 'string' ? new TextEncoder().encode(chunk) : new Uint8Array(chunk))
+    }
+    const totalLength = chunks.reduce((acc, val) => acc + val.length, 0)
+    const result = new Uint8Array(totalLength)
+    let offset = 0
+    for (const chunk of chunks) {
+      result.set(chunk, offset)
+      offset += chunk.length
+    }
+    return result
+  }
+  else {
+    throw new Error('Unsupported source type')
+  }
+}
+
+function isNodeReadableStream(obj: any): obj is NodeJS.ReadableStream {
+  return obj && typeof obj.read === 'function' && typeof obj.on === 'function'
+}
+
+export async function decodePPTX(source: DecodeingSource, options: PPTXDecodeOptions = {}): Promise<PPTX> {
+  const unzipped: Unzipped = unzipSync(await parseSource(source))
 
   const createNode = (xml?: string): OOXMLNode => OOXMLNode.fromXML(xml, namespaces)
   const resolvePath = (path: string): string => (path.startsWith('/') ? path.substring(1) : path)
@@ -312,7 +354,7 @@ export async function decodePPTX(source: Uint8Array, options: PPTXDecodeOptions 
   return clearUndef(pptx)
 }
 
-export async function encodePPTX(pptx: EncodeingPPTX): Promise<Uint8Array> {
+export async function encodePPTX(pptx: EncodeingSource): Promise<Uint8Array> {
   const _pptx = { ...pptx } as PPTX
 
   const unzipped: Unzipped = {}
