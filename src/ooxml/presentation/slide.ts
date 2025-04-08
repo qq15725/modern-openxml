@@ -30,7 +30,7 @@ export interface SlideMeta {
   masterId: string
 }
 
-export interface Slide extends IDOCElementDeclaration, Transition, Timing {
+export interface Slide extends Transition, Timing, IDOCElementDeclaration {
   children: SlideElement[]
   meta: SlideMeta
 }

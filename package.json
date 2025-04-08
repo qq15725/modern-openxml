@@ -24,6 +24,11 @@
   ],
   "sideEffects": false,
   "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    },
     "./presetShapeDefinitions": {
       "types": "./assets/presetShapeDefinitions.d.ts",
       "import": "./assets/presetShapeDefinitions.js",
@@ -33,11 +38,6 @@
       "types": "./assets/presetTextWarpDefinitions.d.ts",
       "import": "./assets/presetTextWarpDefinitions.js",
       "require": "./assets/presetTextWarpDefinitions.js"
-    },
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.cjs"
     }
   },
   "main": "./dist/index.mjs",

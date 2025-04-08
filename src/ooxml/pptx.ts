@@ -1,5 +1,5 @@
 import type { Unzipped } from 'fflate'
-import type { IDOCDocumentDeclaration, StyleProperty, TextureFillDeclaration } from 'modern-idoc'
+import type { IDOCDocumentDeclaration, StyleProperty } from 'modern-idoc'
 import type { Theme } from './drawing'
 import type {
   Slide,
@@ -37,7 +37,7 @@ import {
 } from './utils'
 
 export interface PPTXMeta {
-  cover?: TextureFillDeclaration
+  cover?: string
   themes: Theme[]
   slideLayouts: SlideLayout[]
   slideMasters: SlideMaster[]
@@ -62,7 +62,7 @@ export interface EncodeingPPTX {
   style?: StyleProperty
   children?: Omit<Slide, 'layoutId' | 'masterId'>[]
   meta?: {
-    cover?: TextureFillDeclaration
+    cover?: string
     themes?: Theme[]
     slideLayouts?: SlideLayout[]
     slideMasters?: SlideMaster[]
@@ -143,11 +143,9 @@ export async function decodePPTX(source: Uint8Array, options: PPTXDecodeOptions 
       slideLayouts: [],
       slideMasters: [],
       // docProps/thumbnail.jpeg
-      cover: {
-        src: relsNode.attr(
-          'Relationships/Relationship[@Type="http://schemas.openxmlformats.org/package/2006/relationships/metadata/thumbnail"]/@Target',
-        )!,
-      },
+      cover: relsNode.attr(
+        'Relationships/Relationship[@Type="http://schemas.openxmlformats.org/package/2006/relationships/metadata/thumbnail"]/@Target',
+      )!,
     },
   }
 
@@ -281,13 +279,13 @@ export async function decodePPTX(source: Uint8Array, options: PPTXDecodeOptions 
     }
 
     const tasks = [
-      pptx.meta.cover?.src && _upload(pptx.meta.cover!, pptx),
+      pptx.meta.cover && (async () => (pptx.meta.cover = await _upload({ src: pptx.meta.cover! }, pptx))),
       ...pptx.children.flatMap(flatMapSlide),
       ...pptx.meta.slideLayouts.flatMap(flatMapSlide),
       ...pptx.meta.slideMasters.flatMap(flatMapSlide),
     ].filter(Boolean) as Promise<any>[]
 
-    async function _upload(file: any, source: PPTX | Slide | SlideLayout | SlideMaster | SlideElement): Promise<void> {
+    async function _upload(file: any, source: PPTX | Slide | SlideLayout | SlideMaster | SlideElement): Promise<string> {
       const key = JSON.stringify({ ...file, width: (source as any).width, height: (source as any).height })
       let promise: Promise<any>
       const cached = cache.has(key)
@@ -303,6 +301,7 @@ export async function decodePPTX(source: Uint8Array, options: PPTXDecodeOptions 
       if (output) {
         file.src = output
       }
+      return output
     }
 
     await Promise.all(tasks)
