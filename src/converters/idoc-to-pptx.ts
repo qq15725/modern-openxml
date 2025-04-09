@@ -1,8 +1,8 @@
-import type { EncodeingPPTXSource } from '../codecs'
+import type { IDOCPPTX } from '../ooxml'
 import { PPTXEncoder } from '../codecs'
 
 export async function idocToPPTX(
-  source: EncodeingPPTXSource,
+  source: IDOCPPTX,
 ): Promise<Uint8Array> {
   return await new PPTXEncoder().encode(source)
 }

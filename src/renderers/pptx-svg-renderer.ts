@@ -1,5 +1,4 @@
-import type { DecodedPPTX } from '../codecs'
-import type { SlideElement } from '../ooxml'
+import type { IDOCPPTXDeclaration, SlideElement } from '../ooxml'
 import type { XMLNode } from './xml-renderer'
 import { measureText } from 'modern-text'
 import { OOXMLValue } from '../ooxml'
@@ -189,7 +188,7 @@ export class PPTXSVGRenderer {
     return elementG
   }
 
-  parse(pptx: DecodedPPTX): XMLNode {
+  parse(pptx: IDOCPPTXDeclaration): XMLNode {
     const {
       width,
       height,
@@ -282,7 +281,7 @@ export class PPTXSVGRenderer {
     }
   }
 
-  render(pptx: DecodedPPTX): string {
+  render(pptx: IDOCPPTXDeclaration): string {
     return this.xmlRenderer.render(
       this.parse(pptx),
     )

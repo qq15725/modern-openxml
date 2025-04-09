@@ -1,13 +1,10 @@
 import type { Unzipped } from 'fflate'
-import type { StyleProperty } from 'modern-idoc'
 import type {
+  IDOCPPTX,
+  IDOCPPTXDeclaration,
   Slide,
   SlideElement,
-  SlideLayout,
-  SlideMaster,
-  Theme,
 } from '../ooxml'
-import type { DecodedPPTX } from './pptx-decoder'
 import { zipSync } from 'fflate'
 import {
   compressXml,
@@ -30,20 +27,9 @@ import {
   withXmlHeader,
 } from '../ooxml'
 
-export interface EncodeingPPTXSource {
-  style?: StyleProperty
-  children?: Omit<Slide, 'layoutId' | 'masterId'>[]
-  meta?: {
-    cover?: string
-    themes?: Theme[]
-    slideLayouts?: SlideLayout[]
-    slideMasters?: SlideMaster[]
-  }
-}
-
 export class PPTXEncoder {
-  async encode(pptx: EncodeingPPTXSource): Promise<Uint8Array> {
-    const _pptx = { ...pptx } as DecodedPPTX
+  async encode(pptx: IDOCPPTX): Promise<Uint8Array> {
+    const _pptx = { ...pptx } as IDOCPPTXDeclaration
 
     const unzipped: Unzipped = {}
     const add = (path: string, content: string): void => {
