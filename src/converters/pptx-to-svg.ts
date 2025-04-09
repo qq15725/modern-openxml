@@ -1,9 +1,10 @@
-import type { DecodeingPPTXSource, DecodePPTXOptions } from '../codecs'
+import type { IDOCPPTXSource } from '../ooxml'
+import type { IDOCPPTXConvertOptions } from './pptx-to-idoc-converter'
 import { pptxToSVGString } from './pptx-to-svg-string'
 
 export async function pptxToSVG(
-  source: DecodeingPPTXSource,
-  options: DecodePPTXOptions = {},
+  source: IDOCPPTXSource,
+  options: IDOCPPTXConvertOptions = {},
 ): Promise<SVGSVGElement> {
   return xmlToDOM(
     await pptxToSVGString(source, options),

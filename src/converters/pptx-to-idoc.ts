@@ -1,10 +1,10 @@
-import type { DecodeingPPTXSource, DecodePPTXOptions } from '../codecs'
-import type { IDOCPPTXDeclaration } from '../ooxml'
-import { PPTXDecoder } from '../codecs'
+import type { IDOCPPTXDeclaration, IDOCPPTXSource } from '../ooxml'
+import type { IDOCPPTXConvertOptions } from './pptx-to-idoc-converter'
+import { PPTXToIDOCConverter } from './pptx-to-idoc-converter'
 
 export async function pptxToIDOC(
-  source: DecodeingPPTXSource,
-  options: DecodePPTXOptions = {},
+  source: IDOCPPTXSource,
+  options: IDOCPPTXConvertOptions = {},
 ): Promise<IDOCPPTXDeclaration> {
-  return await new PPTXDecoder().decode(source, options)
+  return await new PPTXToIDOCConverter().convert(source, options)
 }

@@ -1,14 +1,14 @@
 import type { IDOCPPTXDeclaration, SlideElement } from '../ooxml'
-import type { XMLNode } from './xml-renderer'
+import type { XMLNode } from '../renderers'
 import { measureText } from 'modern-text'
 import { OOXMLValue } from '../ooxml'
-import { XMLRenderer } from './xml-renderer'
+import { XMLRenderer } from '../renderers'
 
 export interface ParseSlideElementContext {
   parent?: SlideElement
 }
 
-export class PPTXSVGRenderer {
+export class IDOCToSVGStringConverter {
   xmlRenderer = new XMLRenderer()
 
   parseSlideElement(element: SlideElement, ctx: ParseSlideElementContext = {}): XMLNode {
@@ -281,7 +281,7 @@ export class PPTXSVGRenderer {
     }
   }
 
-  render(pptx: IDOCPPTXDeclaration): string {
+  convert(pptx: IDOCPPTXDeclaration): string {
     return this.xmlRenderer.render(
       this.parse(pptx),
     )

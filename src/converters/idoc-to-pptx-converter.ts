@@ -27,7 +27,7 @@ import {
   withXmlHeader,
 } from '../ooxml'
 
-export class PPTXEncoder {
+export class IDOCToPPTXConverter {
   async encode(pptx: IDOCPPTX): Promise<Uint8Array> {
     const _pptx = { ...pptx } as IDOCPPTXDeclaration
 

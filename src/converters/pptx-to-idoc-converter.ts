@@ -1,28 +1,30 @@
 import type { Unzipped } from 'fflate'
-import type { IDOCPPTXDeclaration, Slide, SlideElement, SlideLayout, SlideMaster } from '../ooxml'
+import type { IDOCPPTXDeclaration, IDOCPPTXSource, Slide, SlideElement, SlideLayout, SlideMaster } from '../ooxml'
 import { unzipSync } from 'fflate'
 import { clearUndef, namespaces, OOXMLNode, parsePresentation, parseRelationships, parseSlide, parseSlideLayout, parseSlideMaster, parseTheme, parseTypes } from '../ooxml'
 
-export type DecodeingPPTXSource = string | number[] | Uint8Array | ArrayBuffer | Blob | NodeJS.ReadableStream
-
-export interface UploadPPTXOptions {
+export interface IDOCPPTXUploadOptions {
   upload?: (input: string, file: { src: string }, source: IDOCPPTXDeclaration | Slide | SlideLayout | SlideMaster | SlideElement) => any | Promise<any>
   progress?: (progress: number, total: number, cached: boolean) => void
 }
 
-export interface DecodePPTXOptions extends UploadPPTXOptions {
+export interface IDOCPPTXDecodeOptions {
   presetShapeDefinitions?: string
+}
+
+export interface IDOCPPTXConvertOptions extends IDOCPPTXDecodeOptions, IDOCPPTXUploadOptions {
+  //
 }
 
 function isNodeReadableStream(obj: any): obj is NodeJS.ReadableStream {
   return obj && typeof obj.read === 'function' && typeof obj.on === 'function'
 }
 
-export class PPTXDecoder {
+export class PPTXToIDOCConverter {
   unzipped?: Unzipped
   pptx?: IDOCPPTXDeclaration
 
-  protected async _resolveSource(source: DecodeingPPTXSource): Promise<Uint8Array> {
+  protected async _resolveSource(source: IDOCPPTXSource): Promise<Uint8Array> {
     if (typeof source === 'string') {
       return new TextEncoder().encode(source)
     }
@@ -89,7 +91,7 @@ export class PPTXDecoder {
     return uint8Array
   }
 
-  async decode(source: DecodeingPPTXSource, options: DecodePPTXOptions = {}): Promise<IDOCPPTXDeclaration> {
+  async decode(source: IDOCPPTXSource, options: IDOCPPTXDecodeOptions = {}): Promise<IDOCPPTXDeclaration> {
     this.unzipped = unzipSync(await this._resolveSource(source))
 
     const createNode = (xml?: string): OOXMLNode => OOXMLNode.fromXML(xml, namespaces)
@@ -245,14 +247,12 @@ export class PPTXDecoder {
 
     pptx.meta.themes = pptx.meta.themes.filter(Boolean)
 
-    this.pptx = pptx
+    this.pptx = clearUndef(pptx)
 
-    await this.upload(options)
-
-    return clearUndef(pptx)
+    return this.pptx
   }
 
-  async upload(options: UploadPPTXOptions = {}, pptx = this.pptx): Promise<IDOCPPTXDeclaration> {
+  async upload(options: IDOCPPTXUploadOptions = {}, pptx = this.pptx): Promise<IDOCPPTXDeclaration> {
     if (!pptx) {
       throw new Error('Failed to upload, miss pptx object')
     }
@@ -317,5 +317,12 @@ export class PPTXDecoder {
     await Promise.all(tasks)
 
     return pptx
+  }
+
+  async convert(source: IDOCPPTXSource, options: IDOCPPTXConvertOptions = {}): Promise<IDOCPPTXDeclaration> {
+    return await this.upload(
+      options,
+      await this.decode(source, options),
+    )
   }
 }

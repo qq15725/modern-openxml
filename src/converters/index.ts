@@ -1,4 +1,7 @@
 export * from './idoc-to-pptx'
+export * from './idoc-to-pptx-converter'
+export * from './idoc-to-svg-string-converter'
 export * from './pptx-to-idoc'
+export * from './pptx-to-idoc-converter'
 export * from './pptx-to-svg'
 export * from './pptx-to-svg-string'
