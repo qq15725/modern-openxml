@@ -1,3 +1,13 @@
+## [0.1.5](https://github.com/qq15725/modern-openxml/compare/v0.1.4...v0.1.5) (2025-04-09)
+
+
+### Features
+
+* converters ([df8402b](https://github.com/qq15725/modern-openxml/commit/df8402b5080bd39bc1ae3093f6affd06f61dd38a))
+* IDOCPPTX ([251d20a](https://github.com/qq15725/modern-openxml/commit/251d20a554128683af3822147bd3d1fd4381e36c))
+
+
+
 ## [0.1.4](https://github.com/qq15725/modern-openxml/compare/v0.1.3...v0.1.4) (2025-04-08)
 
 
