@@ -1,3 +1,12 @@
+## [0.1.6](https://github.com/qq15725/modern-openxml/compare/v0.1.5...v0.1.6) (2025-04-09)
+
+
+### Features
+
+* PPTXToIDOCConverter ([590e27f](https://github.com/qq15725/modern-openxml/commit/590e27fa985c2d20c234597694123fc820abae19))
+
+
+
 ## [0.1.5](https://github.com/qq15725/modern-openxml/compare/v0.1.4...v0.1.5) (2025-04-09)
 
 
