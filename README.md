@@ -21,24 +21,28 @@
 ## PPTX to JSON
 
 ```ts
-import { decodePPTX } from 'modern-openxml'
+import { pptxToIDOC } from 'modern-openxml'
 import presetShapeDefinitions from 'modern-openxml/presetShapeDefinitions'
 
-// buffer is PPTX file arrayBuffer
-const pptx = await decodePPTX(new Uint8Array(buffer), { presetShapeDefinitions })
-console.log(pptx)
+fetch('./example.pptx')
+  .then(rep => rep.arrayBuffer())
+  .then(async buffer => {
+    const pptx = await pptxToIDOC(new Uint8Array(buffer), { presetShapeDefinitions })
+    console.log(pptx)
+  })
 ```
 
 ## PPTX to SVG
 
 ```ts
-import { decodePPTX, pptxToSVG } from 'modern-openxml'
+import { pptxToSVG } from 'modern-openxml'
 import presetShapeDefinitions from 'modern-openxml/presetShapeDefinitions'
 
-// buffer is PPTX file arrayBuffer
-const pptx = await decodePPTX(new Uint8Array(buffer), { presetShapeDefinitions })
-const svgXML = pptxToSVG(pptx)
-const svgDOM = new DOMParser().parseFromString(svgXML, 'application/xml').documentElement
-document.body.appendChild(svgDOM)
-console.log(svgXML)
+fetch('./example.pptx')
+  .then(rep => rep.arrayBuffer())
+  .then(async buffer => {
+    const pptxSVG = await pptxToSVG(new Uint8Array(buffer), { presetShapeDefinitions })
+    console.log(pptxSVG)
+    document.body.appendChild(pptxSVG)
+  })
 ```

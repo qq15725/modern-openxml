@@ -1,5 +1,5 @@
-import { presetShapeDefinitions } from '../assets/presetShapeDefinitions'
-import { decodePPTX, pptxToSVG } from '../src'
+import presetShapeDefinitions from '../assets/presetShapeDefinitions'
+import { pptxToIDOC, pptxToSVG } from '../src'
 
 const input = document.createElement('input')
 document.body.appendChild(input)
@@ -10,21 +10,11 @@ input.onchange = async () => {
   parsePPTX(new Uint8Array(await file!.arrayBuffer()))
 }
 
-function xmlToDOM(xml: string): HTMLElement {
-  const doc = new DOMParser().parseFromString(xml, 'application/xml') as XMLDocument
-  const error = doc.querySelector('parsererror')
-  if (error) {
-    throw new Error(`${error.textContent ?? 'parser error'}\n${xml}`)
-  }
-  return doc.documentElement
-}
-
 async function parsePPTX(source: Uint8Array): Promise<void> {
-  const pptx = await decodePPTX(source, { presetShapeDefinitions })
-  console.warn(pptx)
-  document.body.append(
-    xmlToDOM(pptxToSVG(pptx)),
-  )
+  console.log(await pptxToIDOC(source, { presetShapeDefinitions }))
+  const svg = await pptxToSVG(source, { presetShapeDefinitions })
+  console.warn(svg)
+  document.body.append(svg)
 }
 
 async function testPPTX(): Promise<void> {

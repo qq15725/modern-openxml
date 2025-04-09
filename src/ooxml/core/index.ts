@@ -1,2 +1,2 @@
-export * from './OOXMLNode'
-export * from './OOXMLValue'
+export * from './ooxml-node'
+export * from './ooxml-value'

@@ -7,8 +7,8 @@ export interface XMLNode {
   children?: XMLNodeChild[]
 }
 
-export class XMLGen {
-  static htmlEntities: Record<string, string> = {
+export class XMLRenderer {
+  htmlEntities: Record<string, string> = {
     '<': '&lt;',
     '>': '&gt;',
     '&': '&amp;',
@@ -17,11 +17,11 @@ export class XMLGen {
     '`': '&#96;',
   }
 
-  static encodeHtmlCustom(str: string): string {
+  encodeHtmlCustom(str: string): string {
     return str.replace(/[<>&"'`]/g, char => this.htmlEntities[char])
   }
 
-  static attrs(attrs?: XMLNodeAttrs): string {
+  renderAttrs(attrs?: XMLNodeAttrs): string {
     if (!attrs) {
       return ''
     }
@@ -46,7 +46,7 @@ export class XMLGen {
     }).filter(Boolean).join(' ')}`
   }
 
-  static children(children?: XMLNodeChild[]): string {
+  renderChildren(children?: XMLNodeChild[]): string {
     return children
       ?.filter(Boolean)
       .map((child: any) => {
@@ -54,14 +54,14 @@ export class XMLGen {
           return this.encodeHtmlCustom(child)
         }
         else {
-          return this.node(child)
+          return this.render(child)
         }
       })
       .join('')
       ?? ''
   }
 
-  static node(node: XMLNode): string {
-    return `<${node.tag}${this.attrs(node.attrs)}>${this.children(node.children)}</${node.tag}>`
+  render(node: XMLNode): string {
+    return `<${node.tag}${this.renderAttrs(node.attrs)}>${this.renderChildren(node.children)}</${node.tag}>`
   }
 }

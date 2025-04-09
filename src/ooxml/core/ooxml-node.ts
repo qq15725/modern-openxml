@@ -1,5 +1,5 @@
-import type { OOXMLValueType } from './OOXMLValue'
-import { OOXMLValue } from './OOXMLValue'
+import type { OOXMLValueType } from './ooxml-value'
+import { OOXMLValue } from './ooxml-value'
 
 export type OOXMLQueryType = 'node' | 'nodes' | OOXMLValueType
 
