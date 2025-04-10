@@ -1,8 +1,8 @@
-import type { IDOCDocumentDeclaration } from 'modern-idoc'
+import type { DocumentDeclaration } from 'modern-idoc'
 import type { Theme } from './drawing'
 import type { Slide, SlideLayout, SlideMaster } from './presentation'
 
-export type IDOCPPTXSource =
+export type PPTXSource =
   | string
   | number[]
   | Uint8Array
@@ -10,26 +10,26 @@ export type IDOCPPTXSource =
   | Blob
   | NodeJS.ReadableStream
 
-export interface IDOCPPTXMeta {
+export interface PPTXMeta {
   cover?: string
   themes: Theme[]
   slideLayouts: SlideLayout[]
   slideMasters: SlideMaster[]
 }
 
-export interface IDOCPPTXStyle {
+export interface PPTXStyle {
   width: number
   height: number
 }
 
-export interface IDOCPPTXDeclaration extends IDOCDocumentDeclaration {
-  style: IDOCPPTXStyle
+export interface PPTXDeclaration extends DocumentDeclaration {
+  style: PPTXStyle
   children: Slide[]
-  meta: IDOCPPTXMeta
+  meta: PPTXMeta
 }
 
-export interface IDOCPPTX {
-  style?: Partial<IDOCPPTXStyle>
+export interface PPTX {
+  style?: Partial<PPTXStyle>
   children?: Slide[]
-  meta?: Partial<IDOCPPTXMeta>
+  meta?: Partial<PPTXMeta>
 }

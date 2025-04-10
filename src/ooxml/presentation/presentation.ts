@@ -1,5 +1,5 @@
 import type { OOXMLNode } from '../core'
-import type { IDOCPPTXDeclaration } from '../types'
+import type { PPTXDeclaration } from '../types'
 import { OOXMLValue } from '../core'
 import { withAttr, withAttrs, withIndents } from '../utils'
 
@@ -32,7 +32,7 @@ export function parsePresentation(node?: OOXMLNode): Presentation | undefined {
   }
 }
 
-export function stringifyPresentation(props: IDOCPPTXDeclaration, slides: string[], slideMasters: string[]): string {
+export function stringifyPresentation(props: PPTXDeclaration, slides: string[], slideMasters: string[]): string {
   const slideIds = slides.map((id, i) => {
     return `<p:sldId id="${256 + i}" r:id="${id}"/>`
   })

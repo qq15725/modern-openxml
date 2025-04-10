@@ -21,13 +21,13 @@
 ## PPTX to JSON
 
 ```ts
-import { pptxToIDOC } from 'modern-openxml'
+import { pptxToIDoc } from 'modern-openxml'
 import presetShapeDefinitions from 'modern-openxml/presetShapeDefinitions'
 
 fetch('./example.pptx')
   .then(rep => rep.arrayBuffer())
   .then(async buffer => {
-    const pptx = await pptxToIDOC(new Uint8Array(buffer), { presetShapeDefinitions })
+    const pptx = await pptxToIDoc(new Uint8Array(buffer), { presetShapeDefinitions })
     console.log(pptx)
   })
 ```

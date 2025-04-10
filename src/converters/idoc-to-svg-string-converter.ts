@@ -1,4 +1,4 @@
-import type { IDOCPPTXDeclaration, SlideElement } from '../ooxml'
+import type { PPTXDeclaration, SlideElement } from '../ooxml'
 import type { XMLNode } from '../renderers'
 import { measureText } from 'modern-text'
 import { OOXMLValue } from '../ooxml'
@@ -8,7 +8,7 @@ export interface ParseSlideElementContext {
   parent?: SlideElement
 }
 
-export class IDOCToSVGStringConverter {
+export class IDocToSVGStringConverter {
   xmlRenderer = new XMLRenderer()
 
   parseSlideElement(element: SlideElement, ctx: ParseSlideElementContext = {}): XMLNode {
@@ -16,7 +16,7 @@ export class IDOCToSVGStringConverter {
 
     const {
       name = '',
-      style,
+      style = {},
       background,
       foreground,
       // video,
@@ -188,7 +188,7 @@ export class IDOCToSVGStringConverter {
     return elementG
   }
 
-  parse(pptx: IDOCPPTXDeclaration): XMLNode {
+  parse(pptx: PPTXDeclaration): XMLNode {
     const {
       width,
       height,
@@ -281,7 +281,22 @@ export class IDOCToSVGStringConverter {
     }
   }
 
-  convert(pptx: IDOCPPTXDeclaration): string {
+  convertSlideElement(element: SlideElement, ctx: ParseSlideElementContext = {}): string {
+    return this.xmlRenderer.render({
+      tag: 'svg',
+      attrs: {
+        xmlns: 'http://www.w3.org/2000/svg',
+        width: element.style.width,
+        height: element.style.height,
+        viewBox: `0 0 ${element.style.width} ${element.style.height}`,
+      },
+      children: [
+        this.parseSlideElement(element, ctx),
+      ],
+    })
+  }
+
+  convert(pptx: PPTXDeclaration): string {
     return this.xmlRenderer.render(
       this.parse(pptx),
     )

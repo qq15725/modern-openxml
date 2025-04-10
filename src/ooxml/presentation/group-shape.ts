@@ -1,4 +1,4 @@
-import type { IDOCElementDeclaration, StyleProperty } from 'modern-idoc'
+import type { ElementDeclaration, StyleProperty } from 'modern-idoc'
 import type { OOXMLNode, OOXMLQueryType } from '../core'
 import type { NonVisualDrawingProperties } from './non-visual-drawing-properties'
 import type { SlideElement } from './slide'
@@ -17,7 +17,7 @@ export type GroupShapeMeta = NonVisualDrawingProperties['meta'] & {
   placeholderIndex?: string
 }
 
-export interface GroupShape extends IDOCElementDeclaration {
+export interface GroupShape extends ElementDeclaration {
   style: StyleProperty
   children: SlideElement[]
   meta: GroupShapeMeta

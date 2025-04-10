@@ -1,4 +1,4 @@
-import type { IDOCElementDeclaration, StyleProperty } from 'modern-idoc'
+import type { ElementDeclaration, StyleProperty } from 'modern-idoc'
 import type { OOXMLNode } from '../core'
 import type { GroupShape } from './group-shape'
 import type { SlideElement } from './slide'
@@ -13,7 +13,7 @@ export interface GraphicFrameMeta {
   placeholderIndex?: string
 }
 
-export interface GraphicFrame extends IDOCElementDeclaration {
+export interface GraphicFrame extends ElementDeclaration {
   style: StyleProperty
   meta: GraphicFrameMeta
   children: SlideElement[]

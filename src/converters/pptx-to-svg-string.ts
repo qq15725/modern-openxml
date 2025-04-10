@@ -1,13 +1,13 @@
-import type { IDOCPPTXSource } from '../ooxml'
-import type { IDOCPPTXConvertOptions } from './pptx-to-idoc-converter'
-import { IDOCToSVGStringConverter } from './idoc-to-svg-string-converter'
-import { pptxToIDOC } from './pptx-to-idoc'
+import type { PPTXSource } from '../ooxml'
+import type { PPTXConvertOptions } from './pptx-to-idoc-converter'
+import { IDocToSVGStringConverter } from './idoc-to-svg-string-converter'
+import { pptxToIDoc } from './pptx-to-idoc'
 
 export async function pptxToSVGString(
-  source: IDOCPPTXSource,
-  options: IDOCPPTXConvertOptions = {},
+  source: PPTXSource,
+  options: PPTXConvertOptions = {},
 ): Promise<string> {
-  return new IDOCToSVGStringConverter().convert(
-    await pptxToIDOC(source, options),
+  return new IDocToSVGStringConverter().convert(
+    await pptxToIDoc(source, options),
   )
 }

@@ -1,4 +1,4 @@
-import type { IDOCElementDeclaration, StyleProperty } from 'modern-idoc'
+import type { ElementDeclaration, StyleProperty } from 'modern-idoc'
 import type { OOXMLNode, OOXMLQueryType } from '../core'
 import type { NonVisualDrawingProperties } from './non-visual-drawing-properties'
 import { parsePBlipFill, stringifyFill } from '../drawing'
@@ -13,7 +13,7 @@ export type PictureMeta = NonVisualDrawingProperties['meta'] & {
   placeholderIndex?: string
 }
 
-export interface Picture extends IDOCElementDeclaration {
+export interface Picture extends ElementDeclaration {
   style: StyleProperty
   meta: PictureMeta
 }

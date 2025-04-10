@@ -1,5 +1,5 @@
 import presetShapeDefinitions from '../assets/presetShapeDefinitions'
-import { pptxToIDOC, pptxToSVG } from '../src'
+import { pptxToIDoc, pptxToSVG } from '../src'
 
 const input = document.createElement('input')
 document.body.appendChild(input)
@@ -11,7 +11,7 @@ input.onchange = async () => {
 }
 
 async function parsePPTX(source: Uint8Array): Promise<void> {
-  console.log(await pptxToIDOC(source, { presetShapeDefinitions }))
+  console.log(await pptxToIDoc(source, { presetShapeDefinitions }))
   const svg = await pptxToSVG(source, { presetShapeDefinitions })
   console.warn(svg)
   document.body.append(svg)

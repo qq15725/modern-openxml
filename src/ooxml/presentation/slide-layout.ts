@@ -1,4 +1,4 @@
-import type { IDOCElementDeclaration } from 'modern-idoc'
+import type { ElementDeclaration } from 'modern-idoc'
 import type { OOXMLNode } from '../core'
 import type { ColorMap } from './color-map'
 import type { SlideElement } from './slide'
@@ -7,7 +7,7 @@ import { parseColorMap } from './color-map'
 import { parseElement } from './slide'
 import { parseTiming } from './timing'
 
-export interface SlideLayout extends IDOCElementDeclaration {
+export interface SlideLayout extends ElementDeclaration {
   children: SlideElement[]
   meta: {
     id: string

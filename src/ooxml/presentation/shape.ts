@@ -1,4 +1,4 @@
-import type { IDOCElementDeclaration, StyleProperty } from 'modern-idoc'
+import type { ElementDeclaration, StyleProperty } from 'modern-idoc'
 import type { OOXMLNode, OOXMLQueryType } from '../core'
 import type { NonVisualDrawingProperties } from './non-visual-drawing-properties'
 import {
@@ -17,7 +17,7 @@ export type ShapeMeta = NonVisualDrawingProperties['meta'] & {
   placeholderIndex?: string
 }
 
-export interface Shape extends IDOCElementDeclaration {
+export interface Shape extends ElementDeclaration {
   style: StyleProperty
   meta: ShapeMeta
 }

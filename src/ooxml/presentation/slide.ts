@@ -1,4 +1,4 @@
-import type { IDOCElementDeclaration } from 'modern-idoc'
+import type { ElementDeclaration } from 'modern-idoc'
 import type { OOXMLNode } from '../core'
 import type { ConnectionShape } from './connection-shape'
 import type { GraphicFrame } from './graphic-frame'
@@ -30,7 +30,7 @@ export interface SlideMeta {
   masterId: string
 }
 
-export interface Slide extends Transition, Timing, IDOCElementDeclaration {
+export interface Slide extends Transition, Timing, ElementDeclaration {
   children: SlideElement[]
   meta: SlideMeta
 }

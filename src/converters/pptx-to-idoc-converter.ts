@@ -1,18 +1,19 @@
 import type { Unzipped } from 'fflate'
-import type { IDOCPPTXDeclaration, IDOCPPTXSource, Slide, SlideElement, SlideLayout, SlideMaster } from '../ooxml'
+import type { ElementDeclaration } from 'modern-idoc'
+import type { PPTXDeclaration, PPTXSource, Slide, SlideElement, SlideLayout, SlideMaster } from '../ooxml'
 import { unzipSync } from 'fflate'
 import { clearUndef, namespaces, OOXMLNode, parsePresentation, parseRelationships, parseSlide, parseSlideLayout, parseSlideMaster, parseTheme, parseTypes } from '../ooxml'
 
-export interface IDOCPPTXUploadOptions {
-  upload?: (input: string, file: { src: string }, source: IDOCPPTXDeclaration | Slide | SlideLayout | SlideMaster | SlideElement) => any | Promise<any>
+export interface PPTXUploadOptions {
+  upload?: (input: string, file: { src: string }, source: PPTXDeclaration | Slide | SlideLayout | SlideMaster | SlideElement) => any | Promise<any>
   progress?: (progress: number, total: number, cached: boolean) => void
 }
 
-export interface IDOCPPTXDecodeOptions {
+export interface PPTXDecodeOptions {
   presetShapeDefinitions?: string
 }
 
-export interface IDOCPPTXConvertOptions extends IDOCPPTXDecodeOptions, IDOCPPTXUploadOptions {
+export interface PPTXConvertOptions extends PPTXDecodeOptions, PPTXUploadOptions {
   //
 }
 
@@ -20,11 +21,11 @@ function isNodeReadableStream(obj: any): obj is NodeJS.ReadableStream {
   return obj && typeof obj.read === 'function' && typeof obj.on === 'function'
 }
 
-export class PPTXToIDOCConverter {
+export class pptxToIDocConverter {
   unzipped?: Unzipped
-  pptx?: IDOCPPTXDeclaration
+  pptx?: PPTXDeclaration
 
-  protected async _resolveSource(source: IDOCPPTXSource): Promise<Uint8Array> {
+  protected async _resolveSource(source: PPTXSource): Promise<Uint8Array> {
     if (typeof source === 'string') {
       return new TextEncoder().encode(source)
     }
@@ -91,7 +92,7 @@ export class PPTXToIDOCConverter {
     return uint8Array
   }
 
-  async decode(source: IDOCPPTXSource, options: IDOCPPTXDecodeOptions = {}): Promise<IDOCPPTXDeclaration> {
+  async decode(source: PPTXSource, options: PPTXDecodeOptions = {}): Promise<PPTXDeclaration> {
     this.unzipped = unzipSync(await this._resolveSource(source))
 
     const createNode = (xml?: string): OOXMLNode => OOXMLNode.fromXML(xml, namespaces)
@@ -127,7 +128,7 @@ export class PPTXToIDOCConverter {
       contentTypes,
     )
 
-    const pptx: IDOCPPTXDeclaration = {
+    const pptx: PPTXDeclaration = {
       style: {
         width: presentation.width,
         height: presentation.height,
@@ -252,7 +253,7 @@ export class PPTXToIDOCConverter {
     return this.pptx
   }
 
-  async upload(options: IDOCPPTXUploadOptions = {}, pptx = this.pptx): Promise<IDOCPPTXDeclaration> {
+  async upload(options: PPTXUploadOptions = {}, pptx = this.pptx): Promise<PPTXDeclaration> {
     if (!pptx) {
       throw new Error('Failed to upload, miss pptx object')
     }
@@ -268,7 +269,7 @@ export class PPTXToIDOCConverter {
     let current = 0
     const tasks = []
 
-    const _upload = async (file: any, source: IDOCPPTXDeclaration | Slide | SlideLayout | SlideMaster | SlideElement): Promise<string> => {
+    const _upload = async (file: any, source: ElementDeclaration): Promise<string> => {
       const key = JSON.stringify({ ...file, width: (source as any).width, height: (source as any).height })
       let promise: Promise<any>
       const cached = cache.has(key)
@@ -276,7 +277,7 @@ export class PPTXToIDOCConverter {
         promise = cache.get(key)!
       }
       else {
-        promise = upload?.(this._readFile(file.src, 'base64'), file as any, source)
+        promise = upload?.(this._readFile(file.src, 'base64'), file as any, source as any)
         cache.set(key, promise)
       }
       const output = await promise
@@ -287,29 +288,23 @@ export class PPTXToIDOCConverter {
       return output
     }
 
-    function flatMapSlide(slide: Slide | SlideLayout | SlideMaster): Promise<any>[] {
+    function handleUpload(el: ElementDeclaration): Promise<any>[] {
       return [
-        slide.background?.src && _upload(slide.background!, slide),
-        ...slide.children.flatMap(function flatMapEl(el: SlideElement): any[] {
-          return [
-            el.background?.src && _upload(el.background, el),
-            el.foreground?.src && _upload(el.foreground, el),
-            el.audio?.src && _upload(el.audio, el),
-            el.video?.src && _upload(el.video, el),
-            // @ts-expect-error flatMapEl
-            ...(el.children?.flatMap(el => flatMapEl(el as any)) ?? []),
-          ]
-        }),
-      ].filter(Boolean)
+        el.background?.src && _upload(el.background, el),
+        el.foreground?.src && _upload(el.foreground, el),
+        el.audio?.src && _upload(el.audio, el),
+        el.video?.src && _upload(el.video, el),
+        ...(el.children?.flatMap(childEl => handleUpload(childEl as any)) ?? []),
+      ].filter(Boolean) as Promise<any>[]
     }
 
     tasks.push(
       ...(
         [
           pptx.meta.cover && (async () => (pptx.meta.cover = await _upload({ src: pptx.meta.cover! }, pptx))),
-          ...pptx.children.flatMap(flatMapSlide),
-          ...pptx.meta.slideLayouts.flatMap(flatMapSlide),
-          ...pptx.meta.slideMasters.flatMap(flatMapSlide),
+          ...pptx.children.flatMap(handleUpload),
+          ...pptx.meta.slideLayouts.flatMap(handleUpload),
+          ...pptx.meta.slideMasters.flatMap(handleUpload),
         ].filter(Boolean) as Promise<any>[]
       ),
     )
@@ -319,7 +314,7 @@ export class PPTXToIDOCConverter {
     return pptx
   }
 
-  async convert(source: IDOCPPTXSource, options: IDOCPPTXConvertOptions = {}): Promise<IDOCPPTXDeclaration> {
+  async convert(source: PPTXSource, options: PPTXConvertOptions = {}): Promise<PPTXDeclaration> {
     return await this.upload(
       options,
       await this.decode(source, options),

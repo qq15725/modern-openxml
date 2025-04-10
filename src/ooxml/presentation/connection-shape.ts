@@ -1,4 +1,4 @@
-import type { IDOCElementDeclaration, StyleProperty } from 'modern-idoc'
+import type { ElementDeclaration, StyleProperty } from 'modern-idoc'
 import type { OOXMLNode, OOXMLQueryType } from '../core'
 import { parseNonVisualDrawingProperties } from './non-visual-drawing-properties'
 import { parseNonVisualProperties } from './non-visual-properties'
@@ -10,7 +10,7 @@ export interface ConnectionShapeMeta {
   placeholderIndex?: string
 }
 
-export interface ConnectionShape extends IDOCElementDeclaration {
+export interface ConnectionShape extends ElementDeclaration {
   style: StyleProperty
   meta: ConnectionShapeMeta
 }
