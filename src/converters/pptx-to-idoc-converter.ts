@@ -21,7 +21,7 @@ function isNodeReadableStream(obj: any): obj is NodeJS.ReadableStream {
   return obj && typeof obj.read === 'function' && typeof obj.on === 'function'
 }
 
-export class pptxToIDocConverter {
+export class PPTXToIDocConverter {
   unzipped?: Unzipped
   pptx?: PPTXDeclaration
 
