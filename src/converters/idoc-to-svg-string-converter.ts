@@ -1,3 +1,4 @@
+import type { FillDeclaration } from 'modern-idoc'
 import type { PPTXDeclaration, SlideElement } from '../ooxml'
 import type { XMLNode } from '../renderers'
 import { measureText } from 'modern-text'
@@ -11,7 +12,114 @@ export interface ParseSlideElementContext {
 export class IDocToSVGStringConverter {
   xmlRenderer = new XMLRenderer()
 
-  parseSlideElement(element: SlideElement, ctx: ParseSlideElementContext = {}): XMLNode {
+  protected _uuid(): number {
+    return ~~(Math.random() * 1000000000)
+  }
+
+  protected _parseGeometry(el: SlideElement): XMLNode[] {
+    const { style = {}, fill, outline, shadow } = el
+    if (
+      !fill?.color
+      && !fill?.src
+      && !outline?.src
+      && !outline?.color
+      && !shadow?.color
+    ) {
+      return []
+    }
+    const { width, height } = style
+    const id = this._uuid()
+    const paths = el.geometry?.paths?.map((path, idx) => {
+      return {
+        tag: 'path',
+        attrs: {
+          'id': `geom-${id}-${idx}`,
+          'stroke-width': path.strokeWidth,
+          'd': path.data,
+        },
+      }
+    }) ?? [
+      {
+        tag: 'rect',
+        attrs: {
+          id: `geom-${id}-${0}`,
+          width,
+          height,
+        },
+      },
+    ]
+
+    // TODO tile
+    // TODO stretch
+    // TODO srcRect
+
+    return [
+      {
+        tag: 'defs',
+        children: [
+          ...paths,
+          fill?.src && {
+            tag: 'pattern',
+            attrs: {
+              id: `fill-${id}`,
+              left: 0,
+              top: 0,
+              width: '100%',
+              height: '100%',
+            },
+            children: [
+              {
+                tag: 'image',
+                attrs: {
+                  href: fill.src,
+                  width: el.style.width,
+                  height: el.style.height,
+                  preserveAspectRatio: 'none',
+                },
+              },
+            ],
+          },
+        ].filter(Boolean),
+      },
+      ...paths.map((_path, idx) => {
+        return {
+          tag: 'use',
+          attrs: {
+            'xlink:href': `#geom-${id}-${idx}`,
+            'fill': fill?.src ? `url(#fill-${id})` : fill?.color ?? 'none',
+            'stroke': outline?.color ?? 'none',
+          },
+        }
+      }),
+    ]
+  }
+
+  protected _parseRectFill(width: number, height: number, fill?: FillDeclaration): XMLNode[] {
+    if (!fill)
+      return []
+    return [
+      fill.color && {
+        tag: 'rect',
+        attrs: {
+          width,
+          height,
+          fill: fill.color,
+        },
+      },
+      fill.src && {
+        tag: 'image',
+        attrs: {
+          width,
+          height,
+          href: fill.src,
+          opacity: fill.opacity,
+          preserveAspectRatio: 'none',
+        },
+      },
+    ].filter(Boolean) as XMLNode[]
+  }
+
+  parseSlideElement(el: SlideElement, ctx: ParseSlideElementContext = {}): XMLNode {
     const { parent } = ctx
 
     const {
@@ -21,12 +129,9 @@ export class IDocToSVGStringConverter {
       foreground,
       // video,
       text,
-      geometry,
-      // fill,
-      // stroke,
       // meta,
       children,
-    } = element
+    } = el
 
     let {
       scaleX = 1,
@@ -37,7 +142,7 @@ export class IDocToSVGStringConverter {
       height = 0,
       rotate = 0,
       visibility,
-      backgroundColor,
+      // backgroundColor,
     } = style as Record<string, any>
 
     if (parent) {
@@ -60,67 +165,18 @@ export class IDocToSVGStringConverter {
       transform.push(`translate(${-cx}, ${-cy})`)
     }
 
-    const elementG: XMLNode = {
+    const container: XMLNode = {
       tag: 'g',
       attrs: {
         title: name,
         transform: transform.join(' '),
         visibility,
       },
-      children: [],
-    }
-
-    if (background) {
-      elementG.children!.push({
-        tag: 'image',
-        attrs: {
-          width,
-          height,
-          href: background.src,
-          opacity: background.opacity,
-          preserveAspectRatio: 'none',
-        },
-      })
-    }
-
-    if (backgroundColor) {
-      elementG.children!.push({
-        tag: 'rect',
-        attrs: {
-          width,
-          height,
-          fill: backgroundColor,
-        },
-      })
-    }
-
-    if (geometry?.paths) {
-      elementG.children!.push(
-        ...geometry.paths.map((path) => {
-          return {
-            tag: 'path',
-            attrs: {
-              'fill': path.fill,
-              'stroke': path.stroke,
-              'stroke-width': path.strokeWidth,
-              'd': path.data,
-            },
-          }
-        }),
-      )
-    }
-
-    if (foreground) {
-      elementG.children!.push({
-        tag: 'image',
-        attrs: {
-          width,
-          height,
-          href: foreground.src,
-          opacity: foreground.opacity,
-          preserveAspectRatio: 'none',
-        },
-      })
+      children: [
+        ...this._parseRectFill(width, height, background),
+        ...this._parseGeometry(el),
+        ...this._parseRectFill(width, height, foreground),
+      ],
     }
 
     if (text) {
@@ -135,7 +191,7 @@ export class IDocToSVGStringConverter {
         },
       } as any)
 
-      elementG.children!.push(
+      container.children!.push(
         ...measured.paragraphs.flatMap((paragraph) => {
           const { computedStyle: pStyle } = paragraph
           return paragraph.fragments
@@ -175,17 +231,17 @@ export class IDocToSVGStringConverter {
     }
 
     if (children) {
-      elementG.children!.push(
+      container.children!.push(
         ...children.map((child) => {
           return this.parseSlideElement(child as any, {
             ...ctx,
-            parent: element as any,
+            parent: el as any,
           })
         }),
       )
     }
 
-    return elementG
+    return container
   }
 
   parse(pptx: PPTXDeclaration): XMLNode {
@@ -206,10 +262,11 @@ export class IDocToSVGStringConverter {
     return {
       tag: 'svg',
       attrs: {
-        xmlns: 'http://www.w3.org/2000/svg',
+        'xmlns': 'http://www.w3.org/2000/svg',
+        'xmlns:xlink': 'http://www.w3.org/1999/xlink',
         width,
-        height: viewBoxHeight,
-        viewBox: `0 0 ${width} ${viewBoxHeight}`,
+        'height': viewBoxHeight,
+        'viewBox': `0 0 ${width} ${viewBoxHeight}`,
       },
       children: slides.flatMap((slide, slideIndex) => {
         const top = height * slideIndex
@@ -285,10 +342,11 @@ export class IDocToSVGStringConverter {
     return this.xmlRenderer.render({
       tag: 'svg',
       attrs: {
-        xmlns: 'http://www.w3.org/2000/svg',
-        width: element.style.width,
-        height: element.style.height,
-        viewBox: `0 0 ${element.style.width} ${element.style.height}`,
+        'xmlns': 'http://www.w3.org/2000/svg',
+        'xmlns:xlink': 'http://www.w3.org/1999/xlink',
+        'width': element.style.width,
+        'height': element.style.height,
+        'viewBox': `0 0 ${element.style.width} ${element.style.height}`,
       },
       children: [
         this.parseSlideElement(element, ctx),

@@ -63,7 +63,13 @@ export function parseGroupShape(node: OOXMLNode, ctx: any, parseElement: any): G
   }
 
   groupShape.children = node.get('*').map(item => parseElement(item, ctx)).filter(Boolean)
-  return groupShape
+  return {
+    ...groupShape,
+    fill: undefined,
+    outline: undefined,
+    background: undefined,
+    foreground: undefined,
+  }
 }
 
 export function stringifyGroupShape(grpSp: GroupShape, stringifyElement: any): string {

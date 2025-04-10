@@ -253,6 +253,51 @@ export class PPTXToIDocConverter {
     return this.pptx
   }
 
+  static mimeTypes: { [key: string]: string } = {
+    '.apng': 'image/apng',
+    '.bmp': 'image/bmp',
+    '.gif': 'image/gif',
+    '.ico': 'image/vnd.microsoft.icon',
+    '.cur': 'image/x-icon',
+    '.jpg': 'image/jpeg',
+    '.jpeg': 'image/jpeg',
+    '.jfif': 'image/jpeg',
+    '.pjpeg': 'image/jpeg',
+    '.pjp': 'image/jpeg',
+    '.png': 'image/png',
+    '.svg': 'image/svg+xml',
+    '.tif': 'image/tiff',
+    '.tiff': 'image/tiff',
+    '.webp': 'image/webp',
+
+    '.aac': 'audio/aac',
+    '.mid': 'audio/midi',
+    '.midi': 'audio/midi',
+    '.mp3': 'audio/mpeg',
+    '.oga': 'audio/ogg',
+    '.opus': 'audio/opus',
+    '.wav': 'audio/wav',
+    '.weba': 'audio/webm',
+    '.3gp': 'audio/3gpp',
+    '.flac': 'audio/flac',
+
+    '.avi': 'video/x-msvideo',
+    '.mp4': 'video/mp4',
+    '.mpeg': 'video/mpeg',
+    '.ogv': 'video/ogg',
+    '.ts': 'video/mp2t',
+    '.webm': 'video/webm',
+    '.3g2': 'video/3gpp2',
+    '.mov': 'video/quicktime',
+    '.wmv': 'video/x-ms-wmv',
+    '.flv': 'video/x-flv',
+    '.mkv': 'video/x-matroska',
+  }
+
+  getMimeType(filePath: string): string | undefined {
+    return PPTXToIDocConverter.mimeTypes[filePath.substring(filePath.lastIndexOf('.')).toLowerCase()] || undefined
+  }
+
   async upload(options: PPTXUploadOptions = {}, pptx = this.pptx): Promise<PPTXDeclaration> {
     if (!pptx) {
       throw new Error('Failed to upload, miss pptx object')
@@ -260,8 +305,8 @@ export class PPTXToIDocConverter {
 
     const {
       progress,
-      upload = (input) => {
-        return `data:image/png;base64,${input}`
+      upload = (input, file) => {
+        return `data:${this.getMimeType(file.src) ?? 'image/png'};base64,${input}`
       },
     } = options
 
@@ -291,6 +336,8 @@ export class PPTXToIDocConverter {
     function handleUpload(el: ElementDeclaration): Promise<any>[] {
       return [
         el.background?.src && _upload(el.background, el),
+        el.fill?.src && _upload(el.fill, el),
+        el.outline?.src && _upload(el.outline, el),
         el.foreground?.src && _upload(el.foreground, el),
         el.audio?.src && _upload(el.audio, el),
         el.video?.src && _upload(el.video, el),
