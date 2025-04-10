@@ -1,3 +1,17 @@
+## [0.1.7](https://github.com/qq15725/modern-openxml/compare/v0.1.6...v0.1.7) (2025-04-10)
+
+
+### Bug Fixes
+
+* up deps ([78d592c](https://github.com/qq15725/modern-openxml/commit/78d592c80aef6ff42151a25cad18408593879328))
+
+
+### Features
+
+* up deps ([95cb33f](https://github.com/qq15725/modern-openxml/commit/95cb33f6fb8eadb374ca1d958178f61ffc4c589e))
+
+
+
 ## [0.1.6](https://github.com/qq15725/modern-openxml/compare/v0.1.5...v0.1.6) (2025-04-09)
 
 
