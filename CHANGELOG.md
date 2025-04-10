@@ -1,3 +1,12 @@
+## [0.1.8](https://github.com/qq15725/modern-openxml/compare/v0.1.7...v0.1.8) (2025-04-10)
+
+
+### Features
+
+* svg image fill ([40ebd87](https://github.com/qq15725/modern-openxml/commit/40ebd875d816fb33529b3e940f1e7dea3bd8eb96))
+
+
+
 ## [0.1.7](https://github.com/qq15725/modern-openxml/compare/v0.1.6...v0.1.7) (2025-04-10)
 
 
