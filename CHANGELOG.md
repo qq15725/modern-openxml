@@ -1,3 +1,13 @@
+## [0.1.9](https://github.com/qq15725/modern-openxml/compare/v0.1.8...v0.1.9) (2025-04-11)
+
+
+### Features
+
+* effect ([ae1100b](https://github.com/qq15725/modern-openxml/commit/ae1100b5bfb9b3e5405f66df57588c08a1d11273))
+* effect ([4ab55eb](https://github.com/qq15725/modern-openxml/commit/4ab55eb986eb94c279f2bf68d6737d1bd405f5bb))
+
+
+
 ## [0.1.8](https://github.com/qq15725/modern-openxml/compare/v0.1.7...v0.1.8) (2025-04-10)
 
 
