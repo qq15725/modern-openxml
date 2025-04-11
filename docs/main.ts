@@ -11,7 +11,7 @@ input.onchange = async () => {
 }
 
 async function parsePPTX(source: Uint8Array): Promise<void> {
-  console.log(await pptxToIDoc(source, { presetShapeDefinitions }))
+  console.warn(await pptxToIDoc(source, { presetShapeDefinitions }))
   const svg = await pptxToSVG(source, { presetShapeDefinitions })
   console.warn(svg)
   document.body.append(svg)
@@ -19,7 +19,7 @@ async function parsePPTX(source: Uint8Array): Promise<void> {
 
 async function testPPTX(): Promise<void> {
   for (const [key] of Object.entries(import.meta.glob('../test/fixtures/*.pptx', { query: '?raw' }))) {
-    if (!key.endsWith('billFill.srcRect.pptx'))
+    if (!key.endsWith('complex2.pptx'))
       continue
     const filename = key.split('/').pop()
     const source = await fetch(filename!).then(rep => rep.arrayBuffer())

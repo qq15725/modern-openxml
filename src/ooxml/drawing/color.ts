@@ -169,6 +169,11 @@ export interface RGBA {
 }
 
 export type RGB = Omit<RGBA, 'a'>
+export interface HSL {
+  h: number
+  l: number
+  s: number
+}
 
 const tags = [
   'a:hslClr',
@@ -181,21 +186,14 @@ const tags = [
 
 export const colorXPath = `*[(${tags.map(v => `self::${v}`).join(' or ')})]`
 
-export function parseColor(node?: OOXMLNode, ctx?: Record<string, any>): string | undefined {
-  if (node && !tags.includes(node?.name)) {
-    node = node.find(colorXPath)
-  }
-
-  if (!node)
-    return undefined
-
+function parseColorHex(node: OOXMLNode, ctx?: Record<string, any>): string {
   switch (node.name) {
     case 'a:hslClr':
-      return toHex(hslToRgb(
-        node.attr<number>('@hue', 'ST_PositiveFixedAngle')!,
-        node.attr<number>('@sat', 'ST_Percentage')!,
-        node.attr<number>('@lum', 'ST_Percentage')!,
-      ))
+      return toHex(hslToRgb({
+        h: node.attr<number>('@hue', 'ST_PositiveFixedAngle')!,
+        s: node.attr<number>('@sat', 'ST_Percentage')!,
+        l: node.attr<number>('@lum', 'ST_Percentage')!,
+      }))
     case 'a:prstClr': {
       const val = node.attr('@val')!
       return toHex(presetColorMap.get(val) ?? val)
@@ -203,14 +201,15 @@ export function parseColor(node?: OOXMLNode, ctx?: Record<string, any>): string 
     case 'a:schemeClr': {
       const master = ctx?.master as SlideMaster | undefined
       const theme = ctx?.theme as Theme | undefined
-      let key = node.attr('@val')!
+      const val = node.attr('@val')!
+      let key = val
       key = master?.meta?.colorMap?.[key] ?? key
       let colorScheme = theme?.colorScheme?.[key]
       if (!colorScheme) {
         key = theme?.extraColorMap?.[key] ?? key
         colorScheme = theme?.extraColorScheme?.[key]
       }
-      return toHex(colorScheme ?? '#000000')
+      return colorScheme ? toHex(colorScheme) : val
     }
     case 'a:scrgbClr':
       return toHex({
@@ -222,7 +221,42 @@ export function parseColor(node?: OOXMLNode, ctx?: Record<string, any>): string 
       return toHex(node.attr('@val')!)
     case 'a:sysClr':
       return toHex(sysColors[node.attr('@val')!] ?? '#000000')
+    default:
+      return '#000000'
   }
+}
+
+export function parseColor(node?: OOXMLNode, ctx?: Record<string, any>): string | undefined {
+  if (node && !tags.includes(node?.name)) {
+    node = node.find(colorXPath)
+  }
+
+  if (!node)
+    return undefined
+
+  const hex = parseColorHex(node, ctx)
+
+  if (!hex || !hex.startsWith('#')) {
+    return hex
+  }
+
+  const rgba = {
+    ...hexToRgb(hex),
+    a: ~~(Number(node.attr('a:alpha/@val', 'ST_PositivePercentage') ?? 1) * 100) / 100,
+  }
+
+  const luminanceModulation = node.attr('a:lumMod/@val', 'rate')
+  const luminanceOffset = node.attr('a:lumOff/@val', 'rate')
+  if (luminanceModulation) {
+    const hsl = rgbToHsl(rgba)
+    hsl.l = hsl.l * Number(luminanceModulation) + Number(luminanceOffset ?? 0)
+    const newRgb = hslToRgb(hsl)
+    rgba.r = newRgb.r
+    rgba.g = newRgb.g
+    rgba.b = newRgb.b
+  }
+
+  return `rgba(${rgba.r},${rgba.g},${rgba.b},${rgba.a})`
 }
 
 export function stringifyColor(color?: string): string {
@@ -288,7 +322,7 @@ function _stringifyColor(color: string): string {
       ?.split(',')
       .map(v => Number(v.trim()))
     if (rgba) {
-      color = rgbToHex(rgba[0], rgba[1], rgba[2])
+      color = rgbToHex({ r: rgba[0], g: rgba[1], b: rgba[2] })
       if (rgba[3] > 1) {
         rgba[3] /= 255
       }
@@ -301,7 +335,7 @@ function _stringifyColor(color: string): string {
       ?.split(',')
       .map(v => Number(v.trim()))
     if (rgb)
-      color = rgbToHex(rgb[0], rgb[1], rgb[2])
+      color = rgbToHex({ r: rgb[0], g: rgb[1], b: rgb[2] })
   }
   return `<a:srgbClr val="${color}">
   <a:alpha val="${Math.floor(alpha)}"/>
@@ -315,42 +349,86 @@ function toHex(value: string | RGB): string {
   return value.startsWith('#') ? value : `#${value}`
 }
 
-function hslToRgb(h: number, s: number, l: number): RGB {
-  h = ((h % 360) + 360) % 360
-  const c = (1 - Math.abs(2 * l - 1)) * s // Chroma
-  const x = c * (1 - Math.abs((h / 60) % 2 - 1)) // Intermediate value
-  const m = l - c / 2 // Adjustment for lightness
-  let r, g, b
-  if (h < 60) {
-    // eslint-disable-next-line style/max-statements-per-line
-    r = c; g = x; b = 0
-  }
-  else if (h < 120) {
-    // eslint-disable-next-line style/max-statements-per-line
-    r = x; g = c; b = 0
-  }
-  else if (h < 180) {
-    // eslint-disable-next-line style/max-statements-per-line
-    r = 0; g = c; b = x
-  }
-  else if (h < 240) {
-    // eslint-disable-next-line style/max-statements-per-line
-    r = 0; g = x; b = c
-  }
-  else if (h < 300) {
-    // eslint-disable-next-line style/max-statements-per-line
-    r = x; g = 0; b = c
+function hueTo(p: number, q: number, t: number): number {
+  if (t < 0)
+    t += 1
+  if (t > 1)
+    t -= 1
+  if (t < 1 / 6)
+    return p + (q - p) * 6 * t
+  if (t < 1 / 2)
+    return q
+  if (t < 2 / 3)
+    return p + (q - p) * (2 / 3 - t) * 6
+  return p
+}
+
+function hslToRgb(hsl: HSL): RGB {
+  const { h, s, l } = hsl
+  let r: number
+  let g: number
+  let b: number
+  if (s === 0) {
+    r = g = b = l
   }
   else {
-    // eslint-disable-next-line style/max-statements-per-line
-    r = c; g = 0; b = x
+    const q = l < 0.5 ? l * (1 + s) : l + s - l * s
+    const p = 2 * l - q
+    r = hueTo(p, q, h + 1 / 3)
+    g = hueTo(p, q, h)
+    b = hueTo(p, q, h - 1 / 3)
   }
-  r = Math.round((r + m) * 255)
-  g = Math.round((g + m) * 255)
-  b = Math.round((b + m) * 255)
+  return {
+    r: Math.round(r * 255),
+    g: Math.round(g * 255),
+    b: Math.round(b * 255),
+  }
+}
+
+function rgbToHex(rgb: RGB): string {
+  const { r, g, b } = rgb
+  return ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)
+}
+
+function hexToRgb(hex: string): RGB {
+  hex = hex.replace(/^#/, '')
+  if (hex.length === 3) {
+    hex = hex.split('').map(char => char + char).join('')
+  }
+  const r = Number.parseInt(hex.substring(0, 2), 16)
+  const g = Number.parseInt(hex.substring(2, 4), 16)
+  const b = Number.parseInt(hex.substring(4, 6), 16)
   return { r, g, b }
 }
 
-export function rgbToHex(r: number, g: number, b: number): string {
-  return ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)
+function rgbToHsl(rgb: RGB): HSL {
+  let { r, g, b } = rgb
+  r /= 255
+  g /= 255
+  b /= 255
+  const max = Math.max(r, g, b)
+  const min = Math.min(r, g, b)
+  let h = (max + min) / 2
+  let s = h
+  const l = s
+  if (max === min) {
+    h = s = 0
+  }
+  else {
+    const d = max - min
+    s = l > 0.5 ? d / (2 - max - min) : d / (max + min)
+    switch (max) {
+      case r:
+        h = (g - b) / d + (g < b ? 6 : 0)
+        break
+      case g:
+        h = (b - r) / d + 2
+        break
+      case b:
+        h = (r - g) / d + 4
+        break
+    }
+    h /= 6
+  }
+  return { h, s, l }
 }

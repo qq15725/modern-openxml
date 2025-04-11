@@ -1,4 +1,4 @@
-import type { FillDeclaration, OutlineDeclaration, ShadowDeclaration } from 'modern-idoc'
+import type { EffectDeclaration, FillDeclaration, OutlineDeclaration } from 'modern-idoc'
 import type { OOXMLNode } from '../core'
 import type { ColorMap } from '../presentation'
 import type { ColorScheme } from './color-scheme'
@@ -17,7 +17,7 @@ export interface Theme {
   fontScheme?: FontScheme
   fillStyleList?: FillDeclaration[]
   outlineStyleList?: OutlineDeclaration[]
-  effectStyleList?: ShadowDeclaration[]
+  effectStyleList?: EffectDeclaration[]
   backgroundFillStyleList?: FillDeclaration[]
 }
 

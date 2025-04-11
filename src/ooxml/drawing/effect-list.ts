@@ -1,8 +1,13 @@
-import type { ShadowDeclaration } from 'modern-idoc'
+import type {
+  EffectDeclaration,
+  InnerShadowDeclaration,
+  OuterShadowDeclaration,
+  SoftEdgeDeclaration,
+} from 'modern-idoc'
 import type { OOXMLNode } from '../core'
 import { parseColor } from './color'
 
-function parseInnerShadow(innerShdw?: OOXMLNode, ctx?: any): ShadowDeclaration | undefined {
+function parseInnerShadow(innerShdw?: OOXMLNode, ctx?: any): InnerShadowDeclaration | undefined {
   if (!innerShdw)
     return undefined
   const color = parseColor(innerShdw, ctx)
@@ -28,13 +33,13 @@ function parseInnerShadow(innerShdw?: OOXMLNode, ctx?: any): ShadowDeclaration |
 // @prop('@kx', 'ST_FixedAngle') declare kx?: number
 // @prop('@ky', 'ST_FixedAngle') declare ky?: number
 // @prop('@rotWithShape', 'boolean') declare rotWithShape?: boolean
-function parseOuterShadow(outerShadow?: OOXMLNode, ctx?: any): ShadowDeclaration | undefined {
-  const base = parseInnerShadow(outerShadow, ctx)
+function parseOuterShadow(outerShdw?: OOXMLNode, ctx?: any): OuterShadowDeclaration | undefined {
+  const base = parseInnerShadow(outerShdw, ctx)
   if (!base) {
     return undefined
   }
-  const sx = Number(outerShadow!.attr('@sx', 'ST_Percentage') ?? 1)
-  const sy = Number(outerShadow!.attr('@sy', 'ST_Percentage') ?? 1)
+  const sx = Number(outerShdw!.attr('@sx', 'ST_Percentage') ?? 1)
+  const sy = Number(outerShdw!.attr('@sy', 'ST_Percentage') ?? 1)
   return {
     ...base,
     offsetX: base!.offsetX! * sx,
@@ -42,11 +47,24 @@ function parseOuterShadow(outerShadow?: OOXMLNode, ctx?: any): ShadowDeclaration
   }
 }
 
+function parseSoftEdge(softEdge?: OOXMLNode): SoftEdgeDeclaration | undefined {
+  if (!softEdge) {
+    return undefined
+  }
+
+  return {
+    radius: Number(softEdge.attr('@rad', 'ST_PositiveCoordinate') ?? 0),
+  }
+}
+
 // a:effectLst
-export function parseEffectList(effectLst?: OOXMLNode, ctx?: any): ShadowDeclaration | undefined {
+export function parseEffectList(effectLst?: OOXMLNode, ctx?: any): EffectDeclaration | undefined {
   if (!effectLst)
     return undefined
 
-  return parseInnerShadow(effectLst.find('a:innerShdw'), ctx)
-    ?? parseOuterShadow(effectLst.find('a:outerShdw'), ctx)
+  return {
+    innerShadow: parseInnerShadow(effectLst.find('a:innerShdw'), ctx),
+    outerShadow: parseOuterShadow(effectLst.find('a:outerShdw'), ctx),
+    softEdge: parseSoftEdge(effectLst.find('a:softEdge')),
+  }
 }

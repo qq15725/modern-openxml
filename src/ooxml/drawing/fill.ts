@@ -133,7 +133,7 @@ function parseGradientFill(gradFill?: OOXMLNode, ctx?: any): string | undefined 
     .map((gs) => {
       return {
         color: parseColor(gs, ctx),
-        percentage: gs.attr<number>('@pos', 'positiveFixedPercentage') ?? 0,
+        percentage: (gs.attr<number>('@pos', 'positiveFixedPercentage') ?? 0) * 100,
       }
     })
     .filter(({ color }) => color)
@@ -158,17 +158,14 @@ function parseGradientFill(gradFill?: OOXMLNode, ctx?: any): string | undefined 
   ].join(',')})`
 }
 
-export function stringifyFill(fill?: FillDeclaration | FillDeclaration, isPic = false): string | undefined {
+export function stringifyFill(fill?: FillDeclaration, isPic = false): string | undefined {
   if (!fill)
     return undefined
 
-  const _fill = fill as FillDeclaration
-  const _image = fill as FillDeclaration
-
-  if (!!_fill.src || isPic) {
+  if (!!fill.src || isPic) {
     const tagName = isPic ? 'p:blipFill' : 'a:blipFill'
-    const url = _fill.src
-      ?? _image.src
+    const url = fill.src
+      ?? fill.src
     return `<${tagName}>
   <a:blip${withAttrs([withAttr('r:embed', url)])}>
     ${withIndents([
@@ -183,8 +180,8 @@ export function stringifyFill(fill?: FillDeclaration | FillDeclaration, isPic = 
   </a:stretch>
 </${tagName}>`
   }
-  else if (_fill.color) {
-    return stringifyColor(String(_fill.color ?? '#FFFFFF'))
+  else if (fill.color) {
+    return stringifyColor(String(fill.color ?? '#FFFFFF'))
   }
   return undefined
 }

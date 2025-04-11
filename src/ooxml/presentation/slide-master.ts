@@ -18,7 +18,7 @@ export interface SlideMaster extends ElementDeclaration {
 }
 
 export function parseSlideMaster(slide: OOXMLNode, id: string, ctx: any): SlideMaster {
-  const props = {
+  const meta = {
     id,
     ...parseTiming(slide.find('p:timing')),
     colorMap: parseColorMap(slide.find('p:clrMap')),
@@ -28,7 +28,7 @@ export function parseSlideMaster(slide: OOXMLNode, id: string, ctx: any): SlideM
     ...ctx,
     master: {
       node: slide,
-      ...props,
+      meta,
     },
   }
 
@@ -38,9 +38,7 @@ export function parseSlideMaster(slide: OOXMLNode, id: string, ctx: any): SlideM
       .get('p:cSld/p:spTree/*')
       .map(item => parseElement(item, newCtx))
       .filter(Boolean) as SlideElement[],
-    meta: {
-      ...props,
-    },
+    meta,
   }
 }
 

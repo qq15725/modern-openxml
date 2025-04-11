@@ -1,8 +1,8 @@
 import type {
+  EffectDeclaration,
   FillDeclaration,
   GeometryDeclaration,
   OutlineDeclaration,
-  ShadowDeclaration,
   SolidFillDeclaration,
 } from 'modern-idoc'
 import type { OOXMLNode, OOXMLQueryType } from '../core'
@@ -21,10 +21,10 @@ import { parseGeometry, stringifyGeometry } from './geometry'
 import { parseTransform2d, stringifyTransform2d } from './transform2d'
 
 export interface ShapeProperties extends Transform2d {
-  fill?: FillDeclaration
   geometry?: GeometryDeclaration
+  fill?: FillDeclaration
   outline?: OutlineDeclaration
-  shadow?: ShadowDeclaration
+  effect?: EffectDeclaration
 }
 
 export function parseShapeProperties(spPr?: OOXMLNode, ctx?: any): ShapeProperties | undefined {
@@ -36,7 +36,7 @@ export function parseShapeProperties(spPr?: OOXMLNode, ctx?: any): ShapeProperti
   let fill = (parseFill(query(`${fillXPath}`), ctx) ?? {}) as SolidFillDeclaration
   if (!spPr.find(`${fillXPath}`)) {
     const fillRef = spPr.find('../p:style/a:fillRef')
-    const fillRefIdx = Number(fillRef?.attr('@idx', 'number') ?? 1)
+    const fillRefIdx = fillRef?.attr<number>('@idx', 'number') ?? 1
     if (ctx?.theme?.fillStyleList?.[fillRefIdx - 1]) {
       // TODO
       fill.color = parseColor(fillRef, ctx)!
@@ -50,7 +50,7 @@ export function parseShapeProperties(spPr?: OOXMLNode, ctx?: any): ShapeProperti
   }) ?? {}
   if (!spPr.find(`a:ln/${fillXPath}`)) {
     const lnRef = spPr.find('../p:style/a:lnRef')
-    const lnRefIdx = Number(lnRef?.attr('@idx', 'number') ?? 1)
+    const lnRefIdx = lnRef?.attr<number>('@idx', 'number') ?? 1
     if (ctx?.theme?.outlineStyleList?.[lnRefIdx - 1]) {
       // TODO
       outline.color = parseColor(lnRef, ctx)
@@ -72,14 +72,12 @@ export function parseShapeProperties(spPr?: OOXMLNode, ctx?: any): ShapeProperti
     strokeWidth: outline.width,
   })
 
-  const effectList = parseEffectList(query('a:effectLst'), ctx)
-
   return {
     ...xfrm,
+    geometry,
     fill: Object.keys(fill).length > 0 ? fill : undefined,
     outline: Object.keys(outline).length > 0 ? outline : undefined,
-    geometry,
-    shadow: effectList,
+    effect: parseEffectList(query('a:effectLst'), ctx),
   }
 }
 

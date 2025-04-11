@@ -104,8 +104,8 @@ interface GeometryContext {
 
 interface GeometryPath {
   commands: GeometryPathCommand[]
-  fill: string
-  stroke: string
+  fill?: string
+  stroke?: string
   strokeWidth?: number
 }
 
@@ -266,8 +266,6 @@ function getPaths(ctx: GeometryContext): GeometryPath[] {
     pathLst,
     avLst = [],
     gdLst = [],
-    fill,
-    stroke,
     strokeWidth,
   } = ctx
 
@@ -323,21 +321,22 @@ function getPaths(ctx: GeometryContext): GeometryPath[] {
 
     let currentPoint: { x: any, y: any }
     const commands: GeometryPathCommand[] = path.get('*').map((child) => {
-      if (child.name.endsWith('moveTo')) {
+      const name = child.name
+      if (name.endsWith('moveTo')) {
         const pt = child.query('*[self::a:pt or self::pt]')
         const x = convert(pt?.attr('@x'), true)
         const y = convert(pt?.attr('@y'), false)
         currentPoint = { x, y }
         return { type: 'M', x, y }
       }
-      else if (child.name.endsWith('lnTo')) {
+      else if (name.endsWith('lnTo')) {
         const pt = child.query('*[self::a:pt or self::pt]')!
         const x = convert(pt.attr('@x')!, true)
         const y = convert(pt.attr('@y')!, false)
         currentPoint = { x, y }
         return { type: 'L', x, y }
       }
-      else if (child.name.endsWith('arcTo')) {
+      else if (name.endsWith('arcTo')) {
         const wr = convert(child.attr('@wR')!, true)
         const hr = convert(child.attr('@hR')!, false)
         const stAng = convert(child.attr('@stAng')!, true, 'degree')
@@ -362,7 +361,7 @@ function getPaths(ctx: GeometryContext): GeometryPath[] {
           y: currentPoint.y,
         }
       }
-      else if (child.name.endsWith('cubicBezTo')) {
+      else if (name.endsWith('cubicBezTo')) {
         const points = child.get('*[self::a:pt or self::pt]').map(p => ({
           x: p.attr('@x')!,
           y: p.attr('@y')!,
@@ -380,7 +379,7 @@ function getPaths(ctx: GeometryContext): GeometryPath[] {
           y,
         }
       }
-      else if (child.name.endsWith('quadBezTo')) {
+      else if (name.endsWith('quadBezTo')) {
         const points = child.get('*[(self::a:pt or self::pt)]').map(p => ({
           x: p.attr('@x')!,
           y: p.attr('@y')!,
@@ -404,8 +403,8 @@ function getPaths(ctx: GeometryContext): GeometryPath[] {
     })
 
     return {
-      fill: (needsFill ? fill : undefined) ?? 'none',
-      stroke: (needsStroke ? stroke : undefined) ?? 'none',
+      fill: needsFill ? undefined : 'none',
+      stroke: needsStroke ? undefined : 'none',
       strokeWidth,
       commands,
     }

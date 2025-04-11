@@ -16,122 +16,29 @@ export class IDocToSVGStringConverter {
     return ~~(Math.random() * 1000000000)
   }
 
-  protected _parseGeometry(el: SlideElement): XMLNode[] {
-    const { style = {}, fill, outline, shadow } = el
-    if (
-      !fill?.color
-      && !fill?.src
-      && !outline?.src
-      && !outline?.color
-      && !shadow?.color
-    ) {
-      return []
-    }
-    const { width, height } = style
-    const id = this._uuid()
-    const paths = el.geometry?.paths?.map((path, idx) => {
-      return {
-        tag: 'path',
-        attrs: {
-          'id': `geom-${id}-${idx}`,
-          'stroke-width': path.strokeWidth,
-          'd': path.data,
-        },
-      }
-    }) ?? [
-      {
-        tag: 'rect',
-        attrs: {
-          id: `geom-${id}-${0}`,
-          width,
-          height,
-        },
-      },
-    ]
-
-    // TODO tile
-    // TODO stretch
-    // TODO srcRect
-
-    return [
-      {
-        tag: 'defs',
-        children: [
-          ...paths,
-          fill?.src && {
-            tag: 'pattern',
-            attrs: {
-              id: `fill-${id}`,
-              left: 0,
-              top: 0,
-              width: '100%',
-              height: '100%',
-            },
-            children: [
-              {
-                tag: 'image',
-                attrs: {
-                  href: fill.src,
-                  width: el.style.width,
-                  height: el.style.height,
-                  preserveAspectRatio: 'none',
-                },
-              },
-            ],
-          },
-        ].filter(Boolean),
-      },
-      ...paths.map((_path, idx) => {
-        return {
-          tag: 'use',
-          attrs: {
-            'xlink:href': `#geom-${id}-${idx}`,
-            'fill': fill?.src ? `url(#fill-${id})` : fill?.color ?? 'none',
-            'stroke': outline?.color ?? 'none',
-          },
-        }
-      }),
-    ]
-  }
-
-  protected _parseRectFill(width: number, height: number, fill?: FillDeclaration): XMLNode[] {
-    if (!fill)
-      return []
-    return [
-      fill.color && {
-        tag: 'rect',
-        attrs: {
-          width,
-          height,
-          fill: fill.color,
-        },
-      },
-      fill.src && {
-        tag: 'image',
-        attrs: {
-          width,
-          height,
-          href: fill.src,
-          opacity: fill.opacity,
-          preserveAspectRatio: 'none',
-        },
-      },
-    ].filter(Boolean) as XMLNode[]
-  }
-
   parseSlideElement(el: SlideElement, ctx: ParseSlideElementContext = {}): XMLNode {
     const { parent } = ctx
+
+    const uuid = this._uuid()
 
     const {
       name = '',
       style = {},
       background,
       foreground,
+      geometry,
       // video,
+      fill,
+      outline,
+      effect = {},
       text,
       // meta,
       children,
     } = el
+
+    const {
+      softEdge,
+    } = effect
 
     let {
       scaleX = 1,
@@ -165,19 +72,210 @@ export class IDocToSVGStringConverter {
       transform.push(`translate(${-cx}, ${-cy})`)
     }
 
-    const container: XMLNode = {
+    const container = {
       tag: 'g',
-      attrs: {
-        title: name,
-        transform: transform.join(' '),
-        visibility,
-      },
-      children: [
-        ...this._parseRectFill(width, height, background),
-        ...this._parseGeometry(el),
-        ...this._parseRectFill(width, height, foreground),
-      ],
+      attrs: { title: name, transform: transform.join(' '), visibility },
+      children: [] as XMLNode[],
     }
+
+    const defs = {
+      tag: 'defs',
+      children: [] as XMLNode[],
+    }
+
+    const pathUseAttrs: Record<string, any> = {
+      fill: 'none',
+      stroke: 'none',
+    }
+
+    function parseColor(val?: string): string {
+      if (val?.startsWith('linear-gradient')) {
+        const id = `linear-gradient-${uuid}`
+        const match = val.match(/linear-gradient\((.*)\)$/)?.[1] as string | undefined
+        const [deg, ..._colorStops] = match?.split(',rgba')?.map(v => v.trim()) ?? []
+        const colorStops
+          = _colorStops?.map((color_) => {
+            const color = `rgba${color_}`
+            const match = color.match(/(rgba\(.*\)) (.*)/) ?? []
+            const offset = match.length > 2 ? match?.[2] : undefined
+            const stopColor = match?.[1]
+            return {
+              tag: 'stop',
+              attrs: {
+                offset,
+                'stop-color': stopColor,
+              },
+            }
+          }) ?? []
+        const degree = Number(deg.replace('deg', '')) || 0
+        const radian = (degree * Math.PI) / 180
+        const offsetX = 0.5 * Math.sin(radian)
+        const offsetY = 0.5 * Math.cos(radian)
+        const x1 = ~~((0.5 - offsetX) * 10000) / 100
+        const y1 = ~~((0.5 + offsetY) * 10000) / 100
+        const x2 = ~~((0.5 + offsetX) * 10000) / 100
+        const y2 = ~~((0.5 - offsetY) * 10000) / 100
+        defs.children.push({
+          tag: 'linearGradient',
+          attrs: {
+            id,
+            x1: `${x1}%`,
+            y1: `${y1}%`,
+            x2: `${x2}%`,
+            y2: `${y2}%`,
+          },
+          children: colorStops,
+        })
+        return `url(#${id})`
+      }
+      else if (val?.startsWith('radial-gradient')) {
+        const id = `radial-gradient-${uuid}`
+        const match = val.match(/radial-gradient\((.*)\)$/)?.[1] as string | undefined
+        const _colorStops = match?.split(',rgba')?.map(v => v.trim()) ?? []
+        const colorStops
+          = _colorStops?.map((color_) => {
+            const color = `rgba${color_}`
+            const match = color.match(/(rgba\(.*\)) (.*)/) ?? []
+            const offset = match.length > 2 ? match?.[2] : undefined
+            const stopColor = match?.[1]
+            return {
+              tag: 'stop',
+              attrs: {
+                offset,
+                'stop-color': stopColor,
+              },
+            }
+          }) ?? []
+        defs.children.push({
+          tag: 'radialGradient',
+          attrs: {
+            id,
+            cx: '50%',
+            cy: '50%',
+            r: '50%',
+            fx: '50%',
+            fy: '50%',
+          },
+          children: colorStops,
+        })
+        return `url(#${id})`
+      }
+      else {
+        return val ?? 'none'
+      }
+    }
+
+    function parseRectFill(width: number, height: number, fill?: FillDeclaration): XMLNode[] {
+      return [
+        fill?.color && {
+          tag: 'rect',
+          attrs: {
+            width,
+            height,
+            fill: fill.color,
+          },
+        },
+        fill?.src && {
+          tag: 'image',
+          attrs: {
+            width,
+            height,
+            href: fill.src,
+            opacity: fill!.opacity,
+            preserveAspectRatio: 'none',
+          },
+        },
+      ].filter(Boolean) as XMLNode[]
+    }
+
+    const paths = geometry?.paths
+      ? geometry.paths.map((path, idx) => {
+          return {
+            tag: 'path',
+            attrs: {
+              'title': geometry.name,
+              'id': `geom-${uuid}-${idx}`,
+              'd': path.data,
+              'fill': path.fill,
+              'stroke': path.stroke,
+              'stroke-width': path.strokeWidth,
+            },
+          }
+        })
+      : [
+          {
+            tag: 'rect',
+            attrs: { id: `geom-${uuid}-${0}`, width, height },
+          },
+        ]
+    defs.children.push(...paths)
+
+    // TODO tile
+    // TODO stretch
+    // TODO srcRect
+
+    if (fill?.src) {
+      defs.children.push({
+        tag: 'pattern',
+        attrs: { id: `fill-${uuid}`, left: 0, top: 0, width: '100%', height: '100%' },
+        children: [
+          { tag: 'image', attrs: { href: fill.src, width, height, preserveAspectRatio: 'none' } },
+        ],
+      })
+      pathUseAttrs.fill = `url(#fill-${uuid})`
+    }
+    else if (fill?.color) {
+      pathUseAttrs.fill = parseColor(fill.color as any)
+    }
+
+    if (outline?.src) {
+      defs.children.push({
+        tag: 'pattern',
+        attrs: { id: `outline-${uuid}`, left: 0, top: 0, width: '100%', height: '100%' },
+        children: [
+          { tag: 'image', attrs: { href: outline.src, width, height, preserveAspectRatio: 'none' } },
+        ],
+      })
+      pathUseAttrs.stroke = `url(#outline-${uuid})`
+    }
+    else if (outline?.color) {
+      pathUseAttrs.stroke = parseColor(outline.color as any)
+    }
+
+    if (softEdge) {
+      defs.children.push({
+        tag: 'filter',
+        attrs: { id: `soft-edge-${uuid}` },
+        children: [
+          {
+            tag: 'feGaussianBlur',
+            attrs: { in: 'SourceGraphic', stdDeviation: softEdge.radius / 3 },
+          },
+        ],
+      })
+      pathUseAttrs.filter = `url(#soft-edge-${uuid})`
+      pathUseAttrs.transform = `matrix(0.8,0,0,0.8,${width * 0.1},${height * 0.1})`
+    }
+
+    container.children.push(
+      defs,
+      ...parseRectFill(width, height, background),
+      {
+        tag: 'g',
+        children: [
+          ...paths.map((_path, idx) => {
+            return {
+              tag: 'use',
+              attrs: {
+                'xlink:href': `#geom-${uuid}-${idx}`,
+                ...pathUseAttrs,
+              },
+            }
+          }),
+        ],
+      },
+      ...parseRectFill(width, height, foreground),
+    )
 
     if (text) {
       const measured = measureText({
@@ -193,6 +291,9 @@ export class IDocToSVGStringConverter {
 
       container.children!.push(
         ...measured.paragraphs.flatMap((paragraph) => {
+          if (!paragraph.fragments.flatMap(f => f.characters.map(c => c.content)).join('')) {
+            return []
+          }
           const { computedStyle: pStyle } = paragraph
           return paragraph.fragments
             .map((f) => {
@@ -200,7 +301,7 @@ export class IDocToSVGStringConverter {
               return {
                 tag: 'text',
                 attrs: {
-                  'fill': rStyle.color,
+                  'fill': parseColor(rStyle.color as any),
                   'font-size': rStyle.fontSize,
                   'font-family': rStyle.fontFamily,
                   'letter-spacing': rStyle.letterSpacing,
@@ -275,7 +376,7 @@ export class IDocToSVGStringConverter {
         const items: XMLNode[] = []
         const {
           children = [],
-          fill,
+          background,
         } = slide
 
         if (master) {
@@ -318,14 +419,14 @@ export class IDocToSVGStringConverter {
             transform: `translate(0, ${top})`,
           },
           children: [
-            (fill as any)?.color && {
+            (background as any)?.color && {
               tag: 'rect',
               attrs: {
                 x: 0,
                 y: 0,
                 width,
                 height,
-                fill: (fill as any).color,
+                fill: (background as any).color,
               },
             },
             ...children

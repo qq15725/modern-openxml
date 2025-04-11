@@ -136,6 +136,7 @@ export class PPTXToIDocConverter {
       children: [],
       meta: {
         themes: [],
+        slides: [],
         slideLayouts: [],
         slideMasters: [],
         // docProps/thumbnail.jpeg
@@ -235,8 +236,6 @@ export class PPTXToIDocConverter {
       const layoutElements = layout?.children.filter(v => !v.meta.placeholderType && !v.meta.placeholderIndex) ?? []
       slide.children = masterElements.concat(layoutElements).concat(slide.children)
 
-      pptx.children.push(slide)
-
       if (pptx.meta.slideLayouts.findIndex(slide => slide.meta.id === layout.meta.id) === -1) {
         pptx.meta.slideLayouts.push(layout)
       }
@@ -244,6 +243,12 @@ export class PPTXToIDocConverter {
       if (pptx.meta.slideMasters.findIndex(slide => slide.meta.id === master.meta.id) === -1) {
         pptx.meta.slideMasters.push(master)
       }
+
+      pptx.meta.slides.push(slide)
+      pptx.children.push({
+        ...slide,
+        background: slide.background ?? layout?.background ?? master?.background,
+      })
     }
 
     pptx.meta.themes = pptx.meta.themes.filter(Boolean)

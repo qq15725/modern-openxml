@@ -13,6 +13,7 @@ export type PPTXSource =
 export interface PPTXMeta {
   cover?: string
   themes: Theme[]
+  slides: Slide[]
   slideLayouts: SlideLayout[]
   slideMasters: SlideMaster[]
 }
