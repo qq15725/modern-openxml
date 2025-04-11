@@ -12,14 +12,12 @@ export interface ParseSlideElementContext {
 export class IDocToSVGStringConverter {
   xmlRenderer = new XMLRenderer()
 
-  protected _uuid(): number {
-    return ~~(Math.random() * 1000000000)
-  }
-
   parseSlideElement(el: SlideElement, ctx: ParseSlideElementContext = {}): XMLNode {
     const { parent } = ctx
 
-    const uuid = this._uuid()
+    const genUUID = (): number => ~~(Math.random() * 1000000000)
+
+    const uuid = genUUID()
 
     const {
       name = '',
@@ -88,9 +86,17 @@ export class IDocToSVGStringConverter {
       stroke: 'none',
     }
 
+    const colorMap = new Map<string, string>()
+
     function parseColor(val?: string): string {
+      const id = `color-${uuid}-${genUUID()}`
+
+      if (val && colorMap.has(val)) {
+        return colorMap.get(val)!
+      }
+
       if (val?.startsWith('linear-gradient')) {
-        const id = `linear-gradient-${uuid}`
+        colorMap.set(val, id)
         const match = val.match(/linear-gradient\((.*)\)$/)?.[1] as string | undefined
         const [deg, ..._colorStops] = match?.split(',rgba')?.map(v => v.trim()) ?? []
         const colorStops
@@ -129,7 +135,7 @@ export class IDocToSVGStringConverter {
         return `url(#${id})`
       }
       else if (val?.startsWith('radial-gradient')) {
-        const id = `radial-gradient-${uuid}`
+        colorMap.set(val, id)
         const match = val.match(/radial-gradient\((.*)\)$/)?.[1] as string | undefined
         const _colorStops = match?.split(',rgba')?.map(v => v.trim()) ?? []
         const colorStops
