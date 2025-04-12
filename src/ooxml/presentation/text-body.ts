@@ -68,7 +68,7 @@ export function parseTextBody(txBody?: OOXMLNode, ctx?: Record<string, any>): Te
     },
     text: {
       content: txBody?.get('.//a:p').map((p) => {
-        const lvl = Number(p.attr('a:pPr/@lvl') ?? 0)
+        const lvl = p.attr<number>('a:pPr/@lvl', 'number') ?? 0
         const lvKey = `a:lvl${lvl + 1}pPr`
         const pPrList = [
           () => p.find('a:pPr'),
@@ -106,10 +106,36 @@ export function parseTextBody(txBody?: OOXMLNode, ctx?: Record<string, any>): Te
               }
               const fill = parseFill(queryRPr(fillXPath), ctx) as SolidFillDeclaration | undefined
               const outline = parseOutline(queryRPr('a:ln'), ctx)
+
+              let fontFamily = queryRPr<string>('*[self::a:cs or self::a:ea or self::a:latin or self::a:sym]/@typeface', 'StringValue')
+              if (fontFamily) {
+                const fontScheme = ctx?.theme?.fontScheme
+                let type: string | undefined
+                if (fontFamily.startsWith('+mn-')) {
+                  type = 'minor'
+                }
+                else if (fontFamily.startsWith('+mj-')) {
+                  type = 'major'
+                }
+                if (fontScheme && type) {
+                  switch (fontFamily.substring(4)) {
+                    case 'lt':
+                      fontFamily = fontScheme[type]?.latin
+                      break
+                    case 'ea':
+                      fontFamily = fontScheme[type]?.eastasian
+                      break
+                    case 'cs':
+                      fontFamily = fontScheme[type]?.complexScript
+                      break
+                  }
+                }
+              }
+
               return {
                 fontWeight: queryRPr('@b', 'boolean') ? 700 : undefined,
                 fontStyle: queryRPr('@i', 'boolean') ? 'italic' : undefined,
-                fontFamily: queryRPr('*[self::a:cs or self::a:ea or self::a:latin or self::a:sym]/@typeface', 'StringValue'),
+                fontFamily,
                 textTransform: toTextTransform(queryRPr('@cap', 'string')),
                 textDecoration: toTextDecoration(queryRPr('@u', 'string')),
                 fontSize: queryRPr('@sz', 'fontSize'),

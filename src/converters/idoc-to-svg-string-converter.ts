@@ -92,7 +92,7 @@ export class IDocToSVGStringConverter {
       const id = `color-${uuid}-${genUUID()}`
 
       if (val && colorMap.has(val)) {
-        return colorMap.get(val)!
+        return `url(#${colorMap.get(val)!})`
       }
 
       if (val?.startsWith('linear-gradient')) {

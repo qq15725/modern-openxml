@@ -242,7 +242,7 @@ export function parseColor(node?: OOXMLNode, ctx?: Record<string, any>): string 
 
   const rgba = {
     ...hexToRgb(hex),
-    a: ~~(Number(node.attr('a:alpha/@val', 'ST_PositivePercentage') ?? 1) * 100) / 100,
+    a: ~~((node.attr<number>('a:alpha/@val', 'ST_PositivePercentage') ?? 1) * 100) / 100,
   }
 
   const luminanceModulation = node.attr('a:lumMod/@val', 'rate')

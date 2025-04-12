@@ -13,9 +13,9 @@ function parseInnerShadow(innerShdw?: OOXMLNode, ctx?: any): InnerShadowDeclarat
   const color = parseColor(innerShdw, ctx)
   if (!color)
     return undefined
-  const blur = Number(innerShdw.attr('@blurRad', 'ST_PositiveCoordinate') ?? 0)
-  const dir = Number(innerShdw.attr('@dir', 'ST_PositiveFixedAngle') ?? 0)
-  const dist = Number(innerShdw.attr('@dist', 'ST_PositiveCoordinate') ?? 0)
+  const blur = innerShdw.attr<number>('@blurRad', 'ST_PositiveCoordinate') ?? 0
+  const dir = innerShdw.attr<number>('@dir', 'ST_PositiveFixedAngle') ?? 0
+  const dist = innerShdw.attr<number>('@dist', 'ST_PositiveCoordinate') ?? 0
   const degree = dir + 90
   const radian = (degree / 180) * Math.PI
   const offsetX = dist * Math.sin(radian)
@@ -38,8 +38,8 @@ function parseOuterShadow(outerShdw?: OOXMLNode, ctx?: any): OuterShadowDeclarat
   if (!base) {
     return undefined
   }
-  const sx = Number(outerShdw!.attr('@sx', 'ST_Percentage') ?? 1)
-  const sy = Number(outerShdw!.attr('@sy', 'ST_Percentage') ?? 1)
+  const sx = outerShdw!.attr<number>('@sx', 'ST_Percentage') ?? 1
+  const sy = outerShdw!.attr<number>('@sy', 'ST_Percentage') ?? 1
   return {
     ...base,
     offsetX: base!.offsetX! * sx,
@@ -53,7 +53,7 @@ function parseSoftEdge(softEdge?: OOXMLNode): SoftEdgeDeclaration | undefined {
   }
 
   return {
-    radius: Number(softEdge.attr('@rad', 'ST_PositiveCoordinate') ?? 0),
+    radius: softEdge.attr<number>('@rad', 'ST_PositiveCoordinate') ?? 0,
   }
 }
 

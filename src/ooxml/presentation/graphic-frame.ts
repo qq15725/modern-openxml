@@ -1,13 +1,14 @@
 import type { ElementDeclaration, StyleProperty } from 'modern-idoc'
 import type { OOXMLNode } from '../core'
 import type { GroupShape } from './group-shape'
+import type { NonVisualDrawingProperties } from './non-visual-drawing-properties'
 import type { SlideElement } from './slide'
 import { parseNonVisualDrawingProperties } from './non-visual-drawing-properties'
 import { parseNonVisualProperties } from './non-visual-properties'
 import { parseElement } from './slide'
 import { parseTransform2d } from './transform2d'
 
-export interface GraphicFrameMeta {
+export type GraphicFrameMeta = NonVisualDrawingProperties['meta'] & {
   type: 'graphic-frame'
   placeholderType?: string
   placeholderIndex?: string

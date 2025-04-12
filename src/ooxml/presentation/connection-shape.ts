@@ -1,10 +1,11 @@
 import type { ElementDeclaration, StyleProperty } from 'modern-idoc'
 import type { OOXMLNode, OOXMLQueryType } from '../core'
+import type { NonVisualDrawingProperties } from './non-visual-drawing-properties'
 import { parseNonVisualDrawingProperties } from './non-visual-drawing-properties'
 import { parseNonVisualProperties } from './non-visual-properties'
 import { parseShapeProperties } from './shape-properties'
 
-export interface ConnectionShapeMeta {
+export type ConnectionShapeMeta = NonVisualDrawingProperties['meta'] & {
   type: 'connection-shape'
   placeholderType?: string
   placeholderIndex?: string
