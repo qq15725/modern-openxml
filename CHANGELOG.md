@@ -1,3 +1,12 @@
+## [0.1.10](https://github.com/qq15725/modern-openxml/compare/v0.1.9...v0.1.10) (2025-04-12)
+
+
+### Bug Fixes
+
+* parse fontFamily +mn-xx +mj-xx ([bf7d985](https://github.com/qq15725/modern-openxml/commit/bf7d9852acad590431bf4b8937d9464e55b569db))
+
+
+
 ## [0.1.9](https://github.com/qq15725/modern-openxml/compare/v0.1.8...v0.1.9) (2025-04-11)
 
 
