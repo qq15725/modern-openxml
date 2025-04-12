@@ -1,3 +1,12 @@
+## [0.1.11](https://github.com/qq15725/modern-openxml/compare/v0.1.10...v0.1.11) (2025-04-12)
+
+
+### Bug Fixes
+
+* text-align justify ([1663e33](https://github.com/qq15725/modern-openxml/commit/1663e33e3f931eaf345137f5c6a774fcbcea31f7))
+
+
+
 ## [0.1.10](https://github.com/qq15725/modern-openxml/compare/v0.1.9...v0.1.10) (2025-04-12)
 
 
