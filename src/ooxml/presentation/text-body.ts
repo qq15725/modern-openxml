@@ -312,11 +312,12 @@ function toTextAlign(algn?: string): TextAlign | undefined {
       return 'right'
     case 'ctr':
       return 'center'
-    case 'dist':
-    case 'thaiDist':
     case 'just':
     case 'justLow':
-      return 'center' // TODO justify
+      return 'justify'
+    case 'dist':
+    case 'thaiDist':
+      return 'center' // TODO
     default:
       return undefined
   }
