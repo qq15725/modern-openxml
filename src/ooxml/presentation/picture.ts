@@ -1,7 +1,7 @@
 import type { ElementDeclaration, StyleProperty } from 'modern-idoc'
 import type { OOXMLNode, OOXMLQueryType } from '../core'
 import type { NonVisualDrawingProperties } from './non-visual-drawing-properties'
-import { parsePBlipFill, stringifyFill } from '../drawing'
+import { parseBlipFill, stringifyFill } from '../drawing'
 import { withIndents } from '../utils'
 import { parseNonVisualDrawingProperties, stringifyNonVisualDrawingProperties } from './non-visual-drawing-properties'
 import { parseNonVisualProperties, stringifyNonVisualProperties } from './non-visual-properties'
@@ -45,7 +45,7 @@ export function parsePicture(node?: OOXMLNode, ctx?: any): Picture | undefined {
       ...cNvPr?.style,
       ...spPr?.style,
     },
-    foreground: parsePBlipFill(query('p:blipFill'), ctx),
+    foreground: parseBlipFill(query('p:blipFill'), ctx),
     meta: {
       ...cNvPr?.meta,
       type: 'picture',

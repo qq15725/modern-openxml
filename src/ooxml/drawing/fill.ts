@@ -59,17 +59,6 @@ export function parseFill(fill?: OOXMLNode, ctx?: Record<string, any>): FillDecl
 export function parseBlipFill(fill?: OOXMLNode, ctx?: Record<string, any>): TextureFillDeclaration | undefined {
   if (!fill)
     return undefined
-  const tileNode = fill.find('a:tile')
-  const tile = tileNode
-    ? clearUndef({
-        scaleX: tileNode.attr<number>('@sx', 'ST_Percentage'),
-        scaleY: tileNode.attr<number>('@sy', 'ST_Percentage'),
-        alignment: tileNode.attr('@algn'),
-        translateX: tileNode.attr<number>('@tx', 'ST_Percentage'),
-        translateY: tileNode.attr<number>('@ty', 'ST_Percentage'),
-        flip: tileNode.attr('@flip'),
-      })
-    : undefined
 
   const embed = fill.attr('a:blip/a:extLst//a:ext/asvg:svgBlip/@r:embed')
     ?? fill.attr('a:blip/@r:embed')!
@@ -83,19 +72,6 @@ export function parseBlipFill(fill?: OOXMLNode, ctx?: Record<string, any>): Text
   }
   src = src ?? embed
 
-  return {
-    rotateWithShape: fill.attr<boolean>('@rotWithShape', 'boolean'),
-    dpi: fill.attr<number>('@dpi', 'number'),
-    src,
-    opacity: fill.attr<number>('a:blip/a:alphaModFix/@amt', 'ST_PositivePercentage'),
-    tile: tile && Object.keys(tile).length > 0 ? tile : undefined,
-  }
-}
-
-// p:BlipFill
-export function parsePBlipFill(fill?: OOXMLNode, ctx?: Record<string, any>): FillDeclaration | undefined {
-  if (!fill)
-    return undefined
   const srcRectNode = fill.find('a:srcRect')
   const srcRect = srcRectNode
     ? clearUndef({
@@ -105,22 +81,36 @@ export function parsePBlipFill(fill?: OOXMLNode, ctx?: Record<string, any>): Fil
         left: srcRectNode.attr<number>('@l', 'ST_Percentage'),
       })
     : undefined
-  const embed = fill.attr('a:blip/a:extLst//a:ext/asvg:svgBlip/@r:embed')
-    ?? fill.attr('a:blip/@r:embed')!
+  const fillRectNode = fill.find('a:stretch/a:fillRect')
+  const fillRect = fillRectNode
+    ? clearUndef({
+        top: fillRectNode.attr<number>('@t', 'ST_Percentage'),
+        right: fillRectNode.attr<number>('@r', 'ST_Percentage'),
+        bottom: fillRectNode.attr<number>('@b', 'ST_Percentage'),
+        left: fillRectNode.attr<number>('@l', 'ST_Percentage'),
+      })
+    : undefined
 
-  let image
-  if (ctx?.drawing) {
-    image = ctx?.drawing.rels.find((v: any) => v.id === embed)?.path
-  }
-  else {
-    image = ctx?.rels?.find((v: any) => v.id === embed)?.path
-  }
-  image = image ?? embed
+  const tileNode = fill.find('a:tile')
+  const tile = tileNode
+    ? clearUndef({
+        scaleX: tileNode.attr<number>('@sx', 'ST_Percentage'),
+        scaleY: tileNode.attr<number>('@sy', 'ST_Percentage'),
+        alignment: tileNode.attr('@algn'),
+        translateX: tileNode.attr<number>('@tx', 'ST_Percentage'),
+        translateY: tileNode.attr<number>('@ty', 'ST_Percentage'),
+        flip: tileNode.attr('@flip'),
+      })
+    : undefined
 
   return {
-    src: image,
+    rotateWithShape: fill.attr<boolean>('@rotWithShape', 'boolean'),
+    dpi: fill.attr<number>('@dpi', 'number'),
+    src,
     opacity: fill.attr<number>('a:blip/a:alphaModFix/@amt', 'ST_PositivePercentage'),
-    srcRect: srcRect && Object.keys(srcRect).length > 0 ? srcRect : undefined,
+    srcRect,
+    stretch: fillRect && Object.keys(fillRect).length > 0 ? { rect: fillRect } : undefined,
+    tile: tile && Object.keys(tile).length > 0 ? tile : undefined,
   }
 }
 
