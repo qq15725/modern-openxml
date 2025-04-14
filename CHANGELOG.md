@@ -1,3 +1,12 @@
+## [0.1.12](https://github.com/qq15725/modern-openxml/compare/v0.1.11...v0.1.12) (2025-04-14)
+
+
+### Features
+
+* idoc to svg ([9699735](https://github.com/qq15725/modern-openxml/commit/9699735adea7cb86eb1eaca3c4bf061d69abf3fe))
+
+
+
 ## [0.1.11](https://github.com/qq15725/modern-openxml/compare/v0.1.10...v0.1.11) (2025-04-12)
 
 
