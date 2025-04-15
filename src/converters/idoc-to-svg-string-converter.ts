@@ -131,7 +131,7 @@ export class IDocToSVGStringConverter {
         const srcHeight = height / (1 - top - bottom)
         const tx = ((right - left) / 2) * srcWidth
         const ty = ((bottom - top) / 2) * srcHeight
-        gAttrs.srcRect = JSON.stringify(srcRect).replace(/"/g, '\'')
+        gAttrs['src-rect'] = JSON.stringify(srcRect).replace(/"/g, '\'')
         gAttrs.transform = [
           `translate(${tx},${ty})`,
           `translate(${width / 2},${height / 2})`,
