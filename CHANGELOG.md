@@ -1,3 +1,12 @@
+## [0.1.14](https://github.com/qq15725/modern-openxml/compare/v0.1.13...v0.1.14) (2025-04-15)
+
+
+### Features
+
+* SVG add srcRect util attr ([2af0e05](https://github.com/qq15725/modern-openxml/commit/2af0e054b5b66e85deb5c31a4f086178b09ff7f4))
+
+
+
 ## [0.1.13](https://github.com/qq15725/modern-openxml/compare/v0.1.12...v0.1.13) (2025-04-15)
 
 
