@@ -113,7 +113,7 @@ export class IDocToSVGStringConverter {
     uuid: number
     colorMap: Map<string, string>
     geometryPaths?: XMLNode[]
-  }): XMLNode[] {
+  }): XMLNode {
     const { key, attrs = {}, width, height, defs, uuid, colorMap, geometryPaths } = ctx
 
     const suffix = `${key}-${uuid}`
@@ -173,38 +173,33 @@ export class IDocToSVGStringConverter {
     }
 
     if (geometryPaths) {
-      return [
-        {
-          tag: 'g',
-          attrs: { title: key },
-          children: geometryPaths.map((path) => {
-            return {
-              tag: 'use',
-              attrs: {
-                'xlink:href': `#${path.attrs!.id}`,
-                'stroke': 'none',
-                'fill': 'none',
-                ...attrs,
-              },
-            }
-          }),
-        },
-      ]
-    }
-
-    return [
-      {
+      return {
         tag: 'g',
         attrs: { title: key },
-        children: [
-          {
-            tag: 'rect',
-            attrs: { width, height, stroke: 'none', fill: 'none', ...attrs },
-          },
-        ],
-      },
+        children: geometryPaths.map((path) => {
+          return {
+            tag: 'use',
+            attrs: {
+              'xlink:href': `#${path.attrs!.id}`,
+              'stroke': 'none',
+              'fill': 'none',
+              ...attrs,
+            },
+          }
+        }),
+      }
+    }
 
-    ]
+    return {
+      tag: 'g',
+      attrs: { title: key },
+      children: [
+        {
+          tag: 'rect',
+          attrs: { width, height, stroke: 'none', fill: 'none', ...attrs },
+        },
+      ],
+    }
   }
 
   parseSlideElement(el: SlideElement, ctx: ParseSlideElementContext = {}): XMLNode {
@@ -229,6 +224,7 @@ export class IDocToSVGStringConverter {
 
     const {
       softEdge,
+      outerShadow,
     } = effect
 
     let {
@@ -344,21 +340,73 @@ export class IDocToSVGStringConverter {
       geometryPathsAttrs.transform = `matrix(0.8,0,0,0.8,${width * 0.1},${height * 0.1})`
     }
 
-    container.children.push(
-      defs,
-      ...(background
-        ? this.parseFill(background, {
-            key: 'background',
-            width,
-            height,
-            defs,
-            uuid,
-            colorMap,
-          })
-        : []),
-      {
+    container.children.push(defs)
+
+    if (background) {
+      container.children.push(this.parseFill(background, {
+        key: 'background',
+        width,
+        height,
+        defs,
+        uuid,
+        colorMap,
+      }))
+    }
+
+    if (outerShadow) {
+      const {
+        color,
+        offsetX = 0,
+        offsetY = 0,
+        scaleX = 1,
+        scaleY = 1,
+        blurRadius = 0,
+      } = outerShadow
+      const [r, g, b, a] = String(color).replace('rgba(', '').replace(')', '').split(',').map(v => Number(v))
+      const filter = {
+        x1: 0 - blurRadius,
+        y1: 0 - blurRadius,
+        x2: width + blurRadius * 2,
+        y2: height + blurRadius * 2,
+      }
+      const t = height - (height * scaleY)
+      const matrix = { a: scaleX, b: 0, c: 0, d: scaleY, e: offsetX, f: t + offsetY }
+
+      defs.children.push({
+        tag: 'filter',
+        attrs: {
+          id: `outerShadow-${uuid}`,
+          filterUnits: 'userSpaceOnUse',
+          x: filter.x1,
+          y: filter.y1,
+          width: filter.x2,
+          height: filter.y2,
+        },
+        children: [
+          {
+            tag: 'feGaussianBlur',
+            attrs: { in: 'SourceAlpha', result: 'blur', stdDeviation: ~~(blurRadius / 6) },
+          },
+          {
+            tag: 'feComponentTransfer',
+            attrs: { 'color-interpolation-filters': 'sRGB' },
+            children: [
+              { tag: 'feFuncR', attrs: { type: 'linear', slope: '0', intercept: r / 255 } },
+              { tag: 'feFuncG', attrs: { type: 'linear', slope: '0', intercept: g / 255 } },
+              { tag: 'feFuncB', attrs: { type: 'linear', slope: '0', intercept: b / 255 } },
+              { tag: 'feFuncA', attrs: { type: 'linear', slope: a, intercept: 0 } },
+            ],
+          },
+        ],
+      })
+
+      container.children.push({
         tag: 'g',
-        attrs: { title: 'geometry' },
+        attrs: {
+          title: 'outerShadow',
+          filter: `url(#outerShadow-${uuid})`,
+          transform: `matrix(${matrix.a},${matrix.b},${matrix.c},${matrix.d},${matrix.e},${matrix.f})`,
+        },
         children: geometryPaths.map((path) => {
           return {
             tag: 'use',
@@ -368,19 +416,34 @@ export class IDocToSVGStringConverter {
             },
           }
         }),
-      },
-      ...(foreground
-        ? this.parseFill(foreground, {
-            key: 'foreground',
-            width,
-            height,
-            defs,
-            uuid,
-            colorMap,
-            geometryPaths,
-          })
-        : []),
-    )
+      })
+    }
+
+    container.children.push({
+      tag: 'g',
+      attrs: { title: 'geometry' },
+      children: geometryPaths.map((path) => {
+        return {
+          tag: 'use',
+          attrs: {
+            'xlink:href': `#${path.attrs.id}`,
+            ...geometryPathsAttrs,
+          },
+        }
+      }),
+    })
+
+    if (foreground) {
+      container.children.push(this.parseFill(foreground, {
+        key: 'foreground',
+        width,
+        height,
+        defs,
+        uuid,
+        colorMap,
+        geometryPaths,
+      }))
+    }
 
     if (text) {
       const measured = measureText({
@@ -537,14 +600,16 @@ export class IDocToSVGStringConverter {
           children: [
             defs,
             ...(background
-              ? this.parseFill(background, {
-                  key: 'background',
-                  width,
-                  height,
-                  defs,
-                  uuid,
-                  colorMap,
-                })
+              ? [
+                  this.parseFill(background, {
+                    key: 'background',
+                    width,
+                    height,
+                    defs,
+                    uuid,
+                    colorMap,
+                  }),
+                ]
               : []),
             ...children
               .map(child => this.parseSlideElement(child as any)),

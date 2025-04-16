@@ -13,18 +13,15 @@ function parseInnerShadow(innerShdw?: OOXMLNode, ctx?: any): InnerShadowDeclarat
   const color = parseColor(innerShdw, ctx)
   if (!color)
     return undefined
-  const blur = innerShdw.attr<number>('@blurRad', 'ST_PositiveCoordinate') ?? 0
+  const blurRadius = innerShdw.attr<number>('@blurRad', 'ST_PositiveCoordinate') ?? 0
   const dir = innerShdw.attr<number>('@dir', 'ST_PositiveFixedAngle') ?? 0
   const dist = innerShdw.attr<number>('@dist', 'ST_PositiveCoordinate') ?? 0
-  const degree = dir + 90
-  const radian = (degree / 180) * Math.PI
-  const offsetX = dist * Math.sin(radian)
-  const offsetY = dist * -Math.cos(radian)
+  const radian = ((dir + 90) / 180) * Math.PI
   return {
     color,
-    offsetX,
-    offsetY,
-    blur,
+    offsetX: dist * Math.sin(radian),
+    offsetY: dist * -Math.cos(radian),
+    blurRadius,
   }
 }
 
@@ -38,12 +35,12 @@ function parseOuterShadow(outerShdw?: OOXMLNode, ctx?: any): OuterShadowDeclarat
   if (!base) {
     return undefined
   }
-  const sx = outerShdw!.attr<number>('@sx', 'ST_Percentage') ?? 1
-  const sy = outerShdw!.attr<number>('@sy', 'ST_Percentage') ?? 1
+  const scaleX = outerShdw!.attr<number>('@sx', 'ST_Percentage') ?? 1
+  const scaleY = outerShdw!.attr<number>('@sy', 'ST_Percentage') ?? 1
   return {
     ...base,
-    offsetX: base!.offsetX! * sx,
-    offsetY: base!.offsetY! * sy,
+    scaleX,
+    scaleY,
   }
 }
 
