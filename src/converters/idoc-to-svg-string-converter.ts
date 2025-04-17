@@ -1,7 +1,6 @@
 import type { FillDeclaration } from 'modern-idoc'
 import type { PPTXDeclaration, SlideElement } from '../ooxml'
 import type { XMLNode } from '../renderers'
-import { Path2D, Path2DSet } from 'modern-path2d'
 import { measureText } from 'modern-text'
 import { OOXMLValue } from '../ooxml'
 import { XMLRenderer } from '../renderers'
@@ -613,22 +612,8 @@ export class IDocToSVGStringConverter {
   }
 
   convertSlideElement(element: SlideElement, ctx: ParseSlideElementContext = {}): string {
-    let width = Number(element.style?.width ?? 0)
-    let height = Number(element.style?.height ?? 0)
-
-    if (element.geometry) {
-      const bbox = new Path2DSet(
-        element.geometry.paths?.map((path) => {
-          const { data, ...style } = path
-          return new Path2D(data, style as any)
-        }),
-      )
-        .getBoundingBox()
-      if (bbox) {
-        width = Math.max(bbox.width, width)
-        height = Math.max(bbox.height, height)
-      }
-    }
+    const width = Number(element.style?.width ?? 0)
+    const height = Number(element.style?.height ?? 0)
 
     const viewBox = {
       x1: 0,
