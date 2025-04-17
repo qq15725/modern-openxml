@@ -64,8 +64,8 @@ export function parseSlide(slide: OOXMLNode, id: string, ctx: any): Slide {
       .filter(Boolean) as SlideElement[],
     meta: {
       id,
-      layoutId: ctx.layout.id,
-      masterId: ctx.master.id,
+      layoutId: ctx.layout.meta.id,
+      masterId: ctx.master.meta.id,
     },
   }
 }

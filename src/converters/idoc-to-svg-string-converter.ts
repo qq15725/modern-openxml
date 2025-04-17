@@ -147,7 +147,7 @@ export class IDocToSVGStringConverter {
         children: [
           {
             tag: 'g',
-            attrs: { title: 'srcRect', ...gAttrs },
+            attrs: { 'data-title': 'srcRect', ...gAttrs },
             children: [
               {
                 tag: 'image',
@@ -166,7 +166,7 @@ export class IDocToSVGStringConverter {
     if (geometryPaths) {
       return {
         tag: 'g',
-        attrs: { title: key },
+        attrs: { 'data-title': key },
         children: geometryPaths.map((path) => {
           return {
             tag: 'use',
@@ -183,7 +183,7 @@ export class IDocToSVGStringConverter {
 
     return {
       tag: 'g',
-      attrs: { title: key },
+      attrs: { 'data-title': key },
       children: [
         {
           tag: 'rect',
@@ -252,7 +252,7 @@ export class IDocToSVGStringConverter {
 
     const container = {
       tag: 'g',
-      attrs: { title: name, transform: transform.join(' '), visibility },
+      attrs: { 'data-title': name, 'transform': transform.join(' '), visibility },
       children: [] as XMLNode[],
     }
 
@@ -393,9 +393,9 @@ export class IDocToSVGStringConverter {
       container.children.push({
         tag: 'g',
         attrs: {
-          title: 'outerShadow',
-          filter: `url(#outerShadow-${uuid})`,
-          transform: `matrix(${matrix.a},${matrix.b},${matrix.c},${matrix.d},${matrix.e},${matrix.f})`,
+          'data-title': 'outerShadow',
+          'filter': `url(#outerShadow-${uuid})`,
+          'transform': `matrix(${matrix.a},${matrix.b},${matrix.c},${matrix.d},${matrix.e},${matrix.f})`,
         },
         children: geometryPaths.map((path) => {
           return {
@@ -411,7 +411,7 @@ export class IDocToSVGStringConverter {
 
     container.children.push({
       tag: 'g',
-      attrs: { title: 'geometry' },
+      attrs: { 'data-title': 'geometry' },
       children: geometryPaths.map((path) => {
         return {
           tag: 'use',
@@ -513,11 +513,6 @@ export class IDocToSVGStringConverter {
 
     const slides = pptx.children
 
-    const {
-      slideMasters,
-      slideLayouts,
-    } = pptx.meta
-
     const viewBoxHeight = height * slides.length
 
     return {
@@ -531,45 +526,11 @@ export class IDocToSVGStringConverter {
       },
       children: slides.flatMap((slide, slideIndex) => {
         const top = height * slideIndex
-        const layout = slideLayouts.find(v => v.meta.id === slide.meta.layoutId)
-        const master = slideMasters.find(v => v.meta.id === layout?.meta.masterId)
         const items: XMLNode[] = []
         const {
           children = [],
           background,
         } = slide
-
-        if (master) {
-          items.push({
-            tag: 'g',
-            attrs: {
-              title: master.name,
-              path: master.meta.id,
-              transform: `translate(0, ${top})`,
-            },
-            children: [
-              master
-                .children
-                .map(child => this.parseSlideElement(child)),
-            ].filter(Boolean) as any[],
-          })
-        }
-
-        if (layout) {
-          items.push({
-            tag: 'g',
-            attrs: {
-              title: layout.name,
-              path: layout.meta.id,
-              transform: `translate(0, ${top})`,
-            },
-            children: [
-              layout
-                .children
-                .map(child => this.parseSlideElement(child)),
-            ].filter(Boolean) as any[],
-          })
-        }
 
         const uuid = this.genUUID()
 
@@ -583,9 +544,9 @@ export class IDocToSVGStringConverter {
         items.push({
           tag: 'g',
           attrs: {
-            title: slide.name,
-            path: slide.meta.id,
-            transform: `translate(0, ${top})`,
+            'data-title': slide.name,
+            'data-path': slide.meta.id,
+            'transform': `translate(0, ${top})`,
           },
           children: [
             defs,
@@ -611,7 +572,7 @@ export class IDocToSVGStringConverter {
     }
   }
 
-  convertSlideElement(element: SlideElement, ctx: ParseSlideElementContext = {}): string {
+  getSlideElementViewBox(element: SlideElement): { x1: number, y1: number, x2: number, y2: number } {
     const width = Number(element.style?.width ?? 0)
     const height = Number(element.style?.height ?? 0)
 
@@ -646,6 +607,11 @@ export class IDocToSVGStringConverter {
       viewBox.x2 = Math.max(oldViewBox.x2, x2) + (diffX > 0 ? 0 : -diffX)
       viewBox.y2 = Math.max(oldViewBox.y2, y2) + (diffY > 0 ? 0 : -diffY)
     }
+    return viewBox
+  }
+
+  convertSlideElement(element: SlideElement, ctx: ParseSlideElementContext = {}): string {
+    const viewBox = this.getSlideElementViewBox(element)
 
     return this.xmlRenderer.render({
       tag: 'svg',

@@ -25,7 +25,7 @@ export function parseSlideLayout(slide: OOXMLNode, id: string, ctx: any): SlideL
       .filter(Boolean) as SlideElement[],
     meta: {
       id,
-      masterId: ctx.master.id,
+      masterId: ctx.master.meta.id,
       colorMap: parseColorMap(slide.find('p:clrMap')),
       ...parseTiming(slide.find('p:timing')),
     },
