@@ -1,3 +1,12 @@
+## [0.1.17](https://github.com/qq15725/modern-openxml/compare/v0.1.16...v0.1.17) (2025-04-17)
+
+
+### Bug Fixes
+
+* slide meta ([eb76bcf](https://github.com/qq15725/modern-openxml/commit/eb76bcf15067affc8a988e829d828b341ba6690c))
+
+
+
 ## [0.1.16](https://github.com/qq15725/modern-openxml/compare/v0.1.15...v0.1.16) (2025-04-17)
 
 
