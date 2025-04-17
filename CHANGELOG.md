@@ -1,3 +1,12 @@
+## [0.1.16](https://github.com/qq15725/modern-openxml/compare/v0.1.15...v0.1.16) (2025-04-17)
+
+
+### Bug Fixes
+
+* svg slideElement viewBox ([326c932](https://github.com/qq15725/modern-openxml/commit/326c932876bc36d950809c87b585076e4fcbe6d3))
+
+
+
 ## [0.1.15](https://github.com/qq15725/modern-openxml/compare/v0.1.14...v0.1.15) (2025-04-17)
 
 
