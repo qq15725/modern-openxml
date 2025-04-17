@@ -1,6 +1,7 @@
 import type { FillDeclaration } from 'modern-idoc'
 import type { PPTXDeclaration, SlideElement } from '../ooxml'
 import type { XMLNode } from '../renderers'
+import { Path2D, Path2DSet } from 'modern-path2d'
 import { measureText } from 'modern-text'
 import { OOXMLValue } from '../ooxml'
 import { XMLRenderer } from '../renderers'
@@ -147,20 +148,11 @@ export class IDocToSVGStringConverter {
         children: [
           {
             tag: 'g',
-            attrs: {
-              title: 'srcRect',
-              ...gAttrs,
-            },
+            attrs: { title: 'srcRect', ...gAttrs },
             children: [
               {
                 tag: 'image',
-                attrs: {
-                  href: src,
-                  width,
-                  height,
-                  opacity,
-                  preserveAspectRatio: 'none',
-                },
+                attrs: { href: src, width, height, opacity, preserveAspectRatio: 'none' },
               },
             ],
           },
@@ -369,8 +361,7 @@ export class IDocToSVGStringConverter {
         x2: width + blurRadius * 2,
         y2: height + blurRadius * 2,
       }
-      const t = height - (height * scaleY)
-      const matrix = { a: scaleX, b: 0, c: 0, d: scaleY, e: offsetX, f: t + offsetY }
+      const matrix = { a: scaleX, b: 0, c: 0, d: scaleY, e: offsetX, f: (height - (height * scaleY)) + offsetY }
 
       defs.children.push({
         tag: 'filter',
@@ -622,17 +613,74 @@ export class IDocToSVGStringConverter {
   }
 
   convertSlideElement(element: SlideElement, ctx: ParseSlideElementContext = {}): string {
+    let width = Number(element.style?.width ?? 0)
+    let height = Number(element.style?.height ?? 0)
+
+    if (element.geometry) {
+      const bbox = new Path2DSet(
+        element.geometry.paths?.map((path) => {
+          const { data, ...style } = path
+          return new Path2D(data, style as any)
+        }),
+      )
+        .getBoundingBox()
+      if (bbox) {
+        width = Math.max(bbox.width, width)
+        height = Math.max(bbox.height, height)
+      }
+    }
+
+    const viewBox = {
+      x1: 0,
+      y1: 0,
+      x2: width,
+      y2: height,
+    }
+
+    if (element.outline) {
+      const borderWidth = element.outline.width ?? 1
+      viewBox.x1 += -borderWidth / 2
+      viewBox.y1 += -borderWidth / 2
+      viewBox.x2 += borderWidth
+      viewBox.y2 += borderWidth
+    }
+
+    if (element.effect?.outerShadow) {
+      const { offsetX = 0, offsetY = 0, scaleX = 1, scaleY = 1, blurRadius = 0 } = element.effect.outerShadow
+      const filter = { x1: viewBox.x1 - blurRadius, y1: viewBox.y1 - blurRadius }
+      const matrix = { e: offsetX, f: (height - (height * scaleY)) + offsetY }
+      const x1 = filter.x1 * scaleX + matrix.e
+      const y1 = filter.y1 * scaleY + matrix.f
+      const x2 = (viewBox.x2 + blurRadius) * scaleX + matrix.e
+      const y2 = (viewBox.y2 + blurRadius) * scaleY + matrix.f
+      const oldViewBox = { ...viewBox }
+      viewBox.x1 = Math.min(oldViewBox.x1, x1)
+      viewBox.y1 = Math.min(oldViewBox.y1, y1)
+      const diffX = viewBox.x1 - oldViewBox.x1
+      const diffY = viewBox.y1 - oldViewBox.y1
+      viewBox.x2 = Math.max(oldViewBox.x2, x2) + (diffX > 0 ? 0 : -diffX)
+      viewBox.y2 = Math.max(oldViewBox.y2, y2) + (diffY > 0 ? 0 : -diffY)
+    }
+
     return this.xmlRenderer.render({
       tag: 'svg',
       attrs: {
         'xmlns': 'http://www.w3.org/2000/svg',
         'xmlns:xlink': 'http://www.w3.org/1999/xlink',
-        'width': element.style.width,
-        'height': element.style.height,
-        'viewBox': `0 0 ${element.style.width} ${element.style.height}`,
+        'width': viewBox.x2 - viewBox.x1,
+        'height': viewBox.y2 - viewBox.y1,
+        'viewBox': `${viewBox.x1} ${viewBox.y1} ${viewBox.x2} ${viewBox.y2}`,
+        'preserveAspectRatio': 'xMidYMid meet',
       },
       children: [
-        this.parseSlideElement(element, ctx),
+        this.parseSlideElement({
+          ...element,
+          style: {
+            ...element.style,
+            left: 0,
+            top: 0,
+          },
+        }, ctx),
       ],
     })
   }
