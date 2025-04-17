@@ -1,3 +1,18 @@
+## [0.1.15](https://github.com/qq15725/modern-openxml/compare/v0.1.14...v0.1.15) (2025-04-17)
+
+
+### Bug Fixes
+
+* svg slideElement viewBox ([19d6cef](https://github.com/qq15725/modern-openxml/commit/19d6cef71c49d0ad5c1f9834b40ec882f79bcd0f))
+
+
+### Features
+
+* shadow svg render ([f439a89](https://github.com/qq15725/modern-openxml/commit/f439a892305b9553c2bb4de6cc0df8ecfe8f4bbc))
+* updep ([734564c](https://github.com/qq15725/modern-openxml/commit/734564cc7205268735ab1de5f1b7fd8b51a3e49d))
+
+
+
 ## [0.1.14](https://github.com/qq15725/modern-openxml/compare/v0.1.13...v0.1.14) (2025-04-15)
 
 
