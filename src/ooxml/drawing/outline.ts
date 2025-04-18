@@ -1,36 +1,27 @@
-import type { OutlineDeclaration, SolidFillDeclaration } from 'modern-idoc'
+import type { LineEndSize, LineEndType, OutlineDeclaration } from 'modern-idoc'
 import type { OOXMLNode } from '../core'
 import { OOXMLValue } from '../core'
 import { withAttr, withAttrs, withIndents } from '../utils'
 import { stringifyColor } from './color'
 import { fillXPath, parseFill } from './fill'
 
-export interface LineEnd {
-  headEnd?: LineEndType
-  tailEnd?: LineEndType
-}
-
-export enum LineEndType {
-  NONE = 'none',
-  OVAL = 'oval',
-  STEALTH = 'stealth',
-  TRIANGLE = 'triangle',
-  ARROW = 'arrow',
-  DIAMOND = 'diamond',
-}
-
-export enum DashType {
-  SOLID = 'solid',
-  SYS_DOT = 'sysDot',
-  SYS_DASH = 'sysDash',
-  DASH = 'dash',
-  DASH_DOT = 'dashDot',
-  LG_DASH = 'lgDash',
-  LG_DASH_DOT = 'lgDashDot',
-  LG_DASH_DOT_DOT = 'lgDashDotDot',
-}
+export type PrstDashType =
+  | 'solid'
+  | 'sysDot'
+  | 'sysDash'
+  | 'dash'
+  | 'dashDot'
+  | 'lgDash'
+  | 'lgDashDot'
+  | 'lgDashDotDot'
 
 // a:ln
+//
+// a:bevel
+// a:custDash
+// a:extLst
+// a:miter
+// a:round
 export function parseOutline(node?: OOXMLNode, ctx?: any): OutlineDeclaration | undefined {
   if (node && node.name !== 'a:ln') {
     node = node.find('.//a:ln')
@@ -40,35 +31,54 @@ export function parseOutline(node?: OOXMLNode, ctx?: any): OutlineDeclaration | 
     return undefined
 
   const query = ctx?.query ?? node.query
-  const prstDash = node.attr('a:prstDash/@val') as DashType
-  const fill = parseFill(query(fillXPath), ctx) as SolidFillDeclaration
-  const style = prstDash
-    ? prstDash !== DashType.SOLID ? 'dashed' : 'solid'
-    : undefined
+  const prstDash = node.attr<PrstDashType>('a:prstDash/@val')
+  const _headEnd = node.find('a:headEnd')
+  const _tailEnd = node.find('a:tailEnd')
+
+  function toWH(val?: 'sm' | 'med' | 'lg'): LineEndSize | undefined {
+    return val === 'med' ? 'md' : val
+  }
+
   return {
-    style,
+    style: prstDash
+      ? prstDash !== 'solid' ? 'dashed' : 'solid'
+      : undefined,
     width: node.attr<number>('@w', 'ST_LineWidth'),
-    color: fill?.color,
+    color: parseFill(query(fillXPath), ctx)?.color,
+    headEnd: _headEnd
+      ? {
+          type: _headEnd.attr<LineEndType>('@type')!,
+          width: toWH(_headEnd.attr<'sm' | 'med' | 'lg'>('@w', 'ST_LineEndWidth')),
+          height: toWH(_headEnd.attr<'sm' | 'med' | 'lg'>('@len', 'ST_LineEndLength')),
+        }
+      : undefined,
+    tailEnd: _tailEnd
+      ? {
+          type: _tailEnd.attr<LineEndType>('@type')!,
+          width: toWH(_tailEnd.attr<'sm' | 'med' | 'lg'>('@w', 'ST_LineEndWidth')),
+          height: toWH(_tailEnd.attr<'sm' | 'med' | 'lg'>('@len', 'ST_LineEndLength')),
+        }
+      : undefined,
   }
 }
 
 // function stringifyStrokeDashArray(dashType: DashType, width = 0.5): string {
 //   switch (dashType) {
-//     case DashType.SYS_DOT:
+//     case 'sysDot':
 //       return `${width},${width}`
-//     case DashType.SYS_DASH:
+//     case 'sysDash':
 //       return `${width * 3},${width}`
-//     case DashType.DASH:
+//     case 'dash':
 //       return `${width * 4},${width * 3}`
-//     case DashType.DASH_DOT:
+//     case 'dashDot':
 //       return `${width * 4},${width * 3},${width},${width * 3}`
-//     case DashType.LG_DASH:
+//     case 'lgDash':
 //       return `${width * 8},${width * 3}`
-//     case DashType.LG_DASH_DOT:
+//     case 'lgDashDot':
 //       return `${width * 8},${width * 3},${width},${width * 3}`
-//     case DashType.LG_DASH_DOT_DOT:
+//     case 'lgDashDotDot':
 //       return `${width * 8},${width * 3},${width},${width * 3},${width},${width * 3}`
-//     case DashType.SOLID:
+//     case 'solid':
 //     default:
 //       return ''
 //   }
@@ -77,27 +87,16 @@ export function parseOutline(node?: OOXMLNode, ctx?: any): OutlineDeclaration | 
 // function stringifyBorderPrstDash(dataArray?: string, borderWidth = 0.5): string {
 //   return dataArray
 //     ? [
-//         DashType.DASH,
-//         DashType.DASH_DOT,
-//         DashType.LG_DASH,
-//         DashType.LG_DASH_DOT,
-//         DashType.LG_DASH_DOT_DOT,
-//         DashType.SOLID,
-//         DashType.SYS_DASH,
-//         DashType.SYS_DOT,
-//       ].find(item => stringifyStrokeDashArray(item, borderWidth) === dataArray) ?? DashType.DASH
-//     : DashType.SOLID
-// }
-
-// export function parseLineEnd(ln?: OOXMLNode): LineEnd | undefined {
-//   if (!ln)
-//     return undefined
-//   const headEnd = (ln.attr('a:headEnd/@type') as LineEndType) ?? LineEndType.NONE
-//   const tailEnd = (ln.attr('a:tailEnd/@type') as LineEndType) ?? LineEndType.NONE
-//   return {
-//     headEnd,
-//     tailEnd,
-//   }
+//         'dash',
+//         'dashDot',
+//         'lgDash',
+//         'lgDashDot',
+//         'lgDashDotDot',
+//         'solid',
+//         'sysDash',
+//         'sysDot',
+//       ].find(item => stringifyStrokeDashArray(item, borderWidth) === dataArray) ?? 'dash'
+//     : 'solid'
 // }
 
 export function stringifyOutline(ln?: OutlineDeclaration): string | undefined {

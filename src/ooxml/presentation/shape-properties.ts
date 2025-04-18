@@ -65,11 +65,8 @@ export function parseShapeProperties(spPr?: OOXMLNode, ctx?: any): ShapeProperti
 
   const geometry = parseGeometry(query('*[(self::a:prstGeom or self::a:custGeom)]'), {
     ...ctx,
-    width: xfrm?.style?.width || outline.width || 1,
-    height: xfrm?.style?.height || outline.width || 1,
-    fill: fill.color,
-    stroke: outline.color,
-    strokeWidth: outline.width,
+    width: xfrm?.style?.width ?? 0,
+    height: xfrm?.style?.height ?? 0,
   })
 
   return {

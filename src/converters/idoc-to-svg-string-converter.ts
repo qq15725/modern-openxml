@@ -1,4 +1,4 @@
-import type { FillDeclaration } from 'modern-idoc'
+import type { FillDeclaration, LineEndSize } from 'modern-idoc'
 import type { PPTXDeclaration, SlideElement } from '../ooxml'
 import type { XMLNode } from '../renderers'
 import { measureText } from 'modern-text'
@@ -87,14 +87,7 @@ export class IDocToSVGStringConverter {
         }) ?? []
       defs.children?.push({
         tag: 'radialGradient',
-        attrs: {
-          id,
-          cx: '50%',
-          cy: '50%',
-          r: '50%',
-          fx: '50%',
-          fy: '50%',
-        },
+        attrs: { id, cx: '50%', cy: '50%', r: '50%', fx: '50%', fy: '50%' },
         children: colorStops,
       })
       return `url(#${id})`
@@ -123,7 +116,7 @@ export class IDocToSVGStringConverter {
       // TODO stretch
       const { src, srcRect, opacity = 1 } = fill
 
-      const gAttrs: Record<string, any> = {}
+      const srcRectAttrs: Record<string, any> = {}
 
       if (srcRect) {
         const { left = 0, top = 0, bottom = 0, right = 0 } = srcRect
@@ -131,8 +124,8 @@ export class IDocToSVGStringConverter {
         const srcHeight = height / (1 - top - bottom)
         const tx = ((right - left) / 2) * srcWidth
         const ty = ((bottom - top) / 2) * srcHeight
-        gAttrs['src-rect'] = JSON.stringify(srcRect).replace(/"/g, '\'')
-        gAttrs.transform = [
+        srcRectAttrs['src-rect'] = JSON.stringify(srcRect).replace(/"/g, '\'')
+        srcRectAttrs.transform = [
           `translate(${tx},${ty})`,
           `translate(${width / 2},${height / 2})`,
           `scale(${srcWidth / width}, ${srcHeight / height})`,
@@ -147,7 +140,7 @@ export class IDocToSVGStringConverter {
         children: [
           {
             tag: 'g',
-            attrs: { 'data-title': 'srcRect', ...gAttrs },
+            attrs: { 'data-title': 'srcRect', ...srcRectAttrs },
             children: [
               {
                 tag: 'image',
@@ -191,6 +184,83 @@ export class IDocToSVGStringConverter {
         },
       ],
     }
+  }
+
+  parseMarker(lineEnd: any, stroke: any, strokeWidth: number): XMLNode {
+    const le1px = strokeWidth <= 1
+
+    const marker = {
+      tag: 'marker',
+      attrs: {
+        'data-title': lineEnd.type,
+        'viewBox': '0 0 10 10',
+        'refX': lineEnd.type === 'arrow' ? 5 - 1 : 5,
+        'refY': 5,
+        'markerWidth': le1px ? 5 : 3,
+        'markerHeight': le1px ? 5 : 3,
+        'orient': 'auto-start-reverse',
+      },
+      children: [] as XMLNode[],
+    }
+
+    switch (lineEnd.type) {
+      case 'oval':
+        marker.children.push({
+          tag: 'circle',
+          attrs: { cx: 5, cy: 5, r: 5, fill: stroke },
+        })
+        break
+      case 'stealth':
+        marker.children.push({
+          tag: 'path',
+          attrs: { d: 'M 0 0 L 10 5 L 0 10 L 3 5', fill: stroke },
+        })
+        break
+      case 'triangle':
+        marker.children.push({
+          tag: 'path',
+          attrs: { d: 'M 0 0 L 10 5 L 0 10', fill: stroke },
+        })
+        break
+      case 'arrow':
+        marker.children.push({
+          tag: 'polyline',
+          attrs: {
+            'points': '1 1 5 5 1 9',
+            'stroke-linejoin': 'miter',
+            'stroke-linecap': 'round',
+            'stroke': stroke,
+            'stroke-width': 1.5,
+            'fill': 'none',
+          },
+        })
+        marker.attrs.markerWidth = le1px ? 8 : 4
+        marker.attrs.markerHeight = le1px ? 8 : 4
+        break
+      case 'diamond':
+        marker.children.push({
+          tag: 'path',
+          attrs: { d: 'M 5 0 L 10 5 L 5 10 L 0 5 Z', fill: stroke },
+        })
+        break
+    }
+
+    function toScale(size?: LineEndSize): number {
+      switch (size) {
+        case 'sm':
+          return 0.8
+        case 'lg':
+          return 1.6
+        case 'md':
+        default:
+          return 1
+      }
+    }
+
+    marker.attrs.markerWidth *= toScale(lineEnd.width)
+    marker.attrs.markerHeight *= toScale(lineEnd.height)
+
+    return marker
   }
 
   parseSlideElement(el: SlideElement, ctx: ParseSlideElementContext = {}): XMLNode {
@@ -263,12 +333,12 @@ export class IDocToSVGStringConverter {
 
     const colorMap = new Map<string, string>()
 
-    const geometryPaths = geometry?.paths
+    const geometryPaths: XMLNode[] = geometry?.paths
       ? geometry.paths.map((path, idx) => {
           return {
             tag: 'path',
             attrs: {
-              'title': geometry.name,
+              'data-title': geometry.name,
               'id': `geometry-${idx}-${uuid}`,
               'd': path.data,
               'fill': path.fill,
@@ -283,7 +353,7 @@ export class IDocToSVGStringConverter {
             attrs: { id: `geometry-${0}-${uuid}`, width, height },
           },
         ]
-    defs.children?.push(...geometryPaths)
+    defs.children.push(...geometryPaths)
 
     const geometryPathsAttrs: Record<string, any> = {
       fill: 'none',
@@ -302,22 +372,32 @@ export class IDocToSVGStringConverter {
       })
     }
 
-    if (outline?.src) {
-      defs.children?.push({
-        tag: 'pattern',
-        attrs: { id: `outline-${uuid}`, left: 0, top: 0, width: '100%', height: '100%' },
-        children: [
-          { tag: 'image', attrs: { href: outline.src, width, height, preserveAspectRatio: 'none' } },
-        ],
-      })
-      geometryPathsAttrs.stroke = `url(#outline-${uuid})`
-    }
-    else if (outline?.color) {
-      geometryPathsAttrs.stroke = this.parseColor(outline.color as any, { defs, uuid, colorMap })
+    if (outline) {
+      const { color, headEnd, tailEnd } = outline
+
+      geometryPathsAttrs['stroke-width'] = outline.width || 1
+
+      if (color) {
+        geometryPathsAttrs.stroke = this.parseColor(color as any, { defs, uuid, colorMap })
+      }
+
+      if (headEnd) {
+        const marker = this.parseMarker(headEnd, geometryPathsAttrs.stroke, geometryPathsAttrs['stroke-width'])
+        marker.attrs!.id = `headEnd-${uuid}`
+        defs.children.push(marker)
+        geometryPathsAttrs['marker-start'] = `url(#${marker.attrs!.id!})`
+      }
+
+      if (tailEnd) {
+        const marker = this.parseMarker(tailEnd, geometryPathsAttrs.stroke, geometryPathsAttrs['stroke-width'])
+        marker.attrs!.id = `tailEnd-${uuid}`
+        defs.children.push(marker)
+        geometryPathsAttrs['marker-end'] = `url(#${marker.attrs!.id!})`
+      }
     }
 
     if (softEdge) {
-      defs.children?.push({
+      defs.children.push({
         tag: 'filter',
         attrs: { id: `soft-edge-${uuid}` },
         children: [
@@ -343,6 +423,23 @@ export class IDocToSVGStringConverter {
         colorMap,
       }))
     }
+
+    const geometryChildren = geometryPaths.map((path) => {
+      const { ...attrs } = geometryPathsAttrs
+
+      if (path.attrs!.stroke === 'none') {
+        delete attrs['marker-start']
+        delete attrs['marker-end']
+      }
+
+      return {
+        tag: 'use',
+        attrs: {
+          'xlink:href': `#${path.attrs!.id}`,
+          ...attrs,
+        },
+      }
+    })
 
     if (outerShadow) {
       const {
@@ -397,30 +494,14 @@ export class IDocToSVGStringConverter {
           'filter': `url(#outerShadow-${uuid})`,
           'transform': `matrix(${matrix.a},${matrix.b},${matrix.c},${matrix.d},${matrix.e},${matrix.f})`,
         },
-        children: geometryPaths.map((path) => {
-          return {
-            tag: 'use',
-            attrs: {
-              'xlink:href': `#${path.attrs.id}`,
-              ...geometryPathsAttrs,
-            },
-          }
-        }),
+        children: geometryChildren,
       })
     }
 
     container.children.push({
       tag: 'g',
       attrs: { 'data-title': 'geometry' },
-      children: geometryPaths.map((path) => {
-        return {
-          tag: 'use',
-          attrs: {
-            'xlink:href': `#${path.attrs.id}`,
-            ...geometryPathsAttrs,
-          },
-        }
-      }),
+      children: geometryChildren,
     })
 
     if (foreground) {

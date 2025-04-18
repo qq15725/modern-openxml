@@ -94,9 +94,6 @@ type GeometryPathCommand =
 interface GeometryContext {
   width: number
   height: number
-  fill?: string
-  stroke?: string
-  strokeWidth?: number
   avLst?: OOXMLNode
   gdLst?: OOXMLNode
   pathLst?: OOXMLNode
@@ -106,7 +103,6 @@ interface GeometryPath {
   commands: GeometryPathCommand[]
   fill?: string
   stroke?: string
-  strokeWidth?: number
 }
 
 function parseVariables(
@@ -266,7 +262,6 @@ function getPaths(ctx: GeometryContext): GeometryPath[] {
     pathLst,
     avLst = [],
     gdLst = [],
-    strokeWidth,
   } = ctx
 
   const prestVars = [...(avLst as any[]), ...(gdLst as any[])].reduce(
@@ -405,7 +400,6 @@ function getPaths(ctx: GeometryContext): GeometryPath[] {
     return {
       fill: needsFill ? undefined : 'none',
       stroke: needsStroke ? undefined : 'none',
-      strokeWidth,
       commands,
     }
   }) ?? []

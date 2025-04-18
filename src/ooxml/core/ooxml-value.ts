@@ -14,6 +14,8 @@ export type OOXMLValueType =
   | 'string'
   | 'HexBinaryValue'
   | 'StringValue'
+  | 'ST_LineEndLength'
+  | 'ST_LineEndWidth'
   | 'emu'
   | 'ST_PositiveCoordinate'
   | 'ST_LineWidth'
@@ -85,6 +87,8 @@ export class OOXMLValue {
       case 'string':
       case 'HexBinaryValue':
       case 'StringValue':
+      case 'ST_LineEndLength':
+      case 'ST_LineEndWidth':
         return String(value)
       case 'emu':
       case 'ST_PositiveCoordinate':
