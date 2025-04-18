@@ -194,7 +194,7 @@ export class IDocToSVGStringConverter {
       attrs: {
         'data-title': lineEnd.type,
         'viewBox': '0 0 10 10',
-        'refX': lineEnd.type === 'arrow' ? 5 - 1 : 5,
+        'refX': 5,
         'refY': 5,
         'markerWidth': le1px ? 5 : 3,
         'markerHeight': le1px ? 5 : 3,
@@ -309,16 +309,6 @@ export class IDocToSVGStringConverter {
     if (left !== 0 || top !== 0) {
       transform.push(`translate(${left}, ${top})`)
     }
-    if (scaleX !== 1 || scaleY !== 1 || rotate !== 0) {
-      const cx = width / 2
-      const cy = height / 2
-      transform.push(`translate(${cx}, ${cy})`)
-      if (rotate !== 0) {
-        transform.push(`rotate(${rotate})`)
-      }
-      transform.push(`scale(${scaleX}, ${scaleY})`)
-      transform.push(`translate(${-cx}, ${-cy})`)
-    }
 
     const container = {
       tag: 'g',
@@ -326,8 +316,26 @@ export class IDocToSVGStringConverter {
       children: [] as XMLNode[],
     }
 
+    const shapeTransform: string[] = []
+    if (scaleX !== 1 || scaleY !== 1 || rotate !== 0) {
+      const cx = width / 2
+      const cy = height / 2
+      shapeTransform.push(`translate(${cx}, ${cy})`)
+      if (rotate !== 0) {
+        shapeTransform.push(`rotate(${rotate})`)
+      }
+      shapeTransform.push(`scale(${scaleX}, ${scaleY})`)
+      shapeTransform.push(`translate(${-cx}, ${-cy})`)
+    }
+
     const defs = {
       tag: 'defs',
+      children: [] as XMLNode[],
+    }
+
+    const shapeContainer = {
+      tag: 'g',
+      attrs: { 'data-title': 'shape', 'transform': shapeTransform.join(' '), visibility },
       children: [] as XMLNode[],
     }
 
@@ -355,7 +363,7 @@ export class IDocToSVGStringConverter {
         ]
     defs.children.push(...geometryPaths)
 
-    const geometryPathsAttrs: Record<string, any> = {
+    const geometryAttrs: Record<string, any> = {
       fill: 'none',
       stroke: 'none',
     }
@@ -363,7 +371,7 @@ export class IDocToSVGStringConverter {
     if (fill) {
       this.parseFill(fill, {
         key: 'fill',
-        attrs: geometryPathsAttrs,
+        attrs: geometryAttrs,
         width,
         height,
         defs,
@@ -375,24 +383,24 @@ export class IDocToSVGStringConverter {
     if (outline) {
       const { color, headEnd, tailEnd } = outline
 
-      geometryPathsAttrs['stroke-width'] = outline.width || 1
+      geometryAttrs['stroke-width'] = outline.width || 1
 
       if (color) {
-        geometryPathsAttrs.stroke = this.parseColor(color as any, { defs, uuid, colorMap })
+        geometryAttrs.stroke = this.parseColor(color as any, { defs, uuid, colorMap })
       }
 
       if (headEnd) {
-        const marker = this.parseMarker(headEnd, geometryPathsAttrs.stroke, geometryPathsAttrs['stroke-width'])
+        const marker = this.parseMarker(headEnd, geometryAttrs.stroke, geometryAttrs['stroke-width'])
         marker.attrs!.id = `headEnd-${uuid}`
         defs.children.push(marker)
-        geometryPathsAttrs['marker-start'] = `url(#${marker.attrs!.id!})`
+        geometryAttrs['marker-start'] = `url(#${marker.attrs!.id!})`
       }
 
       if (tailEnd) {
-        const marker = this.parseMarker(tailEnd, geometryPathsAttrs.stroke, geometryPathsAttrs['stroke-width'])
+        const marker = this.parseMarker(tailEnd, geometryAttrs.stroke, geometryAttrs['stroke-width'])
         marker.attrs!.id = `tailEnd-${uuid}`
         defs.children.push(marker)
-        geometryPathsAttrs['marker-end'] = `url(#${marker.attrs!.id!})`
+        geometryAttrs['marker-end'] = `url(#${marker.attrs!.id!})`
       }
     }
 
@@ -407,14 +415,12 @@ export class IDocToSVGStringConverter {
           },
         ],
       })
-      geometryPathsAttrs.filter = `url(#soft-edge-${uuid})`
-      geometryPathsAttrs.transform = `matrix(0.8,0,0,0.8,${width * 0.1},${height * 0.1})`
+      geometryAttrs.filter = `url(#soft-edge-${uuid})`
+      geometryAttrs.transform = `matrix(0.8,0,0,0.8,${width * 0.1},${height * 0.1})`
     }
 
-    container.children.push(defs)
-
     if (background) {
-      container.children.push(this.parseFill(background, {
+      shapeContainer.children.push(this.parseFill(background, {
         key: 'background',
         width,
         height,
@@ -424,8 +430,8 @@ export class IDocToSVGStringConverter {
       }))
     }
 
-    const geometryChildren = geometryPaths.map((path) => {
-      const { ...attrs } = geometryPathsAttrs
+    const geometryNodes = geometryPaths.map((path) => {
+      const { ...attrs } = geometryAttrs
 
       if (path.attrs!.stroke === 'none') {
         delete attrs['marker-start']
@@ -487,25 +493,21 @@ export class IDocToSVGStringConverter {
         ],
       })
 
-      container.children.push({
+      shapeContainer.children.push({
         tag: 'g',
         attrs: {
           'data-title': 'outerShadow',
           'filter': `url(#outerShadow-${uuid})`,
           'transform': `matrix(${matrix.a},${matrix.b},${matrix.c},${matrix.d},${matrix.e},${matrix.f})`,
         },
-        children: geometryChildren,
+        children: geometryNodes,
       })
     }
 
-    container.children.push({
-      tag: 'g',
-      attrs: { 'data-title': 'geometry' },
-      children: geometryChildren,
-    })
+    shapeContainer.children.push(...geometryNodes)
 
     if (foreground) {
-      container.children.push(this.parseFill(foreground, {
+      shapeContainer.children.push(this.parseFill(foreground, {
         key: 'foreground',
         width,
         height,
@@ -514,6 +516,14 @@ export class IDocToSVGStringConverter {
         colorMap,
         geometryPaths,
       }))
+    }
+
+    if (defs.children.length) {
+      container.children.push(defs)
+    }
+
+    if (shapeContainer.children.length) {
+      container.children.push(shapeContainer)
     }
 
     if (text) {
@@ -530,46 +540,64 @@ export class IDocToSVGStringConverter {
         },
       } as any)
 
-      container.children!.push(
-        ...measured.paragraphs.flatMap((paragraph) => {
-          if (!paragraph.fragments.flatMap(f => f.characters.map(c => c.content)).join('')) {
-            return []
-          }
-          const { computedStyle: pStyle } = paragraph
-          return paragraph.fragments
-            .map((f) => {
-              const { computedStyle: rStyle } = f
-              return {
-                tag: 'text',
-                attrs: {
-                  'fill': this.parseColor(rStyle.color as any, { defs, uuid, colorMap }),
-                  'font-size': rStyle.fontSize,
-                  'font-family': rStyle.fontFamily,
-                  'letter-spacing': rStyle.letterSpacing,
-                  'font-weight': rStyle.fontWeight,
-                  'font-style': rStyle.fontStyle,
-                  'text-transform': rStyle.textTransform,
-                  'text-decoration': rStyle.textDecoration,
-                  'dominant-baseline': 'middle',
-                  'style': {
-                    'text-indent': pStyle.textIndent,
-                  },
+      const textNodes = measured.paragraphs.flatMap((paragraph) => {
+        if (!paragraph.fragments.flatMap(f => f.characters.map(c => c.content)).join('')) {
+          return []
+        }
+        const { computedStyle: pStyle } = paragraph
+        return paragraph.fragments
+          .map((f) => {
+            const { computedStyle: rStyle } = f
+            return {
+              tag: 'text',
+              attrs: {
+                'fill': this.parseColor(rStyle.color as any, { defs, uuid, colorMap }),
+                'font-size': rStyle.fontSize,
+                'font-family': rStyle.fontFamily,
+                'letter-spacing': rStyle.letterSpacing,
+                'font-weight': rStyle.fontWeight,
+                'font-style': rStyle.fontStyle,
+                'text-transform': rStyle.textTransform,
+                'text-decoration': rStyle.textDecoration,
+                'dominant-baseline': 'hanging',
+                'style': {
+                  'text-indent': pStyle.textIndent,
                 },
-                children: f.characters.map((c) => {
-                  const { inlineBox, content } = c
-                  return {
-                    tag: 'tspan',
-                    attrs: {
-                      x: inlineBox.left,
-                      y: inlineBox.top + inlineBox.height / 2,
-                    },
-                    children: [content],
-                  }
-                }),
-              }
-            })
-        }),
-      )
+              },
+              children: f.characters.filter(c => c.content).map((c) => {
+                const { lineBox, content } = c
+                return {
+                  tag: 'tspan',
+                  attrs: {
+                    x: lineBox.left,
+                    y: lineBox.top,
+                  },
+                  children: [content],
+                }
+              }),
+            }
+          })
+          .filter(v => v.children.length)
+      })
+
+      if (textNodes.length) {
+        const textTransform: string[] = []
+        if (rotate !== 0) {
+          const cx = width / 2
+          const cy = height / 2
+          textTransform.push(`translate(${cx}, ${cy})`)
+          if (rotate !== 0) {
+            textTransform.push(`rotate(${rotate})`)
+          }
+          textTransform.push(`translate(${-cx}, ${-cy})`)
+        }
+
+        container.children!.push({
+          tag: 'g',
+          attrs: { 'data-title': 'text', 'transform': textTransform.join(' ') },
+          children: textNodes,
+        })
+      }
     }
 
     if (children) {

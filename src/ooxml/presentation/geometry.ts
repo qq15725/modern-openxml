@@ -166,7 +166,7 @@ function parseVariables(
       return parse(after[1])
     }
 
-    const [cmd, ...args] = variable.split(' ')
+    const [cmd, ...args] = variable.split(' ').filter(v => v !== '')
 
     let res: number
     if (cmd === '*/') {
