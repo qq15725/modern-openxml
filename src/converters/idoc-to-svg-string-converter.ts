@@ -559,18 +559,19 @@ export class IDocToSVGStringConverter {
                 'font-style': rStyle.fontStyle,
                 'text-transform': rStyle.textTransform,
                 'text-decoration': rStyle.textDecoration,
-                'dominant-baseline': 'hanging',
+                'dominant-baseline': 'alphabetic',
                 'style': {
                   'text-indent': pStyle.textIndent,
                 },
               },
               children: f.characters.filter(c => c.content).map((c) => {
-                const { lineBox, content } = c
+                const { inlineBox, content, fontSize } = c
+                // TODO glyphBox
                 return {
                   tag: 'tspan',
                   attrs: {
-                    x: lineBox.left,
-                    y: lineBox.top,
+                    x: inlineBox.left,
+                    y: inlineBox.top + fontSize * 1.15,
                   },
                   children: [content],
                 }
