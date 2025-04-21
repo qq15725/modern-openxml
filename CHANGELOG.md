@@ -1,3 +1,12 @@
+## [0.1.19](https://github.com/qq15725/modern-openxml/compare/v0.1.18...v0.1.19) (2025-04-21)
+
+
+### Bug Fixes
+
+* text layout ([52f9ca7](https://github.com/qq15725/modern-openxml/commit/52f9ca76c4ded85aecdc236af03f63ed8de2969f))
+
+
+
 ## [0.1.18](https://github.com/qq15725/modern-openxml/compare/v0.1.17...v0.1.18) (2025-04-21)
 
 
