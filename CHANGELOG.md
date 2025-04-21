@@ -1,3 +1,19 @@
+## [0.1.18](https://github.com/qq15725/modern-openxml/compare/v0.1.17...v0.1.18) (2025-04-21)
+
+
+### Bug Fixes
+
+* geometry variable parse / SVG render text position ([868bcf2](https://github.com/qq15725/modern-openxml/commit/868bcf2e973c7f3f6fdea854a2cb95a4aa470a8f))
+* lineEnd ([037edbd](https://github.com/qq15725/modern-openxml/commit/037edbdb96a9c6e51d7596c81f6cd0fa16d49c42))
+* text position ([f860664](https://github.com/qq15725/modern-openxml/commit/f86066495c58ff8763d11de78a1a78e977fa0d67))
+
+
+### Features
+
+* SlideElement to SVG onViewBox ([913c32c](https://github.com/qq15725/modern-openxml/commit/913c32cfe208fc1a068cef5760dc181d42708131))
+
+
+
 ## [0.1.17](https://github.com/qq15725/modern-openxml/compare/v0.1.16...v0.1.17) (2025-04-17)
 
 
