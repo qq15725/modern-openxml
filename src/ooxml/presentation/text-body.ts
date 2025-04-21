@@ -1,4 +1,5 @@
 import type {
+  FragmentContent,
   SolidFillDeclaration,
   StyleDeclaration,
   TextAlign,
@@ -90,66 +91,88 @@ export function parseTextBody(txBody?: OOXMLNode, ctx?: Record<string, any>): Te
           return pPrList.reduce((res, pPr) => res ?? pPr()?.query(path, type), undefined)
         }
 
+        function parseStyle(r?: OOXMLNode): Record<string, any> {
+          const queryRPr = <T>(path: string, type?: OOXMLQueryType): T | undefined => {
+            return (
+              r?.query(`a:rPr/${path}`, type)
+              ?? queryPPr(`a:defRPr/${path}`, type)
+            ) as T
+          }
+          const fill = parseFill(queryRPr(fillXPath), ctx) as SolidFillDeclaration | undefined
+          const outline = parseOutline(queryRPr('a:ln'), ctx)
+
+          let fontFamily = queryRPr<string>('*[self::a:cs or self::a:ea or self::a:latin or self::a:sym]/@typeface', 'StringValue')
+          if (fontFamily) {
+            const fontScheme = ctx?.theme?.fontScheme
+            const type = fontFamily.startsWith('+mn-')
+              ? 'minor'
+              : fontFamily.startsWith('+mj-')
+                ? 'major'
+                : undefined
+            if (fontScheme && type) {
+              switch (fontFamily.substring(4)) {
+                case 'lt':
+                  fontFamily = fontScheme[type]?.latin
+                  break
+                case 'ea':
+                  fontFamily = fontScheme[type]?.eastasian
+                  break
+                case 'cs':
+                  fontFamily = fontScheme[type]?.complexScript
+                  break
+              }
+            }
+          }
+
+          return {
+            fontWeight: queryRPr('@b', 'boolean') ? 700 : undefined,
+            fontStyle: queryRPr('@i', 'boolean') ? 'italic' : undefined,
+            fontFamily,
+            textTransform: toTextTransform(queryRPr('@cap', 'string')),
+            textDecoration: toTextDecoration(queryRPr('@u', 'string')),
+            fontSize: queryRPr('@sz', 'fontSize'),
+            letterSpacing: queryRPr('@spc', 'fontSize'),
+            lineHeight: queryRPr('a:lnSpc/a:spcPct/@val', 'ST_TextSpacingPercentOrPercentString'),
+            color: fill?.color,
+            outline,
+          }
+        }
+
+        let hasROrBr = false
+        const fragments = p
+          .get('*')
+          .map((r) => {
+            switch (r.name) {
+              case 'a:r': {
+                hasROrBr = true
+                return {
+                  ...parseStyle(r),
+                  content: r.attr('a:t/text()', 'string')!,
+                }
+              }
+              case 'a:br':
+                hasROrBr = true
+                return {
+                  ...parseStyle(r),
+                  content: '\n ', // TODO
+                }
+              case 'a:endParaRPr':
+                return hasROrBr
+                  ? undefined
+                  : { ...parseStyle(r), content: '\n ' } // TODO
+              default:
+                return undefined
+            }
+          })
+          .filter(Boolean) as FragmentContent[]
+
         return {
           marginLeft: queryPPr('@marL', 'emu'),
           marginRight: queryPPr('@marR', 'emu'),
           textIndent: queryPPr('@indent', 'emu'),
           lineHeight: queryPPr('a:lnSpc/a:spcPct/@val', 'ST_TextSpacingPercentOrPercentString'),
           textAlign: toTextAlign(queryPPr('@algn', 'string')),
-          fragments: p.get('*').map((r) => {
-            if (r.name === 'a:r') {
-              const queryRPr = <T>(path: string, type?: OOXMLQueryType): T | undefined => {
-                return (
-                  r.query(`a:rPr/${path}`, type)
-                  ?? queryPPr(`a:defRPr/${path}`, type)
-                ) as T
-              }
-              const fill = parseFill(queryRPr(fillXPath), ctx) as SolidFillDeclaration | undefined
-              const outline = parseOutline(queryRPr('a:ln'), ctx)
-
-              let fontFamily = queryRPr<string>('*[self::a:cs or self::a:ea or self::a:latin or self::a:sym]/@typeface', 'StringValue')
-              if (fontFamily) {
-                const fontScheme = ctx?.theme?.fontScheme
-                let type: string | undefined
-                if (fontFamily.startsWith('+mn-')) {
-                  type = 'minor'
-                }
-                else if (fontFamily.startsWith('+mj-')) {
-                  type = 'major'
-                }
-                if (fontScheme && type) {
-                  switch (fontFamily.substring(4)) {
-                    case 'lt':
-                      fontFamily = fontScheme[type]?.latin
-                      break
-                    case 'ea':
-                      fontFamily = fontScheme[type]?.eastasian
-                      break
-                    case 'cs':
-                      fontFamily = fontScheme[type]?.complexScript
-                      break
-                  }
-                }
-              }
-
-              return {
-                fontWeight: queryRPr('@b', 'boolean') ? 700 : undefined,
-                fontStyle: queryRPr('@i', 'boolean') ? 'italic' : undefined,
-                fontFamily,
-                textTransform: toTextTransform(queryRPr('@cap', 'string')),
-                textDecoration: toTextDecoration(queryRPr('@u', 'string')),
-                fontSize: queryRPr('@sz', 'fontSize'),
-                letterSpacing: queryRPr('@spc', 'fontSize'),
-                lineHeight: queryRPr('a:lnSpc/a:spcPct/@val', 'ST_TextSpacingPercentOrPercentString'),
-                color: fill?.color,
-                outline,
-                content: r.attr('a:t/text()', 'string')!,
-              }
-            }
-            return {
-              content: '',
-            }
-          }),
+          fragments,
         }
       }) ?? [],
     },

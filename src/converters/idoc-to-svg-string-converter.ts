@@ -535,13 +535,35 @@ export class IDocToSVGStringConverter {
     }
 
     if (text) {
+      const paddingX = 0.25 * OOXMLValue.DPI / 2.54
+      const paddingY = 0.13 * OOXMLValue.DPI / 2.54
+      const content = text.content.map((p) => {
+        let pFontSize = 0
+        const fragments = p.fragments.map((f) => {
+          pFontSize = Math.max(pFontSize, f.fontSize ?? 0)
+          return {
+            ...f,
+            lineHeight: f.lineHeight && f.fontSize
+              ? ((f.lineHeight * f.fontSize) + paddingY) / f.fontSize
+              : f.lineHeight,
+          }
+        })
+        return {
+          ...p,
+          fragments,
+          lineHeight: p.lineHeight && pFontSize
+            ? ((p.lineHeight * pFontSize) + paddingY) / pFontSize
+            : p.lineHeight,
+        }
+      })
       const measured = measureText({
         ...text,
+        content,
         style: {
-          paddingLeft: 0.25 * OOXMLValue.DPI / 2.54,
-          paddingRight: 0.25 * OOXMLValue.DPI / 2.54,
-          paddingTop: 0.13 * OOXMLValue.DPI / 2.54,
-          paddingBottom: 0.13 * OOXMLValue.DPI / 2.54,
+          paddingLeft: paddingX,
+          paddingRight: paddingX,
+          paddingTop: paddingY,
+          paddingBottom: paddingY,
           ...style,
           scaleX: 1,
           scaleY: 1,
@@ -572,7 +594,7 @@ export class IDocToSVGStringConverter {
                   'text-indent': pStyle.textIndent,
                 },
               },
-              children: f.characters.filter(c => c.content).map((c) => {
+              children: f.characters.map((c) => {
                 const { inlineBox, content, fontSize } = c
                 // TODO glyphBox
                 return {
@@ -586,7 +608,6 @@ export class IDocToSVGStringConverter {
               }),
             }
           })
-          .filter(v => v.children.length)
       })
 
       if (textNodes.length) {
