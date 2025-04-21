@@ -5,8 +5,16 @@ import { measureText } from 'modern-text'
 import { OOXMLValue } from '../ooxml'
 import { XMLRenderer } from '../renderers'
 
+export interface ViewBox {
+  x1: number
+  y1: number
+  x2: number
+  y2: number
+}
+
 export interface ParseSlideElementContext {
   parent?: SlideElement
+  onViewBox?: (viewBox: ViewBox) => void
 }
 
 export class IDocToSVGStringConverter {
@@ -682,7 +690,7 @@ export class IDocToSVGStringConverter {
     }
   }
 
-  getSlideElementViewBox(element: SlideElement): { x1: number, y1: number, x2: number, y2: number } {
+  getSlideElementViewBox(element: SlideElement): ViewBox {
     const width = Number(element.style?.width ?? 0)
     const height = Number(element.style?.height ?? 0)
 
@@ -693,12 +701,25 @@ export class IDocToSVGStringConverter {
       y2: height,
     }
 
+    function addOutline(sizeX: number, sizeY: number): void {
+      viewBox.x1 += -sizeX / 2
+      viewBox.y1 += -sizeY / 2
+      viewBox.x2 += sizeX
+      viewBox.y2 += sizeY
+    }
+
     if (element.outline) {
-      const borderWidth = element.outline.width ?? 1
-      viewBox.x1 += -borderWidth / 2
-      viewBox.y1 += -borderWidth / 2
-      viewBox.x2 += borderWidth
-      viewBox.y2 += borderWidth
+      const {
+        width: outlineWidth = 1,
+        tailEnd,
+        headEnd,
+      } = element.outline
+
+      addOutline(outlineWidth, outlineWidth)
+
+      if (tailEnd || headEnd) {
+        addOutline(outlineWidth, outlineWidth) // TODO
+      }
     }
 
     if (element.effect?.outerShadow) {
@@ -717,11 +738,14 @@ export class IDocToSVGStringConverter {
       viewBox.x2 = Math.max(oldViewBox.x2, x2) + (diffX > 0 ? 0 : -diffX)
       viewBox.y2 = Math.max(oldViewBox.y2, y2) + (diffY > 0 ? 0 : -diffY)
     }
+
     return viewBox
   }
 
   convertSlideElement(element: SlideElement, ctx: ParseSlideElementContext = {}): string {
     const viewBox = this.getSlideElementViewBox(element)
+
+    ctx.onViewBox?.(viewBox)
 
     return this.xmlRenderer.render({
       tag: 'svg',
