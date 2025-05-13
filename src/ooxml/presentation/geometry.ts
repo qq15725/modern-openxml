@@ -67,12 +67,8 @@ export function parseGeometry(geom?: OOXMLNode, ctx?: Record<string, any>): Geom
   }
 }
 
-export function stringifyGeometry(geometry?: GeometryDeclaration): string | undefined {
-  if (!geometry) {
-    return undefined
-  }
-
-  if (geometry.name && geometry.name !== 'custom') {
+export function stringifyGeometry(geometry?: GeometryDeclaration): string {
+  if (geometry?.name && geometry.name !== 'custom') {
     return `<a:prstGeom prst="${geometry.name}">
   <a:avLst/>
 </a:prstGeom>`

@@ -272,8 +272,6 @@ export class IDocToSVGStringConverter {
   }
 
   parseSlideElement(el: SlideElement, ctx: ParseSlideElementContext = {}): XMLNode {
-    const { parent } = ctx
-
     const uuid = this.genUUID()
 
     const {
@@ -296,7 +294,7 @@ export class IDocToSVGStringConverter {
       outerShadow,
     } = effect
 
-    let {
+    const {
       scaleX = 1,
       scaleY = 1,
       left = 0,
@@ -307,11 +305,6 @@ export class IDocToSVGStringConverter {
       visibility,
       // backgroundColor,
     } = style as Record<string, any>
-
-    if (parent) {
-      left -= Number(parent.style?.left ?? 0)
-      top -= Number(parent.style?.top ?? 0)
-    }
 
     const transform: string[] = []
     if (left !== 0 || top !== 0) {
@@ -776,7 +769,7 @@ export class IDocToSVGStringConverter {
         'width': viewBox.x2 - viewBox.x1,
         'height': viewBox.y2 - viewBox.y1,
         'viewBox': `${viewBox.x1} ${viewBox.y1} ${viewBox.x2} ${viewBox.y2}`,
-        'preserveAspectRatio': 'xMidYMid meet',
+        'preserveAspectRatio': 'none',
       },
       children: [
         this.parseSlideElement({

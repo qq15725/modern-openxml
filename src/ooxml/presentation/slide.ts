@@ -57,6 +57,10 @@ export function parseSlide(slide: OOXMLNode, id: string, ctx: any): Slide {
   return {
     ...parseTiming(slide.find('p:timing')),
     ...parseTransition(slide.find('mc:AlternateContent')),
+    style: {
+      width: ctx.presentation.width,
+      height: ctx.presentation.height,
+    },
     background: parseBackground(slide.find('p:cSld/p:bg'), ctx),
     children: slide
       .get('p:cSld/p:spTree/*')
@@ -70,14 +74,17 @@ export function parseSlide(slide: OOXMLNode, id: string, ctx: any): Slide {
   }
 }
 
-function stringifyElement(node: any): string | undefined {
-  switch (node.type) {
+function stringifyElement(node: SlideElement): string | undefined {
+  switch (node.meta.type) {
     case 'shape':
-      return stringifyShape(node)
+      return stringifyShape(node as Shape)
     case 'picture':
-      return stringifyPicture(node)
+      return stringifyPicture(node as Picture)
     case 'group-shape':
-      return stringifyGroupShape(node, stringifyElement)
+      return stringifyGroupShape(node as GroupShape, stringifyElement)
+    case 'connection-shape':
+    case 'graphic-frame':
+      break
   }
   return undefined
 }

@@ -13,7 +13,7 @@ import type {
 import type { OOXMLNode, OOXMLQueryType } from '../core'
 import { OOXMLValue } from '../core'
 import { fillXPath, parseFill, parseOutline, stringifyColor } from '../drawing'
-import { Alignment, withAttr, withAttrs, withIndents } from '../utils'
+import { BiMap, withAttr, withAttrs, withIndents } from '../utils'
 
 export interface TextBody {
   style: Partial<StyleDeclaration>
@@ -42,6 +42,32 @@ const characterEntities = Object.entries({
   // '×': '&times;',
   // '÷': '&divide;',
   // ƒ: '&fnof;',
+})
+
+const textWrapMap = new BiMap<any, TextWrap>({
+  none: 'nowrap',
+  square: 'wrap',
+})
+
+const textTransformMap = new BiMap<any, TextTransform>({
+  all: 'uppercase',
+  small: 'lowercase',
+})
+
+const textAlignMap = new BiMap<any, TextAlign>({
+  l: 'left',
+  r: 'right',
+  ctr: 'center',
+  just: 'justify',
+  justLow: 'justify',
+  dist: 'center',
+  thaiDist: 'center',
+})
+
+const verticalAlignMap = new BiMap<any, VerticalAlign>({
+  t: 'top',
+  b: 'bottom',
+  ctr: 'middle',
 })
 
 // p:txBody
@@ -112,7 +138,7 @@ export function parseTextBody(txBody?: OOXMLNode, ctx?: Record<string, any>): Te
         fontWeight: queryRPr('@b', 'boolean') ? 700 : undefined,
         fontStyle: queryRPr('@i', 'boolean') ? 'italic' : undefined,
         fontFamily,
-        textTransform: toTextTransform(queryRPr('@cap', 'string')),
+        textTransform: textTransformMap.getValue(queryRPr('@cap', 'string')),
         textDecoration: toTextDecoration(queryRPr('@u', 'string')),
         fontSize: queryRPr('@sz', 'fontSize'),
         letterSpacing: queryRPr('@spc', 'fontSize'),
@@ -152,7 +178,7 @@ export function parseTextBody(txBody?: OOXMLNode, ctx?: Record<string, any>): Te
       marginRight: queryPPr('@marR', 'emu'),
       textIndent: queryPPr('@indent', 'emu'),
       lineHeight: queryPPr('a:lnSpc/a:spcPct/@val', 'ST_TextSpacingPercentOrPercentString'),
-      textAlign: toTextAlign(queryPPr('@algn', 'string')),
+      textAlign: textAlignMap.getValue(queryPPr('@algn', 'string')),
       fragments,
     }
   }) ?? []
@@ -183,9 +209,9 @@ export function parseTextBody(txBody?: OOXMLNode, ctx?: Record<string, any>): Te
         query('a:bodyPr/@vert', 'string'),
         query('a:bodyPr/@upright', 'boolean'),
       ),
-      textWrap: toTextWrap(query('a:bodyPr/@wrap', 'string')),
+      textWrap: textWrapMap.getValue(query('a:bodyPr/@wrap', 'string')),
       textAlign: query('a:bodyPr/anchorCtr', 'boolean') ? 'center' : 'left',
-      verticalAlign: toVerticalAlign(query('a:bodyPr/@anchor', 'string')),
+      verticalAlign: verticalAlignMap.getValue(query('a:bodyPr/@anchor', 'string')),
     },
     text: {
       content,
@@ -200,34 +226,33 @@ export function stringifyTextBody(txBody?: TextBody): string | undefined {
   const { text, style } = txBody
 
   const hasP = !!text?.content.length
-  const pList = text?.content.map((p: any) => {
-    const rList = p.runs.map((r: any) => {
-      const { fontLatin, fontEastasian, fontSymbol, fontComplexScript } = r
+  const pList = text?.content.map((p) => {
+    const rList = p.fragments.map((f) => {
+      const { fontFamily } = f
       const isUserFont = (name?: string): name is string => !!name && !name.startsWith('+')
       const fixTypeface = (name: string): string => name.replace(/"/g, '')
       const rPr = `<a:rPr${withAttrs([
-        withAttr('b', OOXMLValue.encode(r.bold, 'boolean')),
-        withAttr('i', OOXMLValue.encode(r.italic, 'boolean')),
-        withAttr('u', r.underline ? 'sng' : 'none'),
-        withAttr('sz', OOXMLValue.encode(r.fontSize, 'fontSize')),
-        withAttr('indent', OOXMLValue.encode(r.textIndent, 'emu')),
-        withAttr('spc', OOXMLValue.encode(r.letterSpacing, 'fontSize')),
+        (f.fontWeight === 700 || f.fontWeight === 'bold') && withAttr('b', '1'),
+        f.fontStyle === 'italic' && withAttr('i', '1'),
+        f.textDecoration === 'underline' && withAttr('u', 'sng'),
+        withAttr('sz', OOXMLValue.encode(f.fontSize, 'fontSize')),
+        withAttr('spc', OOXMLValue.encode(f.letterSpacing, 'fontSize')),
       ])}>
   ${withIndents([
-    stringifyColor(String(r.color)),
-    isUserFont(fontLatin) && `<a:latin typeface="${fixTypeface(fontLatin)}" />`,
-    isUserFont(fontEastasian) && `<a:ea typeface="${fixTypeface(fontEastasian)}" />`,
-    isUserFont(fontSymbol) && `<a:sym typeface="${fixTypeface(fontSymbol)}" />`,
-    isUserFont(fontComplexScript) && `<a:cs typeface="${fixTypeface(fontComplexScript)}" />`,
+    stringifyColor(String(f.color)),
+    isUserFont(fontFamily) && `<a:latin typeface="${fixTypeface(fontFamily)}" />`,
+    // isUserFont(fontEastasian) && `<a:ea typeface="${fixTypeface(fontEastasian)}" />`,
+    // isUserFont(fontSymbol) && `<a:sym typeface="${fixTypeface(fontSymbol)}" />`,
+    // isUserFont(fontComplexScript) && `<a:cs typeface="${fixTypeface(fontComplexScript)}" />`,
   ], 2)}
 </a:rPr>`
 
       const text = characterEntities.reduce(
         (text, [char, entity]) => text.replace(new RegExp(char, 'g'), entity),
-        r.text ?? '',
+        f.content ?? '',
       )
 
-      return r.isBreak
+      return f.content === '\n'
         ? '<a:br/>'
         : `<a:r>
   ${withIndents(rPr)}
@@ -244,12 +269,12 @@ export function stringifyTextBody(txBody?: TextBody): string | undefined {
     }
 
     const pPrAttrs = [
-      withAttr('marL', OOXMLValue.encode(p.marginLeft, 'emu')),
-      withAttr('marR', OOXMLValue.encode(p.marginRight, 'emu')),
-      // withAttr('indent', Pixel.encode(p.textIndent)),
-      withAttr('algn', Alignment.encode(p.textAlign)),
-      withAttr('fontAlgn', p.fontAlign),
-      withAttr('rtl', p.rightToLeft),
+      !!p.marginLeft && withAttr('marL', OOXMLValue.encode(p.marginLeft, 'emu')),
+      !!p.marginRight && withAttr('marR', OOXMLValue.encode(p.marginRight, 'emu')),
+      !!p.textIndent && withAttr('indent', OOXMLValue.encode(p.textIndent, 'emu')),
+      !!p.textAlign && withAttr('algn', textAlignMap.getKey(p.textAlign)),
+      // withAttr('fontAlgn', p.fontAlign),
+      // withAttr('rtl', p.rightToLeft),
     ]
 
     const pPr = children.length
@@ -266,8 +291,8 @@ export function stringifyTextBody(txBody?: TextBody): string | undefined {
   }) || []
 
   const bodyPr = `<a:bodyPr${withAttrs([
-    withAttr('anchor', style.verticalAlign),
-    withAttr('anchorCtr', OOXMLValue.encode(style.textAlign === 'center', 'boolean')),
+    style.verticalAlign && withAttr('anchor', verticalAlignMap.getKey(style.verticalAlign)),
+    style.textAlign === 'center' && withAttr('anchorCtr', '1'),
     // withAttr('spcFirstLastPara', OOXMLValue.encode(style.useParagraphSpacing, 'boolean')),
     withAttr('lIns', OOXMLValue.encode(style?.paddingLeft, 'ST_Coordinate32')),
     withAttr('tIns', OOXMLValue.encode(style?.paddingTop, 'ST_Coordinate32')),
@@ -309,66 +334,11 @@ function toWritingMode(vert?: string, upright?: boolean): WritingMode | undefine
   }
 }
 
-function toTextWrap(wrap?: string): TextWrap | undefined {
-  switch (wrap) {
-    case 'none':
-      return 'nowrap'
-    case 'square':
-      return 'wrap'
-    default:
-      return undefined
-  }
-}
-
 function toTextDecoration(u?: string): TextDecoration | undefined {
   if (u && u !== 'none') {
     return 'underline'
   }
   else {
     return undefined
-  }
-}
-
-function toTextTransform(cap?: string): TextTransform | undefined {
-  switch (cap) {
-    case 'all':
-      return 'uppercase'
-    case 'small':
-      return 'lowercase'
-    case 'none':
-    default:
-      return undefined
-  }
-}
-
-function toTextAlign(algn?: string): TextAlign | undefined {
-  switch (algn) {
-    case 'l':
-      return 'left'
-    case 'r':
-      return 'right'
-    case 'ctr':
-      return 'center'
-    case 'just':
-    case 'justLow':
-      return 'justify'
-    case 'dist':
-    case 'thaiDist':
-      return 'center' // TODO
-    default:
-      return undefined
-  }
-}
-
-function toVerticalAlign(anchor?: string): VerticalAlign | undefined {
-  switch (anchor) {
-    case 't':
-      return 'top'
-    case 'b':
-      return 'bottom'
-    case 'ctr':
-      return 'middle'
-    default:
-      return undefined
   }
 }

@@ -342,7 +342,6 @@ export class PPTXToIDocConverter {
       return [
         el.background?.src && _upload(el.background, el),
         el.fill?.src && _upload(el.fill, el),
-        el.outline?.src && _upload(el.outline, el),
         el.foreground?.src && _upload(el.foreground, el),
         el.audio?.src && _upload(el.audio, el),
         el.video?.src && _upload(el.video, el),

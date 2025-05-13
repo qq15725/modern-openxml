@@ -33,6 +33,10 @@ export function parseSlideMaster(slide: OOXMLNode, id: string, ctx: any): SlideM
   }
 
   return {
+    style: {
+      width: ctx.presentation.width,
+      height: ctx.presentation.height,
+    },
     background: parseBackground(slide.find('p:cSld/p:bg'), newCtx),
     children: slide
       .get('p:cSld/p:spTree/*')

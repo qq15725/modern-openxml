@@ -18,6 +18,10 @@ export interface SlideLayout extends ElementDeclaration {
 
 export function parseSlideLayout(slide: OOXMLNode, id: string, ctx: any): SlideLayout {
   return {
+    style: {
+      width: ctx.presentation.width,
+      height: ctx.presentation.height,
+    },
     background: parseBackground(slide.find('p:cSld/p:bg'), ctx),
     children: slide
       .get('p:cSld/p:spTree/*')

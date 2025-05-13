@@ -79,7 +79,7 @@ export function parseShapeProperties(spPr?: OOXMLNode, ctx?: any): ShapeProperti
 }
 
 export function stringifyShapeProperties(spPr: ShapeProperties, isPic = false): string {
-  const xfrm = stringifyTransform2d(spPr.style as any)
+  const xfrm = stringifyTransform2d(spPr as any)
   const geom = stringifyGeometry(spPr.geometry)
   const fill = isPic ? undefined : stringifyFill(spPr.fill)
   const ln = stringifyOutline(spPr.outline)

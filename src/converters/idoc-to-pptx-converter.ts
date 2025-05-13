@@ -37,7 +37,24 @@ export class IDocToPPTXConverter {
     }
     const cache = new Map<any, string>()
     const addMedia = async (file: any, refs: string[], fileName: string, fileExt: string): Promise<void> => {
-      const src = file.src
+      let src = file.src
+
+      if (typeof src === 'string') {
+        if (src.startsWith('http')) {
+          // network
+        }
+        else {
+          const base64 = src.split(',')?.[1] ?? src
+          const binaryString = atob(base64)
+          const length = binaryString.length
+          const bytes = new Uint8Array(length)
+          for (let i = 0; i < length; i++) {
+            bytes[i] = binaryString.charCodeAt(i)
+          }
+          src = bytes
+        }
+      }
+
       const cacheKey = SUPPORTS_CRYPTO_SUBTLE && src instanceof Blob
         ? await hashBlob(src)
         : null
@@ -56,7 +73,9 @@ export class IDocToPPTXConverter {
         else {
           cache.set(name, name)
         }
-        unzipped[`ppt/media/${name}`] = src
+        unzipped[`ppt/media/${name}`] = typeof src === 'string'
+          ? new TextEncoder().encode(src)
+          : src
       }
       refs.push(`../media/${name}`)
       file.src = `rId${refs.length}`

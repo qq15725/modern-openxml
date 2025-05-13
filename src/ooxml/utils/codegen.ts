@@ -23,13 +23,11 @@ export function withAttrs(attrs: (string | boolean | undefined)[]): string {
 }
 
 export function withIndents(str: string | (string | boolean | undefined)[] | undefined, deep = 1, ignoreFirstLine = true): string {
-  if (str === undefined) {
+  if (!str) {
     return ''
   }
   const spaces = Array.from({ length: deep }).map(() => '  ').join('')
-  str = typeof str === 'string' ? str : str.join('\n')
-  return str
-    .split('\n')
+  return (typeof str === 'string' ? str.split('\n') : str)
     .filter(Boolean)
     .map((v, i) => {
       return ignoreFirstLine && i === 0 ? v : `${spaces}${v}`

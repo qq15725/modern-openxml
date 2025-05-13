@@ -46,3 +46,8 @@ fetch('./example.pptx')
     document.body.appendChild(pptxSVG)
   })
 ```
+
+## Related
+
+- [openxml](https://learn.microsoft.com/zh-cn/dotnet/api/documentformat.openxml)
+- [OOXML-Validator](https://github.com/mikeebowen/OOXML-Validator)

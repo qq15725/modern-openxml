@@ -34,13 +34,13 @@ function _parseTransform2dStyle(position: Transform2dStyle, ctx?: any): void {
   const parent = ctx.parents[ctx.parents.length - 1]?.transform2d as RawTransform2d
   if (!parent)
     return
-  const groupPosition: Record<string, any> = {
+  const groupPosition: Record<string, number> = {
     left: Number(parent.offsetX ?? position.left),
     top: Number(parent.offsetY ?? position.top),
     width: Number(parent.extentsCx ?? position.width),
     height: Number(parent.extentsCy ?? position.height),
   }
-  const childPosition: Record<string, any> = {
+  const childPosition: Record<string, number> = {
     left: Number(parent.childOffsetX ?? (ctx.drawing ? 0 : groupPosition.left)),
     top: Number(parent.childOffsetY ?? (ctx.drawing ? 0 : groupPosition.top)),
     width: Number(parent.childExtentsCx ?? groupPosition.width),
@@ -49,9 +49,9 @@ function _parseTransform2dStyle(position: Transform2dStyle, ctx?: any): void {
   const scaleX = childPosition.width ? groupPosition.width / childPosition.width : 1
   const scaleY = childPosition.height ? groupPosition.height / childPosition.height : 1
   if (position.left !== undefined)
-    position.left = (position.left - childPosition.left) * scaleX + groupPosition.left
+    position.left = (position.left - childPosition.left) * scaleX
   if (position.top !== undefined)
-    position.top = (position.top - childPosition.top) * scaleY + groupPosition.top
+    position.top = (position.top - childPosition.top) * scaleY
   if (position.height !== undefined)
     position.height *= scaleY
   if (position.width !== undefined)
@@ -99,9 +99,9 @@ export function parseTransform2d(xfrm?: OOXMLNode, ctx?: any): Transform2d | und
 
 export function stringifyTransform2d(xfrm: Transform2d, isGroup = false): string {
   return `<a:xfrm${withAttrs([
-    withAttr('rot', OOXMLValue.encode(xfrm.style?.rotate, 'ST_Angle')),
-    withAttr('flipV', OOXMLValue.encode(xfrm.style?.scaleX === -1, 'boolean')),
-    withAttr('flipH', OOXMLValue.encode(xfrm.style?.scaleY === -1, 'boolean')),
+    xfrm.style?.rotate ? withAttr('rot', OOXMLValue.encode(xfrm.style?.rotate, 'ST_Angle')) : undefined,
+    xfrm.style?.scaleY === -1 && withAttr('flipV', '1'),
+    xfrm.style?.scaleX === -1 && withAttr('flipH', '1'),
   ])}>
   <a:off${withAttrs([
     withAttr('x', OOXMLValue.encode(xfrm.style?.left, 'emu')),
