@@ -55,9 +55,14 @@ export class IDocToPPTXConverter {
         }
       }
 
-      const cacheKey = SUPPORTS_CRYPTO_SUBTLE && src instanceof Blob
-        ? await hashBlob(src)
-        : null
+      let cacheKey: string | undefined
+      if (SUPPORTS_CRYPTO_SUBTLE && src instanceof Blob) {
+        cacheKey = await hashBlob(src)
+      }
+      else if (typeof file.src === 'string') {
+        cacheKey = file.src
+      }
+
       let name: string
       if (cacheKey && cache.has(cacheKey)) {
         name = cache.get(cacheKey)!
