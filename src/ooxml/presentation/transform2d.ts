@@ -113,8 +113,8 @@ export function stringifyTransform2d(xfrm: Transform2d, isGroup = false): string
   ])}/>
   ${isGroup
     ? `<a:chOff${withAttrs([
-      withAttr('x', OOXMLValue.encode(xfrm.style?.left, 'emu')),
-      withAttr('y', OOXMLValue.encode(xfrm.style?.top, 'emu')),
+      withAttr('x', '0'),
+      withAttr('y', '0'),
     ])}/>
 <a:chExt${withAttrs([
   withAttr('cx', OOXMLValue.encode(xfrm.style?.width, 'emu')),
