@@ -164,9 +164,19 @@ export function stringifyFill(fill?: FillDeclaration, isPic = false): string | u
     ])}
     <a:lum/>
   </a:blip>
-  <a:srcRect/>
+  <a:srcRect${withAttrs([
+    !!fill.srcRect?.top && withAttr('t', OOXMLValue.encode(fill.srcRect?.top, 'ST_Percentage')),
+    !!fill.srcRect?.right && withAttr('r', OOXMLValue.encode(fill.srcRect?.right, 'ST_Percentage')),
+    !!fill.srcRect?.bottom && withAttr('b', OOXMLValue.encode(fill.srcRect?.bottom, 'ST_Percentage')),
+    !!fill.srcRect?.left && withAttr('l', OOXMLValue.encode(fill.srcRect?.left, 'ST_Percentage')),
+  ])}/>
   <a:stretch>
-    <a:fillRect/>
+    <a:fillRect${withAttrs([
+      !!fill.stretch?.rect?.top && withAttr('t', OOXMLValue.encode(fill.stretch?.rect?.top, 'ST_Percentage')),
+      !!fill.stretch?.rect?.right && withAttr('r', OOXMLValue.encode(fill.stretch?.rect?.right, 'ST_Percentage')),
+      !!fill.stretch?.rect?.bottom && withAttr('b', OOXMLValue.encode(fill.stretch?.rect?.bottom, 'ST_Percentage')),
+      !!fill.stretch?.rect?.left && withAttr('l', OOXMLValue.encode(fill.stretch?.rect?.left, 'ST_Percentage')),
+    ])}/>
   </a:stretch>
 </${tagName}>`
   }
