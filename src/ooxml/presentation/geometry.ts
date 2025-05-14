@@ -69,7 +69,8 @@ export function parseGeometry(geom?: OOXMLNode, ctx?: Record<string, any>): Geom
 }
 
 export function stringifyGeometry(geometry?: GeometryDeclaration): string {
-  if (!geometry?.name && geometry?.paths?.length) {
+  // TODO !geometry?.name
+  if (geometry?.paths?.length) {
     return `<a:custGeom>
   <a:avLst/>
   <a:gdLst/>
