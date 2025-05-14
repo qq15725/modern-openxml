@@ -96,7 +96,7 @@ export function stringifySlide(slide: Slide): string {
   xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"
 >
   <p:cSld>
-    ${withIndents(stringifyBackground(slide.fill), 2)}
+    ${withIndents(stringifyBackground(slide.background), 2)}
     <p:spTree>
       <p:nvGrpSpPr>
         <p:cNvPr id="1" name=""/>

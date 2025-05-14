@@ -1,7 +1,8 @@
 import type { GeometryDeclaration } from 'modern-idoc'
 import type { OOXMLNode } from '../core'
-import { svgPathCommandsToData } from 'modern-path2d'
+import { svgPathCommandsToData, svgPathDataToCommands } from 'modern-path2d'
 import { OOXMLValue } from '../core'
+import { withAttr, withAttrs, withIndents } from '../utils'
 
 function parseGdList(gdList?: OOXMLNode): Record<string, any>[] {
   return gdList?.get('*[(self::a:gd or self::gd)]').map(gd => ({ name: gd.attr('@name'), fmla: gd.attr('@fmla') })) ?? []
@@ -68,15 +69,135 @@ export function parseGeometry(geom?: OOXMLNode, ctx?: Record<string, any>): Geom
 }
 
 export function stringifyGeometry(geometry?: GeometryDeclaration): string {
-  if (geometry?.name && geometry.name !== 'custom') {
-    return `<a:prstGeom prst="${geometry.name}">
+  if (!geometry?.name && geometry?.paths?.length) {
+    return `<a:custGeom>
+  <a:avLst/>
+  <a:gdLst/>
+  <a:ahLst/>
+  <a:cxnLst/>
+  <a:rect l="l" t="t" r="r" b="b"/>
+  <a:pathLst>
+  ${withIndents(geometry.paths.map((path) => {
+    let currentPoint: { x: number, y: number }
+    return `<a:path>
+      ${withIndents(svgPathDataToCommands(path.data).map((cmd) => {
+        switch (cmd.type) {
+          case 'm':
+          case 'M':
+            currentPoint = { x: cmd.x, y: cmd.y }
+            return `<a:moveTo>
+  <a:pt${withAttrs([
+    withAttr('x', OOXMLValue.encode(cmd.x, 'emu')),
+    withAttr('y', OOXMLValue.encode(cmd.y, 'emu')),
+  ])}/>
+</a:moveTo>`
+          case 'l':
+          case 'L':
+            currentPoint = { x: cmd.x, y: cmd.y }
+            return `<a:lnTo>
+  <a:pt${withAttrs([
+    withAttr('x', OOXMLValue.encode(cmd.x, 'emu')),
+    withAttr('y', OOXMLValue.encode(cmd.y, 'emu')),
+  ])}/>
+</a:lnTo>`
+          case 'a':
+          case 'A': {
+            const startX = currentPoint.x
+            const startY = currentPoint.y
+            let { rx, ry, angle, largeArcFlag, sweepFlag, x: endX, y: endY } = cmd
+            const phi = angle * (Math.PI / 180)
+            const dx = (startX - endX) / 2
+            const dy = (startY - endY) / 2
+            const x1p = Math.cos(phi) * dx + Math.sin(phi) * dy
+            const y1p = -Math.sin(phi) * dx + Math.cos(phi) * dy
+            let rx_sq = rx * rx
+            let ry_sq = ry * ry
+            const x1p_sq = x1p * x1p
+            const y1p_sq = y1p * y1p
+            const lambda = x1p_sq / rx_sq + y1p_sq / ry_sq
+            if (lambda > 1) {
+              const factor = Math.sqrt(lambda)
+              rx *= factor
+              ry *= factor
+              rx_sq = rx * rx
+              ry_sq = ry * ry
+            }
+            const sign = (largeArcFlag === sweepFlag) ? -1 : 1
+            const coef = sign * Math.sqrt(
+              (rx_sq * ry_sq - rx_sq * y1p_sq - ry_sq * x1p_sq)
+              / (rx_sq * y1p_sq + ry_sq * x1p_sq),
+            )
+            const cxp = coef * (rx * y1p) / ry
+            const cyp = coef * (-ry * x1p) / rx
+            const vectorU = [(x1p - cxp) / rx, (y1p - cyp) / ry]
+            const vectorV = [(-x1p - cxp) / rx, (-y1p - cyp) / ry]
+            const startAngle = Math.atan2(vectorU[1], vectorU[0])
+            let deltaAngle = Math.atan2(
+              vectorU[0] * vectorV[1] - vectorU[1] * vectorV[0],
+              vectorU[0] * vectorV[0] + vectorU[1] * vectorV[1],
+            )
+            if (!sweepFlag && deltaAngle > 0) {
+              deltaAngle -= 2 * Math.PI
+            }
+            else if (sweepFlag && deltaAngle < 0) {
+              deltaAngle += 2 * Math.PI
+            }
+            const stAng = (startAngle * 180 / Math.PI)
+            const swAng = (deltaAngle * 180 / Math.PI)
+            currentPoint = { x: cmd.x, y: cmd.y }
+            return `<a:arcTo${withAttrs([
+              withAttr('wR', OOXMLValue.encode(rx, 'emu')),
+              withAttr('hR', OOXMLValue.encode(ry, 'emu')),
+              withAttr('stAng', OOXMLValue.encode(stAng, 'degree')),
+              withAttr('swAng', OOXMLValue.encode(swAng, 'degree')),
+            ])}/>`
+          }
+          case 'c':
+          case 'C':
+            currentPoint = { x: cmd.x, y: cmd.y }
+            return `<a:cubicBezTo>
+  <a:pt${withAttrs([
+    withAttr('x', OOXMLValue.encode(cmd.x1, 'emu')),
+    withAttr('y', OOXMLValue.encode(cmd.y1, 'emu')),
+  ])}/>
+  <a:pt${withAttrs([
+    withAttr('x', OOXMLValue.encode(cmd.x2, 'emu')),
+    withAttr('y', OOXMLValue.encode(cmd.y2, 'emu')),
+  ])}/>
+  <a:pt${withAttrs([
+    withAttr('x', OOXMLValue.encode(cmd.x, 'emu')),
+    withAttr('y', OOXMLValue.encode(cmd.y, 'emu')),
+  ])}/>
+</a:cubicBezTo>`
+          case 'q':
+          case 'Q':
+            currentPoint = { x: cmd.x, y: cmd.y }
+            return `<a:quadBezTo>
+  <a:pt${withAttrs([
+    withAttr('x', OOXMLValue.encode(cmd.x1, 'emu')),
+    withAttr('y', OOXMLValue.encode(cmd.y1, 'emu')),
+  ])}/>
+  <a:pt${withAttrs([
+    withAttr('x', OOXMLValue.encode(cmd.x, 'emu')),
+    withAttr('y', OOXMLValue.encode(cmd.y, 'emu')),
+  ])}/>
+</a:quadBezTo>`
+          case 'z':
+          case 'Z':
+            return `<a:close/>`
+        }
+        return ''
+      }), 2)}
+    </a:path>`
+  }), 2)}
+  </a:pathLst>
+</a:custGeom>`
+  }
+  else {
+    return `<a:prstGeom prst="${geometry?.name ?? 'rect'}">
   <a:avLst/>
 </a:prstGeom>`
   }
-
-  return `<a:prstGeom prst="rect">
-  <a:avLst/>
-</a:prstGeom>`
 }
 
 type GeometryPathCommand =

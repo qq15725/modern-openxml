@@ -223,7 +223,7 @@ export function stringifyTextBody(txBody?: TextBody): string | undefined {
   if (!txBody)
     return undefined
 
-  const { text, style } = txBody
+  const { text, style = {} } = txBody
 
   const hasP = !!text?.content.length
   const pList = text?.content.map((p) => {
@@ -294,10 +294,10 @@ export function stringifyTextBody(txBody?: TextBody): string | undefined {
     style.verticalAlign && withAttr('anchor', verticalAlignMap.getKey(style.verticalAlign)),
     style.textAlign === 'center' && withAttr('anchorCtr', '1'),
     // withAttr('spcFirstLastPara', OOXMLValue.encode(style.useParagraphSpacing, 'boolean')),
-    withAttr('lIns', OOXMLValue.encode(style?.paddingLeft, 'ST_Coordinate32')),
-    withAttr('tIns', OOXMLValue.encode(style?.paddingTop, 'ST_Coordinate32')),
-    withAttr('rIns', OOXMLValue.encode(style?.paddingRight, 'ST_Coordinate32')),
-    withAttr('bIns', OOXMLValue.encode(style?.paddingBottom, 'ST_Coordinate32')),
+    style.paddingLeft !== undefined && withAttr('lIns', OOXMLValue.encode(style.paddingLeft, 'ST_Coordinate32')),
+    style.paddingTop !== undefined && withAttr('tIns', OOXMLValue.encode(style.paddingTop, 'ST_Coordinate32')),
+    style.paddingRight !== undefined && withAttr('rIns', OOXMLValue.encode(style.paddingRight, 'ST_Coordinate32')),
+    style.paddingBottom !== undefined && withAttr('bIns', OOXMLValue.encode(style.paddingBottom, 'ST_Coordinate32')),
     // withAttr('rot', OOXMLValue.encode(style.textRotation, 'degree')),
     style.textWrap === 'nowrap' && withAttr('wrap', 'none'),
     style.writingMode?.startsWith('vertical') && withAttr('upright', '1'),
