@@ -18,6 +18,8 @@ export interface Transform2dStyle {
 }
 
 export interface RawTransform2d {
+  absoluteX?: number
+  absoluteY?: number
   offsetX?: number
   offsetY?: number
   extentsCx?: number
@@ -41,17 +43,17 @@ function _parseTransform2dStyle(position: Transform2dStyle, ctx?: any): void {
     height: Number(parent.extentsCy ?? position.height),
   }
   const childPosition: Record<string, number> = {
-    left: Number(parent.childOffsetX ?? (ctx.drawing ? 0 : groupPosition.left)),
-    top: Number(parent.childOffsetY ?? (ctx.drawing ? 0 : groupPosition.top)),
+    left: Number(parent.childOffsetX ?? 0),
+    top: Number(parent.childOffsetY ?? 0),
     width: Number(parent.childExtentsCx ?? groupPosition.width),
     height: Number(parent.childExtentsCy ?? groupPosition.height),
   }
   const scaleX = childPosition.width ? groupPosition.width / childPosition.width : 1
   const scaleY = childPosition.height ? groupPosition.height / childPosition.height : 1
   if (position.left !== undefined)
-    position.left = (position.left - childPosition.left) * scaleX
+    position.left = (position.left - childPosition.left) * scaleX + groupPosition.left
   if (position.top !== undefined)
-    position.top = (position.top - childPosition.top) * scaleY
+    position.top = (position.top - childPosition.top) * scaleY + groupPosition.top
   if (position.height !== undefined)
     position.height *= scaleY
   if (position.width !== undefined)
@@ -82,9 +84,20 @@ export function parseTransform2d(xfrm?: OOXMLNode, ctx?: any): Transform2d | und
 
   _parseTransform2dStyle(style, ctx)
 
+  const parent = ctx?.parents?.[ctx.parents.length - 1]?.transform2d as RawTransform2d
+
+  const absoluteX = style.left
+  const absoluteY = style.top
+  if (parent) {
+    style.left = (style.left ?? 0) - (parent.absoluteX ?? 0)
+    style.top = (style.top ?? 0) - (parent.absoluteY ?? 0)
+  }
+
   return {
     style,
     rawTransform2d: {
+      absoluteX,
+      absoluteY,
       offsetX,
       offsetY,
       extentsCx,
