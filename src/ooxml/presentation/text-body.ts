@@ -57,11 +57,11 @@ const textTransformMap = new BiMap<any, TextTransform>({
 const textAlignMap = new BiMap<any, TextAlign>({
   l: 'left',
   r: 'right',
-  ctr: 'center',
-  just: 'justify',
   justLow: 'justify',
+  just: 'justify',
   dist: 'center',
   thaiDist: 'center',
+  ctr: 'center',
 })
 
 const verticalAlignMap = new BiMap<any, VerticalAlign>({
