@@ -1,3 +1,20 @@
+# [1.0.0](https://github.com/qq15725/modern-openxml/compare/v0.1.20...v1.0.0) (2025-05-14)
+
+
+### Bug Fixes
+
+* idocToPPTX ([0e40564](https://github.com/qq15725/modern-openxml/commit/0e40564c828bade964b87840c310c23564439d6c))
+* idocToPPTX cacheKey ([a33c08d](https://github.com/qq15725/modern-openxml/commit/a33c08de20f9b16b474f8cfdd6464ab730f02fb4))
+* parseTransform2d ([2e8ce86](https://github.com/qq15725/modern-openxml/commit/2e8ce861a361a5e9cd4248e8c511583e13732289))
+* stringifyFill ([8727423](https://github.com/qq15725/modern-openxml/commit/8727423d1f660f8465fecc6eed08906871a45be4))
+* stringifyGeometry ([1a3d4c5](https://github.com/qq15725/modern-openxml/commit/1a3d4c5e09a8e77e16125dafa240cfc8641b5be2))
+* stringifyGeometry ([ebd8497](https://github.com/qq15725/modern-openxml/commit/ebd8497edb1a1db02f35ba648109f4d401835730))
+* stringifyOutline ([8d0cde8](https://github.com/qq15725/modern-openxml/commit/8d0cde8eca329603c9ff3caa971720bcf08c71ea))
+* stringifyTransform2d ([c50ef9f](https://github.com/qq15725/modern-openxml/commit/c50ef9f92c0024f3022fd8a5694938031e91ea82))
+* textAlign ([0d7f00d](https://github.com/qq15725/modern-openxml/commit/0d7f00d5504888c189d78bb74cd665586a36b1c5))
+
+
+
 ## [0.1.20](https://github.com/qq15725/modern-openxml/compare/v0.1.19...v0.1.20) (2025-04-21)
 
 
