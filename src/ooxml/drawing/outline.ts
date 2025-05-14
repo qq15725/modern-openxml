@@ -24,7 +24,7 @@ export type PrstDashType =
 // a:round
 export function parseOutline(node?: OOXMLNode, ctx?: any): OutlineDeclaration | undefined {
   if (node && node.name !== 'a:ln') {
-    node = node.find('.//a:ln')
+    node = node.find('a:ln')
   }
 
   if (!node)
@@ -104,9 +104,12 @@ export function stringifyOutline(ln?: OutlineDeclaration): string | undefined {
     return undefined
 
   return `<a:ln${withAttrs([
-    withAttr('w', OOXMLValue.encode(ln.width, 'ST_LineWidth')),
+    ln.width !== undefined && withAttr('w', OOXMLValue.encode(ln.width, 'ST_LineWidth')),
   ])}>
-    ${ln.width ? withIndents(stringifyColor(String(ln.color))) : '<a:noFill/>'}
+    ${withIndents([
+      ln.color !== undefined && stringifyColor(String(ln.color)),
+      ln.color === undefined && '<a:noFill/>',
+    ])}
 </a:ln>`
 
 // TODO

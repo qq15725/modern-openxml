@@ -44,7 +44,7 @@ export function parseShapeProperties(spPr?: OOXMLNode, ctx?: any): ShapeProperti
   }
   fill = clearUndef(fill)
 
-  let outline = parseOutline(spPr, {
+  let outline = parseOutline(query('a:ln'), {
     ...ctx,
     query: (xpath: string, type?: OOXMLQueryType) => query(`a:ln/${xpath}`, type),
   }) ?? {}
