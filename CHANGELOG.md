@@ -1,3 +1,12 @@
+## [1.0.1](https://github.com/qq15725/modern-openxml/compare/v1.0.0...v1.0.1) (2025-05-19)
+
+
+### Features
+
+* add themeId to slide.meta / add coreProps parse to pptx.meta ([bc0d567](https://github.com/qq15725/modern-openxml/commit/bc0d567a6040df1d61f48d1a0675c449c43e22e3))
+
+
+
 # [1.0.0](https://github.com/qq15725/modern-openxml/compare/v0.1.20...v1.0.0) (2025-05-14)
 
 
