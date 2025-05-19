@@ -1,4 +1,5 @@
 import type { DocumentDeclaration } from 'modern-idoc'
+import type { CoreProperties } from './doc-props'
 import type { Theme } from './drawing'
 import type { Slide, SlideLayout, SlideMaster } from './presentation'
 
@@ -10,7 +11,7 @@ export type PPTXSource =
   | Blob
   | NodeJS.ReadableStream
 
-export interface PPTXMeta {
+export interface PPTXMeta extends CoreProperties {
   cover?: string
   themes: Theme[]
   slides: Slide[]

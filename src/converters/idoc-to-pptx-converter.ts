@@ -165,7 +165,7 @@ export class IDocToPPTXConverter {
     ]))
 
     // docProps
-    add('docProps/core.xml', stringifyCoreProperties())
+    add('docProps/core.xml', stringifyCoreProperties(_pptx.meta))
     add('docProps/app.xml', stringifyProperties(slides.length))
 
     // rels

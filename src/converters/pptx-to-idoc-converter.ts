@@ -1,8 +1,27 @@
 import type { Unzipped } from 'fflate'
 import type { ElementDeclaration } from 'modern-idoc'
-import type { PPTXDeclaration, PPTXSource, Slide, SlideElement, SlideLayout, SlideMaster } from '../ooxml'
+import type {
+  PPTXDeclaration,
+  PPTXSource,
+  Slide,
+  SlideElement,
+  SlideLayout,
+  SlideMaster,
+} from '../ooxml'
 import { unzipSync } from 'fflate'
-import { clearUndef, namespaces, OOXMLNode, parsePresentation, parseRelationships, parseSlide, parseSlideLayout, parseSlideMaster, parseTheme, parseTypes } from '../ooxml'
+import {
+  clearUndef,
+  namespaces,
+  OOXMLNode,
+  parseCoreProperties,
+  parsePresentation,
+  parseRelationships,
+  parseSlide,
+  parseSlideLayout,
+  parseSlideMaster,
+  parseTheme,
+  parseTypes,
+} from '../ooxml'
 
 export interface PPTXUploadOptions {
   upload?: (input: string, file: { src: string }, source: PPTXDeclaration | Slide | SlideLayout | SlideMaster | SlideElement) => any | Promise<any>
@@ -110,6 +129,9 @@ export class PPTXToIDocConverter {
     // [Content_Types].xml
     const contentTypes = parseTypes(readNode('[Content_Types].xml')!)
 
+    // docProps/core
+    const coreProperties = parseCoreProperties(readNode('docProps/core.xml')!)
+
     // _rels/.rels
     const relsPath = getRelsPath()
     const relsNode = readNode(relsPath)!
@@ -135,6 +157,7 @@ export class PPTXToIDocConverter {
       },
       children: [],
       meta: {
+        ...coreProperties,
         themes: [],
         slides: [],
         slideLayouts: [],
@@ -200,10 +223,9 @@ export class PPTXToIDocConverter {
           }),
       )
 
-      const theme = parseTheme(themeNode)
-      if (themePath && theme) {
-        pptx.meta.themes[+themePath.match(/theme(\d+)\.xml$/)![1] - 1] = theme
-      }
+      const theme = themeNode && themePath
+        ? parseTheme(themeNode, themePath)
+        : undefined
 
       const sharedContext = {
         theme: { node: themeNode, ...theme },
@@ -244,14 +266,17 @@ export class PPTXToIDocConverter {
         pptx.meta.slideMasters.push(master)
       }
 
+      if (theme && pptx.meta.themes.findIndex(_theme => _theme.meta.id === theme.meta.id) === -1) {
+        pptx.meta.themes.push(theme)
+      }
+
       pptx.meta.slides.push(slide)
+
       pptx.children.push({
         ...slide,
         background: slide.background ?? layout?.background ?? master?.background,
       })
     }
-
-    pptx.meta.themes = pptx.meta.themes.filter(Boolean)
 
     this.pptx = clearUndef(pptx)
 

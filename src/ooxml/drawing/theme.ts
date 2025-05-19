@@ -19,13 +19,13 @@ export interface Theme {
   outlineStyleList?: OutlineDeclaration[]
   effectStyleList?: EffectDeclaration[]
   backgroundFillStyleList?: FillDeclaration[]
+  meta: {
+    id: string
+  }
 }
 
 // a:theme
-export function parseTheme(theme?: OOXMLNode): Theme | undefined {
-  if (!theme)
-    return undefined
-
+export function parseTheme(theme: OOXMLNode, id: string): Theme {
   const fmtScheme = theme.find('a:themeElements/a:fmtScheme')
 
   return {
@@ -37,6 +37,9 @@ export function parseTheme(theme?: OOXMLNode): Theme | undefined {
     outlineStyleList: fmtScheme?.get('a:lnStyleLst/*').map(node => parseOutline(node)!),
     effectStyleList: fmtScheme?.get('a:effectStyleLst/*').map(node => parseEffectList(node)!),
     backgroundFillStyleList: fmtScheme?.get('a:bgFillStyleLst/*').map(node => parseFill(node)!),
+    meta: {
+      id,
+    },
   }
 }
 

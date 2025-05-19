@@ -10,4 +10,9 @@ export const namespaces = {
   p14: 'http://schemas.microsoft.com/office/powerpoint/2010/main',
   p15: 'http://schemas.microsoft.com/office/powerpoint/2012/main',
   p159: 'http://schemas.microsoft.com/office/powerpoint/2015/09/main',
+  cp: 'http://schemas.openxmlformats.org/package/2006/metadata/core-properties',
+  dc: 'http://purl.org/dc/elements/1.1/',
+  dcterms: 'http://purl.org/dc/terms/',
+  dcmitype: 'http://purl.org/dc/dcmitype/',
+  xsi: 'http://www.w3.org/2001/XMLSchema-instance',
 }

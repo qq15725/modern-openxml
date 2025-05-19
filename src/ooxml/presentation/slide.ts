@@ -28,6 +28,7 @@ export interface SlideMeta {
   id: string
   layoutId: string
   masterId: string
+  themeId: string
 }
 
 export interface Slide extends Transition, Timing, ElementDeclaration {
@@ -70,6 +71,7 @@ export function parseSlide(slide: OOXMLNode, id: string, ctx: any): Slide {
       id,
       layoutId: ctx.layout.meta.id,
       masterId: ctx.master.meta.id,
+      themeId: ctx.theme.meta.id,
     },
   }
 }

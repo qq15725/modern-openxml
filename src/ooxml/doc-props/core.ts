@@ -1,4 +1,27 @@
-export function stringifyCoreProperties(): string {
+// a:theme
+import type { OOXMLNode } from '../core'
+
+export interface CoreProperties {
+  title?: string
+  subject?: string
+  creator?: string
+  lastModifiedBy?: string
+  revision?: string
+  modified?: string
+}
+
+export function parseCoreProperties(node: OOXMLNode): CoreProperties {
+  return {
+    title: node.attr('dc:title/text()', 'string'),
+    subject: node.attr('dc:subject/text()', 'string'),
+    creator: node.attr('dc:creator/text()', 'string'),
+    lastModifiedBy: node.attr('dc:lastModifiedBy/text()', 'string'),
+    revision: node.attr('dc:revision/text()', 'string'),
+    modified: node.attr('dcterms:modified/text()', 'string'),
+  }
+}
+
+export function stringifyCoreProperties(props: CoreProperties): string {
   const d = new Date()
   const str = `${d.getFullYear()}-${
     d.getMonth() + 1
@@ -10,11 +33,11 @@ export function stringifyCoreProperties(): string {
   xmlns:dcmitype="http://purl.org/dc/dcmitype/"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 >
-  <dc:title>modern-openxml</dc:title>
-  <dc:subject>modern-openxml</dc:subject>
-  <dc:creator>modern-openxml</dc:creator>
-  <cp:lastModifiedBy>modern-openxml</cp:lastModifiedBy>
-  <cp:revision>1</cp:revision>
+  <dc:title>${props.title ?? 'modern-openxml'}</dc:title>
+  <dc:subject>${props.subject ?? 'modern-openxml'}</dc:subject>
+  <dc:creator>${props.creator ?? 'modern-openxml'}</dc:creator>
+  <cp:lastModifiedBy>${props.lastModifiedBy ?? 'modern-openxml'}</cp:lastModifiedBy>
+  <cp:revision>${props.revision ?? 1}</cp:revision>
   <dcterms:modified xsi:type="dcterms:W3CDTF">${str}</dcterms:modified>
 </cp:coreProperties>`
 }

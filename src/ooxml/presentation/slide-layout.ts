@@ -12,6 +12,7 @@ export interface SlideLayout extends ElementDeclaration {
   meta: {
     id: string
     masterId: string
+    themeId: string
     colorMap?: ColorMap
   }
 }
@@ -30,6 +31,7 @@ export function parseSlideLayout(slide: OOXMLNode, id: string, ctx: any): SlideL
     meta: {
       id,
       masterId: ctx.master.meta.id,
+      themeId: ctx.theme.meta.id,
       colorMap: parseColorMap(slide.find('p:clrMap')),
       ...parseTiming(slide.find('p:timing')),
     },

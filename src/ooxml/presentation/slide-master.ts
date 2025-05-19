@@ -11,15 +11,15 @@ export interface SlideMaster extends ElementDeclaration {
   children: SlideElement[]
   meta: {
     id: string
-    colorMap?: ColorMap
     themeId?: string
-    themeIndex?: number
+    colorMap?: ColorMap
   }
 }
 
 export function parseSlideMaster(slide: OOXMLNode, id: string, ctx: any): SlideMaster {
   const meta = {
     id,
+    themeId: ctx.theme.meta.id,
     ...parseTiming(slide.find('p:timing')),
     colorMap: parseColorMap(slide.find('p:clrMap')),
   }
