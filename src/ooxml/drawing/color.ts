@@ -256,7 +256,7 @@ export function parseColor(node?: OOXMLNode, ctx?: Record<string, any>): string 
     rgba.b = newRgb.b
   }
 
-  return `rgba(${rgba.r},${rgba.g},${rgba.b},${rgba.a})`
+  return `rgba(${rgba.r}, ${rgba.g}, ${rgba.b}, ${rgba.a})`
 }
 
 export function stringifyColor(color?: string): string {
