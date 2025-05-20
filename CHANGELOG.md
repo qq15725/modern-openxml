@@ -1,3 +1,12 @@
+## [1.0.2](https://github.com/qq15725/modern-openxml/compare/v1.0.1...v1.0.2) (2025-05-20)
+
+
+### Features
+
+* parse color fixed to rgba ([d94d6f3](https://github.com/qq15725/modern-openxml/commit/d94d6f397cf9c290d53d53d33f04ebd25846d51d))
+
+
+
 ## [1.0.1](https://github.com/qq15725/modern-openxml/compare/v1.0.0...v1.0.1) (2025-05-19)
 
 
