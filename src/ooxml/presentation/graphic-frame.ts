@@ -1,4 +1,4 @@
-import type { ElementDeclaration, StyleProperty } from 'modern-idoc'
+import type { ElementDeclaration, StyleDeclaration } from 'modern-idoc'
 import type { OOXMLNode } from '../core'
 import type { GroupShape } from './group-shape'
 import type { NonVisualDrawingProperties } from './non-visual-drawing-properties'
@@ -15,7 +15,7 @@ export type GraphicFrameMeta = NonVisualDrawingProperties['meta'] & {
 }
 
 export interface GraphicFrame extends ElementDeclaration {
-  style: StyleProperty
+  style: Partial<StyleDeclaration>
   meta: GraphicFrameMeta
   children: SlideElement[]
 }

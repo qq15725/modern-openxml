@@ -1,4 +1,4 @@
-import type { ElementDeclaration, StyleProperty } from 'modern-idoc'
+import type { ElementDeclaration, StyleDeclaration } from 'modern-idoc'
 import type { OOXMLNode, OOXMLQueryType } from '../core'
 import type { NonVisualDrawingProperties } from './non-visual-drawing-properties'
 import { parseNonVisualDrawingProperties } from './non-visual-drawing-properties'
@@ -12,7 +12,7 @@ export type ConnectionShapeMeta = NonVisualDrawingProperties['meta'] & {
 }
 
 export interface ConnectionShape extends ElementDeclaration {
-  style: StyleProperty
+  style: Partial<StyleDeclaration>
   meta: ConnectionShapeMeta
 }
 

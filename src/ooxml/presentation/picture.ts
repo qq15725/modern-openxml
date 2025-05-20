@@ -1,4 +1,4 @@
-import type { ElementDeclaration, StyleProperty } from 'modern-idoc'
+import type { ElementDeclaration, StyleDeclaration } from 'modern-idoc'
 import type { OOXMLNode, OOXMLQueryType } from '../core'
 import type { NonVisualDrawingProperties } from './non-visual-drawing-properties'
 import { parseBlipFill, stringifyFill } from '../drawing'
@@ -14,7 +14,7 @@ export type PictureMeta = NonVisualDrawingProperties['meta'] & {
 }
 
 export interface Picture extends ElementDeclaration {
-  style: StyleProperty
+  style: Partial<StyleDeclaration>
   meta: PictureMeta
 }
 
