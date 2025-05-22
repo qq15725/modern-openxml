@@ -59,8 +59,8 @@ export class IDocToPPTXConverter {
       if (SUPPORTS_CRYPTO_SUBTLE && src instanceof Blob) {
         cacheKey = await hashBlob(src)
       }
-      else if (typeof file.src === 'string') {
-        cacheKey = file.src
+      else if (typeof file.image === 'string') {
+        cacheKey = file.image
       }
 
       let name: string
@@ -83,7 +83,7 @@ export class IDocToPPTXConverter {
           : src
       }
       refs.push(`../media/${name}`)
-      file.src = `rId${refs.length}`
+      file.image = `rId${refs.length}`
     }
 
     // slides

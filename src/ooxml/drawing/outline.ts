@@ -2,8 +2,7 @@ import type { LineEndSize, LineEndType, NormalizedOutline } from 'modern-idoc'
 import type { OOXMLNode } from '../core'
 import { OOXMLValue } from '../core'
 import { withAttr, withAttrs, withIndents } from '../utils'
-import { stringifyColor } from './color'
-import { fillXPath, parseFill } from './fill'
+import { fillXPath, parseFill, stringifySolidFill } from './fill'
 
 export type PrstDashType =
   | 'solid'
@@ -107,7 +106,7 @@ export function stringifyOutline(ln?: NormalizedOutline): string | undefined {
     ln.width !== undefined && withAttr('w', OOXMLValue.encode(ln.width, 'ST_LineWidth')),
   ])}>
     ${withIndents([
-      ln.color !== undefined && stringifyColor(String(ln.color)),
+      ln.color !== undefined && stringifySolidFill(String(ln.color)),
       ln.color === undefined && '<a:noFill/>',
     ])}
 </a:ln>`

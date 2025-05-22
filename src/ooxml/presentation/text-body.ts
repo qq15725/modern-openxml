@@ -12,7 +12,7 @@ import type {
 } from 'modern-idoc'
 import type { OOXMLNode, OOXMLQueryType } from '../core'
 import { OOXMLValue } from '../core'
-import { fillXPath, parseFill, parseOutline, stringifyColor } from '../drawing'
+import { fillXPath, parseFill, parseOutline, stringifyFill } from '../drawing'
 import { BiMap, withAttr, withAttrs, withIndents } from '../utils'
 
 export interface TextBody {
@@ -240,7 +240,7 @@ export function stringifyTextBody(txBody?: TextBody): string | undefined {
         withAttr('spc', OOXMLValue.encode(f.letterSpacing, 'fontSize')),
       ])}>
   ${withIndents([
-    stringifyColor(String(f.color)),
+    stringifyFill((f as any).fill),
     isUserFont(fontFamily) && `<a:latin typeface="${fixTypeface(fontFamily)}" />`,
     // isUserFont(fontEastasian) && `<a:ea typeface="${fixTypeface(fontEastasian)}" />`,
     // isUserFont(fontSymbol) && `<a:sym typeface="${fixTypeface(fontSymbol)}" />`,

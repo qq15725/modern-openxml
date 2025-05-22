@@ -2,8 +2,6 @@ import type { OOXMLNode } from '../core'
 import type { SlideMaster } from '../presentation'
 import type { Theme } from './theme'
 import { normalizeColor } from 'modern-idoc'
-import { OOXMLValue } from '../core'
-import { withAttr, withAttrs, withIndents } from '../utils'
 
 interface SysColors {
   [key: string]: string
@@ -260,46 +258,7 @@ export function parseColor(node?: OOXMLNode, ctx?: Record<string, any>): string 
   return normalizeColor(rgba) // hex8
 }
 
-export function stringifyColor(color?: string): string {
-  if (!color)
-    return ''
-
-  if (color.startsWith('linear-gradient')) {
-    const str = color.match(/linear-gradient\((.+)\)$/)?.[1] ?? ''
-    const first = str.split(',')[0]
-    const deg = first.includes('deg') ? first : '0deg'
-    let degree = Number(deg.replace('deg', ''))
-    degree = degree ? (degree + 270) % 360 : degree
-    const ang = OOXMLValue.encode(degree, 'positiveFixedAngle')
-    const matched = str
-      .replace(deg, '')
-      .matchAll(/(#|rgba|rgb)(.+?) ([\d.]+%)/gi)
-    const gs = Array.from(matched).map((res) => {
-      let color = res[2]
-      if (color.startsWith('(')) {
-        color = color.split(',').length > 3 ? `rgba${color}` : `rgb${color}`
-      }
-      else {
-        color = `#${color}`
-      }
-      return `<a:gs pos="${Number(res[3]?.replace('%', '') ?? 0) * 1000}">
-    ${withIndents(_stringifyColor(color))}
-</a:gs>`
-    })
-    return `<a:gradFill>
-  <a:gsLst>
-    ${withIndents(gs, 2)}
-  </a:gsLst>
-  <a:lin${withAttrs([withAttr('ang', ang), withAttr('scaled', 0)])}/>
-</a:gradFill>`
-  }
-
-  return `<a:solidFill>
-  ${withIndents(_stringifyColor(color))}
-</a:solidFill>`
-}
-
-function _stringifyColor(color: string): string {
+export function stringifyColor(color: string): string {
   let alpha = 100000
   if (color === 'transparent') {
     color = '#0000'

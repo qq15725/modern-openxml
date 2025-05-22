@@ -1,6 +1,7 @@
 import type { LineEndSize, NormalizedFill, NormalizedGradientFill, NormalizedImageFill } from 'modern-idoc'
 import type { NormalizedPPTX, SlideElement } from '../ooxml'
 import type { XMLNode } from '../renderers'
+import { isNone } from 'modern-idoc'
 import { measureText } from 'modern-text'
 import { OOXMLValue } from '../ooxml'
 import { XMLRenderer } from '../renderers'
@@ -582,7 +583,9 @@ export class IDocToSVGStringConverter {
             return {
               tag: 'text',
               attrs: {
-                'fill': this._parseFill((rStyle as any).fill, { defs, prefix: `${uuid}-text`, fillMap, width, height }),
+                'fill': isNone((rStyle as any).fill)
+                  ? undefined
+                  : this._parseFill((rStyle as any).fill, { defs, prefix: `${uuid}-text`, fillMap, width, height }),
                 'font-size': rStyle.fontSize,
                 'font-family': rStyle.fontFamily,
                 'letter-spacing': rStyle.letterSpacing,

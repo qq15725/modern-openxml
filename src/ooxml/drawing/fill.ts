@@ -156,7 +156,7 @@ export function stringifyFill(fill?: NormalizedFill, isPic = false): string | un
   if (!fill)
     return undefined
 
-  if (!!fill.image || isPic) {
+  if (Boolean(fill.image) || isPic) {
     const tagName = isPic ? 'p:blipFill' : 'a:blipFill'
     const url = fill.image
       ?? fill.image
@@ -184,8 +184,44 @@ export function stringifyFill(fill?: NormalizedFill, isPic = false): string | un
   </a:stretch>
 </${tagName}>`
   }
-  else if (fill.color) {
-    return stringifyColor(String(fill.color ?? '#FFFFFF'))
+  else if (Boolean(fill.linearGradient) || Boolean(fill.radialGradient)) {
+    return stringifyGradientFill(fill)
   }
-  return undefined
+  else if (fill.color) {
+    return stringifySolidFill(fill.color)
+  }
+  return `<a:noFill/>`
+}
+
+export function stringifySolidFill(color: string): string {
+  return `<a:solidFill>
+  ${withIndents(stringifyColor(color))}
+</a:solidFill>`
+}
+
+export function stringifyGradientFill(fill: NormalizedGradientFill): string | undefined {
+  const { linearGradient } = fill
+  // TODO radialGradient
+
+  if (linearGradient) {
+    const { angle, stops } = linearGradient
+    let degree = angle
+    degree = degree ? (degree + 270) % 360 : degree
+    const ang = OOXMLValue.encode(degree, 'positiveFixedAngle')
+    const gs = stops.map((stop) => {
+      const { offset, color } = stop
+      return `<a:gs pos="${offset * 100000}">
+    ${withIndents(stringifyColor(color))}
+</a:gs>`
+    })
+    return `<a:gradFill>
+  <a:gsLst>
+    ${withIndents(gs, 2)}
+  </a:gsLst>
+  <a:lin${withAttrs([withAttr('ang', ang), withAttr('scaled', 0)])}/>
+</a:gradFill>`
+  }
+  else {
+    return undefined
+  }
 }
