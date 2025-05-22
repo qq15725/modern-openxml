@@ -240,7 +240,10 @@ export function stringifyTextBody(txBody?: TextBody): string | undefined {
         withAttr('spc', OOXMLValue.encode(f.letterSpacing, 'fontSize')),
       ])}>
   ${withIndents([
-    stringifyFill((f as any).fill),
+    stringifyFill(
+      (f as any).fill
+      ?? (f.color ? { color: f.color } : undefined),
+    ),
     isUserFont(fontFamily) && `<a:latin typeface="${fixTypeface(fontFamily)}" />`,
     // isUserFont(fontEastasian) && `<a:ea typeface="${fixTypeface(fontEastasian)}" />`,
     // isUserFont(fontSymbol) && `<a:sym typeface="${fixTypeface(fontSymbol)}" />`,

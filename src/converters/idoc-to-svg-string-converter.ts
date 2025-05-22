@@ -584,7 +584,9 @@ export class IDocToSVGStringConverter {
               tag: 'text',
               attrs: {
                 'fill': isNone((rStyle as any).fill)
-                  ? undefined
+                  ? isNone(rStyle.color)
+                    ? undefined
+                    : rStyle.color
                   : this._parseFill((rStyle as any).fill, { defs, prefix: `${uuid}-text`, fillMap, width, height }),
                 'font-size': rStyle.fontSize,
                 'font-family': rStyle.fontFamily,
