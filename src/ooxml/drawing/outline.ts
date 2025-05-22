@@ -1,4 +1,4 @@
-import type { LineEndSize, LineEndType, OutlineDeclaration } from 'modern-idoc'
+import type { LineEndSize, LineEndType, NormalizedOutline } from 'modern-idoc'
 import type { OOXMLNode } from '../core'
 import { OOXMLValue } from '../core'
 import { withAttr, withAttrs, withIndents } from '../utils'
@@ -22,7 +22,7 @@ export type PrstDashType =
 // a:extLst
 // a:miter
 // a:round
-export function parseOutline(node?: OOXMLNode, ctx?: any): OutlineDeclaration | undefined {
+export function parseOutline(node?: OOXMLNode, ctx?: any): NormalizedOutline | undefined {
   if (node && node.name !== 'a:ln') {
     node = node.find('a:ln')
   }
@@ -99,7 +99,7 @@ export function parseOutline(node?: OOXMLNode, ctx?: any): OutlineDeclaration | 
 //     : 'solid'
 // }
 
-export function stringifyOutline(ln?: OutlineDeclaration): string | undefined {
+export function stringifyOutline(ln?: NormalizedOutline): string | undefined {
   if (!ln)
     return undefined
 

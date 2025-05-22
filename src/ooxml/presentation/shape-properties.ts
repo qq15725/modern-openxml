@@ -1,9 +1,9 @@
 import type {
-  EffectDeclaration,
-  FillDeclaration,
-  GeometryDeclaration,
-  OutlineDeclaration,
-  SolidFillDeclaration,
+  NormalizedColorFill,
+  NormalizedEffect,
+  NormalizedFill,
+  NormalizedOutline,
+  NormalizedShape,
 } from 'modern-idoc'
 import type { OOXMLNode, OOXMLQueryType } from '../core'
 import type { Transform2d } from './transform2d'
@@ -21,10 +21,10 @@ import { parseGeometry, stringifyGeometry } from './geometry'
 import { parseTransform2d, stringifyTransform2d } from './transform2d'
 
 export interface ShapeProperties extends Transform2d {
-  geometry?: GeometryDeclaration
-  fill?: FillDeclaration
-  outline?: OutlineDeclaration
-  effect?: EffectDeclaration
+  geometry?: NormalizedShape
+  fill?: NormalizedFill
+  outline?: NormalizedOutline
+  effect?: NormalizedEffect
 }
 
 export function parseShapeProperties(spPr?: OOXMLNode, ctx?: any): ShapeProperties | undefined {
@@ -33,7 +33,7 @@ export function parseShapeProperties(spPr?: OOXMLNode, ctx?: any): ShapeProperti
 
   const query = ctx?.query ?? spPr.query
 
-  let fill = (parseFill(query(`${fillXPath}`), ctx) ?? {}) as SolidFillDeclaration
+  let fill = (parseFill(query(`${fillXPath}`), ctx) ?? {}) as NormalizedColorFill
   if (!spPr.find(`${fillXPath}`)) {
     const fillRef = spPr.find('../p:style/a:fillRef')
     const fillRefIdx = fillRef?.attr<number>('@idx', 'number') ?? 1

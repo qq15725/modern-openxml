@@ -1,4 +1,4 @@
-import type { DocumentDeclaration } from 'modern-idoc'
+import type { NormalizedDocument } from 'modern-idoc'
 import type { CoreProperties } from './doc-props'
 import type { Theme } from './drawing'
 import type { Slide, SlideLayout, SlideMaster } from './presentation'
@@ -24,7 +24,7 @@ export interface PPTXStyle {
   height: number
 }
 
-export interface PPTXDeclaration extends DocumentDeclaration {
+export interface NormalizedPPTX extends NormalizedDocument {
   style: PPTXStyle
   children: Slide[]
   meta: PPTXMeta

@@ -1,4 +1,4 @@
-import type { GeometryDeclaration } from 'modern-idoc'
+import type { NormalizedShape } from 'modern-idoc'
 import type { OOXMLNode } from '../core'
 import { svgPathCommandsToData, svgPathDataToCommands } from 'modern-path2d'
 import { OOXMLValue } from '../core'
@@ -8,7 +8,7 @@ function parseGdList(gdList?: OOXMLNode): Record<string, any>[] {
   return gdList?.get('*[(self::a:gd or self::gd)]').map(gd => ({ name: gd.attr('@name'), fmla: gd.attr('@fmla') })) ?? []
 }
 
-export function parseGeometry(geom?: OOXMLNode, ctx?: Record<string, any>): GeometryDeclaration | undefined {
+export function parseGeometry(geom?: OOXMLNode, ctx?: Record<string, any>): NormalizedShape | undefined {
   if (!geom)
     return undefined
   let prstGeom, custGeom
@@ -26,7 +26,7 @@ export function parseGeometry(geom?: OOXMLNode, ctx?: Record<string, any>): Geom
   }
   else {
     if (preset) {
-      const node = ctx?.presetShapeDefinitions?.find(preset)
+      const node = ctx?.presetNormalizedShapeDefinitions?.find(preset)
       ctx = {
         ...ctx,
         preset,
@@ -38,7 +38,7 @@ export function parseGeometry(geom?: OOXMLNode, ctx?: Record<string, any>): Geom
         pathLst: node?.find('pathLst'),
       }
       return {
-        name: preset,
+        preset,
         paths: getPaths(ctx as any).map((path) => {
           const { commands, ...props } = path
           return {
@@ -68,9 +68,9 @@ export function parseGeometry(geom?: OOXMLNode, ctx?: Record<string, any>): Geom
   }
 }
 
-export function stringifyGeometry(geometry?: GeometryDeclaration): string {
-  // TODO !geometry?.name
-  if (geometry?.paths?.length) {
+export function stringifyGeometry(shape?: NormalizedShape): string {
+  // TODO !shape?.name
+  if (shape?.paths?.length) {
     return `<a:custGeom>
   <a:avLst/>
   <a:gdLst/>
@@ -78,7 +78,7 @@ export function stringifyGeometry(geometry?: GeometryDeclaration): string {
   <a:cxnLst/>
   <a:rect l="l" t="t" r="r" b="b"/>
   <a:pathLst>
-  ${withIndents(geometry.paths.map((path) => {
+  ${withIndents(shape.paths.map((path) => {
     let currentPoint: { x: number, y: number }
     return `<a:path>
       ${withIndents(svgPathDataToCommands(path.data).map((cmd) => {
@@ -195,7 +195,7 @@ export function stringifyGeometry(geometry?: GeometryDeclaration): string {
 </a:custGeom>`
   }
   else {
-    return `<a:prstGeom prst="${geometry?.name ?? 'rect'}">
+    return `<a:prstGeom prst="${shape?.preset ?? 'rect'}">
   <a:avLst/>
 </a:prstGeom>`
   }

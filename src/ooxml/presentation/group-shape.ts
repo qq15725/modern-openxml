@@ -1,4 +1,4 @@
-import type { ElementDeclaration, StyleDeclaration } from 'modern-idoc'
+import type { NormalizedElement, NormalizedStyle } from 'modern-idoc'
 import type { OOXMLNode, OOXMLQueryType } from '../core'
 import type { NonVisualDrawingProperties } from './non-visual-drawing-properties'
 import type { SlideElement } from './slide'
@@ -17,8 +17,8 @@ export type GroupShapeMeta = NonVisualDrawingProperties['meta'] & {
   placeholderIndex?: string
 }
 
-export interface GroupShape extends ElementDeclaration {
-  style: Partial<StyleDeclaration>
+export interface GroupShape extends NormalizedElement {
+  style: Partial<NormalizedStyle>
   children: SlideElement[]
   meta: GroupShapeMeta
 }

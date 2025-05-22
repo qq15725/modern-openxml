@@ -1,7 +1,7 @@
 import type { Unzipped } from 'fflate'
-import type { ElementDeclaration } from 'modern-idoc'
+import type { NormalizedElement } from 'modern-idoc'
 import type {
-  PPTXDeclaration,
+  NormalizedPPTX,
   PPTXSource,
   Slide,
   SlideElement,
@@ -24,7 +24,7 @@ import {
 } from '../ooxml'
 
 export interface PPTXUploadOptions {
-  upload?: (input: string, file: { src: string }, source: PPTXDeclaration | Slide | SlideLayout | SlideMaster | SlideElement) => any | Promise<any>
+  upload?: (input: string, file: { src: string }, source: NormalizedPPTX | Slide | SlideLayout | SlideMaster | SlideElement) => any | Promise<any>
   progress?: (progress: number, total: number, cached: boolean) => void
 }
 
@@ -42,7 +42,7 @@ function isNodeReadableStream(obj: any): obj is NodeJS.ReadableStream {
 
 export class PPTXToIDocConverter {
   unzipped?: Unzipped
-  pptx?: PPTXDeclaration
+  pptx?: NormalizedPPTX
 
   protected async _resolveSource(source: PPTXSource): Promise<Uint8Array> {
     if (typeof source === 'string') {
@@ -111,7 +111,7 @@ export class PPTXToIDocConverter {
     return uint8Array
   }
 
-  async decode(source: PPTXSource, options: PPTXDecodeOptions = {}): Promise<PPTXDeclaration> {
+  async decode(source: PPTXSource, options: PPTXDecodeOptions = {}): Promise<NormalizedPPTX> {
     this.unzipped = unzipSync(await this._resolveSource(source))
 
     const createNode = (xml?: string): OOXMLNode => OOXMLNode.fromXML(xml, namespaces)
@@ -150,7 +150,7 @@ export class PPTXToIDocConverter {
       contentTypes,
     )
 
-    const pptx: PPTXDeclaration = {
+    const pptx: NormalizedPPTX = {
       style: {
         width: presentation.width,
         height: presentation.height,
@@ -328,7 +328,7 @@ export class PPTXToIDocConverter {
     return PPTXToIDocConverter.mimeTypes[filePath.substring(filePath.lastIndexOf('.')).toLowerCase()] || undefined
   }
 
-  async upload(options: PPTXUploadOptions = {}, pptx = this.pptx): Promise<PPTXDeclaration> {
+  async upload(options: PPTXUploadOptions = {}, pptx = this.pptx): Promise<NormalizedPPTX> {
     if (!pptx) {
       throw new Error('Failed to upload, miss pptx object')
     }
@@ -344,7 +344,7 @@ export class PPTXToIDocConverter {
     let current = 0
     const tasks = []
 
-    const _upload = async (file: any, source: ElementDeclaration): Promise<string> => {
+    const _upload = async (file: any, source: NormalizedElement): Promise<string> => {
       const key = JSON.stringify({ ...file, width: (source as any).width, height: (source as any).height })
       let promise: Promise<any>
       const cached = cache.has(key)
@@ -352,22 +352,22 @@ export class PPTXToIDocConverter {
         promise = cache.get(key)!
       }
       else {
-        promise = upload?.(this._readFile(file.src, 'base64'), file as any, source as any)
+        promise = upload?.(this._readFile(file.image, 'base64'), file as any, source as any)
         cache.set(key, promise)
       }
       const output = await promise
       progress?.(++current, tasks.length, cached)
       if (output) {
-        file.src = output
+        file.image = output
       }
       return output
     }
 
-    function handleUpload(el: ElementDeclaration): Promise<any>[] {
+    function handleUpload(el: NormalizedElement): Promise<any>[] {
       return [
-        el.background?.src && _upload(el.background, el),
-        el.fill?.src && _upload(el.fill, el),
-        el.foreground?.src && _upload(el.foreground, el),
+        el.background?.image && _upload(el.background, el),
+        el.fill?.image && _upload(el.fill, el),
+        el.foreground?.image && _upload(el.foreground, el),
         el.audio?.src && _upload(el.audio, el),
         el.video?.src && _upload(el.video, el),
         ...(el.children?.flatMap(childEl => handleUpload(childEl as any)) ?? []),
@@ -390,7 +390,7 @@ export class PPTXToIDocConverter {
     return pptx
   }
 
-  async convert(source: PPTXSource, options: PPTXConvertOptions = {}): Promise<PPTXDeclaration> {
+  async convert(source: PPTXSource, options: PPTXConvertOptions = {}): Promise<NormalizedPPTX> {
     return await this.upload(
       options,
       await this.decode(source, options),

@@ -1,4 +1,4 @@
-import type { ElementDeclaration, StyleDeclaration } from 'modern-idoc'
+import type { NormalizedElement, NormalizedStyle } from 'modern-idoc'
 import type { OOXMLNode, OOXMLQueryType } from '../core'
 import type { NonVisualDrawingProperties } from './non-visual-drawing-properties'
 import { parseNonVisualDrawingProperties } from './non-visual-drawing-properties'
@@ -11,8 +11,8 @@ export type ConnectionShapeMeta = NonVisualDrawingProperties['meta'] & {
   placeholderIndex?: string
 }
 
-export interface ConnectionShape extends ElementDeclaration {
-  style: Partial<StyleDeclaration>
+export interface ConnectionShape extends NormalizedElement {
+  style: Partial<NormalizedStyle>
   meta: ConnectionShapeMeta
 }
 

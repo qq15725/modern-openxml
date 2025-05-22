@@ -1,9 +1,9 @@
-import type { BackgroundDeclaration } from 'modern-idoc'
+import type { NormalizedBackground } from 'modern-idoc'
 import type { OOXMLNode } from '../core'
 import { parseColor, parseFill, stringifyFill } from '../drawing'
 import { withIndents } from '../utils'
 
-export function parseBackground(bg?: OOXMLNode, ctx?: any): BackgroundDeclaration | undefined {
+export function parseBackground(bg?: OOXMLNode, ctx?: any): NormalizedBackground | undefined {
   if (!bg)
     return undefined
 
@@ -19,16 +19,20 @@ export function parseBackground(bg?: OOXMLNode, ctx?: any): BackgroundDeclaratio
     if (bgFill?.color === 'phClr') {
       return {
         color: parseColor(bgRef, ctx),
+        fillWithShape: true,
       }
     }
     return bgFill
   }
   else {
-    return parseFill(bg.find('p:bgPr'), ctx)
+    return {
+      ...parseFill(bg.find('p:bgPr'), ctx),
+      fillWithShape: true,
+    }
   }
 }
 
-export function stringifyBackground(bg?: BackgroundDeclaration): string | undefined {
+export function stringifyBackground(bg?: NormalizedBackground): string | undefined {
   if (!bg)
     return undefined
 

@@ -1,4 +1,4 @@
-import type { EffectDeclaration, FillDeclaration, OutlineDeclaration } from 'modern-idoc'
+import type { NormalizedEffect, NormalizedFill, NormalizedOutline } from 'modern-idoc'
 import type { OOXMLNode } from '../core'
 import type { ColorMap } from '../presentation'
 import type { ColorScheme } from './color-scheme'
@@ -15,10 +15,10 @@ export interface Theme {
   extraColorMap?: ColorMap
   extraColorScheme?: ColorScheme
   fontScheme?: FontScheme
-  fillStyleList?: FillDeclaration[]
-  outlineStyleList?: OutlineDeclaration[]
-  effectStyleList?: EffectDeclaration[]
-  backgroundFillStyleList?: FillDeclaration[]
+  fillStyleList?: NormalizedFill[]
+  outlineStyleList?: NormalizedOutline[]
+  effectStyleList?: NormalizedEffect[]
+  backgroundFillStyleList?: NormalizedFill[]
   meta: {
     id: string
   }

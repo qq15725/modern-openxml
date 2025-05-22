@@ -1,7 +1,7 @@
 import type { Unzipped } from 'fflate'
 import type {
+  NormalizedPPTX,
   PPTX,
-  PPTXDeclaration,
   Slide,
   SlideElement,
 } from '../ooxml'
@@ -29,7 +29,7 @@ import {
 
 export class IDocToPPTXConverter {
   async encode(pptx: PPTX): Promise<Uint8Array> {
-    const _pptx = { ...pptx } as PPTXDeclaration
+    const _pptx = { ...pptx } as NormalizedPPTX
 
     const unzipped: Unzipped = {}
     const add = (path: string, content: string): void => {
@@ -37,7 +37,7 @@ export class IDocToPPTXConverter {
     }
     const cache = new Map<any, string>()
     const addMedia = async (file: any, refs: string[], fileName: string, fileExt: string): Promise<void> => {
-      let src = file.src
+      let src = file.image
 
       if (typeof src === 'string') {
         if (src.startsWith('http')) {
@@ -93,9 +93,9 @@ export class IDocToPPTXConverter {
 
         const uploadRefs = <T>(el: Slide | SlideElement): T[] =>
           [
-            el.background?.src && addMedia(el.background, slideRefs, 'image', 'png'),
-            el.foreground?.src && addMedia(el.foreground, slideRefs, 'image', 'png'),
-            el.fill?.src && addMedia(el.fill, slideRefs, 'image', 'png'),
+            el.background?.image && addMedia(el.background, slideRefs, 'image', 'png'),
+            el.foreground?.image && addMedia(el.foreground, slideRefs, 'image', 'png'),
+            el.fill?.image && addMedia(el.fill, slideRefs, 'image', 'png'),
             el.audio?.src && addMedia(el.audio, slideRefs, 'media', 'mp3'),
             el.video?.src && addMedia(el.video, slideRefs, 'media', 'mp4'),
             ...(el.children ?? []).flatMap(el => uploadRefs(el as SlideElement)),

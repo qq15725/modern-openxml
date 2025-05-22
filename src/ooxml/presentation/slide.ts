@@ -1,4 +1,4 @@
-import type { ElementDeclaration } from 'modern-idoc'
+import type { NormalizedElement } from 'modern-idoc'
 import type { OOXMLNode } from '../core'
 import type { ConnectionShape } from './connection-shape'
 import type { GraphicFrame } from './graphic-frame'
@@ -31,7 +31,7 @@ export interface SlideMeta {
   themeId: string
 }
 
-export interface Slide extends Transition, Timing, ElementDeclaration {
+export interface Slide extends Transition, Timing, NormalizedElement {
   children: SlideElement[]
   meta: SlideMeta
 }

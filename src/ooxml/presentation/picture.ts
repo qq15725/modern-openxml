@@ -1,4 +1,4 @@
-import type { ElementDeclaration, StyleDeclaration } from 'modern-idoc'
+import type { NormalizedElement, NormalizedStyle } from 'modern-idoc'
 import type { OOXMLNode, OOXMLQueryType } from '../core'
 import type { NonVisualDrawingProperties } from './non-visual-drawing-properties'
 import { parseBlipFill, stringifyFill } from '../drawing'
@@ -13,8 +13,8 @@ export type PictureMeta = NonVisualDrawingProperties['meta'] & {
   placeholderIndex?: string
 }
 
-export interface Picture extends ElementDeclaration {
-  style: Partial<StyleDeclaration>
+export interface Picture extends NormalizedElement {
+  style: Partial<NormalizedStyle>
   meta: PictureMeta
 }
 
@@ -45,7 +45,10 @@ export function parsePicture(node?: OOXMLNode, ctx?: any): Picture | undefined {
       ...cNvPr?.style,
       ...spPr?.style,
     },
-    foreground: parseBlipFill(query('p:blipFill'), ctx),
+    foreground: {
+      ...parseBlipFill(query('p:blipFill'), ctx),
+      fillWithShape: true,
+    },
     meta: {
       ...cNvPr?.meta,
       type: 'picture',

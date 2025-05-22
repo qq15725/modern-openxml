@@ -1,6 +1,7 @@
 import type { OOXMLNode } from '../core'
 import type { SlideMaster } from '../presentation'
 import type { Theme } from './theme'
+import { normalizeColor } from 'modern-idoc'
 import { OOXMLValue } from '../core'
 import { withAttr, withAttrs, withIndents } from '../utils'
 
@@ -186,7 +187,7 @@ const tags = [
 
 export const colorXPath = `*[(${tags.map(v => `self::${v}`).join(' or ')})]`
 
-function parseColorHex(node: OOXMLNode, ctx?: Record<string, any>): string {
+function parseHex6Color(node: OOXMLNode, ctx?: Record<string, any>): string {
   switch (node.name) {
     case 'a:hslClr':
       return toHex(hslToRgb({
@@ -234,14 +235,14 @@ export function parseColor(node?: OOXMLNode, ctx?: Record<string, any>): string 
   if (!node)
     return undefined
 
-  const hex = parseColorHex(node, ctx)
+  const hex6 = parseHex6Color(node, ctx)
 
-  if (!hex || !hex.startsWith('#')) {
-    return hex
+  if (!hex6 || !hex6.startsWith('#')) {
+    return hex6
   }
 
   const rgba = {
-    ...hexToRgb(hex),
+    ...hexToRgb(hex6),
     a: ~~((node.attr<number>('a:alpha/@val', 'ST_PositivePercentage') ?? 1) * 100) / 100,
   }
 
@@ -256,7 +257,7 @@ export function parseColor(node?: OOXMLNode, ctx?: Record<string, any>): string 
     rgba.b = newRgb.b
   }
 
-  return `rgba(${rgba.r}, ${rgba.g}, ${rgba.b}, ${rgba.a})`
+  return normalizeColor(rgba) // hex8
 }
 
 export function stringifyColor(color?: string): string {

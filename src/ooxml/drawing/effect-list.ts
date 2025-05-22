@@ -1,13 +1,13 @@
 import type {
-  EffectDeclaration,
-  InnerShadowDeclaration,
-  OuterShadowDeclaration,
-  SoftEdgeDeclaration,
+  NormalizedEffect,
+  NormalizedInnerShadow,
+  NormalizedOuterShadow,
+  NormalizedSoftEdge,
 } from 'modern-idoc'
 import type { OOXMLNode } from '../core'
 import { parseColor } from './color'
 
-function parseInnerShadow(innerShdw?: OOXMLNode, ctx?: any): InnerShadowDeclaration | undefined {
+function parseInnerShadow(innerShdw?: OOXMLNode, ctx?: any): NormalizedInnerShadow | undefined {
   if (!innerShdw)
     return undefined
   const color = parseColor(innerShdw, ctx)
@@ -30,7 +30,7 @@ function parseInnerShadow(innerShdw?: OOXMLNode, ctx?: any): InnerShadowDeclarat
 // @prop('@kx', 'ST_FixedAngle') declare kx?: number
 // @prop('@ky', 'ST_FixedAngle') declare ky?: number
 // @prop('@rotWithShape', 'boolean') declare rotWithShape?: boolean
-function parseOuterShadow(outerShdw?: OOXMLNode, ctx?: any): OuterShadowDeclaration | undefined {
+function parseOuterShadow(outerShdw?: OOXMLNode, ctx?: any): NormalizedOuterShadow | undefined {
   const base = parseInnerShadow(outerShdw, ctx)
   if (!base) {
     return undefined
@@ -44,7 +44,7 @@ function parseOuterShadow(outerShdw?: OOXMLNode, ctx?: any): OuterShadowDeclarat
   }
 }
 
-function parseSoftEdge(softEdge?: OOXMLNode): SoftEdgeDeclaration | undefined {
+function parseSoftEdge(softEdge?: OOXMLNode): NormalizedSoftEdge | undefined {
   if (!softEdge) {
     return undefined
   }
@@ -55,7 +55,7 @@ function parseSoftEdge(softEdge?: OOXMLNode): SoftEdgeDeclaration | undefined {
 }
 
 // a:effectLst
-export function parseEffectList(effectLst?: OOXMLNode, ctx?: any): EffectDeclaration | undefined {
+export function parseEffectList(effectLst?: OOXMLNode, ctx?: any): NormalizedEffect | undefined {
   if (!effectLst)
     return undefined
 

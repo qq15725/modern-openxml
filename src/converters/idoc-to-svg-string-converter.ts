@@ -1,5 +1,5 @@
-import type { FillDeclaration, LineEndSize } from 'modern-idoc'
-import type { PPTXDeclaration, SlideElement } from '../ooxml'
+import type { LineEndSize, NormalizedFill } from 'modern-idoc'
+import type { NormalizedPPTX, SlideElement } from '../ooxml'
 import type { XMLNode } from '../renderers'
 import { measureText } from 'modern-text'
 import { OOXMLValue } from '../ooxml'
@@ -105,7 +105,7 @@ export class IDocToSVGStringConverter {
     }
   }
 
-  parseFill(fill: FillDeclaration, ctx: {
+  parseFill(fill: NormalizedFill, ctx: {
     key: string
     attrs?: Record<string, any>
     width: number
@@ -119,21 +119,21 @@ export class IDocToSVGStringConverter {
 
     const suffix = `${key}-${uuid}`
 
-    if (fill?.src) {
+    if (fill?.image) {
       // TODO tile
       // TODO stretch
-      const { src, srcRect, opacity = 1 } = fill
+      const { image, cropRect, opacity = 1 } = fill
 
-      const srcRectAttrs: Record<string, any> = {}
+      const cropRectAttrs: Record<string, any> = {}
 
-      if (srcRect) {
-        const { left = 0, top = 0, bottom = 0, right = 0 } = srcRect
+      if (cropRect) {
+        const { left = 0, top = 0, bottom = 0, right = 0 } = cropRect
         const srcWidth = width / (1 - right - left)
         const srcHeight = height / (1 - top - bottom)
         const tx = ((right - left) / 2) * srcWidth
         const ty = ((bottom - top) / 2) * srcHeight
-        srcRectAttrs['src-rect'] = JSON.stringify(srcRect).replace(/"/g, '\'')
-        srcRectAttrs.transform = [
+        cropRectAttrs['src-rect'] = JSON.stringify(cropRect).replace(/"/g, '\'')
+        cropRectAttrs.transform = [
           `translate(${tx},${ty})`,
           `translate(${width / 2},${height / 2})`,
           `scale(${srcWidth / width}, ${srcHeight / height})`,
@@ -148,11 +148,11 @@ export class IDocToSVGStringConverter {
         children: [
           {
             tag: 'g',
-            attrs: { 'data-title': 'srcRect', ...srcRectAttrs },
+            attrs: { 'data-title': 'cropRect', ...cropRectAttrs },
             children: [
               {
                 tag: 'image',
-                attrs: { href: src, width, height, opacity, preserveAspectRatio: 'none' },
+                attrs: { href: image, width, height, opacity, preserveAspectRatio: 'none' },
               },
             ],
           },
@@ -279,7 +279,7 @@ export class IDocToSVGStringConverter {
       style = {},
       background,
       foreground,
-      geometry,
+      shape,
       // video,
       fill,
       outline,
@@ -342,13 +342,13 @@ export class IDocToSVGStringConverter {
 
     const colorMap = new Map<string, string>()
 
-    const geometryPaths: XMLNode[] = geometry?.paths
-      ? geometry.paths.map((path, idx) => {
+    const geometryPaths: XMLNode[] = shape?.paths
+      ? shape.paths.map((path, idx) => {
           return {
             tag: 'path',
             attrs: {
-              'data-title': geometry.name,
-              'id': `geometry-${idx}-${uuid}`,
+              'data-title': shape.preset,
+              'id': `shape-${idx}-${uuid}`,
               'd': path.data,
               'fill': path.fill,
               'stroke': path.stroke,
@@ -359,7 +359,7 @@ export class IDocToSVGStringConverter {
       : [
           {
             tag: 'rect',
-            attrs: { id: `geometry-${0}-${uuid}`, width, height },
+            attrs: { id: `shape-${0}-${uuid}`, width, height },
           },
         ]
     defs.children.push(...geometryPaths)
@@ -637,7 +637,7 @@ export class IDocToSVGStringConverter {
     return container
   }
 
-  parse(pptx: PPTXDeclaration): XMLNode {
+  parse(pptx: NormalizedPPTX): XMLNode {
     const {
       width,
       height,
@@ -784,7 +784,7 @@ export class IDocToSVGStringConverter {
     })
   }
 
-  convert(pptx: PPTXDeclaration): string {
+  convert(pptx: NormalizedPPTX): string {
     return this.xmlRenderer.render(
       this.parse(pptx),
     )

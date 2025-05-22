@@ -1,9 +1,9 @@
 import type {
   FragmentContent,
-  SolidFillDeclaration,
-  StyleDeclaration,
+  NormalizedColorFill,
+  NormalizedStyle,
+  NormalizedText,
   TextAlign,
-  TextDeclaration,
   TextDecoration,
   TextTransform,
   TextWrap,
@@ -16,8 +16,8 @@ import { fillXPath, parseFill, parseOutline, stringifyColor } from '../drawing'
 import { BiMap, withAttr, withAttrs, withIndents } from '../utils'
 
 export interface TextBody {
-  style: Partial<StyleDeclaration>
-  text?: TextDeclaration
+  style: Partial<NormalizedStyle>
+  text?: NormalizedText
 }
 
 const characterEntities = Object.entries({
@@ -108,7 +108,7 @@ export function parseTextBody(txBody?: OOXMLNode, ctx?: Record<string, any>): Te
           ?? queryPPr(`a:defRPr/${path}`, type)
         ) as T
       }
-      const fill = parseFill(queryRPr(fillXPath), ctx) as SolidFillDeclaration | undefined
+      const fill = parseFill(queryRPr(fillXPath), ctx) as NormalizedColorFill | undefined
       const outline = parseOutline(queryRPr('a:ln'), ctx)
 
       let fontFamily = queryRPr<string>('*[self::a:cs or self::a:ea or self::a:latin or self::a:sym]/@typeface', 'StringValue')

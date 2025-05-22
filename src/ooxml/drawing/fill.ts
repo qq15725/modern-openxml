@@ -1,4 +1,4 @@
-import type { FillDeclaration, TextureFillDeclaration } from 'modern-idoc'
+import type { NormalizedFill, NormalizedImageFill } from 'modern-idoc'
 import type { OOXMLNode } from '../core'
 import { OOXMLValue } from '../core'
 import {
@@ -21,7 +21,7 @@ const tags = [
 
 export const fillXPath = `*[(${tags.map(v => `self::${v}`).join(' or ')})]`
 
-export function parseFill(fill?: OOXMLNode, ctx?: Record<string, any>): FillDeclaration | undefined {
+export function parseFill(fill?: OOXMLNode, ctx?: Record<string, any>): NormalizedFill | undefined {
   if (fill && !tags.includes(fill?.name)) {
     fill = fill.find(fillXPath)
   }
@@ -40,7 +40,7 @@ export function parseFill(fill?: OOXMLNode, ctx?: Record<string, any>): FillDecl
       }
     case 'a:gradFill':
       return {
-        color: parseGradientFill(fill, ctx)!,
+        image: parseGradientFill(fill, ctx)!,
       }
     case 'a:grpFill':
       return ctx?.parents?.length
@@ -56,7 +56,7 @@ export function parseFill(fill?: OOXMLNode, ctx?: Record<string, any>): FillDecl
 }
 
 // a:BlipFill
-export function parseBlipFill(fill?: OOXMLNode, ctx?: Record<string, any>): TextureFillDeclaration | undefined {
+export function parseBlipFill(fill?: OOXMLNode, ctx?: Record<string, any>): NormalizedImageFill | undefined {
   if (!fill)
     return undefined
 
@@ -73,7 +73,7 @@ export function parseBlipFill(fill?: OOXMLNode, ctx?: Record<string, any>): Text
   src = src ?? embed
 
   const srcRectNode = fill.find('a:srcRect')
-  const srcRect = srcRectNode
+  const cropRect = srcRectNode
     ? clearUndef({
         top: srcRectNode.attr<number>('@t', 'ST_Percentage'),
         right: srcRectNode.attr<number>('@r', 'ST_Percentage'),
@@ -82,7 +82,7 @@ export function parseBlipFill(fill?: OOXMLNode, ctx?: Record<string, any>): Text
       })
     : undefined
   const fillRectNode = fill.find('a:stretch/a:fillRect')
-  const fillRect = fillRectNode
+  const stretchRect = fillRectNode
     ? clearUndef({
         top: fillRectNode.attr<number>('@t', 'ST_Percentage'),
         right: fillRectNode.attr<number>('@r', 'ST_Percentage'),
@@ -104,13 +104,13 @@ export function parseBlipFill(fill?: OOXMLNode, ctx?: Record<string, any>): Text
     : undefined
 
   return {
-    rotateWithShape: fill.attr<boolean>('@rotWithShape', 'boolean'),
+    image: src,
+    cropRect: cropRect && Object.keys(cropRect).length > 0 ? cropRect : undefined,
+    stretchRect: stretchRect && Object.keys(stretchRect).length > 0 ? stretchRect : undefined,
     dpi: fill.attr<number>('@dpi', 'number'),
-    src,
     opacity: fill.attr<number>('a:blip/a:alphaModFix/@amt', 'ST_PositivePercentage'),
-    srcRect,
-    stretch: fillRect && Object.keys(fillRect).length > 0 ? { rect: fillRect } : undefined,
     tile: tile && Object.keys(tile).length > 0 ? tile : undefined,
+    rotateWithShape: fill.attr<boolean>('@rotWithShape', 'boolean'),
   }
 }
 
@@ -140,6 +140,7 @@ function parseGradientFill(gradFill?: OOXMLNode, ctx?: any): string | undefined 
     // const b = fillToRect?.attr('@b', 'percentage')
     return `radial-gradient(${colorStops.map(({ color, percentage }) => `${color} ${percentage}%`).join(',')})`
   }
+
   const degree = gradFill.attr<number>('a:lin/@ang', 'positiveFixedAngle') ?? 0
   // const scaled = gradFill.attr('a:lin/@scaled')
   return `linear-gradient(${[
@@ -148,14 +149,14 @@ function parseGradientFill(gradFill?: OOXMLNode, ctx?: any): string | undefined 
   ].join(',')})`
 }
 
-export function stringifyFill(fill?: FillDeclaration, isPic = false): string | undefined {
+export function stringifyFill(fill?: NormalizedFill, isPic = false): string | undefined {
   if (!fill)
     return undefined
 
-  if (!!fill.src || isPic) {
+  if (!!fill.image || isPic) {
     const tagName = isPic ? 'p:blipFill' : 'a:blipFill'
-    const url = fill.src
-      ?? fill.src
+    const url = fill.image
+      ?? fill.image
     return `<${tagName}>
   <a:blip${withAttrs([withAttr('r:embed', url)])}>
     ${withIndents([
@@ -165,17 +166,17 @@ export function stringifyFill(fill?: FillDeclaration, isPic = false): string | u
     <a:lum/>
   </a:blip>
   <a:srcRect${withAttrs([
-    !!fill.srcRect?.top && withAttr('t', OOXMLValue.encode(fill.srcRect?.top, 'ST_Percentage')),
-    !!fill.srcRect?.right && withAttr('r', OOXMLValue.encode(fill.srcRect?.right, 'ST_Percentage')),
-    !!fill.srcRect?.bottom && withAttr('b', OOXMLValue.encode(fill.srcRect?.bottom, 'ST_Percentage')),
-    !!fill.srcRect?.left && withAttr('l', OOXMLValue.encode(fill.srcRect?.left, 'ST_Percentage')),
+    !!fill.cropRect?.top && withAttr('t', OOXMLValue.encode(fill.cropRect?.top, 'ST_Percentage')),
+    !!fill.cropRect?.right && withAttr('r', OOXMLValue.encode(fill.cropRect?.right, 'ST_Percentage')),
+    !!fill.cropRect?.bottom && withAttr('b', OOXMLValue.encode(fill.cropRect?.bottom, 'ST_Percentage')),
+    !!fill.cropRect?.left && withAttr('l', OOXMLValue.encode(fill.cropRect?.left, 'ST_Percentage')),
   ])}/>
   <a:stretch>
     <a:fillRect${withAttrs([
-      !!fill.stretch?.rect?.top && withAttr('t', OOXMLValue.encode(fill.stretch?.rect?.top, 'ST_Percentage')),
-      !!fill.stretch?.rect?.right && withAttr('r', OOXMLValue.encode(fill.stretch?.rect?.right, 'ST_Percentage')),
-      !!fill.stretch?.rect?.bottom && withAttr('b', OOXMLValue.encode(fill.stretch?.rect?.bottom, 'ST_Percentage')),
-      !!fill.stretch?.rect?.left && withAttr('l', OOXMLValue.encode(fill.stretch?.rect?.left, 'ST_Percentage')),
+      !!fill.stretchRect?.top && withAttr('t', OOXMLValue.encode(fill.stretchRect?.top, 'ST_Percentage')),
+      !!fill.stretchRect?.right && withAttr('r', OOXMLValue.encode(fill.stretchRect?.right, 'ST_Percentage')),
+      !!fill.stretchRect?.bottom && withAttr('b', OOXMLValue.encode(fill.stretchRect?.bottom, 'ST_Percentage')),
+      !!fill.stretchRect?.left && withAttr('l', OOXMLValue.encode(fill.stretchRect?.left, 'ST_Percentage')),
     ])}/>
   </a:stretch>
 </${tagName}>`

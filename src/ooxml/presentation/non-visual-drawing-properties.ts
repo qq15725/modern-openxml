@@ -1,4 +1,4 @@
-import type { StyleDeclaration } from 'modern-idoc'
+import type { NormalizedStyle } from 'modern-idoc'
 import type { OOXMLNode } from '../core'
 import { withAttr, withAttrs } from '../utils'
 
@@ -11,7 +11,7 @@ export interface NonVisualDrawingPropertiesMeta {
 export interface NonVisualDrawingProperties {
   name?: string
   meta: NonVisualDrawingPropertiesMeta
-  style: Partial<StyleDeclaration>
+  style: Partial<NormalizedStyle>
 }
 
 export function parseNonVisualDrawingProperties(cNvPr?: OOXMLNode): NonVisualDrawingProperties | undefined {
