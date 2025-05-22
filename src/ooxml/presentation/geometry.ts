@@ -26,7 +26,7 @@ export function parseGeometry(geom?: OOXMLNode, ctx?: Record<string, any>): Norm
   }
   else {
     if (preset) {
-      const node = ctx?.presetNormalizedShapeDefinitions?.find(preset)
+      const node = ctx?.presetShapeDefinitions?.find(preset)
       ctx = {
         ...ctx,
         preset,

@@ -21,7 +21,7 @@ import { parseGeometry, stringifyGeometry } from './geometry'
 import { parseTransform2d, stringifyTransform2d } from './transform2d'
 
 export interface ShapeProperties extends Transform2d {
-  geometry?: NormalizedShape
+  shape?: NormalizedShape
   fill?: NormalizedFill
   outline?: NormalizedOutline
   effect?: NormalizedEffect
@@ -63,15 +63,13 @@ export function parseShapeProperties(spPr?: OOXMLNode, ctx?: any): ShapeProperti
     query: (xpath: string, type?: OOXMLQueryType) => query(`a:xfrm/${xpath}`, type),
   })
 
-  const geometry = parseGeometry(query('*[(self::a:prstGeom or self::a:custGeom)]'), {
-    ...ctx,
-    width: xfrm?.style?.width ?? 0,
-    height: xfrm?.style?.height ?? 0,
-  })
-
   return {
     ...xfrm,
-    geometry,
+    shape: parseGeometry(query('*[(self::a:prstGeom or self::a:custGeom)]'), {
+      ...ctx,
+      width: xfrm?.style?.width ?? 0,
+      height: xfrm?.style?.height ?? 0,
+    }),
     fill: Object.keys(fill).length > 0 ? fill : undefined,
     outline: Object.keys(outline).length > 0 ? outline : undefined,
     effect: parseEffectList(query('a:effectLst'), ctx),
@@ -80,7 +78,7 @@ export function parseShapeProperties(spPr?: OOXMLNode, ctx?: any): ShapeProperti
 
 export function stringifyShapeProperties(spPr: ShapeProperties, isPic = false): string {
   const xfrm = stringifyTransform2d(spPr as any)
-  const geom = stringifyGeometry(spPr.geometry)
+  const geom = stringifyGeometry(spPr.shape)
   const fill = isPic ? undefined : stringifyFill(spPr.fill)
   const ln = stringifyOutline(spPr.outline)
 

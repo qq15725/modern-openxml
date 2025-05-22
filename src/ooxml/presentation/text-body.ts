@@ -144,7 +144,8 @@ export function parseTextBody(txBody?: OOXMLNode, ctx?: Record<string, any>): Te
         letterSpacing: queryRPr('@spc', 'fontSize'),
         lineHeight: queryRPr('a:lnSpc/a:spcPct/@val', 'ST_TextSpacingPercentOrPercentString'),
         color: fill?.color,
-        outline,
+        fill: Object.keys(fill ?? {}).length ? fill : undefined,
+        outline: Object.keys(outline ?? {}).length ? outline : undefined,
       }
     }
 

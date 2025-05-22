@@ -1,4 +1,4 @@
-import type { NormalizedFill, NormalizedImageFill } from 'modern-idoc'
+import type { ColorStop, NormalizedFill, NormalizedGradientFill, NormalizedImageFill } from 'modern-idoc'
 import type { OOXMLNode } from '../core'
 import { OOXMLValue } from '../core'
 import {
@@ -39,9 +39,7 @@ export function parseFill(fill?: OOXMLNode, ctx?: Record<string, any>): Normaliz
         color: parseColor(fill, ctx)!,
       }
     case 'a:gradFill':
-      return {
-        image: parseGradientFill(fill, ctx)!,
-      }
+      return parseGradientFill(fill, ctx)
     case 'a:grpFill':
       return ctx?.parents?.length
         ? ctx.parents[ctx.parents.length - 1]?.fill
@@ -114,22 +112,22 @@ export function parseBlipFill(fill?: OOXMLNode, ctx?: Record<string, any>): Norm
   }
 }
 
-function parseGradientFill(gradFill?: OOXMLNode, ctx?: any): string | undefined {
+export function parseGradientFill(gradFill?: OOXMLNode, ctx?: any): NormalizedGradientFill | undefined {
   if (!gradFill)
     return undefined
 
-  const colorStops = gradFill
+  const stops: ColorStop[] = gradFill
     .get('a:gsLst/a:gs')
     .map((gs) => {
       return {
-        color: parseColor(gs, ctx),
-        percentage: (gs.attr<number>('@pos', 'positiveFixedPercentage') ?? 0) * 100,
+        color: parseColor(gs, ctx)!,
+        offset: (gs.attr<number>('@pos', 'positiveFixedPercentage') ?? 0),
       }
     })
     .filter(({ color }) => color)
-    .sort((a, b) => a.percentage - b.percentage)
+    .sort((a, b) => a.offset - b.offset)
 
-  if (!colorStops.length)
+  if (!stops.length)
     return undefined
 
   if (gradFill.attr('a:path/@path') === 'circle') {
@@ -138,15 +136,20 @@ function parseGradientFill(gradFill?: OOXMLNode, ctx?: any): string | undefined 
     // const t = fillToRect?.attr('@t', 'percentage')
     // const r = fillToRect?.attr('@r', 'percentage')
     // const b = fillToRect?.attr('@b', 'percentage')
-    return `radial-gradient(${colorStops.map(({ color, percentage }) => `${color} ${percentage}%`).join(',')})`
+    return {
+      radialGradient: {
+        stops,
+      },
+    }
   }
 
-  const degree = gradFill.attr<number>('a:lin/@ang', 'positiveFixedAngle') ?? 0
   // const scaled = gradFill.attr('a:lin/@scaled')
-  return `linear-gradient(${[
-    `${(degree + 90) % 360}deg`,
-    ...colorStops.map(({ color, percentage }) => `${color} ${percentage}%`),
-  ].join(',')})`
+  return {
+    linearGradient: {
+      angle: ((gradFill.attr<number>('a:lin/@ang', 'positiveFixedAngle') ?? 0) + 90) % 360,
+      stops,
+    },
+  }
 }
 
 export function stringifyFill(fill?: NormalizedFill, isPic = false): string | undefined {

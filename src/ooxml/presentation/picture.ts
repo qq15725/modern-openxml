@@ -60,7 +60,7 @@ export function parsePicture(node?: OOXMLNode, ctx?: any): Picture | undefined {
 
 export function stringifyPicture(pic: Picture): string {
   const cNvPr = stringifyNonVisualDrawingProperties(pic)
-  const nvPr = stringifyNonVisualProperties(pic)
+  const nvPr = stringifyNonVisualProperties(pic as any)
   const pBlipFill = stringifyFill(pic.foreground, true)
   const spPr = stringifyShapeProperties(pic as any, true)
 

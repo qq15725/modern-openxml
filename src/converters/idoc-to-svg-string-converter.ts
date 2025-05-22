@@ -1,7 +1,6 @@
-import type { LineEndSize, NormalizedFill } from 'modern-idoc'
+import type { LineEndSize, NormalizedFill, NormalizedGradientFill, NormalizedImageFill } from 'modern-idoc'
 import type { NormalizedPPTX, SlideElement } from '../ooxml'
 import type { XMLNode } from '../renderers'
-import { isGradient, normalizeGradient } from 'modern-idoc'
 import { measureText } from 'modern-text'
 import { OOXMLValue } from '../ooxml'
 import { XMLRenderer } from '../renderers'
@@ -25,23 +24,24 @@ export class IDocToSVGStringConverter {
     return ~~(Math.random() * 1000000000)
   }
 
-  parseGradient(val: string, ctx: {
+  parseGradientFill(fill: NormalizedGradientFill, ctx: {
     defs: XMLNode
-    uuid: number
-    colorMap: Map<string, string>
+    prefix: string
+    fillMap: Map<string, string>
   }): string {
-    const { defs, uuid, colorMap } = ctx
-    const id = `gradient-${this.genUUID()}-${uuid}`
+    const val = JSON.stringify(fill)
+    const { defs, prefix, fillMap } = ctx
+    const id = `${prefix}-gradient-${this.genUUID()}`
 
-    if (val && colorMap.has(val)) {
-      return `url(#${colorMap.get(val)!})`
+    if (val && fillMap.has(val)) {
+      return `url(#${fillMap.get(val)!})`
     }
 
-    const res = normalizeGradient(val)[0]
+    const { linearGradient, radialGradient } = fill
 
-    if (res?.type === 'linear-gradient') {
-      const { angle, stops } = res
-      colorMap.set(val, id)
+    if (linearGradient) {
+      const { angle, stops } = linearGradient
+      fillMap.set(val, id)
       const radian = (angle * Math.PI) / 180
       const offsetX = 0.5 * Math.sin(radian)
       const offsetY = 0.5 * Math.cos(radian)
@@ -64,9 +64,9 @@ export class IDocToSVGStringConverter {
       })
       return `url(#${id})`
     }
-    else if (res?.type === 'radial-gradient') {
-      const { stops } = res
-      colorMap.set(val, id)
+    else if (radialGradient) {
+      const { stops } = radialGradient
+      fillMap.set(val, id)
       defs.children?.push({
         tag: 'radialGradient',
         attrs: { id, cx: '50%', cy: '50%', r: '50%', fx: '50%', fy: '50%' },
@@ -83,8 +83,79 @@ export class IDocToSVGStringConverter {
       return `url(#${id})`
     }
     else {
-      return val ?? 'none'
+      return 'none'
     }
+  }
+
+  parseImageFill(fill: NormalizedImageFill, ctx: {
+    defs: XMLNode
+    width: number
+    height: number
+    prefix: string
+  }): string {
+    const { prefix, defs, width, height } = ctx
+    const id = `${prefix}-image-${this.genUUID()}`
+
+    // TODO tile
+    // TODO stretch
+    const { image, cropRect, opacity = 1 } = fill
+
+    const cropRectAttrs: Record<string, any> = {}
+
+    if (cropRect) {
+      const { left = 0, top = 0, bottom = 0, right = 0 } = cropRect
+      const srcWidth = width / (1 - right - left)
+      const srcHeight = height / (1 - top - bottom)
+      const tx = ((right - left) / 2) * srcWidth
+      const ty = ((bottom - top) / 2) * srcHeight
+      cropRectAttrs['src-rect'] = JSON.stringify(cropRect).replace(/"/g, '\'')
+      cropRectAttrs.transform = [
+        `translate(${tx},${ty})`,
+        `translate(${width / 2},${height / 2})`,
+        `scale(${srcWidth / width}, ${srcHeight / height})`,
+        `translate(${-width / 2},${-height / 2})`,
+      ].join(' ')
+    }
+
+    defs.children?.push({
+      tag: 'pattern',
+      // TODO 100% 会出现细线
+      attrs: { id, left: 0, top: 0, width: '200%', height: '200%' },
+      children: [
+        {
+          tag: 'g',
+          attrs: { 'data-title': 'cropRect', ...cropRectAttrs },
+          children: [
+            {
+              tag: 'image',
+              attrs: { href: image, width, height, opacity, preserveAspectRatio: 'none' },
+            },
+          ],
+        },
+      ],
+    })
+
+    return `url(#${id})`
+  }
+
+  _parseFill(fill: NormalizedFill, ctx: {
+    prefix: string
+    width: number
+    height: number
+    defs: XMLNode
+    fillMap: Map<string, string>
+  }): string | undefined {
+    const { width, height, defs, prefix, fillMap } = ctx
+    if (fill.linearGradient || fill.radialGradient) {
+      return this.parseGradientFill(fill as any, { defs, prefix, fillMap })
+    }
+    else if (fill.image) {
+      return this.parseImageFill(fill as any, { defs, prefix, width, height })
+    }
+    else if (fill.color) {
+      return fill.color
+    }
+    return undefined
   }
 
   parseFill(fill: NormalizedFill, ctx: {
@@ -94,62 +165,12 @@ export class IDocToSVGStringConverter {
     height: number
     defs: XMLNode
     uuid: number
-    colorMap: Map<string, string>
+    fillMap: Map<string, string>
     shapePaths?: XMLNode[]
   }): XMLNode {
-    const { key, attrs = {}, width, height, defs, uuid, colorMap, shapePaths } = ctx
+    const { key, attrs = {}, width, height, defs, uuid, fillMap, shapePaths } = ctx
 
-    const suffix = `${key}-${uuid}`
-
-    if (fill?.image) {
-      if (isGradient(fill.image)) {
-        attrs.fill = this.parseGradient(fill.image as any, { defs, uuid, colorMap })
-      }
-      else {
-        // TODO tile
-        // TODO stretch
-        const { image, cropRect, opacity = 1 } = fill
-
-        const cropRectAttrs: Record<string, any> = {}
-
-        if (cropRect) {
-          const { left = 0, top = 0, bottom = 0, right = 0 } = cropRect
-          const srcWidth = width / (1 - right - left)
-          const srcHeight = height / (1 - top - bottom)
-          const tx = ((right - left) / 2) * srcWidth
-          const ty = ((bottom - top) / 2) * srcHeight
-          cropRectAttrs['src-rect'] = JSON.stringify(cropRect).replace(/"/g, '\'')
-          cropRectAttrs.transform = [
-            `translate(${tx},${ty})`,
-            `translate(${width / 2},${height / 2})`,
-            `scale(${srcWidth / width}, ${srcHeight / height})`,
-            `translate(${-width / 2},${-height / 2})`,
-          ].join(' ')
-        }
-
-        defs.children?.push({
-          tag: 'pattern',
-          // TODO 100% 会出现细线
-          attrs: { id: `pattern-${suffix}`, left: 0, top: 0, width: '200%', height: '200%' },
-          children: [
-            {
-              tag: 'g',
-              attrs: { 'data-title': 'cropRect', ...cropRectAttrs },
-              children: [
-                {
-                  tag: 'image',
-                  attrs: { href: image, width, height, opacity, preserveAspectRatio: 'none' },
-                },
-              ],
-            },
-          ],
-        })
-        attrs.fill = `url(#pattern-${suffix})`
-      }
-    }
-    else if (fill?.color) {
-      attrs.fill = fill.color
-    }
+    attrs.fill = this._parseFill(fill, { defs, prefix: `${uuid}-${key}`, fillMap, width, height })
 
     if (shapePaths) {
       return {
@@ -327,7 +348,7 @@ export class IDocToSVGStringConverter {
       children: [] as XMLNode[],
     }
 
-    const colorMap = new Map<string, string>()
+    const fillMap = new Map<string, string>()
 
     const shapePaths: XMLNode[] = shape?.paths
       ? shape.paths.map((path, idx) => {
@@ -335,7 +356,7 @@ export class IDocToSVGStringConverter {
             tag: 'path',
             attrs: {
               'data-title': shape.preset,
-              'id': `shape-${idx}-${uuid}`,
+              'id': `${uuid}-shape-${idx}`,
               'd': path.data,
               'fill': path.fill,
               'stroke': path.stroke,
@@ -346,7 +367,7 @@ export class IDocToSVGStringConverter {
       : [
           {
             tag: 'rect',
-            attrs: { id: `shape-${0}-${uuid}`, width, height },
+            attrs: { id: `${uuid}-shape-${0}`, width, height },
           },
         ]
     defs.children.push(...shapePaths)
@@ -364,7 +385,7 @@ export class IDocToSVGStringConverter {
         height,
         defs,
         uuid,
-        colorMap,
+        fillMap,
       })
     }
 
@@ -379,14 +400,14 @@ export class IDocToSVGStringConverter {
 
       if (headEnd) {
         const marker = this.parseMarker(headEnd, geometryAttrs.stroke, geometryAttrs['stroke-width'])
-        marker.attrs!.id = `headEnd-${uuid}`
+        marker.attrs!.id = `${uuid}-headEnd`
         defs.children.push(marker)
         geometryAttrs['marker-start'] = `url(#${marker.attrs!.id!})`
       }
 
       if (tailEnd) {
         const marker = this.parseMarker(tailEnd, geometryAttrs.stroke, geometryAttrs['stroke-width'])
-        marker.attrs!.id = `tailEnd-${uuid}`
+        marker.attrs!.id = `${uuid}-tailEnd`
         defs.children.push(marker)
         geometryAttrs['marker-end'] = `url(#${marker.attrs!.id!})`
       }
@@ -395,7 +416,7 @@ export class IDocToSVGStringConverter {
     if (softEdge) {
       defs.children.push({
         tag: 'filter',
-        attrs: { id: `soft-edge-${uuid}` },
+        attrs: { id: `${uuid}-soft-edge` },
         children: [
           {
             tag: 'feGaussianBlur',
@@ -403,7 +424,7 @@ export class IDocToSVGStringConverter {
           },
         ],
       })
-      geometryAttrs.filter = `url(#soft-edge-${uuid})`
+      geometryAttrs.filter = `url(#${uuid}-soft-edge)`
       geometryAttrs.transform = `matrix(0.8,0,0,0.8,${width * 0.1},${height * 0.1})`
     }
 
@@ -414,7 +435,7 @@ export class IDocToSVGStringConverter {
         height,
         defs,
         uuid,
-        colorMap,
+        fillMap,
       }))
     }
 
@@ -456,7 +477,7 @@ export class IDocToSVGStringConverter {
       defs.children.push({
         tag: 'filter',
         attrs: {
-          id: `outerShadow-${uuid}`,
+          id: `${uuid}-outerShadow`,
           filterUnits: 'userSpaceOnUse',
           x: filter.x1,
           y: filter.y1,
@@ -485,7 +506,7 @@ export class IDocToSVGStringConverter {
         tag: 'g',
         attrs: {
           'data-title': 'outerShadow',
-          'filter': `url(#outerShadow-${uuid})`,
+          'filter': `url(#${uuid}-outerShadow)`,
           'transform': `matrix(${matrix.a},${matrix.b},${matrix.c},${matrix.d},${matrix.e},${matrix.f})`,
         },
         children: geometryNodes,
@@ -501,7 +522,7 @@ export class IDocToSVGStringConverter {
         height,
         defs,
         uuid,
-        colorMap,
+        fillMap,
         shapePaths,
       }))
     }
@@ -561,7 +582,7 @@ export class IDocToSVGStringConverter {
             return {
               tag: 'text',
               attrs: {
-                'fill': rStyle.color,
+                'fill': this._parseFill((rStyle as any).fill, { defs, prefix: `${uuid}-text`, fillMap, width, height }),
                 'font-size': rStyle.fontSize,
                 'font-family': rStyle.fontFamily,
                 'letter-spacing': rStyle.letterSpacing,
@@ -658,7 +679,7 @@ export class IDocToSVGStringConverter {
           children: [] as XMLNode[],
         }
 
-        const colorMap = new Map<string, string>()
+        const fillMap = new Map<string, string>()
 
         items.push({
           tag: 'g',
@@ -677,7 +698,7 @@ export class IDocToSVGStringConverter {
                     height,
                     defs,
                     uuid,
-                    colorMap,
+                    fillMap,
                   }),
                 ]
               : []),
