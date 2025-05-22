@@ -241,7 +241,7 @@ export function stringifyTextBody(txBody?: TextBody): string | undefined {
       ])}>
   ${withIndents([
     stringifyFill(
-      (f as any).fill
+      f.fill
       ?? (f.color ? { color: f.color } : undefined),
     ),
     isUserFont(fontFamily) && `<a:latin typeface="${fixTypeface(fontFamily)}" />`,
