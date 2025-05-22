@@ -1,5 +1,9 @@
 import type { Unzipped } from 'fflate'
-import type { NormalizedElement } from 'modern-idoc'
+import type {
+  NormalizedElement,
+  NormalizedFill,
+  NormalizedImageFill,
+} from 'modern-idoc'
 import type {
   NormalizedPPTX,
   PPTXSource,
@@ -9,6 +13,7 @@ import type {
   SlideMaster,
 } from '../ooxml'
 import { unzipSync } from 'fflate'
+import { isGradient } from 'modern-idoc'
 import {
   clearUndef,
   namespaces,
@@ -24,7 +29,7 @@ import {
 } from '../ooxml'
 
 export interface PPTXUploadOptions {
-  upload?: (input: string, file: { src: string }, source: NormalizedPPTX | Slide | SlideLayout | SlideMaster | SlideElement) => any | Promise<any>
+  upload?: (input: string, file: NormalizedImageFill, source: NormalizedPPTX | Slide | SlideLayout | SlideMaster | SlideElement) => any | Promise<any>
   progress?: (progress: number, total: number, cached: boolean) => void
 }
 
@@ -335,8 +340,8 @@ export class PPTXToIDocConverter {
 
     const {
       progress,
-      upload = (input, file) => {
-        return `data:${this.getMimeType(file.src) ?? 'image/png'};base64,${input}`
+      upload = (input, fill) => {
+        return `data:${this.getMimeType(fill.image) ?? 'image/png'};base64,${input}`
       },
     } = options
 
@@ -344,32 +349,36 @@ export class PPTXToIDocConverter {
     let current = 0
     const tasks = []
 
-    const _upload = async (file: any, source: NormalizedElement): Promise<string> => {
-      const key = JSON.stringify({ ...file, width: (source as any).width, height: (source as any).height })
+    const _upload = async (fill: NormalizedImageFill, source: NormalizedElement): Promise<string> => {
+      const key = JSON.stringify({ ...fill, width: (source as any).width, height: (source as any).height })
       let promise: Promise<any>
       const cached = cache.has(key)
       if (cached) {
         promise = cache.get(key)!
       }
       else {
-        promise = upload?.(this._readFile(file.image, 'base64'), file as any, source as any)
+        promise = upload?.(this._readFile(fill.image, 'base64'), fill, source as any)
         cache.set(key, promise)
       }
       const output = await promise
       progress?.(++current, tasks.length, cached)
       if (output) {
-        file.image = output
+        fill.image = output
       }
       return output
     }
 
+    function needsUpload(value?: NormalizedFill): value is NormalizedImageFill {
+      return Boolean(value?.image) && !isGradient(value!.image!)
+    }
+
     function handleUpload(el: NormalizedElement): Promise<any>[] {
       return [
-        el.background?.image && _upload(el.background, el),
-        el.fill?.image && _upload(el.fill, el),
-        el.foreground?.image && _upload(el.foreground, el),
-        el.audio?.src && _upload(el.audio, el),
-        el.video?.src && _upload(el.video, el),
+        needsUpload(el.background) && _upload(el.background, el),
+        needsUpload(el.fill) && _upload(el.fill, el),
+        needsUpload(el.foreground) && _upload(el.foreground, el),
+        // el.audio?.src && _upload(el.audio, el),
+        // el.video?.src && _upload(el.video, el),
         ...(el.children?.flatMap(childEl => handleUpload(childEl as any)) ?? []),
       ].filter(Boolean) as Promise<any>[]
     }
@@ -377,7 +386,7 @@ export class PPTXToIDocConverter {
     tasks.push(
       ...(
         [
-          pptx.meta.cover && (async () => (pptx.meta.cover = await _upload({ src: pptx.meta.cover! }, pptx))),
+          pptx.meta.cover && (async () => (pptx.meta.cover = await _upload({ image: pptx.meta.cover! }, pptx))),
           ...pptx.children.flatMap(handleUpload),
           ...pptx.meta.slideLayouts.flatMap(handleUpload),
           ...pptx.meta.slideMasters.flatMap(handleUpload),

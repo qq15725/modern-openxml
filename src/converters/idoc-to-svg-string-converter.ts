@@ -1,6 +1,7 @@
 import type { LineEndSize, NormalizedFill } from 'modern-idoc'
 import type { NormalizedPPTX, SlideElement } from '../ooxml'
 import type { XMLNode } from '../renderers'
+import { isGradient, normalizeGradient } from 'modern-idoc'
 import { measureText } from 'modern-text'
 import { OOXMLValue } from '../ooxml'
 import { XMLRenderer } from '../renderers'
@@ -24,38 +25,24 @@ export class IDocToSVGStringConverter {
     return ~~(Math.random() * 1000000000)
   }
 
-  parseColor(val: string, ctx: {
+  parseGradient(val: string, ctx: {
     defs: XMLNode
     uuid: number
     colorMap: Map<string, string>
   }): string {
     const { defs, uuid, colorMap } = ctx
-    const id = `color-${this.genUUID()}-${uuid}`
+    const id = `gradient-${this.genUUID()}-${uuid}`
 
     if (val && colorMap.has(val)) {
       return `url(#${colorMap.get(val)!})`
     }
 
-    if (val?.startsWith('linear-gradient')) {
+    const res = normalizeGradient(val)[0]
+
+    if (res?.type === 'linear-gradient') {
+      const { angle, stops } = res
       colorMap.set(val, id)
-      const match = val.match(/linear-gradient\((.*)\)$/)?.[1] as string | undefined
-      const [deg, ..._colorStops] = match?.split(',rgba')?.map(v => v.trim()) ?? []
-      const colorStops
-        = _colorStops?.map((color_) => {
-          const color = `rgba${color_}`
-          const match = color.match(/(rgba\(.*\)) (.*)/) ?? []
-          const offset = match.length > 2 ? match?.[2] : undefined
-          const stopColor = match?.[1]
-          return {
-            tag: 'stop',
-            attrs: {
-              offset,
-              'stop-color': stopColor,
-            },
-          }
-        }) ?? []
-      const degree = Number(deg.replace('deg', '')) || 0
-      const radian = (degree * Math.PI) / 180
+      const radian = (angle * Math.PI) / 180
       const offsetX = 0.5 * Math.sin(radian)
       const offsetY = 0.5 * Math.cos(radian)
       const x1 = ~~((0.5 - offsetX) * 10000) / 100
@@ -64,39 +51,34 @@ export class IDocToSVGStringConverter {
       const y2 = ~~((0.5 - offsetY) * 10000) / 100
       defs.children?.push({
         tag: 'linearGradient',
-        attrs: {
-          id,
-          x1: `${x1}%`,
-          y1: `${y1}%`,
-          x2: `${x2}%`,
-          y2: `${y2}%`,
-        },
-        children: colorStops,
-      })
-      return `url(#${id})`
-    }
-    else if (val?.startsWith('radial-gradient')) {
-      colorMap.set(val, id)
-      const match = val.match(/radial-gradient\((.*)\)$/)?.[1] as string | undefined
-      const _colorStops = match?.split(',rgba')?.map(v => v.trim()) ?? []
-      const colorStops
-        = _colorStops?.map((color_) => {
-          const color = `rgba${color_}`
-          const match = color.match(/(rgba\(.*\)) (.*)/) ?? []
-          const offset = match.length > 2 ? match?.[2] : undefined
-          const stopColor = match?.[1]
+        attrs: { id, x1: `${x1}%`, y1: `${y1}%`, x2: `${x2}%`, y2: `${y2}%` },
+        children: stops.map((stop) => {
           return {
             tag: 'stop',
             attrs: {
-              offset,
-              'stop-color': stopColor,
+              'offset': stop.offset,
+              'stop-color': stop.color,
             },
           }
-        }) ?? []
+        }),
+      })
+      return `url(#${id})`
+    }
+    else if (res?.type === 'radial-gradient') {
+      const { stops } = res
+      colorMap.set(val, id)
       defs.children?.push({
         tag: 'radialGradient',
         attrs: { id, cx: '50%', cy: '50%', r: '50%', fx: '50%', fy: '50%' },
-        children: colorStops,
+        children: stops.map((stop) => {
+          return {
+            tag: 'stop',
+            attrs: {
+              'offset': stop.offset,
+              'stop-color': stop.color,
+            },
+          }
+        }),
       })
       return `url(#${id})`
     }
@@ -113,62 +95,67 @@ export class IDocToSVGStringConverter {
     defs: XMLNode
     uuid: number
     colorMap: Map<string, string>
-    geometryPaths?: XMLNode[]
+    shapePaths?: XMLNode[]
   }): XMLNode {
-    const { key, attrs = {}, width, height, defs, uuid, colorMap, geometryPaths } = ctx
+    const { key, attrs = {}, width, height, defs, uuid, colorMap, shapePaths } = ctx
 
     const suffix = `${key}-${uuid}`
 
     if (fill?.image) {
-      // TODO tile
-      // TODO stretch
-      const { image, cropRect, opacity = 1 } = fill
-
-      const cropRectAttrs: Record<string, any> = {}
-
-      if (cropRect) {
-        const { left = 0, top = 0, bottom = 0, right = 0 } = cropRect
-        const srcWidth = width / (1 - right - left)
-        const srcHeight = height / (1 - top - bottom)
-        const tx = ((right - left) / 2) * srcWidth
-        const ty = ((bottom - top) / 2) * srcHeight
-        cropRectAttrs['src-rect'] = JSON.stringify(cropRect).replace(/"/g, '\'')
-        cropRectAttrs.transform = [
-          `translate(${tx},${ty})`,
-          `translate(${width / 2},${height / 2})`,
-          `scale(${srcWidth / width}, ${srcHeight / height})`,
-          `translate(${-width / 2},${-height / 2})`,
-        ].join(' ')
+      if (isGradient(fill.image)) {
+        attrs.fill = this.parseGradient(fill.image as any, { defs, uuid, colorMap })
       }
+      else {
+        // TODO tile
+        // TODO stretch
+        const { image, cropRect, opacity = 1 } = fill
 
-      defs.children?.push({
-        tag: 'pattern',
-        // TODO 100% 会出现细线
-        attrs: { id: `pattern-${suffix}`, left: 0, top: 0, width: '200%', height: '200%' },
-        children: [
-          {
-            tag: 'g',
-            attrs: { 'data-title': 'cropRect', ...cropRectAttrs },
-            children: [
-              {
-                tag: 'image',
-                attrs: { href: image, width, height, opacity, preserveAspectRatio: 'none' },
-              },
-            ],
-          },
-        ],
-      })
-      attrs.fill = `url(#pattern-${suffix})`
+        const cropRectAttrs: Record<string, any> = {}
+
+        if (cropRect) {
+          const { left = 0, top = 0, bottom = 0, right = 0 } = cropRect
+          const srcWidth = width / (1 - right - left)
+          const srcHeight = height / (1 - top - bottom)
+          const tx = ((right - left) / 2) * srcWidth
+          const ty = ((bottom - top) / 2) * srcHeight
+          cropRectAttrs['src-rect'] = JSON.stringify(cropRect).replace(/"/g, '\'')
+          cropRectAttrs.transform = [
+            `translate(${tx},${ty})`,
+            `translate(${width / 2},${height / 2})`,
+            `scale(${srcWidth / width}, ${srcHeight / height})`,
+            `translate(${-width / 2},${-height / 2})`,
+          ].join(' ')
+        }
+
+        defs.children?.push({
+          tag: 'pattern',
+          // TODO 100% 会出现细线
+          attrs: { id: `pattern-${suffix}`, left: 0, top: 0, width: '200%', height: '200%' },
+          children: [
+            {
+              tag: 'g',
+              attrs: { 'data-title': 'cropRect', ...cropRectAttrs },
+              children: [
+                {
+                  tag: 'image',
+                  attrs: { href: image, width, height, opacity, preserveAspectRatio: 'none' },
+                },
+              ],
+            },
+          ],
+        })
+        attrs.fill = `url(#pattern-${suffix})`
+      }
     }
     else if (fill?.color) {
-      attrs.fill = this.parseColor(fill.color as any, { defs, uuid, colorMap })
+      attrs.fill = fill.color
     }
 
-    if (geometryPaths) {
+    if (shapePaths) {
       return {
         tag: 'g',
         attrs: { 'data-title': key },
-        children: geometryPaths.map((path) => {
+        children: shapePaths.map((path) => {
           return {
             tag: 'use',
             attrs: {
@@ -342,7 +329,7 @@ export class IDocToSVGStringConverter {
 
     const colorMap = new Map<string, string>()
 
-    const geometryPaths: XMLNode[] = shape?.paths
+    const shapePaths: XMLNode[] = shape?.paths
       ? shape.paths.map((path, idx) => {
           return {
             tag: 'path',
@@ -362,7 +349,7 @@ export class IDocToSVGStringConverter {
             attrs: { id: `shape-${0}-${uuid}`, width, height },
           },
         ]
-    defs.children.push(...geometryPaths)
+    defs.children.push(...shapePaths)
 
     const geometryAttrs: Record<string, any> = {
       fill: 'none',
@@ -387,7 +374,7 @@ export class IDocToSVGStringConverter {
       geometryAttrs['stroke-width'] = outline.width || 1
 
       if (color) {
-        geometryAttrs.stroke = this.parseColor(color as any, { defs, uuid, colorMap })
+        geometryAttrs.stroke = color
       }
 
       if (headEnd) {
@@ -431,7 +418,7 @@ export class IDocToSVGStringConverter {
       }))
     }
 
-    const geometryNodes = geometryPaths.map((path) => {
+    const geometryNodes = shapePaths.map((path) => {
       const { ...attrs } = geometryAttrs
 
       if (path.attrs!.stroke === 'none') {
@@ -515,7 +502,7 @@ export class IDocToSVGStringConverter {
         defs,
         uuid,
         colorMap,
-        geometryPaths,
+        shapePaths,
       }))
     }
 
@@ -574,7 +561,7 @@ export class IDocToSVGStringConverter {
             return {
               tag: 'text',
               attrs: {
-                'fill': this.parseColor(rStyle.color as any, { defs, uuid, colorMap }),
+                'fill': rStyle.color,
                 'font-size': rStyle.fontSize,
                 'font-family': rStyle.fontFamily,
                 'letter-spacing': rStyle.letterSpacing,

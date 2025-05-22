@@ -63,14 +63,14 @@ export function parseBlipFill(fill?: OOXMLNode, ctx?: Record<string, any>): Norm
   const embed = fill.attr('a:blip/a:extLst//a:ext/asvg:svgBlip/@r:embed')
     ?? fill.attr('a:blip/@r:embed')!
 
-  let src
+  let image
   if (ctx?.drawing) {
-    src = ctx?.drawing.rels.find((v: any) => v.id === embed)?.path
+    image = ctx?.drawing.rels.find((v: any) => v.id === embed)?.path
   }
   else {
-    src = ctx?.rels?.find((v: any) => v.id === embed)?.path
+    image = ctx?.rels?.find((v: any) => v.id === embed)?.path
   }
-  src = src ?? embed
+  image = image ?? embed
 
   const srcRectNode = fill.find('a:srcRect')
   const cropRect = srcRectNode
@@ -104,7 +104,7 @@ export function parseBlipFill(fill?: OOXMLNode, ctx?: Record<string, any>): Norm
     : undefined
 
   return {
-    image: src,
+    image,
     cropRect: cropRect && Object.keys(cropRect).length > 0 ? cropRect : undefined,
     stretchRect: stretchRect && Object.keys(stretchRect).length > 0 ? stretchRect : undefined,
     dpi: fill.attr<number>('@dpi', 'number'),

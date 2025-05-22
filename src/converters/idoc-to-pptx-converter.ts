@@ -96,8 +96,8 @@ export class IDocToPPTXConverter {
             el.background?.image && addMedia(el.background, slideRefs, 'image', 'png'),
             el.foreground?.image && addMedia(el.foreground, slideRefs, 'image', 'png'),
             el.fill?.image && addMedia(el.fill, slideRefs, 'image', 'png'),
-            el.audio?.src && addMedia(el.audio, slideRefs, 'media', 'mp3'),
-            el.video?.src && addMedia(el.video, slideRefs, 'media', 'mp4'),
+            // el.audio?.src && addMedia(el.audio, slideRefs, 'media', 'mp3'),
+            // el.video?.src && addMedia(el.video, slideRefs, 'media', 'mp4'),
             ...(el.children ?? []).flatMap(el => uploadRefs(el as SlideElement)),
           ].filter(Boolean) as T[]
 

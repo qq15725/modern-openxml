@@ -3,24 +3,24 @@ import type { Placeholder } from './placeholder'
 import { parsePlaceholder } from './placeholder'
 
 export interface NonVisualProperties {
-  audio?: any
-  video?: any
+  // audio?: NormalizedAudio
+  // video?: NormalizedVideo
   placeholder?: Placeholder
 }
 
 export function parseNonVisualProperties(nvPr?: OOXMLNode, ctx?: any): NonVisualProperties | undefined {
   if (!nvPr)
     return undefined
-  const audioId = nvPr.attr('a:audioFile/@r:link')
-  const videoId = nvPr.attr('a:videoFile/@r:link')
-  const audio = ctx?.rels?.find((v: any) => v.id === audioId)?.path
-  const video = ctx?.rels?.find((v: any) => v.id === videoId)?.path
+  // const audioId = nvPr.attr('a:audioFile/@r:link')
+  // const videoId = nvPr.attr('a:videoFile/@r:link')
+  // const audio = ctx?.rels?.find((v: any) => v.id === audioId)?.path
+  // const video = ctx?.rels?.find((v: any) => v.id === videoId)?.path
   // const mediaId = nvPr.attr('p:extLst/p:ext/p14:media/@r:embed')
   // const media = ctx?.rels?.find((v: any) => v.id === mediaId)?.path
   const placeholder = parsePlaceholder(nvPr.find('p:ph'), ctx)
   return {
-    audio: audio ? { url: audio } : undefined,
-    video: video ? { url: video } : undefined,
+    // audio: audio ? { src: audio } : undefined,
+    // video: video ? { src: video } : undefined,
     placeholder,
   }
 }

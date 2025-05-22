@@ -15,8 +15,8 @@ importers:
         specifier: ^0.4.1
         version: 0.4.1
       modern-idoc:
-        specifier: ^0.6.1
-        version: 0.6.1
+        specifier: ^0.6.2
+        version: 0.6.2
       modern-path2d:
         specifier: ^1.3.0
         version: 1.3.0
@@ -1952,8 +1952,8 @@ packages:
   modern-idoc@0.5.6:
     resolution: {integrity: sha512-9dVjTyaiktQcTACkMIlbYELCsMRik5tiaWLLndITXWWjerRnVFemVqmhK/sWED4RaKCwSGCKIHugdLFgYFmhsw==}
 
-  modern-idoc@0.6.1:
-    resolution: {integrity: sha512-cXPjSweGZms9AoQjKbOfcdU6n+cxCK0DPMJrTjsErgOD2d/kpi78dgsQfp5THgWTJyPH2NsbrZsm1b1kk0nMeQ==}
+  modern-idoc@0.6.2:
+    resolution: {integrity: sha512-IITRihLPmDfJFYYkDDrw0GMbwsfGxLPMVSlW8EsXTEIfrPjlYITX89f75wL3CKXXiT9YDICti38Y4fSP+a893w==}
 
   modern-path2d@1.3.0:
     resolution: {integrity: sha512-43LdKLsaYtPA+8YQMzpNiFFO1er5a9v8wjIeEWrv7avJ6zXXQ4lbqRelRyDaNTAiPuA+nn0A0LcjB7Rh+UFx4w==}
@@ -4825,7 +4825,7 @@ snapshots:
     dependencies:
       colord: 2.9.3
 
-  modern-idoc@0.6.1:
+  modern-idoc@0.6.2:
     dependencies:
       colord: 2.9.3
 
