@@ -1,3 +1,17 @@
+# [1.1.0](https://github.com/qq15725/modern-openxml/compare/v1.0.3...v1.1.0) (2025-05-22)
+
+
+### Features
+
+* up idoc ([9c350ad](https://github.com/qq15725/modern-openxml/commit/9c350adf73e44883df91e62543d43469f6c1aea5))
+* up idoc ([9223299](https://github.com/qq15725/modern-openxml/commit/922329971b19fe9eb22745c49ec1b05f8364b205))
+* up idoc ([4379e3e](https://github.com/qq15725/modern-openxml/commit/4379e3efae8fb055ee4066b6e78b398ee7ea5eba))
+* up idoc ([00e08cd](https://github.com/qq15725/modern-openxml/commit/00e08cd3af5f142fe07dab5eb4dd2b0312a39614))
+* up idoc ([b7773a9](https://github.com/qq15725/modern-openxml/commit/b7773a97ea6dfce90eaae29adfeeaac43c52070e))
+* up idoc ([1f124b6](https://github.com/qq15725/modern-openxml/commit/1f124b6aa9c2aac76e6ee959fb5220f25ce06254))
+
+
+
 ## [1.0.3](https://github.com/qq15725/modern-openxml/compare/v1.0.2...v1.0.3) (2025-05-20)
 
 
