@@ -1,3 +1,12 @@
+## [1.1.1](https://github.com/qq15725/modern-openxml/compare/v1.1.0...v1.1.1) (2025-05-23)
+
+
+### Features
+
+* up idoc ([b4744e1](https://github.com/qq15725/modern-openxml/commit/b4744e16ca38ffcf2ad7cf69ad3986b782895490))
+
+
+
 # [1.1.0](https://github.com/qq15725/modern-openxml/compare/v1.0.3...v1.1.0) (2025-05-22)
 
 
