@@ -1,5 +1,5 @@
 import type { OOXMLNode } from '../core'
-import { pathToContentType, withIndents } from '../utils'
+import { pathJoin, pathToContentType, withIndents } from '../utils'
 
 const RELATIONSHIP = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships'
 const RELATIONSHIP2007 = 'http://schemas.microsoft.com/office/2007/relationships'
@@ -27,19 +27,15 @@ export function parseRelationships(
     contentTypes.find(v => v.path && v.path.includes(path))?.type
     ?? contentTypes.find(v => v.ext && path.endsWith(v.ext))?.type
 
-  let rels = relsPath.split('/')
-  rels = rels.length >= 3 ? rels.slice(0, rels.length - 2) : []
-
   return node.get('//Relationship').map((v) => {
-    let path = v.attr('@Target')!
-    const paths = path.split('/')
-    path
-            = rels.length > 0
-        ? [
-            ...rels.slice(0, rels.length - paths.filter(v => v === '..').length),
-            ...paths.filter(v => v !== '..'),
-          ].join('/')
-        : path
+    const target = v.attr('@Target')!
+    let path
+    if (target.startsWith('/')) {
+      path = target
+    }
+    else {
+      path = pathJoin(relsPath, '..', '..', target)
+    }
     return {
       id: v.attr('@Id'),
       type: getType(path),

@@ -26,6 +26,7 @@ import {
   parseSlideMaster,
   parseTheme,
   parseTypes,
+  pathJoin,
 } from '../ooxml'
 
 export interface PPTXUploadOptions {
@@ -124,7 +125,7 @@ export class PPTXToIDocConverter {
     const getRelsPath = (path = ''): string => {
       const paths = path.split('/')
       const name = paths.pop()
-      return [...paths, '_rels', `${name}.rels`].join('/')
+      return pathJoin(...paths, '_rels', `${name}.rels`)
     }
 
     const presetShapeDefinitions = options.presetShapeDefinitions
