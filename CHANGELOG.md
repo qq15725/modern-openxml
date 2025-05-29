@@ -1,3 +1,12 @@
+## [0.1.20-patch.1](https://github.com/qq15725/modern-openxml/compare/v0.1.20...v0.1.20-patch.1) (2025-05-29)
+
+
+### Bug Fixes
+
+* rels target path ([7bea203](https://github.com/qq15725/modern-openxml/commit/7bea203683226aa3a224d9009e4ea7a650c10da3))
+
+
+
 ## [0.1.20](https://github.com/qq15725/modern-openxml/compare/v0.1.19...v0.1.20) (2025-04-21)
 
 
