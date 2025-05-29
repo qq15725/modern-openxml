@@ -2,7 +2,7 @@ import type { Unzipped } from 'fflate'
 import type { ElementDeclaration } from 'modern-idoc'
 import type { PPTXDeclaration, PPTXSource, Slide, SlideElement, SlideLayout, SlideMaster } from '../ooxml'
 import { unzipSync } from 'fflate'
-import { clearUndef, namespaces, OOXMLNode, parsePresentation, parseRelationships, parseSlide, parseSlideLayout, parseSlideMaster, parseTheme, parseTypes } from '../ooxml'
+import { clearUndef, namespaces, OOXMLNode, parsePresentation, parseRelationships, parseSlide, parseSlideLayout, parseSlideMaster, parseTheme, parseTypes, pathJoin } from '../ooxml'
 
 export interface PPTXUploadOptions {
   upload?: (input: string, file: { src: string }, source: PPTXDeclaration | Slide | SlideLayout | SlideMaster | SlideElement) => any | Promise<any>
@@ -100,7 +100,7 @@ export class PPTXToIDocConverter {
     const getRelsPath = (path = ''): string => {
       const paths = path.split('/')
       const name = paths.pop()
-      return [...paths, '_rels', `${name}.rels`].join('/')
+      return pathJoin(...paths, '_rels', `${name}.rels`)
     }
 
     const presetShapeDefinitions = options.presetShapeDefinitions
