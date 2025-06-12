@@ -1,3 +1,12 @@
+## [1.1.3](https://github.com/qq15725/modern-openxml/compare/v1.1.2...v1.1.3) (2025-06-12)
+
+
+### Bug Fixes
+
+* theme.colorScheme ([f114cb8](https://github.com/qq15725/modern-openxml/commit/f114cb8a2419b7b2041be0a32a277fdfc96d2fbd))
+
+
+
 ## [1.1.2](https://github.com/qq15725/modern-openxml/compare/v1.1.1...v1.1.2) (2025-06-12)
 
 
