@@ -3,13 +3,13 @@ import type { CoreProperties } from './doc-props'
 import type { Theme } from './drawing'
 import type { Slide, SlideLayout, SlideMaster } from './presentation'
 
-export type PPTXSource =
-  | string
-  | number[]
-  | Uint8Array
-  | ArrayBuffer
-  | Blob
-  | NodeJS.ReadableStream
+export type PPTXSource
+  = | string
+    | number[]
+    | Uint8Array
+    | ArrayBuffer
+    | Blob
+    | NodeJS.ReadableStream
 
 export interface PPTXMeta extends CoreProperties {
   cover?: string

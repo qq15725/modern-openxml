@@ -17,12 +17,12 @@ import { parseShape, stringifyShape } from './shape'
 import { parseTiming, stringifyTiming } from './timing'
 import { parseTransition, stringifyTransition } from './transition'
 
-export type SlideElement =
-  | Picture
-  | Shape
-  | ConnectionShape
-  | GroupShape
-  | GraphicFrame
+export type SlideElement
+  = | Picture
+    | Shape
+    | ConnectionShape
+    | GroupShape
+    | GraphicFrame
 
 export interface SlideMeta {
   id: string

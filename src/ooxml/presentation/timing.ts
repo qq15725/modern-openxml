@@ -70,13 +70,13 @@ export interface CommandNode extends Props {
   cmdType: string
 }
 
-export type TimingPartNode =
-  | SetNode
-  | AnimationNode
-  | AnimationScaleNode
-  | AnimationEffectNode
-  | AnimationRotateNode
-  | CommandNode
+export type TimingPartNode
+  = | SetNode
+    | AnimationNode
+    | AnimationScaleNode
+    | AnimationEffectNode
+    | AnimationRotateNode
+    | CommandNode
 
 export type TimingNode = CommonTimeNode | TimingPartNode | AudioNode
 

@@ -4,15 +4,15 @@ import { OOXMLValue } from '../core'
 import { withAttr, withAttrs, withIndents } from '../utils'
 import { fillXPath, parseFill, stringifySolidFill } from './fill'
 
-export type PrstDashType =
-  | 'solid'
-  | 'sysDot'
-  | 'sysDash'
-  | 'dash'
-  | 'dashDot'
-  | 'lgDash'
-  | 'lgDashDot'
-  | 'lgDashDotDot'
+export type PrstDashType
+  = | 'solid'
+    | 'sysDot'
+    | 'sysDash'
+    | 'dash'
+    | 'dashDot'
+    | 'lgDash'
+    | 'lgDashDot'
+    | 'lgDashDotDot'
 
 // a:ln
 //
