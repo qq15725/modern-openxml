@@ -219,6 +219,7 @@ function parseHex6Color(node: OOXMLNode, ctx?: Record<string, any>): string {
     case 'a:srgbClr':
       return toHex(node.attr('@val')!)
     case 'a:sysClr':
+      // TODO @lastClr
       return toHex(sysColors[node.attr('@val')!] ?? '#000000')
     default:
       return '#000000'

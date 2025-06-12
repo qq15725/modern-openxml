@@ -1,4 +1,5 @@
 import type { OOXMLNode } from '../core'
+import { parseColor } from './color'
 
 export type ColorScheme = Record<string, any>
 
@@ -10,9 +11,7 @@ export function parseColorScheme(clrScheme?: OOXMLNode): ColorScheme | undefined
   const map: Record<string, any> = {}
 
   clrScheme.get('*').forEach((color) => {
-    const key = color.name.replace('a:', '')
-    const value = color.attr('a:srgbClr/@val') ?? color.attr('a:sysClr/@lastClr')
-    map[key] = value ? `#${value}` : value
+    map[color.name.replace('a:', '')] = parseColor(color)?.color
   })
 
   return map
