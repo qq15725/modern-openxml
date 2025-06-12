@@ -1,3 +1,18 @@
+## [1.1.2](https://github.com/qq15725/modern-openxml/compare/v1.1.1...v1.1.2) (2025-06-12)
+
+
+### Bug Fixes
+
+* rels target path ([7bea203](https://github.com/qq15725/modern-openxml/commit/7bea203683226aa3a224d9009e4ea7a650c10da3))
+* SVG renderer ([ba5d087](https://github.com/qq15725/modern-openxml/commit/ba5d0876d610f16f050d8c5ef2104fe6ffd25b8d))
+
+
+### Features
+
+* up dep ([240bfb3](https://github.com/qq15725/modern-openxml/commit/240bfb32ab55e9903b31340dfdd441814c927a4a))
+
+
+
 ## [1.1.1](https://github.com/qq15725/modern-openxml/compare/v1.1.0...v1.1.1) (2025-05-23)
 
 
