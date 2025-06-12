@@ -36,7 +36,7 @@ export function parseFill(fill?: OOXMLNode, ctx?: Record<string, any>): Normaliz
     }
     case 'a:solidFill':
       return {
-        color: parseColor(fill, ctx)!,
+        ...parseColor(fill, ctx)!,
       }
     case 'a:gradFill':
       return parseGradientFill(fill, ctx)
@@ -120,7 +120,7 @@ export function parseGradientFill(gradFill?: OOXMLNode, ctx?: any): NormalizedGr
     .get('a:gsLst/a:gs')
     .map((gs) => {
       return {
-        color: parseColor(gs, ctx)!,
+        ...parseColor(gs, ctx)!,
         offset: (gs.attr<number>('@pos', 'positiveFixedPercentage') ?? 0),
       }
     })

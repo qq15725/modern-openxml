@@ -18,7 +18,7 @@ function parseInnerShadow(innerShdw?: OOXMLNode, ctx?: any): NormalizedInnerShad
   const dist = innerShdw.attr<number>('@dist', 'ST_PositiveCoordinate') ?? 0
   const radian = ((dir + 90) / 180) * Math.PI
   return {
-    color,
+    ...color,
     offsetX: dist * Math.sin(radian),
     offsetY: dist * -Math.cos(radian),
     blurRadius,

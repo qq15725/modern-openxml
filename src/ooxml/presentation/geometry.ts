@@ -43,6 +43,7 @@ export function parseGeometry(geom?: OOXMLNode, ctx?: Record<string, any>): Norm
           const { commands, ...props } = path
           return {
             ...props,
+            fillRule: 'evenodd',
             data: svgPathCommandsToData(commands),
           }
         }),
@@ -60,6 +61,7 @@ export function parseGeometry(geom?: OOXMLNode, ctx?: Record<string, any>): Norm
           const { commands, ...props } = path
           return {
             ...props,
+            fillRule: 'evenodd',
             data: svgPathCommandsToData(commands),
           }
         }),
@@ -201,13 +203,13 @@ export function stringifyGeometry(shape?: NormalizedShape): string {
   }
 }
 
-type GeometryPathCommand =
-  | { type: 'M', x: number, y: number }
-  | { type: 'L', x: number, y: number }
-  | { type: 'A', rx: number, ry: number, angle: number, largeArcFlag: number, sweepFlag: number, x: number, y: number }
-  | { type: 'Q', x1: number, y1: number, x: number, y: number }
-  | { type: 'C', x1: number, y1: number, x2: number, y2: number, x: number, y: number }
-  | { type: 'Z' }
+type GeometryPathCommand
+  = | { type: 'M', x: number, y: number }
+    | { type: 'L', x: number, y: number }
+    | { type: 'A', rx: number, ry: number, angle: number, largeArcFlag: number, sweepFlag: number, x: number, y: number }
+    | { type: 'Q', x1: number, y1: number, x: number, y: number }
+    | { type: 'C', x1: number, y1: number, x2: number, y2: number, x: number, y: number }
+    | { type: 'Z' }
 
 interface GeometryContext {
   width: number

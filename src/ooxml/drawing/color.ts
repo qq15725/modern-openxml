@@ -225,7 +225,7 @@ function parseHex6Color(node: OOXMLNode, ctx?: Record<string, any>): string {
   }
 }
 
-export function parseColor(node?: OOXMLNode, ctx?: Record<string, any>): string | undefined {
+export function parseColor(node?: OOXMLNode, ctx?: Record<string, any>): { color: string } | undefined {
   if (node && !tags.includes(node?.name)) {
     node = node.find(colorXPath)
   }
@@ -236,7 +236,9 @@ export function parseColor(node?: OOXMLNode, ctx?: Record<string, any>): string 
   const hex6 = parseHex6Color(node, ctx)
 
   if (!hex6 || !hex6.startsWith('#')) {
-    return hex6
+    return {
+      color: hex6,
+    }
   }
 
   const rgba = {
@@ -255,7 +257,9 @@ export function parseColor(node?: OOXMLNode, ctx?: Record<string, any>): string 
     rgba.b = newRgb.b
   }
 
-  return normalizeColor(rgba) // hex8
+  return {
+    color: normalizeColor(rgba), // hex8
+  }
 }
 
 export function stringifyColor(color: string): string {

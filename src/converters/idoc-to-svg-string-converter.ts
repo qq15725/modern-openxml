@@ -360,6 +360,7 @@ export class IDocToSVGStringConverter {
               'id': `${uuid}-shape-${idx}`,
               'd': path.data,
               'fill': path.fill,
+              'fill-rule': path.fillRule,
               'stroke': path.stroke,
               'stroke-width': path.strokeWidth,
             },
@@ -373,7 +374,7 @@ export class IDocToSVGStringConverter {
         ]
     defs.children.push(...shapePaths)
 
-    const geometryAttrs: Record<string, any> = {
+    const shapeAttrs: Record<string, any> = {
       fill: 'none',
       stroke: 'none',
     }
@@ -381,7 +382,7 @@ export class IDocToSVGStringConverter {
     if (fill) {
       this.parseFill(fill, {
         key: 'fill',
-        attrs: geometryAttrs,
+        attrs: shapeAttrs,
         width,
         height,
         defs,
@@ -393,24 +394,24 @@ export class IDocToSVGStringConverter {
     if (outline) {
       const { color, headEnd, tailEnd } = outline
 
-      geometryAttrs['stroke-width'] = outline.width || 1
+      shapeAttrs['stroke-width'] = outline.width || 1
 
       if (color) {
-        geometryAttrs.stroke = color
+        shapeAttrs.stroke = color
       }
 
       if (headEnd) {
-        const marker = this.parseMarker(headEnd, geometryAttrs.stroke, geometryAttrs['stroke-width'])
+        const marker = this.parseMarker(headEnd, shapeAttrs.stroke, shapeAttrs['stroke-width'])
         marker.attrs!.id = `${uuid}-headEnd`
         defs.children.push(marker)
-        geometryAttrs['marker-start'] = `url(#${marker.attrs!.id!})`
+        shapeAttrs['marker-start'] = `url(#${marker.attrs!.id!})`
       }
 
       if (tailEnd) {
-        const marker = this.parseMarker(tailEnd, geometryAttrs.stroke, geometryAttrs['stroke-width'])
+        const marker = this.parseMarker(tailEnd, shapeAttrs.stroke, shapeAttrs['stroke-width'])
         marker.attrs!.id = `${uuid}-tailEnd`
         defs.children.push(marker)
-        geometryAttrs['marker-end'] = `url(#${marker.attrs!.id!})`
+        shapeAttrs['marker-end'] = `url(#${marker.attrs!.id!})`
       }
     }
 
@@ -425,8 +426,8 @@ export class IDocToSVGStringConverter {
           },
         ],
       })
-      geometryAttrs.filter = `url(#${uuid}-soft-edge)`
-      geometryAttrs.transform = `matrix(0.8,0,0,0.8,${width * 0.1},${height * 0.1})`
+      shapeAttrs.filter = `url(#${uuid}-soft-edge)`
+      shapeAttrs.transform = `matrix(0.8,0,0,0.8,${width * 0.1},${height * 0.1})`
     }
 
     if (background) {
@@ -440,8 +441,8 @@ export class IDocToSVGStringConverter {
       }))
     }
 
-    const geometryNodes = shapePaths.map((path) => {
-      const { ...attrs } = geometryAttrs
+    const shapeNodes = shapePaths.map((path) => {
+      const { ...attrs } = shapeAttrs
 
       if (path.attrs!.stroke === 'none') {
         delete attrs['marker-start']
@@ -510,11 +511,11 @@ export class IDocToSVGStringConverter {
           'filter': `url(#${uuid}-outerShadow)`,
           'transform': `matrix(${matrix.a},${matrix.b},${matrix.c},${matrix.d},${matrix.e},${matrix.f})`,
         },
-        children: geometryNodes,
+        children: shapeNodes,
       })
     }
 
-    shapeContainer.children.push(...geometryNodes)
+    shapeContainer.children.push(...shapeNodes)
 
     if (foreground) {
       shapeContainer.children.push(this.parseFill(foreground, {
@@ -637,7 +638,7 @@ export class IDocToSVGStringConverter {
     }
 
     if (children) {
-      container.children!.push(
+      shapeContainer.children!.push(
         ...children.map((child) => {
           return this.parseSlideElement(child as any, {
             ...ctx,

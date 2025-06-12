@@ -39,7 +39,10 @@ export function parseShapeProperties(spPr?: OOXMLNode, ctx?: any): ShapeProperti
     const fillRefIdx = fillRef?.attr<number>('@idx', 'number') ?? 1
     if (ctx?.theme?.fillStyleList?.[fillRefIdx - 1]) {
       // TODO
-      fill.color = parseColor(fillRef, ctx)!
+      fill = {
+        ...fill,
+        ...parseColor(fillRef, ctx)!,
+      }
     }
   }
   fill = clearUndef(fill)
@@ -53,7 +56,10 @@ export function parseShapeProperties(spPr?: OOXMLNode, ctx?: any): ShapeProperti
     const lnRefIdx = lnRef?.attr<number>('@idx', 'number') ?? 1
     if (ctx?.theme?.outlineStyleList?.[lnRefIdx - 1]) {
       // TODO
-      outline.color = parseColor(lnRef, ctx)
+      outline = {
+        ...outline,
+        ...parseColor(lnRef, ctx),
+      }
     }
   }
   outline = clearUndef(outline)

@@ -18,7 +18,7 @@ export function parseBackground(bg?: OOXMLNode, ctx?: any): NormalizedBackground
     const bgFill = backgroundFillStyleList[bgRefIdx - 1] ?? backgroundFillStyleList[0]
     if (bgFill?.color === 'phClr') {
       return {
-        color: parseColor(bgRef, ctx),
+        ...parseColor(bgRef, ctx),
         fillWithShape: true,
       }
     }
