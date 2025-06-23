@@ -1,21 +1,13 @@
 import type { PPTXConvertOptions } from '../converters'
 import type { PPTXSource } from '../ooxml'
 import { pptxToSVGString } from './pptx-to-svg-string'
+import { xmlToDOM } from './xml-to-dom'
 
 export async function pptxToSVG(
   source: PPTXSource,
   options: PPTXConvertOptions = {},
 ): Promise<SVGSVGElement> {
-  return xmlToDOM(
+  return xmlToDOM<SVGSVGElement>(
     await pptxToSVGString(source, options),
-  ) as SVGSVGElement
-}
-
-function xmlToDOM(xml: string): Element {
-  const doc = new DOMParser().parseFromString(xml, 'application/xml') as XMLDocument
-  const error = doc.querySelector('parsererror')
-  if (error) {
-    throw new Error(`${error.textContent ?? 'parser error'}\n${xml}`)
-  }
-  return doc.documentElement
+  )
 }

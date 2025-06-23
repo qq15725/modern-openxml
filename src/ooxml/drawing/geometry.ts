@@ -36,21 +36,26 @@ export function parseShapeGuides(gdLst?: OOXMLNode): ShapeGuide[] | undefined {
 }
 
 export interface ShapeAdjustHandle {
-  //
+  gdRefX?: string
+  gdRefY?: string
+  minX?: string
+  maxX?: string
+  minY?: string
+  maxY?: string
+  posX: string
+  posY: string
 }
 
 export function parseShapeAdjustHandles(ahLst?: OOXMLNode): ShapeAdjustHandle[] | undefined {
   return ahLst?.get('*[(self::a:ahXY or self::ahXY)]').map(ahXY => clearUndef({
-    gdRefX: ahXY.attr('@gdRefX')!,
-    gdRefY: ahXY.attr('@gdRefY')!,
-    minX: ahXY.attr('@minX')!,
-    maxX: ahXY.attr('@maxX')!,
-    minY: ahXY.attr('@minY')!,
-    maxY: ahXY.attr('@maxY')!,
-    pos: {
-      x: ahXY.attr('pos/@x')!,
-      y: ahXY.attr('pos/@y')!,
-    },
+    gdRefX: ahXY.attr('@gdRefX'),
+    gdRefY: ahXY.attr('@gdRefY'),
+    minX: ahXY.attr('@minX'),
+    maxX: ahXY.attr('@maxX'),
+    minY: ahXY.attr('@minY'),
+    maxY: ahXY.attr('@maxY'),
+    posX: ahXY.attr('pos/@x')!,
+    posY: ahXY.attr('pos/@y')!,
   }))
 }
 

@@ -1,7 +1,22 @@
 import presetShapeDefinitions from '../assets/presetShapeDefinitions'
-import { idocToPPTX, parsePresetShapeDefinitions, pptxToIDoc, pptxToSVG } from '../src'
+import { idocToPPTX, parsePresetShapeDefinitions, pptxToIDoc, pptxToSVG, xmlToDOM } from '../src'
 
-console.warn(parsePresetShapeDefinitions(presetShapeDefinitions))
+document.querySelector<HTMLButtonElement>('#Decode')!.onclick = async () => {
+  testPPTXToSVG(await openFileDialog())
+}
+
+document.querySelector<HTMLButtonElement>('#ReEncode')!.onclick = async () => {
+  testPPTXReEncode(await openFileDialog())
+}
+
+document.querySelector<HTMLButtonElement>('#GeneratePresetShapes')!.onclick = async () => {
+  const shapes = parsePresetShapeDefinitions(presetShapeDefinitions)
+  const width = 100
+  const height = 100
+  shapes.forEach((shape) => {
+    document.body.append(xmlToDOM(shape.generateSVGString({ width, height })))
+  })
+}
 
 function openFileDialog(): Promise<Uint8Array> {
   return new Promise((resolve) => {
@@ -14,16 +29,6 @@ function openFileDialog(): Promise<Uint8Array> {
     }
     input.click()
   })
-}
-
-const btn1 = document.querySelector('#decode') as HTMLButtonElement
-btn1.onclick = async () => {
-  testPPTXToSVG(await openFileDialog())
-}
-
-const btn2 = document.querySelector('#reEncode') as HTMLButtonElement
-btn2.onclick = async () => {
-  testPPTXReEncode(await openFileDialog())
 }
 
 async function testPPTXToSVG(source: Uint8Array): Promise<void> {
