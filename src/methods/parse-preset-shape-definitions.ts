@@ -18,6 +18,7 @@ import { XMLRenderer } from '../renderers'
 
 export interface ParsedPresetShapeDefinition {
   name: string
+  attrs?: Record<string, any>
   rect?: Rectangle
   adjustValues?: ShapeGuide[]
   shapeGuides?: ShapeGuide[]
@@ -44,8 +45,13 @@ export function parsePresetShapeDefinitions(
           ...options,
         })
       }
+      const attrs: Record<string, any> = {}
+      child.getDOM<Element>().getAttributeNames().forEach((key) => {
+        attrs[key] = child.attr(`@${key}`)
+      })
       return clearUndef({
         name,
+        attrs: Object.keys(attrs).length ? attrs : undefined,
         rect: parseRectangle(child.find('rect')),
         adjustValues,
         shapeGuides,
@@ -70,9 +76,9 @@ export function parsePresetShapeDefinitions(
                 tag: 'path',
                 attrs: {
                   'd': path.data,
-                  'fill': path.fill ?? 'currentColor',
+                  'fill': path.fill,
                   'fill-rule': path.fillRule,
-                  'stroke': path.stroke ?? 'currentColor',
+                  'stroke': path.stroke,
                   'stroke-width': path.strokeWidth,
                 },
               }

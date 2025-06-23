@@ -11,10 +11,14 @@ document.querySelector<HTMLButtonElement>('#ReEncode')!.onclick = async () => {
 
 document.querySelector<HTMLButtonElement>('#GeneratePresetShapes')!.onclick = async () => {
   const shapes = parsePresetShapeDefinitions(presetShapeDefinitions)
+  console.warn(shapes)
   const width = 100
   const height = 100
   shapes.forEach((shape) => {
-    document.body.append(xmlToDOM(shape.generateSVGString({ width, height })))
+    const svg = xmlToDOM<SVGSVGElement>(shape.generateSVGString({ width, height }))
+    svg.style.fill = '#c6dee8'
+    svg.style.stroke = '#4874cb'
+    document.body.append(svg)
   })
 }
 
