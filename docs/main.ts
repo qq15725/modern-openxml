@@ -1,5 +1,7 @@
 import presetShapeDefinitions from '../assets/presetShapeDefinitions'
-import { idocToPPTX, pptxToIDoc, pptxToSVG } from '../src'
+import { idocToPPTX, parsePresetShapeDefinitions, pptxToIDoc, pptxToSVG } from '../src'
+
+console.warn(parsePresetShapeDefinitions(presetShapeDefinitions))
 
 function openFileDialog(): Promise<Uint8Array> {
   return new Promise((resolve) => {

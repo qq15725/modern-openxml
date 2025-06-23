@@ -1,11 +1,57 @@
-import type { NormalizedShape } from 'modern-idoc'
+import type { NormalizedShape, ShapePath } from 'modern-idoc'
 import type { OOXMLNode } from '../core'
 import { svgPathCommandsToData, svgPathDataToCommands } from 'modern-path2d'
 import { OOXMLValue } from '../core'
-import { withAttr, withAttrs, withIndents } from '../utils'
+import { clearUndef, withAttr, withAttrs, withIndents } from '../utils'
 
-function parseGdList(gdList?: OOXMLNode): Record<string, any>[] {
-  return gdList?.get('*[(self::a:gd or self::gd)]').map(gd => ({ name: gd.attr('@name'), fmla: gd.attr('@fmla') })) ?? []
+export interface Rectangle {
+  left?: number
+  top?: number
+  right?: number
+  bottom?: number
+}
+
+export function parseRectangle(rect?: OOXMLNode): Rectangle | undefined {
+  const res = clearUndef({
+    left: rect?.attr('l', 'ST_AdjCoordinate'),
+    top: rect?.attr('t', 'ST_AdjCoordinate'),
+    right: rect?.attr('r', 'ST_AdjCoordinate'),
+    bottom: rect?.attr('b', 'ST_AdjCoordinate'),
+  }) as Rectangle
+  return Object.keys(res).length
+    ? res
+    : undefined
+}
+
+export interface ShapeGuide {
+  name: string
+  fmla: string
+}
+
+export function parseShapeGuides(gdLst?: OOXMLNode): ShapeGuide[] | undefined {
+  return gdLst?.get('*[(self::a:gd or self::gd)]').map(gd => ({
+    name: gd.attr('@name')!,
+    fmla: gd.attr('@fmla')!,
+  }))
+}
+
+export interface ShapeAdjustHandle {
+  //
+}
+
+export function parseShapeAdjustHandles(ahLst?: OOXMLNode): ShapeAdjustHandle[] | undefined {
+  return ahLst?.get('*[(self::a:ahXY or self::ahXY)]').map(ahXY => clearUndef({
+    gdRefX: ahXY.attr('@gdRefX')!,
+    gdRefY: ahXY.attr('@gdRefY')!,
+    minX: ahXY.attr('@minX')!,
+    maxX: ahXY.attr('@maxX')!,
+    minY: ahXY.attr('@minY')!,
+    maxY: ahXY.attr('@maxY')!,
+    pos: {
+      x: ahXY.attr('pos/@x')!,
+      y: ahXY.attr('pos/@y')!,
+    },
+  }))
 }
 
 export function parseGeometry(geom?: OOXMLNode, ctx?: Record<string, any>): NormalizedShape | undefined {
@@ -30,41 +76,25 @@ export function parseGeometry(geom?: OOXMLNode, ctx?: Record<string, any>): Norm
       ctx = {
         ...ctx,
         preset,
-        avLst: [
-          ...parseGdList(node?.find('avLst')),
-          ...parseGdList(prstGeom?.find('a:avLst')),
+        adjustValues: [
+          ...(parseShapeGuides(node?.find('avLst')) ?? []),
+          ...(parseShapeGuides(prstGeom?.find('a:avLst')) ?? []),
         ],
-        gdLst: parseGdList(node?.find('gdLst')),
-        pathLst: node?.find('pathLst'),
+        shapeGuides: parseShapeGuides(node?.find('gdLst')),
       }
       return {
         preset,
-        paths: getPaths(ctx as any).map((path) => {
-          const { commands, ...props } = path
-          return {
-            ...props,
-            fillRule: 'evenodd',
-            data: svgPathCommandsToData(commands),
-          }
-        }),
+        paths: parsePaths(node?.find('pathLst'), ctx as any),
       }
     }
     else if (custGeom) {
       ctx = {
         ...ctx,
-        avLst: parseGdList(custGeom.find('a:avLst')),
-        gdLst: parseGdList(custGeom.find('a:gdLst')),
-        pathLst: custGeom.find('a:pathLst'),
+        adjustValues: parseShapeGuides(custGeom.find('a:avLst')),
+        shapeGuides: parseShapeGuides(custGeom.find('a:gdLst')),
       }
       return {
-        paths: getPaths(ctx as any).map((path) => {
-          const { commands, ...props } = path
-          return {
-            ...props,
-            fillRule: 'evenodd',
-            data: svgPathCommandsToData(commands),
-          }
-        }),
+        paths: parsePaths(custGeom.find('a:pathLst'), ctx as any),
       }
     }
   }
@@ -211,20 +241,6 @@ type GeometryPathCommand
     | { type: 'C', x1: number, y1: number, x2: number, y2: number, x: number, y: number }
     | { type: 'Z' }
 
-interface GeometryContext {
-  width: number
-  height: number
-  avLst?: OOXMLNode
-  gdLst?: OOXMLNode
-  pathLst?: OOXMLNode
-}
-
-interface GeometryPath {
-  commands: GeometryPathCommand[]
-  fill?: string
-  stroke?: string
-}
-
 function parseVariables(
   width: number,
   height: number,
@@ -241,6 +257,7 @@ function parseVariables(
     'r': width,
     'w': width,
     'wd2': width / 2,
+    'wd3': width / 3,
     'wd4': width / 4,
     'wd5': width / 5,
     'wd6': width / 6,
@@ -251,6 +268,7 @@ function parseVariables(
     'b': height,
     'h': height,
     'hd2': height / 2,
+    'hd3': height / 3,
     'hd4': height / 4,
     'hd5': height / 5,
     'hd6': height / 6,
@@ -375,16 +393,22 @@ function getEllipsePoint(a: number, b: number, theta: number): { x: number, y: n
   }
 }
 
-function getPaths(ctx: GeometryContext): GeometryPath[] {
+export interface OptionsForParseShapePaths {
+  width: number
+  height: number
+  adjustValues?: ShapeGuide[]
+  shapeGuides?: ShapeGuide[]
+}
+
+export function parsePaths(pathLst: OOXMLNode | undefined, options: OptionsForParseShapePaths): ShapePath[] {
   const {
     width,
     height,
-    pathLst,
-    avLst = [],
-    gdLst = [],
-  } = ctx
+    adjustValues = [],
+    shapeGuides = [],
+  } = options ?? {}
 
-  const prestVars = [...(avLst as any[]), ...(gdLst as any[])].reduce(
+  const prestVars = [...adjustValues, ...shapeGuides].reduce(
     (vars, gd) => {
       const name = gd.name
       const fmla = gd.fmla
@@ -419,7 +443,11 @@ function getPaths(ctx: GeometryContext): GeometryPath[] {
         newValue = Number(
           // eslint-disable-next-line no-new-func
           new Function(
-            [`const width=${width}`, `const height=${height}`, `return (${value})`].join(';'),
+            [
+              `const width=${width}`,
+              `const height=${height}`,
+              `return (${value})`,
+            ].join(';'),
           )(),
         )
       }
@@ -517,10 +545,11 @@ function getPaths(ctx: GeometryContext): GeometryPath[] {
       }
     })
 
-    return {
+    return clearUndef({
+      data: svgPathCommandsToData(commands),
       fill: needsFill ? undefined : 'none',
+      fillRule: 'evenodd',
       stroke: needsStroke ? undefined : 'none',
-      commands,
-    }
+    })
   }) ?? []
 }

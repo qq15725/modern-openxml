@@ -1,5 +1,5 @@
 import type {
-  FragmentContent,
+  FragmentObject,
   NormalizedColorFill,
   NormalizedStyle,
   NormalizedText,
@@ -172,7 +172,7 @@ export function parseTextBody(txBody?: OOXMLNode, ctx?: Record<string, any>): Te
             return undefined
         }
       })
-      .filter(Boolean) as FragmentContent[]
+      .filter(Boolean) as FragmentObject[]
 
     return {
       marginLeft: queryPPr('@marL', 'emu'),

@@ -1,7 +1,6 @@
 export * from './background'
 export * from './color-map'
 export * from './connection-shape'
-export * from './geometry'
 export * from './graphic-frame'
 export * from './group-shape'
 export * from './non-visual-drawing-properties'

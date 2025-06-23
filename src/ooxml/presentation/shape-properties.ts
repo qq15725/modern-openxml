@@ -12,12 +12,13 @@ import {
   parseColor,
   parseEffectList,
   parseFill,
+  parseGeometry,
   parseOutline,
   stringifyFill,
+  stringifyGeometry,
   stringifyOutline,
 } from '../drawing'
 import { clearUndef, withIndents } from '../utils'
-import { parseGeometry, stringifyGeometry } from './geometry'
 import { parseTransform2d, stringifyTransform2d } from './transform2d'
 
 export interface ShapeProperties extends Transform2d {

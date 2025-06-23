@@ -1,6 +1,6 @@
+import type { PPTXConvertOptions } from '../converters'
 import type { PPTXSource } from '../ooxml'
-import type { PPTXConvertOptions } from './pptx-to-idoc-converter'
-import { IDocToSVGStringConverter } from './idoc-to-svg-string-converter'
+import { IDocToSVGStringConverter } from '../converters'
 import { pptxToIDoc } from './pptx-to-idoc'
 
 export async function pptxToSVGString(

@@ -1,6 +1,6 @@
+import type { PPTXConvertOptions } from '../converters'
 import type { NormalizedPPTX, PPTXSource } from '../ooxml'
-import type { PPTXConvertOptions } from './pptx-to-idoc-converter'
-import { PPTXToIDocConverter } from './pptx-to-idoc-converter'
+import { PPTXToIDocConverter } from '../converters'
 
 export async function pptxToIDoc(
   source: PPTXSource,

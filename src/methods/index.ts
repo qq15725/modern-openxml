@@ -1,0 +1,5 @@
+export * from './idoc-to-pptx'
+export * from './parse-preset-shape-definitions'
+export * from './pptx-to-idoc'
+export * from './pptx-to-svg'
+export * from './pptx-to-svg-string'
