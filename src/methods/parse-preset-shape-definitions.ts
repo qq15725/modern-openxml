@@ -5,6 +5,8 @@ import type {
   ShapeGuide,
   ShapeGuideContext,
 } from '../ooxml'
+import { Path2D } from 'modern-path2d'
+
 import {
   clearUndef,
   namespaces,
@@ -41,13 +43,15 @@ export function parsePresetShapeDefinitions(
       const avLst = child.find('avLst')
       const gdLst = child.find('gdLst')
       const ahLst = child.find('ahLst')
+      const pathLst = child.find('pathLst')
+      const rect = child.find('rect')
       const adjustValues = avLst ? parseShapeGuides(avLst) : undefined
       const shapeGuides = gdLst ? parseShapeGuides(gdLst) : undefined
       const generate = (options: Partial<ShapeGuideContext> = {}): ShapePath[] => {
         const ctx: ShapeGuideContext = {
-          variables: options?.variables ?? {},
           width: Number(OOXMLValue.encode(options.width ?? 0, 'emu')),
           height: Number(OOXMLValue.encode(options.height ?? 0, 'emu')),
+          variables: options?.variables ?? {},
         }
         adjustValues?.forEach((gd) => {
           ctx.variables[gd.name] = parseShapeGuideFmla(gd.fmla, ctx)
@@ -55,21 +59,37 @@ export function parsePresetShapeDefinitions(
         shapeGuides?.forEach((gd) => {
           ctx.variables[gd.name] = parseShapeGuideFmla(gd.fmla, ctx)
         })
-        return parsePaths(child.find('pathLst'), ctx)
+        return parsePaths(pathLst, ctx)
       }
       const attrs: Record<string, any> = {}
       child.getDOM<Element>().getAttributeNames().forEach(key => attrs[key] = child.attr(`@${key}`))
       return clearUndef({
         name,
         attrs: Object.keys(attrs).length ? attrs : undefined,
-        rect: parseRectangle(child.find('rect')),
+        rect: parseRectangle(rect),
         adjustValues,
         shapeGuides,
         shapeAdjustHandles: ahLst ? parseShapeAdjustHandles(ahLst) : undefined,
         // cxnLst: child.find('cxnLst'),
         generate,
-        generateSVGString: (options: Partial<ShapeGuideContext>): string => {
-          const { width, height } = options
+        generateSVGString: (options: Partial<ShapeGuideContext> = {}): string => {
+          const { width = 0, height = 0 } = options
+          const paths = generate(options)
+          const viewBox = {
+            x1: [] as number[],
+            y1: [] as number[],
+            x2: [] as number[],
+            y2: [] as number[],
+          }
+          paths.forEach((path) => {
+            const { data, ...style } = path
+            const _path = new Path2D(data, style)
+            const { left, top, right, bottom } = _path.getBoundingBox()
+            viewBox.x1.push(left)
+            viewBox.y1.push(top)
+            viewBox.x2.push(right)
+            viewBox.y2.push(bottom)
+          })
           return xmlRenderer.render({
             tag: 'svg',
             attrs: {
@@ -77,9 +97,14 @@ export function parsePresetShapeDefinitions(
               'xmlns': 'http://www.w3.org/2000/svg',
               'width': width,
               'height': height,
-              'viewBox': `0 0 ${width} ${height}`,
+              'viewBox': [
+                Math.min(...viewBox.x1),
+                Math.min(...viewBox.y1),
+                Math.max(...viewBox.x2),
+                Math.max(...viewBox.y2),
+              ].join(' '),
             },
-            children: generate(options).map((path) => {
+            children: paths.map((path) => {
               return {
                 tag: 'path',
                 attrs: {

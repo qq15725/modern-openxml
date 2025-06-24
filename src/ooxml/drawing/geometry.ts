@@ -5,10 +5,10 @@ import { OOXMLValue } from '../core'
 import { clearUndef, withAttr, withAttrs, withIndents } from '../utils'
 
 export interface Rectangle {
-  left?: number
-  top?: number
-  right?: number
-  bottom?: number
+  left?: string
+  top?: string
+  right?: string
+  bottom?: string
 }
 
 export interface ShapeGuide {
@@ -42,15 +42,13 @@ export interface ShapeGuideContext {
 }
 
 export function parseRectangle(rect?: OOXMLNode): Rectangle | undefined {
-  const res = clearUndef({
-    left: rect?.attr('l', 'ST_AdjCoordinate'),
-    top: rect?.attr('t', 'ST_AdjCoordinate'),
-    right: rect?.attr('r', 'ST_AdjCoordinate'),
-    bottom: rect?.attr('b', 'ST_AdjCoordinate'),
-  }) as Rectangle
-  return Object.keys(res).length
-    ? res
-    : undefined
+  const res = {
+    left: rect?.attr('@l'),
+    top: rect?.attr('@t'),
+    right: rect?.attr('@r'),
+    bottom: rect?.attr('@b'),
+  }
+  return Object.keys(res).length ? res : undefined
 }
 
 export function parseShapeGuides(gdLst: OOXMLNode): ShapeGuide[] {
@@ -207,22 +205,20 @@ export function parsePaths(pathLst: OOXMLNode | undefined, ctx: ShapeGuideContex
     path.attr('@extrusionOk', 'boolean')
     const needsFill = path.attr<boolean>('@fill', 'boolean') ?? true
     const needsStroke = path.attr<boolean>('@stroke', 'boolean') ?? true
-    const w = path.attr<number>('@w', 'ST_PositiveCoordinate')
-    const h = path.attr<number>('@h', 'ST_PositiveCoordinate')
+    const w = path.attr<number>('@w', 'number')
+    const h = path.attr<number>('@h', 'number')
 
     const rateX = w ? width / w : 1
     const rateY = h ? height / h : 1
 
     function convert(gdValue: string, isX: boolean, type: 'emu' | 'degree' = 'emu'): number {
       const value = parseShapeGuideValue(gdValue, ctx)
-      let newValue: number
       if (type === 'emu') {
-        newValue = OOXMLValue.decode(value, 'emu')
+        return OOXMLValue.decode(isX ? value * rateX : value * rateY, 'emu')
       }
       else {
         return (OOXMLValue.decode(value, 'degree') / 180) * Math.PI
       }
-      return isX ? newValue * rateX : newValue * rateY
     }
 
     let currentPoint: { x: any, y: any }

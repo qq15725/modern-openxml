@@ -1,5 +1,5 @@
 import type { LineEndSize, NormalizedFill, NormalizedGradientFill, NormalizedImageFill } from 'modern-idoc'
-import type { NormalizedPPTX, SlideElement } from '../ooxml'
+import type { NormalizedPPTX, Slide, SlideElement, SlideLayout, SlideMaster } from '../ooxml'
 import type { XMLNode } from '../renderers'
 import { isNone } from 'modern-idoc'
 import { measureText } from 'modern-text'
@@ -651,6 +651,48 @@ export class IDocToSVGStringConverter {
     return container
   }
 
+  parseSlide(slide: Slide | SlideMaster | SlideLayout, slideIndex: number, width: number, height: number): XMLNode {
+    const {
+      children = [],
+      background,
+    } = slide
+
+    const uuid = this.genUUID()
+
+    const defs = {
+      tag: 'defs',
+      children: [] as XMLNode[],
+    }
+
+    const fillMap = new Map<string, string>()
+
+    return {
+      tag: 'g',
+      attrs: {
+        'data-title': slide.name,
+        'data-path': slide.meta.id,
+        'transform': `translate(0, ${height * slideIndex})`,
+      },
+      children: [
+        defs,
+        ...(background
+          ? [
+              this.parseFill(background, {
+                key: 'background',
+                width,
+                height,
+                defs,
+                uuid,
+                fillMap,
+              }),
+            ]
+          : []),
+        ...children
+          .map(child => this.parseSlideElement(child as any)),
+      ],
+    }
+  }
+
   parse(pptx: NormalizedPPTX): XMLNode {
     const {
       width,
@@ -658,7 +700,6 @@ export class IDocToSVGStringConverter {
     } = pptx.style
 
     const slides = pptx.children
-
     const viewBoxHeight = height * slides.length
 
     return {
@@ -671,49 +712,9 @@ export class IDocToSVGStringConverter {
         'viewBox': `0 0 ${width} ${viewBoxHeight}`,
       },
       children: slides.flatMap((slide, slideIndex) => {
-        const top = height * slideIndex
-        const items: XMLNode[] = []
-        const {
-          children = [],
-          background,
-        } = slide
-
-        const uuid = this.genUUID()
-
-        const defs = {
-          tag: 'defs',
-          children: [] as XMLNode[],
-        }
-
-        const fillMap = new Map<string, string>()
-
-        items.push({
-          tag: 'g',
-          attrs: {
-            'data-title': slide.name,
-            'data-path': slide.meta.id,
-            'transform': `translate(0, ${top})`,
-          },
-          children: [
-            defs,
-            ...(background
-              ? [
-                  this.parseFill(background, {
-                    key: 'background',
-                    width,
-                    height,
-                    defs,
-                    uuid,
-                    fillMap,
-                  }),
-                ]
-              : []),
-            ...children
-              .map(child => this.parseSlideElement(child as any)),
-          ],
-        })
-
-        return items
+        return [
+          this.parseSlide(slide, slideIndex, width, height),
+        ].filter(Boolean) as XMLNode[]
       }),
     }
   }

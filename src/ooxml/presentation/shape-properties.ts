@@ -34,19 +34,28 @@ export function parseShapeProperties(spPr?: OOXMLNode, ctx?: any): ShapeProperti
 
   const query = ctx?.query ?? spPr.query
 
-  let fill = (parseFill(query(`${fillXPath}`), ctx) ?? {}) as NormalizedColorFill
-  if (!spPr.find(`${fillXPath}`)) {
-    const fillRef = spPr.find('../p:style/a:fillRef')
-    const fillRefIdx = fillRef?.attr<number>('@idx', 'number') ?? 1
-    if (ctx?.theme?.fillStyleList?.[fillRefIdx - 1]) {
-      // TODO
-      fill = {
-        ...fill,
-        ...parseColor(fillRef, ctx)!,
-      }
+  const useBgFill = spPr.attr('../@useBgFill', 'boolean')
+  let fill: Record<string, any>
+  if (useBgFill) {
+    fill = {
+      color: ctx?.theme?.colorScheme?.lt2,
     }
   }
-  fill = clearUndef(fill)
+  else {
+    fill = (parseFill(query(`${fillXPath}`), ctx) ?? {}) as NormalizedColorFill
+    if (!spPr.find(`${fillXPath}`)) {
+      const fillRef = spPr.find('../p:style/a:fillRef')
+      const fillRefIdx = fillRef?.attr<number>('@idx', 'number') ?? 1
+      if (ctx?.theme?.fillStyleList?.[fillRefIdx - 1]) {
+        // TODO
+        fill = {
+          ...fill,
+          ...parseColor(fillRef, ctx)!,
+        }
+      }
+    }
+    fill = clearUndef(fill)
+  }
 
   let outline = parseOutline(query('a:ln'), {
     ...ctx,
