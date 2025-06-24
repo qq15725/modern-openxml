@@ -1,17 +1,19 @@
 import type { ShapePath } from 'modern-idoc'
 import type {
-  OptionsForParseShapePaths,
   Rectangle,
   ShapeAdjustHandle,
   ShapeGuide,
+  ShapeGuideContext,
 } from '../ooxml'
 import {
   clearUndef,
   namespaces,
   OOXMLNode,
+  OOXMLValue,
   parsePaths,
   parseRectangle,
   parseShapeAdjustHandles,
+  parseShapeGuideFmla,
   parseShapeGuides,
 } from '../ooxml'
 import { XMLRenderer } from '../renderers'
@@ -23,8 +25,8 @@ export interface ParsedPresetShapeDefinition {
   adjustValues?: ShapeGuide[]
   shapeGuides?: ShapeGuide[]
   shapeAdjustHandles?: ShapeAdjustHandle[]
-  generate: (options: OptionsForParseShapePaths) => ShapePath[]
-  generateSVGString: (options: OptionsForParseShapePaths) => string
+  generate: (options: Partial<ShapeGuideContext>) => ShapePath[]
+  generateSVGString: (options: Partial<ShapeGuideContext>) => string
 }
 
 export function parsePresetShapeDefinitions(
@@ -36,40 +38,46 @@ export function parsePresetShapeDefinitions(
     .get('*')
     .map((child) => {
       const name = child.name
-      const adjustValues = parseShapeGuides(child.find('avLst'))
-      const shapeGuides = parseShapeGuides(child.find('gdLst'))
-      const generate = (options: OptionsForParseShapePaths): ShapePath[] => {
-        return parsePaths(child.find('pathLst'), {
-          adjustValues,
-          shapeGuides,
-          ...options,
+      const avLst = child.find('avLst')
+      const gdLst = child.find('gdLst')
+      const ahLst = child.find('ahLst')
+      const adjustValues = avLst ? parseShapeGuides(avLst) : undefined
+      const shapeGuides = gdLst ? parseShapeGuides(gdLst) : undefined
+      const generate = (options: Partial<ShapeGuideContext> = {}): ShapePath[] => {
+        const ctx: ShapeGuideContext = {
+          variables: options?.variables ?? {},
+          width: Number(OOXMLValue.encode(options.width ?? 0, 'emu')),
+          height: Number(OOXMLValue.encode(options.height ?? 0, 'emu')),
+        }
+        adjustValues?.forEach((gd) => {
+          ctx.variables[gd.name] = parseShapeGuideFmla(gd.fmla, ctx)
         })
+        shapeGuides?.forEach((gd) => {
+          ctx.variables[gd.name] = parseShapeGuideFmla(gd.fmla, ctx)
+        })
+        return parsePaths(child.find('pathLst'), ctx)
       }
       const attrs: Record<string, any> = {}
-      child.getDOM<Element>().getAttributeNames().forEach((key) => {
-        attrs[key] = child.attr(`@${key}`)
-      })
+      child.getDOM<Element>().getAttributeNames().forEach(key => attrs[key] = child.attr(`@${key}`))
       return clearUndef({
         name,
         attrs: Object.keys(attrs).length ? attrs : undefined,
         rect: parseRectangle(child.find('rect')),
         adjustValues,
         shapeGuides,
-        shapeAdjustHandles: parseShapeAdjustHandles(child.find('ahLst')),
+        shapeAdjustHandles: ahLst ? parseShapeAdjustHandles(ahLst) : undefined,
         // cxnLst: child.find('cxnLst'),
         generate,
-        generateSVGString: (options: OptionsForParseShapePaths): string => {
+        generateSVGString: (options: Partial<ShapeGuideContext>): string => {
           const { width, height } = options
           return xmlRenderer.render({
             tag: 'svg',
             attrs: {
               'data-title': name,
               'xmlns': 'http://www.w3.org/2000/svg',
-              'xmlns:xlink': 'http://www.w3.org/1999/xlink',
               'width': width,
               'height': height,
               'viewBox': `0 0 ${width} ${height}`,
-              'preserveAspectRatio': 'none',
             },
             children: generate(options).map((path) => {
               return {
