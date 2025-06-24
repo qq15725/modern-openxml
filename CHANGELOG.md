@@ -1,3 +1,21 @@
+## [1.1.4](https://github.com/qq15725/modern-openxml/compare/v1.1.3...v1.1.4) (2025-06-24)
+
+
+### Bug Fixes
+
+* useBgFill attr in wps ([1497e59](https://github.com/qq15725/modern-openxml/commit/1497e59c7714d0d06d8a07ec1ded0a28a67cfa70))
+
+
+### Features
+
+* parsePresetShapeDefinitions ([eb39cd1](https://github.com/qq15725/modern-openxml/commit/eb39cd1071229dac719c730a7cdcbcd502f2489b))
+* parsePresetShapeDefinitions ([3c1db44](https://github.com/qq15725/modern-openxml/commit/3c1db442f1cbf9c87fe5f9c26d60012c5ca9b191))
+* parsePresetShapeDefinitions ([26470fd](https://github.com/qq15725/modern-openxml/commit/26470fd0213496e849edc405c2fce15bf8ee82de))
+* parsePresetShapeDefinitions ([1795f82](https://github.com/qq15725/modern-openxml/commit/1795f82e51463719c0afb0a3af01a22aa219bc32))
+* parsePresetShapeDefinitions ([ffdc8cd](https://github.com/qq15725/modern-openxml/commit/ffdc8cd30720498f59e664e500b9da9a74ec4680))
+
+
+
 ## [1.1.3](https://github.com/qq15725/modern-openxml/compare/v1.1.2...v1.1.3) (2025-06-12)
 
 
