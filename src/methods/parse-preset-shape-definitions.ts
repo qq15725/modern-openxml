@@ -1,4 +1,5 @@
 import type { ShapePath } from 'modern-idoc'
+import type { Path2DStyle } from 'modern-path2d'
 import type {
   Rectangle,
   ShapeAdjustHandle,
@@ -28,7 +29,7 @@ export interface ParsedPresetShapeDefinition {
   shapeGuides?: ShapeGuide[]
   shapeAdjustHandles?: ShapeAdjustHandle[]
   generate: (options: Partial<ShapeGuideContext>) => ShapePath[]
-  generateSVGString: (options: Partial<ShapeGuideContext>) => string
+  generateSVGString: (options: Partial<ShapeGuideContext & Path2DStyle>) => string
 }
 
 export function parsePresetShapeDefinitions(
@@ -72,8 +73,9 @@ export function parsePresetShapeDefinitions(
         shapeAdjustHandles: ahLst ? parseShapeAdjustHandles(ahLst) : undefined,
         // cxnLst: child.find('cxnLst'),
         generate,
-        generateSVGString: (options: Partial<ShapeGuideContext> = {}): string => {
-          const { width = 0, height = 0 } = options
+        generateSVGString: (options: Partial<ShapeGuideContext & Path2DStyle> = {}): string => {
+          const { width = 0, height = 0, variables: _variables, ...style } = options
+          const strokeWidth = style.strokeWidth ?? 0
           const paths = generate(options)
           const viewBox = {
             x1: [] as number[],
@@ -82,14 +84,16 @@ export function parsePresetShapeDefinitions(
             y2: [] as number[],
           }
           paths.forEach((path) => {
-            const { data, ...style } = path
-            const _path = new Path2D(data, style)
+            const { data, ...pathStyle } = path
+            const _path = new Path2D(data, pathStyle)
             const { left, top, right, bottom } = _path.getBoundingBox()
             viewBox.x1.push(left)
             viewBox.y1.push(top)
             viewBox.x2.push(right)
             viewBox.y2.push(bottom)
           })
+          const x1 = Math.min(...viewBox.x1.map(v => v - strokeWidth / 2))
+          const y1 = Math.min(...viewBox.y1.map(v => v - strokeWidth / 2))
           return xmlRenderer.render({
             tag: 'svg',
             attrs: {
@@ -98,10 +102,10 @@ export function parsePresetShapeDefinitions(
               'width': width,
               'height': height,
               'viewBox': [
-                Math.min(...viewBox.x1),
-                Math.min(...viewBox.y1),
-                Math.max(...viewBox.x2),
-                Math.max(...viewBox.y2),
+                x1,
+                y1,
+                Math.max(...viewBox.x2.map(v => v - x1 + strokeWidth)),
+                Math.max(...viewBox.y2.map(v => v - y1 + strokeWidth)),
               ].join(' '),
             },
             children: paths.map((path) => {
@@ -109,10 +113,10 @@ export function parsePresetShapeDefinitions(
                 tag: 'path',
                 attrs: {
                   'd': path.data,
-                  'fill': path.fill,
+                  'fill': path.fill ?? style.fill,
                   'fill-rule': path.fillRule,
-                  'stroke': path.stroke,
-                  'stroke-width': path.strokeWidth,
+                  'stroke': path.stroke ?? style.stroke,
+                  'stroke-width': style.strokeWidth,
                 },
               }
             }),
