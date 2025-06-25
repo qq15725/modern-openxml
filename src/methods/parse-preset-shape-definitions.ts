@@ -1,9 +1,9 @@
 import type { ShapePath } from 'modern-idoc'
 import type { Path2DStyle } from 'modern-path2d'
 import type {
-  ConstantShapeGuide,
+  AdjustHandle,
+  AdjustValue,
   Rectangle,
-  ShapeAdjustHandle,
   ShapeGuide,
   ShapeGuideContext,
 } from '../ooxml'
@@ -12,23 +12,38 @@ import {
   clearUndef,
   OOXMLNode,
   OOXMLValue,
-  parseAdjustValues,
+  parseAdjustHandleList,
+  parseAdjustValueList,
   parsePaths,
   parseRectangle,
-  parseShapeAdjustHandles,
   parseShapeGuideFmla,
-  parseShapeGuides,
+  parseShapeGuideList,
+  parseShapeGuideValue,
 } from '../ooxml'
 import { XMLRenderer } from '../renderers'
+
+export interface GeneratedAdjustHandle {
+  refX: string
+  refY: string
+  refXDefault?: number
+  refYDefault?: number
+  minX?: number
+  minY?: number
+  maxX?: number
+  maxY?: number
+  posX: number
+  posY: number
+}
 
 export interface ParsedPresetShapeDefinition {
   name: string
   attrs?: Record<string, any>
   rect?: Rectangle
-  adjustValues?: ConstantShapeGuide[]
+  adjustValues?: AdjustValue[]
+  adjustHandles?: AdjustHandle[]
   shapeGuides?: ShapeGuide[]
-  shapeAdjustHandles?: ShapeAdjustHandle[]
-  generate: (options: Partial<ShapeGuideContext>) => ShapePath[]
+  generatePaths: (options: Partial<ShapeGuideContext>) => ShapePath[]
+  generateAdjustHandles: (options: Partial<ShapeGuideContext>) => GeneratedAdjustHandle[] | undefined
   generateSVGString: (options: Partial<ShapeGuideContext & Path2DStyle>) => string
 }
 
@@ -45,16 +60,16 @@ export function parsePresetShapeDefinition(node: OOXMLNode): ParsedPresetShapeDe
   const avLst = node.find('avLst')
   const gdLst = node.find('gdLst')
   const ahLst = node.find('ahLst')
+  // const cxnLst = node.find('cxnLst')
   const pathLst = node.find('pathLst')
   const rect = node.find('rect')
-  const adjustValues = avLst ? parseAdjustValues(avLst) : undefined
-  const shapeGuides = gdLst ? parseShapeGuides(gdLst) : undefined
-  const generate = (options: Partial<ShapeGuideContext> = {}): ShapePath[] => {
-    const ctx: ShapeGuideContext = {
-      width: Number(OOXMLValue.encode(options.width ?? 0, 'emu')),
-      height: Number(OOXMLValue.encode(options.height ?? 0, 'emu')),
-      variables: options?.variables ?? {},
-    }
+  const adjustValues = avLst ? parseAdjustValueList(avLst) : undefined
+  const adjustHandles = ahLst ? parseAdjustHandleList(ahLst) : undefined
+  const shapeGuides = gdLst ? parseShapeGuideList(gdLst) : undefined
+  function loadVariables(ctx: ShapeGuideContext): void {
+    Object.keys(ctx.variables).forEach((key) => {
+      ctx.variables[key] = Number(OOXMLValue.encode(ctx.variables[key], 'emu'))
+    })
     adjustValues?.forEach((gd) => {
       if (!ctx.variables[gd.name]) {
         ctx.variables[gd.name] = gd.value
@@ -63,6 +78,14 @@ export function parsePresetShapeDefinition(node: OOXMLNode): ParsedPresetShapeDe
     shapeGuides?.forEach((gd) => {
       ctx.variables[gd.name] = parseShapeGuideFmla(gd.fmla, ctx)
     })
+  }
+  const generatePaths = (options: Partial<ShapeGuideContext> = {}): ShapePath[] => {
+    const ctx: ShapeGuideContext = {
+      width: Number(OOXMLValue.encode(options.width ?? 0, 'emu')),
+      height: Number(OOXMLValue.encode(options.height ?? 0, 'emu')),
+      variables: options?.variables ?? {},
+    }
+    loadVariables(ctx)
     return parsePaths(pathLst, ctx)
   }
   const attrs: Record<string, any> = {}
@@ -72,14 +95,40 @@ export function parsePresetShapeDefinition(node: OOXMLNode): ParsedPresetShapeDe
     attrs: Object.keys(attrs).length ? attrs : undefined,
     rect: parseRectangle(rect),
     adjustValues,
+    adjustHandles,
     shapeGuides,
-    shapeAdjustHandles: ahLst ? parseShapeAdjustHandles(ahLst) : undefined,
-    // cxnLst: child.find('cxnLst'),
-    generate,
+    generateAdjustHandles: (options: Partial<ShapeGuideContext> = {}) => {
+      const ctx: ShapeGuideContext = {
+        width: Number(OOXMLValue.encode(options.width ?? 0, 'emu')),
+        height: Number(OOXMLValue.encode(options.height ?? 0, 'emu')),
+        variables: options?.variables ?? {},
+      }
+      loadVariables(ctx)
+      function convert(gdValue?: any): number | undefined {
+        return gdValue
+          ? OOXMLValue.decode(parseShapeGuideValue(gdValue, ctx), 'emu')
+          : undefined
+      }
+      return adjustHandles?.map((adjustHandle) => {
+        return clearUndef({
+          refX: adjustHandle.gdRefX,
+          refY: adjustHandle.gdRefY,
+          refXDefault: convert(adjustHandle.gdRefX ? ctx.variables[adjustHandle.gdRefX] : undefined),
+          refYDefault: convert(adjustHandle.gdRefY ? ctx.variables[adjustHandle.gdRefY] : undefined),
+          minX: convert(adjustHandle.minX),
+          minY: convert(adjustHandle.minY),
+          maxX: convert(adjustHandle.maxX),
+          maxY: convert(adjustHandle.maxY),
+          posX: convert(adjustHandle.posX)!,
+          posY: convert(adjustHandle.posY)!,
+        }) as GeneratedAdjustHandle
+      })
+    },
+    generatePaths,
     generateSVGString: (options: Partial<ShapeGuideContext & Path2DStyle> = {}): string => {
       const { width = 0, height = 0, variables: _variables, ...style } = options
       const strokeWidth = style.strokeWidth ?? 0
-      const paths = generate(options)
+      const paths = generatePaths(options)
       const viewBox = {
         x1: [] as number[],
         y1: [] as number[],

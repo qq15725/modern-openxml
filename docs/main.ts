@@ -15,11 +15,12 @@ document.querySelector<HTMLButtonElement>('#GeneratePresetShapes')!.onclick = as
   console.warn(definitions)
   const width = 100
   const height = 100
-  definitions.forEach((shape) => {
-    const svg = xmlToDom<SVGSVGElement>(shape.generateSVGString({ width, height, strokeWidth: 2 }))
+  definitions.forEach((definition) => {
+    const svg = xmlToDom<SVGSVGElement>(definition.generateSVGString({ width, height, strokeWidth: 2 }))
     svg.style.fill = '#c6dee8'
     svg.style.stroke = '#4874cb'
     document.body.append(svg)
+    console.warn(definition.name, definition.generateAdjustHandles({ width, height }))
   })
 }
 
@@ -28,8 +29,8 @@ document.querySelector<HTMLButtonElement>('#GeneratePresetTextWarps')!.onclick =
   console.warn(definitions)
   const width = 100
   const height = 100
-  definitions.forEach((shape) => {
-    const svg = xmlToDom<SVGSVGElement>(shape.generateSVGString({ width, height, strokeWidth: 2 }))
+  definitions.forEach((definition) => {
+    const svg = xmlToDom<SVGSVGElement>(definition.generateSVGString({ width, height, strokeWidth: 2 }))
     svg.style.fill = '#c6dee8'
     svg.style.stroke = '#4874cb'
     document.body.append(svg)
