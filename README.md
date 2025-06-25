@@ -69,5 +69,6 @@ fetch('./example.pptx')
 
 ## Related
 
-- [openxml](https://learn.microsoft.com/zh-cn/dotnet/api/documentformat.openxml)
-- [OOXML-Validator](https://github.com/mikeebowen/OOXML-Validator)
+- [Office Open XML file formats (ECMA-376)](https://ecma-international.org/publications-and-standards/standards/ecma-376/)
+- [Office Open XML validator](https://github.com/mikeebowen/OOXML-Validator)
+- [Open XML SDK API](https://learn.microsoft.com/zh-cn/dotnet/api/documentformat.openxml)
