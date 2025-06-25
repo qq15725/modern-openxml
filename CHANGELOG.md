@@ -1,3 +1,12 @@
+## [1.2.1](https://github.com/qq15725/modern-openxml/compare/v1.2.0...v1.2.1) (2025-06-25)
+
+
+### Bug Fixes
+
+* addMedia ([5d58d7c](https://github.com/qq15725/modern-openxml/commit/5d58d7cb64580fa9391008ed5105552755bcd4fe))
+
+
+
 # [1.2.0](https://github.com/qq15725/modern-openxml/compare/v1.1.4...v1.2.0) (2025-06-25)
 
 
