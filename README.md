@@ -34,6 +34,10 @@ preset shape definitions
 
 - [parsePresetShapeDefinitions](src/methods/parse-preset-shape-definitions.ts)
 
+preset text warp definitions
+
+- [parsePresetTextWarpDefinitions](src/methods/parse-preset-text-warp-definitions.ts)
+
 utils
 
 - [xmlToDom](src/methods/xml-to-dom.ts)

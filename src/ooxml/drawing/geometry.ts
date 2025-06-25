@@ -69,9 +69,17 @@ export function parseConstantShapeGuide(gd: OOXMLNode): ConstantShapeGuide {
   if (!fmla.startsWith('val ')) {
     console.warn('Failed to parse constant shape guide')
   }
+  const value = parseShapeGuideFmla(fmla, {
+    width: 0,
+    height: 0,
+    variables: {},
+  })
+  if (Number.isNaN(value)) {
+    console.warn('Failed to parse constant shape guide')
+  }
   return {
     name: gd.attr('@name')!,
-    value: Number(fmla.substring(4)),
+    value,
   }
 }
 

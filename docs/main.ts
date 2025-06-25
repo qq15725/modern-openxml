@@ -1,5 +1,6 @@
 import presetShapeDefinitions from '../assets/presetShapeDefinitions'
-import { idocToPptx, parsePresetShapeDefinitions, pptxToIdoc, pptxToSvg, xmlToDom } from '../src'
+import presetTextWarpDefinitions from '../assets/presetTextWarpDefinitions'
+import { idocToPptx, parsePresetShapeDefinitions, parsePresetTextWarpDefinitions, pptxToIdoc, pptxToSvg, xmlToDom } from '../src'
 
 document.querySelector<HTMLButtonElement>('#Decode')!.onclick = async () => {
   testPPTXToSVG(await openFileDialog())
@@ -10,11 +11,24 @@ document.querySelector<HTMLButtonElement>('#ReEncode')!.onclick = async () => {
 }
 
 document.querySelector<HTMLButtonElement>('#GeneratePresetShapes')!.onclick = async () => {
-  const shapes = parsePresetShapeDefinitions(presetShapeDefinitions)
-  console.warn(shapes)
+  const definitions = parsePresetShapeDefinitions(presetShapeDefinitions)
+  console.warn(definitions)
   const width = 100
   const height = 100
-  shapes.forEach((shape) => {
+  definitions.forEach((shape) => {
+    const svg = xmlToDom<SVGSVGElement>(shape.generateSVGString({ width, height, strokeWidth: 2 }))
+    svg.style.fill = '#c6dee8'
+    svg.style.stroke = '#4874cb'
+    document.body.append(svg)
+  })
+}
+
+document.querySelector<HTMLButtonElement>('#GeneratePresetTextWarps')!.onclick = async () => {
+  const definitions = parsePresetTextWarpDefinitions(presetTextWarpDefinitions)
+  console.warn(definitions)
+  const width = 100
+  const height = 100
+  definitions.forEach((shape) => {
     const svg = xmlToDom<SVGSVGElement>(shape.generateSVGString({ width, height, strokeWidth: 2 }))
     svg.style.fill = '#c6dee8'
     svg.style.stroke = '#4874cb'
