@@ -69,6 +69,7 @@ fetch('./example.pptx')
 
 ## Related
 
+- [IDoc definition](https://github.com/qq15725/modern-idoc)
 - [Office Open XML file formats (ECMA-376)](https://ecma-international.org/publications-and-standards/standards/ecma-376/)
 - [Office Open XML validator](https://github.com/mikeebowen/OOXML-Validator)
 - [Open XML SDK API](https://learn.microsoft.com/zh-cn/dotnet/api/documentformat.openxml)
