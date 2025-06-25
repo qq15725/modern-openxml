@@ -18,6 +18,26 @@
   </a>
 </p>
 
+## Methods
+
+IDoc to other
+
+- [idocToPPTX](src/methods/idoc-to-pptx.ts)
+
+PPTX to other
+
+- [pptxToIDoc](src/methods/pptx-to-idoc.ts)
+- [pptxToSVG](src/methods/pptx-to-svg.ts)
+- [pptxToSVGString](src/methods/pptx-to-svg-string.ts)
+
+preset shape definitions
+
+- [parsePresetShapeDefinitions](src/methods/parse-preset-shape-definitions.ts)
+
+utils
+
+- [xmlToDOM](src/methods/xml-to-dom.ts)
+
 ## PPTX to JSON
 
 ```ts
@@ -26,7 +46,7 @@ import presetShapeDefinitions from 'modern-openxml/presetShapeDefinitions'
 
 fetch('./example.pptx')
   .then(rep => rep.arrayBuffer())
-  .then(async buffer => {
+  .then(async (buffer) => {
     const pptx = await pptxToIDoc(new Uint8Array(buffer), { presetShapeDefinitions })
     console.log(pptx)
   })
@@ -40,7 +60,7 @@ import presetShapeDefinitions from 'modern-openxml/presetShapeDefinitions'
 
 fetch('./example.pptx')
   .then(rep => rep.arrayBuffer())
-  .then(async buffer => {
+  .then(async (buffer) => {
     const pptxSVG = await pptxToSVG(new Uint8Array(buffer), { presetShapeDefinitions })
     console.log(pptxSVG)
     document.body.appendChild(pptxSVG)
