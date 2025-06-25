@@ -1,3 +1,12 @@
+# [1.2.0](https://github.com/qq15725/modern-openxml/compare/v1.1.4...v1.2.0) (2025-06-25)
+
+
+### Features
+
+* add parseAdjustValues / change methods name ([11a8627](https://github.com/qq15725/modern-openxml/commit/11a8627fa2d215a370af669dbfd6ef1350ddfbff))
+
+
+
 ## [1.1.4](https://github.com/qq15725/modern-openxml/compare/v1.1.3...v1.1.4) (2025-06-24)
 
 
