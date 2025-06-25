@@ -1,3 +1,12 @@
+## [1.2.2](https://github.com/qq15725/modern-openxml/compare/v1.2.1...v1.2.2) (2025-06-25)
+
+
+### Features
+
+* parsePresetTextWarpDefinitions ([e870ac8](https://github.com/qq15725/modern-openxml/commit/e870ac838ce7ee79a08c6039be91d53867e560ae))
+
+
+
 ## [1.2.1](https://github.com/qq15725/modern-openxml/compare/v1.2.0...v1.2.1) (2025-06-25)
 
 
