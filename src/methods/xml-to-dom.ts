@@ -1,4 +1,4 @@
-export function xmlToDOM<T = Element>(xml: string): T {
+export function xmlToDom<T = Element>(xml: string): T {
   const doc = new DOMParser().parseFromString(xml, 'application/xml') as XMLDocument
   const error = doc.querySelector('parsererror')
   if (error) {

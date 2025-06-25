@@ -22,13 +22,13 @@
 
 PPTX to other
 
-- [pptxToIDoc](src/methods/pptx-to-idoc.ts)
-- [pptxToSVG](src/methods/pptx-to-svg.ts)
-- [pptxToSVGString](src/methods/pptx-to-svg-string.ts)
+- [pptxToIdoc](src/methods/pptx-to-idoc.ts)
+- [pptxToSvg](src/methods/pptx-to-svg.ts)
+- [pptxToSvgString](src/methods/pptx-to-svg-string.ts)
 
 IDoc to other
 
-- [idocToPPTX](src/methods/idoc-to-pptx.ts)
+- [idocToPptx](src/methods/idoc-to-pptx.ts)
 
 preset shape definitions
 
@@ -36,18 +36,18 @@ preset shape definitions
 
 utils
 
-- [xmlToDOM](src/methods/xml-to-dom.ts)
+- [xmlToDom](src/methods/xml-to-dom.ts)
 
 ## PPTX to JSON
 
 ```ts
-import { pptxToIDoc } from 'modern-openxml'
+import { pptxToIdoc } from 'modern-openxml'
 import presetShapeDefinitions from 'modern-openxml/presetShapeDefinitions'
 
 fetch('./example.pptx')
   .then(rep => rep.arrayBuffer())
   .then(async (buffer) => {
-    const pptx = await pptxToIDoc(new Uint8Array(buffer), { presetShapeDefinitions })
+    const pptx = await pptxToIdoc(new Uint8Array(buffer), { presetShapeDefinitions })
     console.log(pptx)
   })
 ```
@@ -55,13 +55,13 @@ fetch('./example.pptx')
 ## PPTX to SVG
 
 ```ts
-import { pptxToSVG } from 'modern-openxml'
+import { pptxToSvg } from 'modern-openxml'
 import presetShapeDefinitions from 'modern-openxml/presetShapeDefinitions'
 
 fetch('./example.pptx')
   .then(rep => rep.arrayBuffer())
   .then(async (buffer) => {
-    const pptxSVG = await pptxToSVG(new Uint8Array(buffer), { presetShapeDefinitions })
+    const pptxSVG = await pptxToSvg(new Uint8Array(buffer), { presetShapeDefinitions })
     console.log(pptxSVG)
     document.body.appendChild(pptxSVG)
   })

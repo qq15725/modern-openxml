@@ -1,4 +1,5 @@
 import type { OOXMLValueType } from './ooxml-value'
+import { namespaces } from '../namespaces'
 import { OOXMLValue } from './ooxml-value'
 
 export type OOXMLQueryType = 'node' | 'nodes' | OOXMLValueType
@@ -42,7 +43,7 @@ export class OOXMLNode {
     this.query = this.query.bind(this)
   }
 
-  static fromXML(xml = '', userNamespaces?: Record<string, any>): OOXMLNode {
+  static fromXML(xml = '', userNamespaces: Record<string, any> = namespaces): OOXMLNode {
     xml = xml.replace(/xmlns=".*?"/g, '')
     for (const key in fixtures) {
       xml = xml.replace(new RegExp(key, 'gi'), (fixtures as any)[key] as string)

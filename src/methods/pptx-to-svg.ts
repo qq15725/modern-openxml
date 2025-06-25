@@ -1,13 +1,13 @@
 import type { PPTXConvertOptions } from '../converters'
 import type { PPTXSource } from '../ooxml'
-import { pptxToSVGString } from './pptx-to-svg-string'
-import { xmlToDOM } from './xml-to-dom'
+import { pptxToSvgString } from './pptx-to-svg-string'
+import { xmlToDom } from './xml-to-dom'
 
-export async function pptxToSVG(
+export async function pptxToSvg(
   source: PPTXSource,
   options: PPTXConvertOptions = {},
 ): Promise<SVGSVGElement> {
-  return xmlToDOM<SVGSVGElement>(
-    await pptxToSVGString(source, options),
+  return xmlToDom<SVGSVGElement>(
+    await pptxToSvgString(source, options),
   )
 }

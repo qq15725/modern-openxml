@@ -16,6 +16,11 @@ export interface ShapeGuide {
   fmla: string
 }
 
+export interface ConstantShapeGuide {
+  name: string
+  value: number
+}
+
 export interface ShapeAdjustHandle {
   gdRefX?: string
   gdRefY?: string
@@ -38,7 +43,7 @@ type GeometryPathCommand
 export interface ShapeGuideContext {
   width: number
   height: number
-  variables: Record<string, any>
+  variables: Record<string, number>
 }
 
 export function parseRectangle(rect?: OOXMLNode): Rectangle | undefined {
@@ -51,8 +56,23 @@ export function parseRectangle(rect?: OOXMLNode): Rectangle | undefined {
   return Object.keys(res).length ? res : undefined
 }
 
+export function parseAdjustValues(avLst: OOXMLNode): ConstantShapeGuide[] {
+  return avLst.get('*[(self::a:gd or self::gd)]').map(gd => parseConstantShapeGuide(gd))
+}
+
 export function parseShapeGuides(gdLst: OOXMLNode): ShapeGuide[] {
   return gdLst.get('*[(self::a:gd or self::gd)]').map(gd => parseShapeGuide(gd))
+}
+
+export function parseConstantShapeGuide(gd: OOXMLNode): ConstantShapeGuide {
+  const fmla = gd.attr('@fmla')!
+  if (!fmla.startsWith('val ')) {
+    console.warn('Failed to parse constant shape guide')
+  }
+  return {
+    name: gd.attr('@name')!,
+    value: Number(fmla.substring(4)),
+  }
 }
 
 export function parseShapeGuide(gd: OOXMLNode): ShapeGuide {
@@ -344,13 +364,13 @@ export function parseGeometry(geom?: OOXMLNode, ctx?: Record<string, any>): Norm
         variables: {},
       }
       if (avLst) {
-        parseShapeGuides(avLst).forEach((gd) => {
-          _ctx.variables[gd.name] = parseShapeGuideFmla(gd.fmla, _ctx as any)
+        parseAdjustValues(avLst).forEach((gd) => {
+          _ctx.variables[gd.name] = gd.value
         })
       }
       if (overlayAvLst) {
-        parseShapeGuides(overlayAvLst).forEach((gd) => {
-          _ctx.variables[gd.name] = parseShapeGuideFmla(gd.fmla, _ctx as any)
+        parseAdjustValues(overlayAvLst).forEach((gd) => {
+          _ctx.variables[gd.name] = gd.value
         })
       }
       if (gdLst) {
@@ -372,8 +392,8 @@ export function parseGeometry(geom?: OOXMLNode, ctx?: Record<string, any>): Norm
         variables: {},
       }
       if (avLst) {
-        parseShapeGuides(avLst).forEach((gd) => {
-          _ctx.variables[gd.name] = parseShapeGuideFmla(gd.fmla, _ctx as any)
+        parseAdjustValues(avLst).forEach((gd) => {
+          _ctx.variables[gd.name] = gd.value
         })
       }
       if (gdLst) {
