@@ -20,15 +20,15 @@
 
 ## Methods
 
-IDoc to other
-
-- [idocToPPTX](src/methods/idoc-to-pptx.ts)
-
 PPTX to other
 
 - [pptxToIDoc](src/methods/pptx-to-idoc.ts)
 - [pptxToSVG](src/methods/pptx-to-svg.ts)
 - [pptxToSVGString](src/methods/pptx-to-svg-string.ts)
+
+IDoc to other
+
+- [idocToPPTX](src/methods/idoc-to-pptx.ts)
 
 preset shape definitions
 
