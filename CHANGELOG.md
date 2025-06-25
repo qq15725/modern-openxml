@@ -1,3 +1,12 @@
+## [1.2.3](https://github.com/qq15725/modern-openxml/compare/v1.2.2...v1.2.3) (2025-06-25)
+
+
+### Features
+
+* generateAdjustHandles ([3e8e92a](https://github.com/qq15725/modern-openxml/commit/3e8e92a6f002d1e00a9ff3fc3d250a8996191106))
+
+
+
 ## [1.2.2](https://github.com/qq15725/modern-openxml/compare/v1.2.1...v1.2.2) (2025-06-25)
 
 
