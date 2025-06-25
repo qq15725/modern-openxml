@@ -8,9 +8,6 @@ import type {
 import { zipSync } from 'fflate'
 import {
   compressXml,
-  hashBlob,
-  IN_BROWSER,
-  MINES_TO_EXT,
   stringifyCoreProperties,
   stringifyPresentation,
   stringifyPresentationProperties,
@@ -23,7 +20,6 @@ import {
   stringifyTheme,
   stringifyTypes,
   stringifyViewProperties,
-  SUPPORTS_CRYPTO_SUBTLE,
   withXmlHeader,
 } from '../ooxml'
 
@@ -37,30 +33,44 @@ export class IDocToPPTXConverter {
     }
     const cache = new Map<any, string>()
     const addMedia = async (file: any, refs: string[], fileName: string, fileExt: string): Promise<void> => {
-      let src = file.image
+      const src = file.image
 
+      let uin8Array: Uint8Array
       if (typeof src === 'string') {
-        if (src.startsWith('http')) {
-          // network
+        if (src.startsWith('data:')) {
+          if (src.includes(';base64,')) {
+            const binaryString = atob(src.split(',')?.[1] ?? '')
+            const length = binaryString.length
+            const bytes = new Uint8Array(length)
+            for (let i = 0; i < length; i++) {
+              bytes[i] = binaryString.charCodeAt(i)
+            }
+            uin8Array = bytes
+          }
+          else {
+            return
+          }
+        }
+        else if (
+          src.startsWith('http:')
+          || src.startsWith('https:')
+          || src.startsWith('blob:')
+        ) {
+          uin8Array = await fetch(src)
+            .then(rep => rep.arrayBuffer())
+            .then(buffer => new Uint8Array(buffer))
         }
         else {
-          const base64 = src.split(',')?.[1] ?? src
-          const binaryString = atob(base64)
-          const length = binaryString.length
-          const bytes = new Uint8Array(length)
-          for (let i = 0; i < length; i++) {
-            bytes[i] = binaryString.charCodeAt(i)
-          }
-          src = bytes
+          uin8Array = new TextEncoder().encode(src)
         }
+      }
+      else {
+        uin8Array = src
       }
 
       let cacheKey: string | undefined
-      if (SUPPORTS_CRYPTO_SUBTLE && src instanceof Blob) {
-        cacheKey = await hashBlob(src)
-      }
-      else if (typeof file.image === 'string') {
-        cacheKey = file.image
+      if (typeof src === 'string') {
+        cacheKey = src
       }
 
       let name: string
@@ -68,19 +78,14 @@ export class IDocToPPTXConverter {
         name = cache.get(cacheKey)!
       }
       else {
-        const ext = IN_BROWSER && src instanceof Blob
-          ? MINES_TO_EXT[src.type]
-          : fileExt
-        name = `${fileName}${cache.size + 1}.${ext}`
+        name = `${fileName}${cache.size + 1}.${fileExt}`
         if (cacheKey) {
           cache.set(cacheKey, name)
         }
         else {
           cache.set(name, name)
         }
-        unzipped[`ppt/media/${name}`] = typeof src === 'string'
-          ? new TextEncoder().encode(src)
-          : src
+        unzipped[`ppt/media/${name}`] = uin8Array
       }
       refs.push(`../media/${name}`)
       file.image = `rId${refs.length}`

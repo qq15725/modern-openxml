@@ -1,5 +1,4 @@
 export * from './BiMap'
-export * from './blob'
 export * from './codegen'
 export * from './content-type'
 export * from './convert'
