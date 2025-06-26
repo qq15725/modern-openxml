@@ -1,6 +1,6 @@
-import type { OoxmlValueType } from './ooxmlValue'
+import type { OoxmlValueType } from './OoxmlValue'
 import { namespaces } from '../namespaces'
-import { OoxmlValue } from './ooxmlValue'
+import { OoxmlValue } from './OoxmlValue'
 
 export type OOXMLQueryType = 'node' | 'nodes' | OoxmlValueType
 
