@@ -1,7 +1,7 @@
 import type { NormalizedShape, ShapePath } from 'modern-idoc'
-import type { OOXMLNode } from '../core'
+import type { OoxmlNode } from '../core'
 import { svgPathCommandsToData, svgPathDataToCommands } from 'modern-path2d'
-import { OOXMLValue } from '../core'
+import { OoxmlValue } from '../core'
 import { clearUndef, withAttr, withAttrs, withIndents } from '../utils'
 
 export interface Rectangle {
@@ -46,7 +46,7 @@ export interface ShapeGuideContext {
   variables: Record<string, number>
 }
 
-export function parseRectangle(rect?: OOXMLNode): Rectangle | undefined {
+export function parseRectangle(rect?: OoxmlNode): Rectangle | undefined {
   const res = {
     left: rect?.attr('@l'),
     top: rect?.attr('@t'),
@@ -56,15 +56,15 @@ export function parseRectangle(rect?: OOXMLNode): Rectangle | undefined {
   return Object.keys(res).length ? res : undefined
 }
 
-export function parseAdjustValueList(avLst: OOXMLNode): AdjustValue[] {
+export function parseAdjustValueList(avLst: OoxmlNode): AdjustValue[] {
   return avLst.get('*[(self::a:gd or self::gd)]').map(gd => parseAdjustValue(gd))
 }
 
-export function parseShapeGuideList(gdLst: OOXMLNode): ShapeGuide[] {
+export function parseShapeGuideList(gdLst: OoxmlNode): ShapeGuide[] {
   return gdLst.get('*[(self::a:gd or self::gd)]').map(gd => parseShapeGuide(gd))
 }
 
-export function parseAdjustValue(gd: OOXMLNode): AdjustValue {
+export function parseAdjustValue(gd: OoxmlNode): AdjustValue {
   const fmla = gd.attr('@fmla')!
   if (!fmla.startsWith('val ')) {
     console.warn('Failed to parse constant shape guide')
@@ -83,14 +83,14 @@ export function parseAdjustValue(gd: OOXMLNode): AdjustValue {
   }
 }
 
-export function parseShapeGuide(gd: OOXMLNode): ShapeGuide {
+export function parseShapeGuide(gd: OoxmlNode): ShapeGuide {
   return {
     name: gd.attr('@name')!,
     fmla: gd.attr('@fmla')!,
   }
 }
 
-export function parseAdjustHandleList(ahLst: OOXMLNode): AdjustHandle[] {
+export function parseAdjustHandleList(ahLst: OoxmlNode): AdjustHandle[] {
   return ahLst.get('*[(self::a:ahXY or self::ahXY)]').map(ahXY => clearUndef({
     gdRefX: ahXY.attr('@gdRefX'),
     gdRefY: ahXY.attr('@gdRefY'),
@@ -103,7 +103,7 @@ export function parseAdjustHandleList(ahLst: OOXMLNode): AdjustHandle[] {
   }))
 }
 
-export function parseShapeGuideValue(value: string, ctx: ShapeGuideContext, parent?: OOXMLNode): number {
+export function parseShapeGuideValue(value: string, ctx: ShapeGuideContext, parent?: OoxmlNode): number {
   if (!Number.isNaN(Number(value))) {
     return Number(value)
   }
@@ -114,7 +114,7 @@ export function parseShapeGuideValue(value: string, ctx: ShapeGuideContext, pare
   return (ctx.variables[value] = parseShapeGuideFmla(fmla, ctx, parent))
 }
 
-export function parseShapeGuideFmla(fmla: string, ctx: ShapeGuideContext, parent?: OOXMLNode): number {
+export function parseShapeGuideFmla(fmla: string, ctx: ShapeGuideContext, parent?: OoxmlNode): number {
   switch (fmla) {
     case 'l':
     case 't':
@@ -153,13 +153,13 @@ export function parseShapeGuideFmla(fmla: string, ctx: ShapeGuideContext, parent
   }
   else if (fmla.startsWith('cd')) {
     // cd2 cd4 cd8
-    return Number(OOXMLValue.encode(360 / Number(fmla.substring(2)), 'degree'))
+    return Number(OoxmlValue.encode(360 / Number(fmla.substring(2)), 'degree'))
   }
   else if (/^\d+cd\d+$/.test(fmla)) {
     // 3cd4 3cd8 5cd8 7cd8
     const match = fmla.match(/^(\d+)cd(\d+)$/)
     if (match && match[1] && match[2]) {
-      return Number(OOXMLValue.encode((360 * Number(match[1])) / Number(match[2]), 'degree'))
+      return Number(OoxmlValue.encode((360 * Number(match[1])) / Number(match[2]), 'degree'))
     }
   }
 
@@ -194,17 +194,17 @@ export function parseShapeGuideFmla(fmla: string, ctx: ShapeGuideContext, parent
     case 'val':
       return args[0]
     case 'at2':
-      return Number(OOXMLValue.encode((Math.atan2(args[1], args[0]) / Math.PI) * 180, 'degree'))
+      return Number(OoxmlValue.encode((Math.atan2(args[1], args[0]) / Math.PI) * 180, 'degree'))
     case 'cat2':
       return args[0] * Math.cos(Math.atan2(args[2], args[1]))
     case 'sat2':
       return args[0] * Math.sin(Math.atan2(args[2], args[1]))
     case 'cos':
-      return args[0] * Math.cos((OOXMLValue.decode(String(args[1]), 'degree') / 180) * Math.PI)
+      return args[0] * Math.cos((OoxmlValue.decode(String(args[1]), 'degree') / 180) * Math.PI)
     case 'sin':
-      return args[0] * Math.sin((OOXMLValue.decode(String(args[1]), 'degree') / 180) * Math.PI)
+      return args[0] * Math.sin((OoxmlValue.decode(String(args[1]), 'degree') / 180) * Math.PI)
     case 'tan':
-      return args[0] * Math.tan((OOXMLValue.decode(String(args[1]), 'degree') / 180) * Math.PI)
+      return args[0] * Math.tan((OoxmlValue.decode(String(args[1]), 'degree') / 180) * Math.PI)
     default:
       return Number(fmla)
   }
@@ -223,7 +223,7 @@ function getEllipsePoint(a: number, b: number, theta: number): { x: number, y: n
   }
 }
 
-export function parsePaths(pathLst: OOXMLNode | undefined, ctx: ShapeGuideContext): ShapePath[] {
+export function parsePaths(pathLst: OoxmlNode | undefined, ctx: ShapeGuideContext): ShapePath[] {
   const {
     width,
     height,
@@ -242,10 +242,10 @@ export function parsePaths(pathLst: OOXMLNode | undefined, ctx: ShapeGuideContex
     function convert(gdValue: string, isX: boolean, type: 'emu' | 'degree' = 'emu'): number {
       const value = parseShapeGuideValue(gdValue, ctx)
       if (type === 'emu') {
-        return OOXMLValue.decode(isX ? value * rateX : value * rateY, 'emu')
+        return OoxmlValue.decode(isX ? value * rateX : value * rateY, 'emu')
       }
       else {
-        return (OOXMLValue.decode(value, 'degree') / 180) * Math.PI
+        return (OoxmlValue.decode(value, 'degree') / 180) * Math.PI
       }
     }
 
@@ -344,7 +344,7 @@ export function parsePaths(pathLst: OOXMLNode | undefined, ctx: ShapeGuideContex
   }) ?? []
 }
 
-export function parseGeometry(geom?: OOXMLNode, ctx?: Record<string, any>): NormalizedShape | undefined {
+export function parseGeometry(geom?: OoxmlNode, ctx?: Record<string, any>): NormalizedShape | undefined {
   if (!geom)
     return undefined
   let prstGeom, custGeom
@@ -367,8 +367,8 @@ export function parseGeometry(geom?: OOXMLNode, ctx?: Record<string, any>): Norm
       const gdLst = node?.find('gdLst')
       const overlayAvLst = prstGeom?.find('a:avLst')
       const _ctx: ShapeGuideContext = {
-        width: Number(OOXMLValue.encode(ctx?.width ?? 0, 'emu')),
-        height: Number(OOXMLValue.encode(ctx?.height ?? 0, 'emu')),
+        width: Number(OoxmlValue.encode(ctx?.width ?? 0, 'emu')),
+        height: Number(OoxmlValue.encode(ctx?.height ?? 0, 'emu')),
         variables: {},
       }
       if (avLst) {
@@ -395,8 +395,8 @@ export function parseGeometry(geom?: OOXMLNode, ctx?: Record<string, any>): Norm
       const avLst = custGeom?.find('avLst')
       const gdLst = custGeom?.find('gdLst')
       const _ctx: ShapeGuideContext = {
-        width: Number(OOXMLValue.encode(ctx?.width ?? 0, 'emu')),
-        height: Number(OOXMLValue.encode(ctx?.height ?? 0, 'emu')),
+        width: Number(OoxmlValue.encode(ctx?.width ?? 0, 'emu')),
+        height: Number(OoxmlValue.encode(ctx?.height ?? 0, 'emu')),
         variables: {},
       }
       if (avLst) {
@@ -436,8 +436,8 @@ export function stringifyGeometry(shape?: NormalizedShape): string {
             currentPoint = { x: cmd.x, y: cmd.y }
             return `<a:moveTo>
   <a:pt${withAttrs([
-    withAttr('x', OOXMLValue.encode(cmd.x, 'emu')),
-    withAttr('y', OOXMLValue.encode(cmd.y, 'emu')),
+    withAttr('x', OoxmlValue.encode(cmd.x, 'emu')),
+    withAttr('y', OoxmlValue.encode(cmd.y, 'emu')),
   ])}/>
 </a:moveTo>`
           case 'l':
@@ -445,8 +445,8 @@ export function stringifyGeometry(shape?: NormalizedShape): string {
             currentPoint = { x: cmd.x, y: cmd.y }
             return `<a:lnTo>
   <a:pt${withAttrs([
-    withAttr('x', OOXMLValue.encode(cmd.x, 'emu')),
-    withAttr('y', OOXMLValue.encode(cmd.y, 'emu')),
+    withAttr('x', OoxmlValue.encode(cmd.x, 'emu')),
+    withAttr('y', OoxmlValue.encode(cmd.y, 'emu')),
   ])}/>
 </a:lnTo>`
           case 'a':
@@ -495,10 +495,10 @@ export function stringifyGeometry(shape?: NormalizedShape): string {
             const swAng = (deltaAngle * 180 / Math.PI)
             currentPoint = { x: cmd.x, y: cmd.y }
             return `<a:arcTo${withAttrs([
-              withAttr('wR', OOXMLValue.encode(rx, 'emu')),
-              withAttr('hR', OOXMLValue.encode(ry, 'emu')),
-              withAttr('stAng', OOXMLValue.encode(stAng, 'degree')),
-              withAttr('swAng', OOXMLValue.encode(swAng, 'degree')),
+              withAttr('wR', OoxmlValue.encode(rx, 'emu')),
+              withAttr('hR', OoxmlValue.encode(ry, 'emu')),
+              withAttr('stAng', OoxmlValue.encode(stAng, 'degree')),
+              withAttr('swAng', OoxmlValue.encode(swAng, 'degree')),
             ])}/>`
           }
           case 'c':
@@ -506,16 +506,16 @@ export function stringifyGeometry(shape?: NormalizedShape): string {
             currentPoint = { x: cmd.x, y: cmd.y }
             return `<a:cubicBezTo>
   <a:pt${withAttrs([
-    withAttr('x', OOXMLValue.encode(cmd.x1, 'emu')),
-    withAttr('y', OOXMLValue.encode(cmd.y1, 'emu')),
+    withAttr('x', OoxmlValue.encode(cmd.x1, 'emu')),
+    withAttr('y', OoxmlValue.encode(cmd.y1, 'emu')),
   ])}/>
   <a:pt${withAttrs([
-    withAttr('x', OOXMLValue.encode(cmd.x2, 'emu')),
-    withAttr('y', OOXMLValue.encode(cmd.y2, 'emu')),
+    withAttr('x', OoxmlValue.encode(cmd.x2, 'emu')),
+    withAttr('y', OoxmlValue.encode(cmd.y2, 'emu')),
   ])}/>
   <a:pt${withAttrs([
-    withAttr('x', OOXMLValue.encode(cmd.x, 'emu')),
-    withAttr('y', OOXMLValue.encode(cmd.y, 'emu')),
+    withAttr('x', OoxmlValue.encode(cmd.x, 'emu')),
+    withAttr('y', OoxmlValue.encode(cmd.y, 'emu')),
   ])}/>
 </a:cubicBezTo>`
           case 'q':
@@ -523,12 +523,12 @@ export function stringifyGeometry(shape?: NormalizedShape): string {
             currentPoint = { x: cmd.x, y: cmd.y }
             return `<a:quadBezTo>
   <a:pt${withAttrs([
-    withAttr('x', OOXMLValue.encode(cmd.x1, 'emu')),
-    withAttr('y', OOXMLValue.encode(cmd.y1, 'emu')),
+    withAttr('x', OoxmlValue.encode(cmd.x1, 'emu')),
+    withAttr('y', OoxmlValue.encode(cmd.y1, 'emu')),
   ])}/>
   <a:pt${withAttrs([
-    withAttr('x', OOXMLValue.encode(cmd.x, 'emu')),
-    withAttr('y', OOXMLValue.encode(cmd.y, 'emu')),
+    withAttr('x', OoxmlValue.encode(cmd.x, 'emu')),
+    withAttr('y', OoxmlValue.encode(cmd.y, 'emu')),
   ])}/>
 </a:quadBezTo>`
           case 'z':

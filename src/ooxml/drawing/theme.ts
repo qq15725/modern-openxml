@@ -1,13 +1,13 @@
 import type { NormalizedEffect, NormalizedFill, NormalizedOutline } from 'modern-idoc'
-import type { OOXMLNode } from '../core'
+import type { OoxmlNode } from '../core'
 import type { ColorMap } from '../presentation'
-import type { ColorScheme } from './color-scheme'
-import type { FontScheme } from './font-scheme'
+import type { ColorScheme } from './colorScheme'
+import type { FontScheme } from './fontScheme'
 import { parseColorMap } from '../presentation'
-import { parseColorScheme } from './color-scheme'
-import { parseEffectList } from './effect-list'
+import { parseColorScheme } from './colorScheme'
+import { parseEffectList } from './effectList'
 import { parseFill } from './fill'
-import { parseFontScheme } from './font-scheme'
+import { parseFontScheme } from './fontScheme'
 import { parseOutline } from './outline'
 
 export interface Theme {
@@ -25,7 +25,7 @@ export interface Theme {
 }
 
 // a:theme
-export function parseTheme(theme: OOXMLNode, id: string): Theme {
+export function parseTheme(theme: OoxmlNode, id: string): Theme {
   const fmtScheme = theme.find('a:themeElements/a:fmtScheme')
 
   return {

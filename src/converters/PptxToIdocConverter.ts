@@ -5,8 +5,8 @@ import type {
   NormalizedImageFill,
 } from 'modern-idoc'
 import type {
-  NormalizedPPTX,
-  PPTXSource,
+  NormalizedPptx,
+  PptxSource,
   Slide,
   SlideElement,
   SlideLayout,
@@ -17,7 +17,7 @@ import { isGradient } from 'modern-idoc'
 import {
   clearUndef,
   namespaces,
-  OOXMLNode,
+  OoxmlNode,
   parseCoreProperties,
   parsePresentation,
   parseRelationships,
@@ -29,16 +29,16 @@ import {
   pathJoin,
 } from '../ooxml'
 
-export interface PPTXUploadOptions {
-  upload?: (input: string, file: NormalizedImageFill, source: NormalizedPPTX | Slide | SlideLayout | SlideMaster | SlideElement) => any | Promise<any>
+export interface PptxUploadOptions {
+  upload?: (input: string, file: NormalizedImageFill, source: NormalizedPptx | Slide | SlideLayout | SlideMaster | SlideElement) => any | Promise<any>
   progress?: (progress: number, total: number, cached: boolean) => void
 }
 
-export interface PPTXDecodeOptions {
+export interface PptxDecodeOptions {
   presetShapeDefinitions?: string
 }
 
-export interface PPTXConvertOptions extends PPTXDecodeOptions, PPTXUploadOptions {
+export interface PptxConvertOptions extends PptxDecodeOptions, PptxUploadOptions {
   //
 }
 
@@ -46,11 +46,11 @@ function isNodeReadableStream(obj: any): obj is NodeJS.ReadableStream {
   return obj && typeof obj.read === 'function' && typeof obj.on === 'function'
 }
 
-export class PPTXToIDocConverter {
+export class PptxToIdocConverter {
   unzipped?: Unzipped
-  pptx?: NormalizedPPTX
+  pptx?: NormalizedPptx
 
-  protected async _resolveSource(source: PPTXSource): Promise<Uint8Array> {
+  protected async _resolveSource(source: PptxSource): Promise<Uint8Array> {
     if (typeof source === 'string') {
       return new TextEncoder().encode(source)
     }
@@ -117,11 +117,11 @@ export class PPTXToIDocConverter {
     return uint8Array
   }
 
-  async decode(source: PPTXSource, options: PPTXDecodeOptions = {}): Promise<NormalizedPPTX> {
+  async decode(source: PptxSource, options: PptxDecodeOptions = {}): Promise<NormalizedPptx> {
     this.unzipped = unzipSync(await this._resolveSource(source))
 
-    const createNode = (xml?: string): OOXMLNode => OOXMLNode.fromXML(xml, namespaces)
-    const readNode = (path?: string): OOXMLNode => createNode(this._readFile(path, 'text'))
+    const createNode = (xml?: string): OoxmlNode => OoxmlNode.fromXML(xml, namespaces)
+    const readNode = (path?: string): OoxmlNode => createNode(this._readFile(path, 'text'))
     const getRelsPath = (path = ''): string => {
       const paths = path.split('/')
       const name = paths.pop()
@@ -156,7 +156,7 @@ export class PPTXToIDocConverter {
       contentTypes,
     )
 
-    const pptx: NormalizedPPTX = {
+    const pptx: NormalizedPptx = {
       style: {
         width: presentation.width,
         height: presentation.height,
@@ -331,10 +331,10 @@ export class PPTXToIDocConverter {
   }
 
   getMimeType(filePath: string): string | undefined {
-    return PPTXToIDocConverter.mimeTypes[filePath.substring(filePath.lastIndexOf('.')).toLowerCase()] || undefined
+    return PptxToIdocConverter.mimeTypes[filePath.substring(filePath.lastIndexOf('.')).toLowerCase()] || undefined
   }
 
-  async upload(options: PPTXUploadOptions = {}, pptx = this.pptx): Promise<NormalizedPPTX> {
+  async upload(options: PptxUploadOptions = {}, pptx = this.pptx): Promise<NormalizedPptx> {
     if (!pptx) {
       throw new Error('Failed to upload, miss pptx object')
     }
@@ -400,7 +400,7 @@ export class PPTXToIDocConverter {
     return pptx
   }
 
-  async convert(source: PPTXSource, options: PPTXConvertOptions = {}): Promise<NormalizedPPTX> {
+  async convert(source: PptxSource, options: PptxConvertOptions = {}): Promise<NormalizedPptx> {
     return await this.upload(
       options,
       await this.decode(source, options),

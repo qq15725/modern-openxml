@@ -16,7 +16,7 @@ document.querySelector<HTMLButtonElement>('#GeneratePresetShapes')!.onclick = as
   const width = 100
   const height = 100
   definitions.forEach((definition) => {
-    const svg = xmlToDom<SVGSVGElement>(definition.generateSVGString({ width, height, strokeWidth: 2 }))
+    const svg = xmlToDom<SVGSVGElement>(definition.generateSvgString({ width, height, strokeWidth: 2 }))
     svg.style.fill = '#c6dee8'
     svg.style.stroke = '#4874cb'
     document.body.append(svg)
@@ -30,7 +30,7 @@ document.querySelector<HTMLButtonElement>('#GeneratePresetTextWarps')!.onclick =
   const width = 100
   const height = 100
   definitions.forEach((definition) => {
-    const svg = xmlToDom<SVGSVGElement>(definition.generateSVGString({ width, height, strokeWidth: 2 }))
+    const svg = xmlToDom<SVGSVGElement>(definition.generateSvgString({ width, height, strokeWidth: 2 }))
     svg.style.fill = '#c6dee8'
     svg.style.stroke = '#4874cb'
     document.body.append(svg)

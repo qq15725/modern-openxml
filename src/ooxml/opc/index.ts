@@ -1,2 +1,2 @@
-export * from './content-types'
+export * from './contentTypes'
 export * from './relationship'

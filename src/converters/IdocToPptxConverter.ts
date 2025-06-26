@@ -1,7 +1,7 @@
 import type { Unzipped } from 'fflate'
 import type {
-  NormalizedPPTX,
-  PPTX,
+  NormalizedPptx,
+  Pptx,
   Slide,
   SlideElement,
 } from '../ooxml'
@@ -23,9 +23,9 @@ import {
   withXmlHeader,
 } from '../ooxml'
 
-export class IDocToPPTXConverter {
-  async encode(pptx: PPTX): Promise<Uint8Array> {
-    const _pptx = { ...pptx } as NormalizedPPTX
+export class IdocToPptxConverter {
+  async encode(pptx: Pptx): Promise<Uint8Array> {
+    const _pptx = { ...pptx } as NormalizedPptx
 
     const unzipped: Unzipped = {}
     const add = (path: string, content: string): void => {

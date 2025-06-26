@@ -1,9 +1,9 @@
 import type { NormalizedBackground } from 'modern-idoc'
-import type { OOXMLNode } from '../core'
+import type { OoxmlNode } from '../core'
 import { parseColor, parseFill, stringifyFill } from '../drawing'
 import { withIndents } from '../utils'
 
-export function parseBackground(bg?: OOXMLNode, ctx?: any): NormalizedBackground | undefined {
+export function parseBackground(bg?: OoxmlNode, ctx?: any): NormalizedBackground | undefined {
   if (!bg)
     return undefined
 

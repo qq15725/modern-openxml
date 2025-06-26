@@ -18,8 +18,8 @@ importers:
         specifier: ^0.6.16
         version: 0.6.16
       modern-path2d:
-        specifier: ^1.3.5
-        version: 1.3.5
+        specifier: ^1.4.1
+        version: 1.4.1
       modern-text:
         specifier: ^1.4.4
         version: 1.4.4
@@ -1123,8 +1123,8 @@ packages:
   earcut@3.0.1:
     resolution: {integrity: sha512-0l1/0gOjESMeQyYaK5IDiPNvFeu93Z/cO0TjZh9eZ1vyCtZnA7KMZ8rQggpsJHIbGSdrqYq9OhuveadOVHCshw==}
 
-  electron-to-chromium@1.5.174:
-    resolution: {integrity: sha512-HE43yYdUUiJVjewV2A9EP8o89Kb4AqMKplMQP2IxEPUws1Etu/ZkdsgUDabUZ/WmbP4ZbvJDOcunvbBUPPIfmw==}
+  electron-to-chromium@1.5.175:
+    resolution: {integrity: sha512-Nqpef9mOVo7pZfl9NIUhj7tgtRTsMzCzRTJDP1ccim4Wb4YHOz3Le87uxeZq68OCNwau2iQ/X7UwdAZ3ReOkmg==}
 
   emoji-regex@10.4.0:
     resolution: {integrity: sha512-EC+0oUMY1Rqm4O6LLrgjtYDvcVYTy7chDnM4Q7030tP4Kwj3u/pR6gP9ygnp2CJMK5Gq+9Q2oqmrFJAz01DXjw==}
@@ -1873,8 +1873,8 @@ packages:
   modern-idoc@0.6.16:
     resolution: {integrity: sha512-5ymPUMVI+8WCXpgY4LxdSbqa6txdOXy6dJq4SPulM8d8Z9mm6jZW/Wwvhw5OPFfwPfH63i6mg89Bt13ghiP/3g==}
 
-  modern-path2d@1.3.5:
-    resolution: {integrity: sha512-6Gdy3iVlrBeBkWa/S8Z7KJOpkqi3Rlj3WgurbdtKH1FvbtupMSUku38Ot2axzJjVJLlUTduRnoLHeOSmmhAegg==}
+  modern-path2d@1.4.1:
+    resolution: {integrity: sha512-6T1n2PnRArVvyL4lW21JcZqqLYTzsMcc7NDbj6vpDpwcKogQfBjP6Nu4cyIOSFtNbg+a445XgyQDhw8CXsRWVg==}
 
   modern-text@1.4.4:
     resolution: {integrity: sha512-WksBHhvRgU7Ut5aY/RENMb1qUIEY006x/fDiHWbdq/vt6oSe7Te/uoPAfGQ9rbwNJ6cnKLjOqh5YhV6sZP/tIg==}
@@ -3333,7 +3333,7 @@ snapshots:
   browserslist@4.25.1:
     dependencies:
       caniuse-lite: 1.0.30001726
-      electron-to-chromium: 1.5.174
+      electron-to-chromium: 1.5.175
       node-releases: 2.0.19
       update-browserslist-db: 1.1.3(browserslist@4.25.1)
 
@@ -3673,7 +3673,7 @@ snapshots:
 
   earcut@3.0.1: {}
 
-  electron-to-chromium@1.5.174: {}
+  electron-to-chromium@1.5.175: {}
 
   emoji-regex@10.4.0: {}
 
@@ -4671,7 +4671,7 @@ snapshots:
     dependencies:
       colord: 2.9.3
 
-  modern-path2d@1.3.5:
+  modern-path2d@1.4.1:
     dependencies:
       earcut: 3.0.1
 
@@ -4680,7 +4680,7 @@ snapshots:
       diff: 8.0.2
       modern-font: 0.4.1
       modern-idoc: 0.6.16
-      modern-path2d: 1.3.5
+      modern-path2d: 1.4.1
 
   ms@2.1.3: {}
 

@@ -1,4 +1,4 @@
-export type OOXMLValueType
+export type OoxmlValueType
   = | 'boolean'
     | 'degree'
     | 'ST_Angle'
@@ -33,10 +33,10 @@ export type OOXMLValueType
     | 'ST_TextSpacingPoint'
     | 'lineHeight'
 
-export class OOXMLValue {
+export class OoxmlValue {
   static DPI = 72
 
-  static encode(value: any, type: OOXMLValueType): string {
+  static encode(value: any, type: OoxmlValueType): string {
     value ??= 0
     switch (type) {
       case 'boolean':
@@ -87,7 +87,7 @@ export class OOXMLValue {
     }
   }
 
-  static decode(value: any, type: OOXMLValueType): any {
+  static decode(value: any, type: OoxmlValueType): any {
     if (value === undefined) {
       return undefined
     }

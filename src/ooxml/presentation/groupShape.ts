@@ -1,18 +1,18 @@
 import type { NormalizedElement, NormalizedStyle } from 'modern-idoc'
-import type { OOXMLNode, OOXMLQueryType } from '../core'
-import type { NonVisualDrawingProperties } from './non-visual-drawing-properties'
+import type { OoxmlNode, OOXMLQueryType } from '../core'
+import type { NonVisualDrawingProperties } from './nonVisualDrawingProperties'
 import type { SlideElement } from './slide'
 import { withIndents } from '../utils'
 import {
   parseNonVisualDrawingProperties,
   stringifyNonVisualDrawingProperties,
-} from './non-visual-drawing-properties'
-import { parseNonVisualProperties } from './non-visual-properties'
-import { parseShapeProperties } from './shape-properties'
+} from './nonVisualDrawingProperties'
+import { parseNonVisualProperties } from './nonVisualProperties'
+import { parseShapeProperties } from './shapeProperties'
 import { stringifyTransform2d } from './transform2d'
 
 export type GroupShapeMeta = NonVisualDrawingProperties['meta'] & {
-  type: 'group-shape'
+  type: 'groupShape'
   placeholderType?: string
   placeholderIndex?: string
 }
@@ -23,7 +23,7 @@ export interface GroupShape extends NormalizedElement {
   meta: GroupShapeMeta
 }
 
-export function parseGroupShape(node: OOXMLNode, ctx: any, parseElement: any): GroupShape {
+export function parseGroupShape(node: OoxmlNode, ctx: any, parseElement: any): GroupShape {
   const { placeholder, ...nvPr } = parseNonVisualProperties(node.find('p:nvGrpSpPr/p:nvPr'), ctx) ?? {}
   const cNvPr = parseNonVisualDrawingProperties(node.find('p:nvGrpSpPr/p:cNvPr'))
   ctx = { ...ctx, placeholder }
@@ -48,7 +48,7 @@ export function parseGroupShape(node: OOXMLNode, ctx: any, parseElement: any): G
     children: [],
     meta: {
       ...cNvPr?.meta,
-      type: 'group-shape',
+      type: 'groupShape',
       placeholderType: placeholder?.type,
       placeholderIndex: placeholder?.index,
     },

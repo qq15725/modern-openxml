@@ -22,25 +22,25 @@
 
 PPTX to other
 
-- [pptxToIdoc](src/methods/pptx-to-idoc.ts)
-- [pptxToSvg](src/methods/pptx-to-svg.ts)
-- [pptxToSvgString](src/methods/pptx-to-svg-string.ts)
+- [pptxToIdoc](src/methods/pptxToIdoc.ts)
+- [pptxToSvg](src/methods/pptxToSvg.ts)
+- [pptxToSvgString](src/methods/pptxToSvgString.ts)
 
 IDoc to other
 
-- [idocToPptx](src/methods/idoc-to-pptx.ts)
+- [idocToPptx](src/methods/idocToPptx.ts)
 
 preset shape definitions
 
-- [parsePresetShapeDefinitions](src/methods/parse-preset-shape-definitions.ts)
+- [parsePresetShapeDefinitions](src/methods/parsePresetShapeDefinitions.ts)
 
 preset text warp definitions
 
-- [parsePresetTextWarpDefinitions](src/methods/parse-preset-text-warp-definitions.ts)
+- [parsePresetTextWarpDefinitions](src/methods/parsePresetTextWarpDefinitions.ts)
 
 utils
 
-- [xmlToDom](src/methods/xml-to-dom.ts)
+- [xmlToDom](src/methods/xmlToDom.ts)
 
 ## PPTX to JSON
 

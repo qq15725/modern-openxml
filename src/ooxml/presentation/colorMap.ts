@@ -1,9 +1,9 @@
-import type { OOXMLNode } from '../core'
+import type { OoxmlNode } from '../core'
 
 export type ColorMap = Record<string, string>
 
 // p:clrMap
-export function parseColorMap(clrMap?: OOXMLNode): ColorMap | undefined {
+export function parseColorMap(clrMap?: OoxmlNode): ColorMap | undefined {
   if (!clrMap)
     return undefined
 

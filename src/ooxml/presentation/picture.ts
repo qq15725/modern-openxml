@@ -1,11 +1,11 @@
 import type { NormalizedElement, NormalizedStyle } from 'modern-idoc'
-import type { OOXMLNode, OOXMLQueryType } from '../core'
-import type { NonVisualDrawingProperties } from './non-visual-drawing-properties'
+import type { OoxmlNode, OOXMLQueryType } from '../core'
+import type { NonVisualDrawingProperties } from './nonVisualDrawingProperties'
 import { parseBlipFill, stringifyFill } from '../drawing'
 import { withIndents } from '../utils'
-import { parseNonVisualDrawingProperties, stringifyNonVisualDrawingProperties } from './non-visual-drawing-properties'
-import { parseNonVisualProperties, stringifyNonVisualProperties } from './non-visual-properties'
-import { parseShapeProperties, stringifyShapeProperties } from './shape-properties'
+import { parseNonVisualDrawingProperties, stringifyNonVisualDrawingProperties } from './nonVisualDrawingProperties'
+import { parseNonVisualProperties, stringifyNonVisualProperties } from './nonVisualProperties'
+import { parseShapeProperties, stringifyShapeProperties } from './shapeProperties'
 
 export type PictureMeta = NonVisualDrawingProperties['meta'] & {
   type: 'picture'
@@ -19,7 +19,7 @@ export interface Picture extends NormalizedElement {
 }
 
 // p:pic
-export function parsePicture(node?: OOXMLNode, ctx?: any): Picture | undefined {
+export function parsePicture(node?: OoxmlNode, ctx?: any): Picture | undefined {
   if (!node) {
     return undefined
   }

@@ -1,4 +1,4 @@
-import type { OOXMLNode } from '../core'
+import type { OoxmlNode } from '../core'
 import { clearUndef } from '../utils'
 
 export interface Font {
@@ -11,7 +11,7 @@ export interface Font {
 export type FontScheme = Record<string, Font>
 
 // a:fontScheme
-export function parseFontScheme(fontScheme?: OOXMLNode): FontScheme | undefined {
+export function parseFontScheme(fontScheme?: OoxmlNode): FontScheme | undefined {
   if (!fontScheme)
     return undefined
 

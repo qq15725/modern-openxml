@@ -1,5 +1,5 @@
 // a:theme
-import type { OOXMLNode } from '../core'
+import type { OoxmlNode } from '../core'
 
 export interface CoreProperties {
   title?: string
@@ -10,7 +10,7 @@ export interface CoreProperties {
   modified?: string
 }
 
-export function parseCoreProperties(node: OOXMLNode): CoreProperties {
+export function parseCoreProperties(node: OoxmlNode): CoreProperties {
   return {
     title: node.attr('dc:title/text()', 'string'),
     subject: node.attr('dc:subject/text()', 'string'),

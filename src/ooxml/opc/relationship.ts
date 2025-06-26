@@ -1,4 +1,4 @@
-import type { OOXMLNode } from '../core'
+import type { OoxmlNode } from '../core'
 import { pathJoin, pathToContentType, withIndents } from '../utils'
 
 const RELATIONSHIP = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships'
@@ -17,7 +17,7 @@ export type Relationships = ({
 })[]
 
 export function parseRelationships(
-  node: OOXMLNode | undefined,
+  node: OoxmlNode | undefined,
   relsPath: string,
   contentTypes: { type: string, ext?: string, path?: string }[],
 ): Relationships {

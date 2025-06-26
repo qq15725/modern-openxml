@@ -1,17 +1,17 @@
 import type { NormalizedElement } from 'modern-idoc'
-import type { OOXMLNode } from '../core'
-import type { ConnectionShape } from './connection-shape'
-import type { GraphicFrame } from './graphic-frame'
-import type { GroupShape } from './group-shape'
+import type { OoxmlNode } from '../core'
+import type { ConnectionShape } from './connectionShape'
+import type { GraphicFrame } from './graphicFrame'
+import type { GroupShape } from './groupShape'
 import type { Picture } from './picture'
 import type { Shape } from './shape'
 import type { Timing } from './timing'
 import type { Transition } from './transition'
 import { withIndents } from '../utils'
 import { parseBackground, stringifyBackground } from './background'
-import { parseConnectionShape } from './connection-shape'
-import { parseGraphicFrame } from './graphic-frame'
-import { parseGroupShape, stringifyGroupShape } from './group-shape'
+import { parseConnectionShape } from './connectionShape'
+import { parseGraphicFrame } from './graphicFrame'
+import { parseGroupShape, stringifyGroupShape } from './groupShape'
 import { parsePicture, stringifyPicture } from './picture'
 import { parseShape, stringifyShape } from './shape'
 import { parseTiming, stringifyTiming } from './timing'
@@ -36,7 +36,7 @@ export interface Slide extends Transition, Timing, NormalizedElement {
   meta: SlideMeta
 }
 
-export function parseElement(node: OOXMLNode, ctx: any): SlideElement | undefined {
+export function parseElement(node: OoxmlNode, ctx: any): SlideElement | undefined {
   switch (node.name) {
     case 'p:sp':
       return parseShape(node, ctx)
@@ -54,7 +54,7 @@ export function parseElement(node: OOXMLNode, ctx: any): SlideElement | undefine
   return undefined
 }
 
-export function parseSlide(slide: OOXMLNode, id: string, ctx: any): Slide {
+export function parseSlide(slide: OoxmlNode, id: string, ctx: any): Slide {
   return {
     ...parseTiming(slide.find('p:timing')),
     ...parseTransition(slide.find('mc:AlternateContent')),
@@ -82,10 +82,10 @@ function stringifyElement(node: SlideElement): string | undefined {
       return stringifyShape(node as Shape)
     case 'picture':
       return stringifyPicture(node as Picture)
-    case 'group-shape':
+    case 'groupShape':
       return stringifyGroupShape(node as GroupShape, stringifyElement)
-    case 'connection-shape':
-    case 'graphic-frame':
+    case 'connectionShape':
+    case 'graphicFrame':
       break
   }
   return undefined

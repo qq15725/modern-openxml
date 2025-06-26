@@ -1,5 +1,5 @@
-import type { ParsedPresetShapeDefinition } from './parse-preset-shape-definitions'
-import { parsePresetShapeDefinitions } from './parse-preset-shape-definitions'
+import type { ParsedPresetShapeDefinition } from './parsePresetShapeDefinitions'
+import { parsePresetShapeDefinitions } from './parsePresetShapeDefinitions'
 
 export interface ParsedPresetTextWarpDefinition extends ParsedPresetShapeDefinition {
   //

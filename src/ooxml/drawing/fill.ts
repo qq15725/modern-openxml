@@ -1,6 +1,6 @@
 import type { ColorStop, NormalizedFill, NormalizedGradientFill, NormalizedImageFill } from 'modern-idoc'
-import type { OOXMLNode } from '../core'
-import { OOXMLValue } from '../core'
+import type { OoxmlNode } from '../core'
+import { OoxmlValue } from '../core'
 import {
   clearUndef,
   withAttr,
@@ -21,7 +21,7 @@ const tags = [
 
 export const fillXPath = `*[(${tags.map(v => `self::${v}`).join(' or ')})]`
 
-export function parseFill(fill?: OOXMLNode, ctx?: Record<string, any>): NormalizedFill | undefined {
+export function parseFill(fill?: OoxmlNode, ctx?: Record<string, any>): NormalizedFill | undefined {
   if (fill && !tags.includes(fill?.name)) {
     fill = fill.find(fillXPath)
   }
@@ -54,7 +54,7 @@ export function parseFill(fill?: OOXMLNode, ctx?: Record<string, any>): Normaliz
 }
 
 // a:BlipFill
-export function parseBlipFill(fill?: OOXMLNode, ctx?: Record<string, any>): NormalizedImageFill | undefined {
+export function parseBlipFill(fill?: OoxmlNode, ctx?: Record<string, any>): NormalizedImageFill | undefined {
   if (!fill)
     return undefined
 
@@ -112,7 +112,7 @@ export function parseBlipFill(fill?: OOXMLNode, ctx?: Record<string, any>): Norm
   }
 }
 
-export function parseGradientFill(gradFill?: OOXMLNode, ctx?: any): NormalizedGradientFill | undefined {
+export function parseGradientFill(gradFill?: OoxmlNode, ctx?: any): NormalizedGradientFill | undefined {
   if (!gradFill)
     return undefined
 
@@ -164,22 +164,22 @@ export function stringifyFill(fill?: NormalizedFill, isPic = false): string | un
   <a:blip${withAttrs([withAttr('r:embed', url)])}>
     ${withIndents([
       fill.opacity !== undefined
-      && `<a:alphaModFix amt="${OOXMLValue.encode(fill.opacity, 'ST_PositivePercentage')}" />`,
+      && `<a:alphaModFix amt="${OoxmlValue.encode(fill.opacity, 'ST_PositivePercentage')}" />`,
     ])}
     <a:lum/>
   </a:blip>
   <a:srcRect${withAttrs([
-    !!fill.cropRect?.top && withAttr('t', OOXMLValue.encode(fill.cropRect?.top, 'ST_Percentage')),
-    !!fill.cropRect?.right && withAttr('r', OOXMLValue.encode(fill.cropRect?.right, 'ST_Percentage')),
-    !!fill.cropRect?.bottom && withAttr('b', OOXMLValue.encode(fill.cropRect?.bottom, 'ST_Percentage')),
-    !!fill.cropRect?.left && withAttr('l', OOXMLValue.encode(fill.cropRect?.left, 'ST_Percentage')),
+    !!fill.cropRect?.top && withAttr('t', OoxmlValue.encode(fill.cropRect?.top, 'ST_Percentage')),
+    !!fill.cropRect?.right && withAttr('r', OoxmlValue.encode(fill.cropRect?.right, 'ST_Percentage')),
+    !!fill.cropRect?.bottom && withAttr('b', OoxmlValue.encode(fill.cropRect?.bottom, 'ST_Percentage')),
+    !!fill.cropRect?.left && withAttr('l', OoxmlValue.encode(fill.cropRect?.left, 'ST_Percentage')),
   ])}/>
   <a:stretch>
     <a:fillRect${withAttrs([
-      !!fill.stretchRect?.top && withAttr('t', OOXMLValue.encode(fill.stretchRect?.top, 'ST_Percentage')),
-      !!fill.stretchRect?.right && withAttr('r', OOXMLValue.encode(fill.stretchRect?.right, 'ST_Percentage')),
-      !!fill.stretchRect?.bottom && withAttr('b', OOXMLValue.encode(fill.stretchRect?.bottom, 'ST_Percentage')),
-      !!fill.stretchRect?.left && withAttr('l', OOXMLValue.encode(fill.stretchRect?.left, 'ST_Percentage')),
+      !!fill.stretchRect?.top && withAttr('t', OoxmlValue.encode(fill.stretchRect?.top, 'ST_Percentage')),
+      !!fill.stretchRect?.right && withAttr('r', OoxmlValue.encode(fill.stretchRect?.right, 'ST_Percentage')),
+      !!fill.stretchRect?.bottom && withAttr('b', OoxmlValue.encode(fill.stretchRect?.bottom, 'ST_Percentage')),
+      !!fill.stretchRect?.left && withAttr('l', OoxmlValue.encode(fill.stretchRect?.left, 'ST_Percentage')),
     ])}/>
   </a:stretch>
 </${tagName}>`
@@ -207,7 +207,7 @@ export function stringifyGradientFill(fill: NormalizedGradientFill): string | un
     const { angle, stops } = linearGradient
     let degree = angle
     degree = degree ? (degree + 270) % 360 : degree
-    const ang = OOXMLValue.encode(degree, 'positiveFixedAngle')
+    const ang = OoxmlValue.encode(degree, 'positiveFixedAngle')
     const gs = stops.map((stop) => {
       const { offset, color } = stop
       return `<a:gs pos="${offset * 100000}">

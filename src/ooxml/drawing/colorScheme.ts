@@ -1,10 +1,10 @@
-import type { OOXMLNode } from '../core'
+import type { OoxmlNode } from '../core'
 import { parseColor } from './color'
 
 export type ColorScheme = Record<string, any>
 
 // a:clrScheme
-export function parseColorScheme(clrScheme?: OOXMLNode): ColorScheme | undefined {
+export function parseColorScheme(clrScheme?: OoxmlNode): ColorScheme | undefined {
   if (!clrScheme)
     return undefined
 

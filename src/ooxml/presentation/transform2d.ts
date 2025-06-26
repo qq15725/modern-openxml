@@ -1,5 +1,5 @@
-import type { OOXMLNode } from '../core'
-import { OOXMLValue } from '../core'
+import type { OoxmlNode } from '../core'
+import { OoxmlValue } from '../core'
 import { withAttr, withAttrs } from '../utils'
 
 export interface Transform2d {
@@ -64,7 +64,7 @@ function _parseTransform2dStyle(position: Transform2dStyle, ctx?: any): void {
   })
 }
 
-export function parseTransform2d(xfrm?: OOXMLNode, ctx?: any): Transform2d | undefined {
+export function parseTransform2d(xfrm?: OoxmlNode, ctx?: any): Transform2d | undefined {
   const query = ctx?.query ?? xfrm?.query
 
   const offsetX = query('a:off/@x', 'emu')
@@ -112,17 +112,17 @@ export function parseTransform2d(xfrm?: OOXMLNode, ctx?: any): Transform2d | und
 
 export function stringifyTransform2d(xfrm: Transform2d, isGroup = false): string {
   return `<a:xfrm${withAttrs([
-    xfrm.style?.rotate ? withAttr('rot', OOXMLValue.encode(xfrm.style?.rotate, 'ST_Angle')) : undefined,
+    xfrm.style?.rotate ? withAttr('rot', OoxmlValue.encode(xfrm.style?.rotate, 'ST_Angle')) : undefined,
     xfrm.style?.scaleY === -1 && withAttr('flipV', '1'),
     xfrm.style?.scaleX === -1 && withAttr('flipH', '1'),
   ])}>
   <a:off${withAttrs([
-    withAttr('x', OOXMLValue.encode(xfrm.style?.left, 'emu')),
-    withAttr('y', OOXMLValue.encode(xfrm.style?.top, 'emu')),
+    withAttr('x', OoxmlValue.encode(xfrm.style?.left, 'emu')),
+    withAttr('y', OoxmlValue.encode(xfrm.style?.top, 'emu')),
   ])}/>
   <a:ext${withAttrs([
-    withAttr('cx', OOXMLValue.encode(xfrm.style?.width, 'emu')),
-    withAttr('cy', OOXMLValue.encode(xfrm.style?.height, 'emu')),
+    withAttr('cx', OoxmlValue.encode(xfrm.style?.width, 'emu')),
+    withAttr('cy', OoxmlValue.encode(xfrm.style?.height, 'emu')),
   ])}/>
   ${isGroup
     ? `<a:chOff${withAttrs([
@@ -130,8 +130,8 @@ export function stringifyTransform2d(xfrm: Transform2d, isGroup = false): string
       withAttr('y', '0'),
     ])}/>
 <a:chExt${withAttrs([
-  withAttr('cx', OOXMLValue.encode(xfrm.style?.width, 'emu')),
-  withAttr('cy', OOXMLValue.encode(xfrm.style?.height, 'emu')),
+  withAttr('cx', OoxmlValue.encode(xfrm.style?.width, 'emu')),
+  withAttr('cy', OoxmlValue.encode(xfrm.style?.height, 'emu')),
 ])}/>`
     : ''}
 </a:xfrm>`

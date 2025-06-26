@@ -1,10 +1,10 @@
 import type { LineEndSize, NormalizedFill, NormalizedGradientFill, NormalizedImageFill } from 'modern-idoc'
-import type { NormalizedPPTX, Slide, SlideElement, SlideLayout, SlideMaster } from '../ooxml'
-import type { XMLNode } from '../renderers'
+import type { NormalizedPptx, Slide, SlideElement, SlideLayout, SlideMaster } from '../ooxml'
+import type { XmlNode } from '../renderers'
 import { isNone } from 'modern-idoc'
 import { measureText } from 'modern-text'
-import { OOXMLValue } from '../ooxml'
-import { XMLRenderer } from '../renderers'
+import { OoxmlValue } from '../ooxml'
+import { XmlRenderer } from '../renderers'
 
 export interface ViewBox {
   x1: number
@@ -18,15 +18,15 @@ export interface ParseSlideElementContext {
   onViewBox?: (viewBox: ViewBox) => void
 }
 
-export class IDocToSVGStringConverter {
-  xmlRenderer = new XMLRenderer()
+export class IdocToSvgStringConverter {
+  xmlRenderer = new XmlRenderer()
 
   genUUID(): number {
     return ~~(Math.random() * 1000000000)
   }
 
   parseGradientFill(fill: NormalizedGradientFill, ctx: {
-    defs: XMLNode
+    defs: XmlNode
     prefix: string
     fillMap: Map<string, string>
   }): string {
@@ -89,7 +89,7 @@ export class IDocToSVGStringConverter {
   }
 
   parseImageFill(fill: NormalizedImageFill, ctx: {
-    defs: XMLNode
+    defs: XmlNode
     width: number
     height: number
     prefix: string
@@ -143,7 +143,7 @@ export class IDocToSVGStringConverter {
     prefix: string
     width: number
     height: number
-    defs: XMLNode
+    defs: XmlNode
     fillMap: Map<string, string>
   }): string | undefined {
     const { width, height, defs, prefix, fillMap } = ctx
@@ -164,11 +164,11 @@ export class IDocToSVGStringConverter {
     attrs?: Record<string, any>
     width: number
     height: number
-    defs: XMLNode
+    defs: XmlNode
     uuid: number
     fillMap: Map<string, string>
-    shapePaths?: XMLNode[]
-  }): XMLNode {
+    shapePaths?: XmlNode[]
+  }): XmlNode {
     const { key, attrs = {}, width, height, defs, uuid, fillMap, shapePaths } = ctx
 
     attrs.fill = this._parseFill(fill, { defs, prefix: `${uuid}-${key}`, fillMap, width, height })
@@ -203,7 +203,7 @@ export class IDocToSVGStringConverter {
     }
   }
 
-  parseMarker(lineEnd: any, stroke: any, strokeWidth: number): XMLNode {
+  parseMarker(lineEnd: any, stroke: any, strokeWidth: number): XmlNode {
     const le1px = strokeWidth <= 1
 
     const marker = {
@@ -217,7 +217,7 @@ export class IDocToSVGStringConverter {
         'markerHeight': le1px ? 5 : 3,
         'orient': 'auto-start-reverse',
       },
-      children: [] as XMLNode[],
+      children: [] as XmlNode[],
     }
 
     switch (lineEnd.type) {
@@ -280,7 +280,7 @@ export class IDocToSVGStringConverter {
     return marker
   }
 
-  parseSlideElement(el: SlideElement, ctx: ParseSlideElementContext = {}): XMLNode {
+  parseSlideElement(el: SlideElement, ctx: ParseSlideElementContext = {}): XmlNode {
     const uuid = this.genUUID()
 
     const {
@@ -323,7 +323,7 @@ export class IDocToSVGStringConverter {
     const container = {
       tag: 'g',
       attrs: { 'data-title': name, 'transform': transform.join(' '), visibility },
-      children: [] as XMLNode[],
+      children: [] as XmlNode[],
     }
 
     const shapeTransform: string[] = []
@@ -340,18 +340,18 @@ export class IDocToSVGStringConverter {
 
     const defs = {
       tag: 'defs',
-      children: [] as XMLNode[],
+      children: [] as XmlNode[],
     }
 
     const shapeContainer = {
       tag: 'g',
       attrs: { 'data-title': 'shape', 'transform': shapeTransform.join(' '), visibility },
-      children: [] as XMLNode[],
+      children: [] as XmlNode[],
     }
 
     const fillMap = new Map<string, string>()
 
-    const shapePaths: XMLNode[] = shape?.paths
+    const shapePaths: XmlNode[] = shape?.paths
       ? shape.paths.map((path, idx) => {
           return {
             tag: 'path',
@@ -538,8 +538,8 @@ export class IDocToSVGStringConverter {
     }
 
     if (text) {
-      const paddingX = 0.25 * OOXMLValue.DPI / 2.54
-      const paddingY = 0.13 * OOXMLValue.DPI / 2.54
+      const paddingX = 0.25 * OoxmlValue.DPI / 2.54
+      const paddingY = 0.13 * OoxmlValue.DPI / 2.54
       const content = text.content.map((p) => {
         let pFontSize = 0
         const fragments = p.fragments.map((f) => {
@@ -651,7 +651,7 @@ export class IDocToSVGStringConverter {
     return container
   }
 
-  parseSlide(slide: Slide | SlideMaster | SlideLayout, slideIndex: number, width: number, height: number): XMLNode {
+  parseSlide(slide: Slide | SlideMaster | SlideLayout, slideIndex: number, width: number, height: number): XmlNode {
     const {
       children = [],
       background,
@@ -661,7 +661,7 @@ export class IDocToSVGStringConverter {
 
     const defs = {
       tag: 'defs',
-      children: [] as XMLNode[],
+      children: [] as XmlNode[],
     }
 
     const fillMap = new Map<string, string>()
@@ -693,7 +693,7 @@ export class IDocToSVGStringConverter {
     }
   }
 
-  parse(pptx: NormalizedPPTX): XMLNode {
+  parse(pptx: NormalizedPptx): XmlNode {
     const {
       width,
       height,
@@ -714,7 +714,7 @@ export class IDocToSVGStringConverter {
       children: slides.flatMap((slide, slideIndex) => {
         return [
           this.parseSlide(slide, slideIndex, width, height),
-        ].filter(Boolean) as XMLNode[]
+        ].filter(Boolean) as XmlNode[]
       }),
     }
   }
@@ -799,7 +799,7 @@ export class IDocToSVGStringConverter {
     })
   }
 
-  convert(pptx: NormalizedPPTX): string {
+  convert(pptx: NormalizedPptx): string {
     return this.xmlRenderer.render(
       this.parse(pptx),
     )

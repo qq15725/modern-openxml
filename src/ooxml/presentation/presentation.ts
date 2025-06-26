@@ -1,6 +1,6 @@
-import type { OOXMLNode } from '../core'
-import type { NormalizedPPTX } from '../types'
-import { OOXMLValue } from '../core'
+import type { OoxmlNode } from '../core'
+import type { NormalizedPptx } from '../types'
+import { OoxmlValue } from '../core'
 import { withAttr, withAttrs, withIndents } from '../utils'
 
 export interface Presentation {
@@ -10,7 +10,7 @@ export interface Presentation {
   slideMasters: { id: string, rId: string }[]
 }
 
-export function parsePresentation(node?: OOXMLNode): Presentation | undefined {
+export function parsePresentation(node?: OoxmlNode): Presentation | undefined {
   if (!node)
     return undefined
 
@@ -32,7 +32,7 @@ export function parsePresentation(node?: OOXMLNode): Presentation | undefined {
   }
 }
 
-export function stringifyPresentation(props: NormalizedPPTX, slides: string[], slideMasters: string[]): string {
+export function stringifyPresentation(props: NormalizedPptx, slides: string[], slideMasters: string[]): string {
   const slideIds = slides.map((id, i) => {
     return `<p:sldId id="${256 + i}" r:id="${id}"/>`
   })
@@ -51,7 +51,7 @@ export function stringifyPresentation(props: NormalizedPPTX, slides: string[], s
   <p:sldIdLst>
     ${withIndents(slideIds, 2)}
   </p:sldIdLst>
-  <p:sldSz${withAttrs([withAttr('cx', OOXMLValue.encode(props.style.width, 'emu')), withAttr('cy', OOXMLValue.encode(props.style.height, 'emu'))])}/>
+  <p:sldSz${withAttrs([withAttr('cx', OoxmlValue.encode(props.style.width, 'emu')), withAttr('cy', OoxmlValue.encode(props.style.height, 'emu'))])}/>
   <p:notesSz cx="5143500" cy="9144000"/>
   <p:defaultTextStyle>
     <a:lvl1pPr marL="0" algn="l" defTabSz="914400" rtl="0" eaLnBrk="1" latinLnBrk="0" hangingPunct="1">

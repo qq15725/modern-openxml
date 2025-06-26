@@ -1,12 +1,12 @@
 import type { NormalizedElement, NormalizedStyle } from 'modern-idoc'
-import type { OOXMLNode, OOXMLQueryType } from '../core'
-import type { NonVisualDrawingProperties } from './non-visual-drawing-properties'
-import { parseNonVisualDrawingProperties } from './non-visual-drawing-properties'
-import { parseNonVisualProperties } from './non-visual-properties'
-import { parseShapeProperties } from './shape-properties'
+import type { OoxmlNode, OOXMLQueryType } from '../core'
+import type { NonVisualDrawingProperties } from './nonVisualDrawingProperties'
+import { parseNonVisualDrawingProperties } from './nonVisualDrawingProperties'
+import { parseNonVisualProperties } from './nonVisualProperties'
+import { parseShapeProperties } from './shapeProperties'
 
 export type ConnectionShapeMeta = NonVisualDrawingProperties['meta'] & {
-  type: 'connection-shape'
+  type: 'connectionShape'
   placeholderType?: string
   placeholderIndex?: string
 }
@@ -17,7 +17,7 @@ export interface ConnectionShape extends NormalizedElement {
 }
 
 // p:cxnSp
-export function parseConnectionShape(node?: OOXMLNode, ctx?: any): ConnectionShape | undefined {
+export function parseConnectionShape(node?: OoxmlNode, ctx?: any): ConnectionShape | undefined {
   if (!node)
     return undefined
   const { placeholder, ...nvPr } = parseNonVisualProperties(node.find('p:nvCxnSpPr/p:nvPr'), ctx) ?? {}
@@ -42,7 +42,7 @@ export function parseConnectionShape(node?: OOXMLNode, ctx?: any): ConnectionSha
     },
     meta: {
       ...cNvPr?.meta,
-      type: 'connection-shape',
+      type: 'connectionShape',
       placeholderType: placeholder?.type,
       placeholderIndex: placeholder?.index,
     },

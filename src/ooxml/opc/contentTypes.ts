@@ -1,4 +1,4 @@
-import type { OOXMLNode } from '../core'
+import type { OoxmlNode } from '../core'
 import { pathToContentType, withIndents } from '../utils'
 
 const PACKAGE = 'application/vnd.openxmlformats-package'
@@ -38,7 +38,7 @@ const CONTENT_TYPES = {
   [`${DOCUMENT}.spreadsheetml.worksheet+xml`]: 'worksheets',
 } as const
 
-export function parseTypes(node: OOXMLNode): { type: string, ext?: string, path?: string }[] {
+export function parseTypes(node: OoxmlNode): { type: string, ext?: string, path?: string }[] {
   const convertType = (type: string): string => (CONTENT_TYPES as any)[type] ?? type
 
   return [

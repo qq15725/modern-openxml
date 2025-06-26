@@ -10,8 +10,8 @@ import type {
   VerticalAlign,
   WritingMode,
 } from 'modern-idoc'
-import type { OOXMLNode, OOXMLQueryType } from '../core'
-import { OOXMLValue } from '../core'
+import type { OoxmlNode, OOXMLQueryType } from '../core'
+import { OoxmlValue } from '../core'
 import { fillXPath, parseFill, parseOutline, stringifyFill } from '../drawing'
 import { BiMap, withAttr, withAttrs, withIndents } from '../utils'
 
@@ -71,7 +71,7 @@ const verticalAlignMap = new BiMap<any, VerticalAlign>({
 })
 
 // p:txBody
-export function parseTextBody(txBody?: OOXMLNode, ctx?: Record<string, any>): TextBody {
+export function parseTextBody(txBody?: OoxmlNode, ctx?: Record<string, any>): TextBody {
   const theme = ctx?.theme
   const master = ctx?.master
   const presentation = ctx?.presentation
@@ -101,7 +101,7 @@ export function parseTextBody(txBody?: OOXMLNode, ctx?: Record<string, any>): Te
       return pPrList.reduce((res, pPr) => res ?? pPr()?.query(path, type), undefined)
     }
 
-    function parseStyle(r?: OOXMLNode): Record<string, any> {
+    function parseStyle(r?: OoxmlNode): Record<string, any> {
       const queryRPr = <T>(path: string, type?: OOXMLQueryType): T | undefined => {
         return (
           r?.query(`a:rPr/${path}`, type)
@@ -236,8 +236,8 @@ export function stringifyTextBody(txBody?: TextBody): string | undefined {
         (f.fontWeight === 700 || f.fontWeight === 'bold') && withAttr('b', '1'),
         f.fontStyle === 'italic' && withAttr('i', '1'),
         f.textDecoration === 'underline' && withAttr('u', 'sng'),
-        withAttr('sz', OOXMLValue.encode(f.fontSize, 'fontSize')),
-        withAttr('spc', OOXMLValue.encode(f.letterSpacing, 'fontSize')),
+        withAttr('sz', OoxmlValue.encode(f.fontSize, 'fontSize')),
+        withAttr('spc', OoxmlValue.encode(f.letterSpacing, 'fontSize')),
       ])}>
   ${withIndents([
     stringifyFill(
@@ -268,14 +268,14 @@ export function stringifyTextBody(txBody?: TextBody): string | undefined {
 
     if ((p as any).lineHeight) {
       children.push(`<a:lnSpc>
-  <a:spcPct val="${OOXMLValue.encode((p as any).lineHeight, 'ST_TextSpacingPercentOrPercentString')}" />
+  <a:spcPct val="${OoxmlValue.encode((p as any).lineHeight, 'ST_TextSpacingPercentOrPercentString')}" />
 </a:lnSpc>`)
     }
 
     const pPrAttrs = [
-      !!p.marginLeft && withAttr('marL', OOXMLValue.encode(p.marginLeft, 'emu')),
-      !!p.marginRight && withAttr('marR', OOXMLValue.encode(p.marginRight, 'emu')),
-      !!p.textIndent && withAttr('indent', OOXMLValue.encode(p.textIndent, 'emu')),
+      !!p.marginLeft && withAttr('marL', OoxmlValue.encode(p.marginLeft, 'emu')),
+      !!p.marginRight && withAttr('marR', OoxmlValue.encode(p.marginRight, 'emu')),
+      !!p.textIndent && withAttr('indent', OoxmlValue.encode(p.textIndent, 'emu')),
       !!p.textAlign && withAttr('algn', textAlignMap.getKey(p.textAlign)),
       // withAttr('fontAlgn', p.fontAlign),
       // withAttr('rtl', p.rightToLeft),
@@ -297,12 +297,12 @@ export function stringifyTextBody(txBody?: TextBody): string | undefined {
   const bodyPr = `<a:bodyPr${withAttrs([
     style.verticalAlign && withAttr('anchor', verticalAlignMap.getKey(style.verticalAlign)),
     style.textAlign === 'center' && withAttr('anchorCtr', '1'),
-    // withAttr('spcFirstLastPara', OOXMLValue.encode(style.useParagraphSpacing, 'boolean')),
-    style.paddingLeft !== undefined && withAttr('lIns', OOXMLValue.encode(style.paddingLeft, 'ST_Coordinate32')),
-    style.paddingTop !== undefined && withAttr('tIns', OOXMLValue.encode(style.paddingTop, 'ST_Coordinate32')),
-    style.paddingRight !== undefined && withAttr('rIns', OOXMLValue.encode(style.paddingRight, 'ST_Coordinate32')),
-    style.paddingBottom !== undefined && withAttr('bIns', OOXMLValue.encode(style.paddingBottom, 'ST_Coordinate32')),
-    // withAttr('rot', OOXMLValue.encode(style.textRotation, 'degree')),
+    // withAttr('spcFirstLastPara', OoxmlValue.encode(style.useParagraphSpacing, 'boolean')),
+    style.paddingLeft !== undefined && withAttr('lIns', OoxmlValue.encode(style.paddingLeft, 'ST_Coordinate32')),
+    style.paddingTop !== undefined && withAttr('tIns', OoxmlValue.encode(style.paddingTop, 'ST_Coordinate32')),
+    style.paddingRight !== undefined && withAttr('rIns', OoxmlValue.encode(style.paddingRight, 'ST_Coordinate32')),
+    style.paddingBottom !== undefined && withAttr('bIns', OoxmlValue.encode(style.paddingBottom, 'ST_Coordinate32')),
+    // withAttr('rot', OoxmlValue.encode(style.textRotation, 'degree')),
     style.textWrap === 'nowrap' && withAttr('wrap', 'none'),
     style.writingMode?.startsWith('vertical') && withAttr('upright', '1'),
     style.writingMode?.startsWith('vertical') && withAttr('vert', 'vert'),

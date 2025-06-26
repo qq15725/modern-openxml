@@ -1,4 +1,4 @@
-import type { OOXMLNode } from '../core'
+import type { OoxmlNode } from '../core'
 import type { Placeholder } from './placeholder'
 import { parsePlaceholder } from './placeholder'
 
@@ -8,7 +8,7 @@ export interface NonVisualProperties {
   placeholder?: Placeholder
 }
 
-export function parseNonVisualProperties(nvPr?: OOXMLNode, ctx?: any): NonVisualProperties | undefined {
+export function parseNonVisualProperties(nvPr?: OoxmlNode, ctx?: any): NonVisualProperties | undefined {
   if (!nvPr)
     return undefined
   // const audioId = nvPr.attr('a:audioFile/@r:link')

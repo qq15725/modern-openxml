@@ -3,7 +3,7 @@ import type { CoreProperties } from './doc-props'
 import type { Theme } from './drawing'
 import type { Slide, SlideLayout, SlideMaster } from './presentation'
 
-export type PPTXSource
+export type PptxSource
   = | string
     | number[]
     | Uint8Array
@@ -11,7 +11,7 @@ export type PPTXSource
     | Blob
     | NodeJS.ReadableStream
 
-export interface PPTXMeta extends CoreProperties {
+export interface PptxMeta extends CoreProperties {
   cover?: string
   themes: Theme[]
   slides: Slide[]
@@ -19,19 +19,19 @@ export interface PPTXMeta extends CoreProperties {
   slideMasters: SlideMaster[]
 }
 
-export interface PPTXStyle {
+export interface PptxStyle {
   width: number
   height: number
 }
 
-export interface NormalizedPPTX extends NormalizedDocument {
-  style: PPTXStyle
+export interface NormalizedPptx extends NormalizedDocument {
+  style: PptxStyle
   children: Slide[]
-  meta: PPTXMeta
+  meta: PptxMeta
 }
 
-export interface PPTX {
-  style?: Partial<PPTXStyle>
+export interface Pptx {
+  style?: Partial<PptxStyle>
   children?: Slide[]
-  meta?: Partial<PPTXMeta>
+  meta?: Partial<PptxMeta>
 }

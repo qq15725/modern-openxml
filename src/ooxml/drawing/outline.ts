@@ -1,6 +1,6 @@
 import type { LineEndSize, LineEndType, NormalizedOutline } from 'modern-idoc'
-import type { OOXMLNode } from '../core'
-import { OOXMLValue } from '../core'
+import type { OoxmlNode } from '../core'
+import { OoxmlValue } from '../core'
 import { withAttr, withAttrs, withIndents } from '../utils'
 import { fillXPath, parseFill, stringifySolidFill } from './fill'
 
@@ -21,7 +21,7 @@ export type PrstDashType
 // a:extLst
 // a:miter
 // a:round
-export function parseOutline(node?: OOXMLNode, ctx?: any): NormalizedOutline | undefined {
+export function parseOutline(node?: OoxmlNode, ctx?: any): NormalizedOutline | undefined {
   if (node && node.name !== 'a:ln') {
     node = node.find('a:ln')
   }
@@ -103,7 +103,7 @@ export function stringifyOutline(ln?: NormalizedOutline): string | undefined {
     return undefined
 
   return `<a:ln${withAttrs([
-    ln.width !== undefined && withAttr('w', OOXMLValue.encode(ln.width, 'ST_LineWidth')),
+    ln.width !== undefined && withAttr('w', OoxmlValue.encode(ln.width, 'ST_LineWidth')),
   ])}>
     ${withIndents([
       ln.color !== undefined && stringifySolidFill(String(ln.color)),
@@ -114,7 +114,7 @@ export function stringifyOutline(ln?: NormalizedOutline): string | undefined {
 // TODO
 //   const prstDash = stringifyBorderPrstDash(ln.borderPrstDash, ln.width)
 //   return `<a:ln${withAttrs([
-//     withAttr('w', OOXMLValue.encode(ln.width, 'ST_LineWidth')),
+//     withAttr('w', OoxmlValue.encode(ln.width, 'ST_LineWidth')),
 //   ])}>
 //     ${ln.width ? withIndents(stringifyColor(ln.color)) : '<a:noFill/>'}
 //     ${prstDash ? `<a:prstDash val="${prstDash}" />` : ''}

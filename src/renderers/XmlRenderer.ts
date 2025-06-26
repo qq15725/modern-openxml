@@ -1,13 +1,13 @@
-export type XMLNodeChild = XMLNode | string | undefined | boolean
-export type XMLNodeAttrs = Record<string, any>
+export type XmlNodeChild = XmlNode | string | undefined | boolean
+export type XmlNodeAttrs = Record<string, any>
 
-export interface XMLNode {
+export interface XmlNode {
   tag: string
-  attrs?: XMLNodeAttrs
-  children?: XMLNodeChild[]
+  attrs?: XmlNodeAttrs
+  children?: XmlNodeChild[]
 }
 
-export class XMLRenderer {
+export class XmlRenderer {
   htmlEntities: Record<string, string> = {
     '<': '&lt;',
     '>': '&gt;',
@@ -21,7 +21,7 @@ export class XMLRenderer {
     return str.replace(/[<>&"'`]/g, char => this.htmlEntities[char])
   }
 
-  renderAttrs(attrs?: XMLNodeAttrs): string {
+  renderAttrs(attrs?: XmlNodeAttrs): string {
     if (!attrs) {
       return ''
     }
@@ -46,7 +46,7 @@ export class XMLRenderer {
     }).filter(Boolean).join(' ')}`
   }
 
-  renderChildren(children?: XMLNodeChild[]): string {
+  renderChildren(children?: XmlNodeChild[]): string {
     return children
       ?.filter(Boolean)
       .map((child: any) => {
@@ -61,7 +61,7 @@ export class XMLRenderer {
       ?? ''
   }
 
-  render(node: XMLNode): string {
+  render(node: XmlNode): string {
     return `<${node.tag}${this.renderAttrs(node.attrs)}>${this.renderChildren(node.children)}</${node.tag}>`
   }
 }

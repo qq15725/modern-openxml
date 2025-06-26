@@ -5,7 +5,7 @@ import type {
   NormalizedOutline,
   NormalizedShape,
 } from 'modern-idoc'
-import type { OOXMLNode, OOXMLQueryType } from '../core'
+import type { OoxmlNode, OOXMLQueryType } from '../core'
 import type { Transform2d } from './transform2d'
 import {
   fillXPath,
@@ -28,7 +28,7 @@ export interface ShapeProperties extends Transform2d {
   effect?: NormalizedEffect
 }
 
-export function parseShapeProperties(spPr?: OOXMLNode, ctx?: any): ShapeProperties | undefined {
+export function parseShapeProperties(spPr?: OoxmlNode, ctx?: any): ShapeProperties | undefined {
   if (!spPr)
     return undefined
 

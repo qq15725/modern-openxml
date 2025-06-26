@@ -1,8 +1,8 @@
-import type { OOXMLValueType } from './ooxml-value'
+import type { OoxmlValueType } from './ooxml-value'
 import { namespaces } from '../namespaces'
-import { OOXMLValue } from './ooxml-value'
+import { OoxmlValue } from './ooxml-value'
 
-export type OOXMLQueryType = 'node' | 'nodes' | OOXMLValueType
+export type OOXMLQueryType = 'node' | 'nodes' | OoxmlValueType
 
 const fixtures = {
   '&sbquo;': '‚',
@@ -23,7 +23,7 @@ const fixtures = {
   '&fnof;': 'ƒ',
 }
 
-export class OOXMLNode {
+export class OoxmlNode {
   doc: Document
   resolver: XPathNSResolver = prefix => (prefix ? this.namespaces[prefix] || null : null)
 
@@ -43,7 +43,7 @@ export class OOXMLNode {
     this.query = this.query.bind(this)
   }
 
-  static fromXML(xml = '', userNamespaces: Record<string, any> = namespaces): OOXMLNode {
+  static fromXML(xml = '', userNamespaces: Record<string, any> = namespaces): OoxmlNode {
     xml = xml.replace(/xmlns=".*?"/g, '')
     for (const key in fixtures) {
       xml = xml.replace(new RegExp(key, 'gi'), (fixtures as any)[key] as string)
@@ -53,7 +53,7 @@ export class OOXMLNode {
     for (const [, key, value] of xml.matchAll(/xmlns:(\w)="(.+?)"/g)) {
       namespaces[key] = value
     }
-    return new OOXMLNode(
+    return new OoxmlNode(
       doc.documentElement,
       { ...namespaces, ...userNamespaces },
     )
@@ -77,7 +77,7 @@ export class OOXMLNode {
     switch (type) {
       case 'node': {
         const result = this.evaluate(xpath, XPathResult.FIRST_ORDERED_NODE_TYPE).singleNodeValue
-        return result ? new OOXMLNode(result, this.namespaces) : undefined
+        return result ? new OoxmlNode(result, this.namespaces) : undefined
       }
       case 'nodes': {
         const result = this.evaluate(xpath, XPathResult.ORDERED_NODE_ITERATOR_TYPE)
@@ -85,28 +85,28 @@ export class OOXMLNode {
         let node
         // eslint-disable-next-line no-cond-assign
         while ((node = result.iterateNext())) {
-          value.push(new OOXMLNode(node, this.namespaces))
+          value.push(new OoxmlNode(node, this.namespaces))
         }
         return value
       }
       default: {
-        return OOXMLValue.decode(
+        return OoxmlValue.decode(
           this.evaluate(xpath, XPathResult.STRING_TYPE).stringValue || undefined,
-          type as OOXMLValueType,
+          type as OoxmlValueType,
         )
       }
     }
   }
 
-  get(xpath: string): OOXMLNode[] {
+  get(xpath: string): OoxmlNode[] {
     return this.query(xpath, 'nodes')
   }
 
-  find(xpath: string): OOXMLNode | undefined {
+  find(xpath: string): OoxmlNode | undefined {
     return this.query(xpath, 'node')
   }
 
-  attr<T = string>(xpath: string, type: OOXMLValueType = 'string'): T | undefined {
+  attr<T = string>(xpath: string, type: OoxmlValueType = 'string'): T | undefined {
     return this.query(xpath, type)
   }
 }

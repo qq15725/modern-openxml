@@ -1,9 +1,9 @@
 import type { NormalizedElement } from 'modern-idoc'
-import type { OOXMLNode } from '../core'
-import type { ColorMap } from './color-map'
+import type { OoxmlNode } from '../core'
+import type { ColorMap } from './colorMap'
 import type { SlideElement } from './slide'
 import { parseBackground } from './background'
-import { parseColorMap } from './color-map'
+import { parseColorMap } from './colorMap'
 import { parseElement } from './slide'
 import { parseTiming } from './timing'
 
@@ -17,7 +17,7 @@ export interface SlideLayout extends NormalizedElement {
   }
 }
 
-export function parseSlideLayout(slide: OOXMLNode, id: string, ctx: any): SlideLayout {
+export function parseSlideLayout(slide: OoxmlNode, id: string, ctx: any): SlideLayout {
   return {
     style: {
       width: ctx.presentation.width,

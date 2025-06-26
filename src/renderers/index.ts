@@ -1,1 +1,1 @@
-export * from './xml-renderer'
+export * from './XmlRenderer'

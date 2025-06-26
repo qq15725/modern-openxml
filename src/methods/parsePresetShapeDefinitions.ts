@@ -10,8 +10,8 @@ import type {
 import { Path2D } from 'modern-path2d'
 import {
   clearUndef,
-  OOXMLNode,
-  OOXMLValue,
+  OoxmlNode,
+  OoxmlValue,
   parseAdjustHandleList,
   parseAdjustValueList,
   parsePaths,
@@ -20,7 +20,7 @@ import {
   parseShapeGuideList,
   parseShapeGuideValue,
 } from '../ooxml'
-import { XMLRenderer } from '../renderers'
+import { XmlRenderer } from '../renderers'
 
 export interface GeneratedAdjustHandle {
   refX: string
@@ -44,18 +44,18 @@ export interface ParsedPresetShapeDefinition {
   shapeGuides?: ShapeGuide[]
   generatePaths: (options: Partial<ShapeGuideContext>) => ShapePath[]
   generateAdjustHandles: (options: Partial<ShapeGuideContext>) => GeneratedAdjustHandle[] | undefined
-  generateSVGString: (options: Partial<ShapeGuideContext & Path2DStyle>) => string
+  generateSvgString: (options: Partial<ShapeGuideContext & Path2DStyle>) => string
 }
 
 export function parsePresetShapeDefinitions(
   presetShapeDefinitions: string,
 ): ParsedPresetShapeDefinition[] {
-  return OOXMLNode.fromXML(presetShapeDefinitions)
+  return OoxmlNode.fromXML(presetShapeDefinitions)
     .get('*')
     .map(child => parsePresetShapeDefinition(child))
 }
 
-export function parsePresetShapeDefinition(node: OOXMLNode): ParsedPresetShapeDefinition {
+export function parsePresetShapeDefinition(node: OoxmlNode): ParsedPresetShapeDefinition {
   const name = node.name
   const avLst = node.find('avLst')
   const gdLst = node.find('gdLst')
@@ -68,7 +68,7 @@ export function parsePresetShapeDefinition(node: OOXMLNode): ParsedPresetShapeDe
   const shapeGuides = gdLst ? parseShapeGuideList(gdLst) : undefined
   function loadVariables(ctx: ShapeGuideContext): void {
     Object.keys(ctx.variables).forEach((key) => {
-      ctx.variables[key] = Number(OOXMLValue.encode(ctx.variables[key], 'emu'))
+      ctx.variables[key] = Number(OoxmlValue.encode(ctx.variables[key], 'emu'))
     })
     adjustValues?.forEach((gd) => {
       if (!ctx.variables[gd.name]) {
@@ -81,8 +81,8 @@ export function parsePresetShapeDefinition(node: OOXMLNode): ParsedPresetShapeDe
   }
   const generatePaths = (options: Partial<ShapeGuideContext> = {}): ShapePath[] => {
     const ctx: ShapeGuideContext = {
-      width: Number(OOXMLValue.encode(options.width ?? 0, 'emu')),
-      height: Number(OOXMLValue.encode(options.height ?? 0, 'emu')),
+      width: Number(OoxmlValue.encode(options.width ?? 0, 'emu')),
+      height: Number(OoxmlValue.encode(options.height ?? 0, 'emu')),
       variables: options?.variables ?? {},
     }
     loadVariables(ctx)
@@ -99,14 +99,14 @@ export function parsePresetShapeDefinition(node: OOXMLNode): ParsedPresetShapeDe
     shapeGuides,
     generateAdjustHandles: (options: Partial<ShapeGuideContext> = {}) => {
       const ctx: ShapeGuideContext = {
-        width: Number(OOXMLValue.encode(options.width ?? 0, 'emu')),
-        height: Number(OOXMLValue.encode(options.height ?? 0, 'emu')),
+        width: Number(OoxmlValue.encode(options.width ?? 0, 'emu')),
+        height: Number(OoxmlValue.encode(options.height ?? 0, 'emu')),
         variables: options?.variables ?? {},
       }
       loadVariables(ctx)
       function convert(gdValue?: any): number | undefined {
         return gdValue
-          ? OOXMLValue.decode(parseShapeGuideValue(gdValue, ctx), 'emu')
+          ? OoxmlValue.decode(parseShapeGuideValue(gdValue, ctx), 'emu')
           : undefined
       }
       return adjustHandles?.map((adjustHandle) => {
@@ -125,7 +125,7 @@ export function parsePresetShapeDefinition(node: OOXMLNode): ParsedPresetShapeDe
       })
     },
     generatePaths,
-    generateSVGString: (options: Partial<ShapeGuideContext & Path2DStyle> = {}): string => {
+    generateSvgString: (options: Partial<ShapeGuideContext & Path2DStyle> = {}): string => {
       const { width = 0, height = 0, variables: _variables, ...style } = options
       const strokeWidth = style.strokeWidth ?? 0
       const paths = generatePaths(options)
@@ -146,7 +146,7 @@ export function parsePresetShapeDefinition(node: OOXMLNode): ParsedPresetShapeDe
       })
       const x1 = Math.min(...viewBox.x1.map(v => v - strokeWidth / 2))
       const y1 = Math.min(...viewBox.y1.map(v => v - strokeWidth / 2))
-      return new XMLRenderer().render({
+      return new XmlRenderer().render({
         tag: 'svg',
         attrs: {
           'data-title': name,

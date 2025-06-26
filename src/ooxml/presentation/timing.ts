@@ -1,5 +1,5 @@
-import type { OOXMLNode } from '../core'
-import { OOXMLValue } from '../core'
+import type { OoxmlNode } from '../core'
+import { OoxmlValue } from '../core'
 import { withAttr, withAttrs, withChildren } from '../utils'
 
 export interface CommonTimeNode {
@@ -84,7 +84,7 @@ export type TimingNode = CommonTimeNode | TimingPartNode | AudioNode
 // deep0: 点击执行顺序
 // deep1: 单次点击的动画连续执行顺序
 // deep2: 单次点击的单个连续动画序下并发执行所有动画
-function parseNode(node: OOXMLNode, mode?: string): TimingNode {
+function parseNode(node: OoxmlNode, mode?: string): TimingNode {
   const name = node.name
 
   if (name === 'p:par') {
@@ -112,10 +112,10 @@ function parseNode(node: OOXMLNode, mode?: string): TimingNode {
     return {
       type: 'audio',
       crossSlides: Number(node.attr('@numSld')),
-      showWhenStopped: OOXMLValue.decode(node.attr('@showWhenStopped'), 'boolean'),
+      showWhenStopped: OoxmlValue.decode(node.attr('@showWhenStopped'), 'boolean'),
       repeatCount: Number(node.attr('p:cTn/@repeatCount')) || 0,
       fill: node.attr('p:cTn/@fill'),
-      display: OOXMLValue.decode(node.attr('p:cTn/@display'), 'boolean'),
+      display: OoxmlValue.decode(node.attr('p:cTn/@display'), 'boolean'),
       shapeId: node.attr('p:tgtEl/p:spTgt/@spid')!,
     } as AudioNode
   }
@@ -203,7 +203,7 @@ export interface Timing {
 }
 
 // p:timing
-export function parseTiming(node: OOXMLNode | undefined): Timing | undefined {
+export function parseTiming(node: OoxmlNode | undefined): Timing | undefined {
   if (!node)
     return undefined
 
@@ -230,13 +230,13 @@ function stringifyNode(node: TimingNode): string {
             <p:audio>
                 <p:cMediaNode ${withAttrs([
                   withAttr('numSld', node.crossSlides),
-                  withAttr('showWhenStopped', OOXMLValue.encode(node.showWhenStopped, 'boolean')),
+                  withAttr('showWhenStopped', OoxmlValue.encode(node.showWhenStopped, 'boolean')),
                 ])}>
                     <p:cTn ${withAttrs([
                       withAttr('id', ++ctnId),
                       withAttr('repeatCount', node.repeatCount ? node.repeatCount : 'indefinite'),
                       withAttr('fill', node.fill),
-                      withAttr('display', OOXMLValue.encode(node.display, 'boolean')),
+                      withAttr('display', OoxmlValue.encode(node.display, 'boolean')),
                     ])}>
                         <p:stCondLst>
                             <p:cond delay="indefinite"/>

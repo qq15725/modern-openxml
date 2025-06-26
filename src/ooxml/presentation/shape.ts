@@ -1,15 +1,15 @@
 import type { NormalizedElement, NormalizedStyle } from 'modern-idoc'
-import type { OOXMLNode, OOXMLQueryType } from '../core'
-import type { NonVisualDrawingProperties } from './non-visual-drawing-properties'
+import type { OoxmlNode, OOXMLQueryType } from '../core'
+import type { NonVisualDrawingProperties } from './nonVisualDrawingProperties'
 import {
   withAttr,
   withAttrs,
   withIndents,
 } from '../utils'
-import { parseNonVisualDrawingProperties, stringifyNonVisualDrawingProperties } from './non-visual-drawing-properties'
-import { parseNonVisualProperties } from './non-visual-properties'
-import { parseShapeProperties, stringifyShapeProperties } from './shape-properties'
-import { parseTextBody, stringifyTextBody } from './text-body'
+import { parseNonVisualDrawingProperties, stringifyNonVisualDrawingProperties } from './nonVisualDrawingProperties'
+import { parseNonVisualProperties } from './nonVisualProperties'
+import { parseShapeProperties, stringifyShapeProperties } from './shapeProperties'
+import { parseTextBody, stringifyTextBody } from './textBody'
 
 export type ShapeMeta = NonVisualDrawingProperties['meta'] & {
   type: 'shape'
@@ -23,7 +23,7 @@ export interface Shape extends NormalizedElement {
 }
 
 // p:sp
-export function parseShape(node?: OOXMLNode, ctx?: any): Shape | undefined {
+export function parseShape(node?: OoxmlNode, ctx?: any): Shape | undefined {
   if (!node) {
     return undefined
   }

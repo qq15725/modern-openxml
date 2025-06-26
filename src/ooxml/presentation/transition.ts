@@ -1,4 +1,4 @@
-import type { OOXMLNode } from '../core'
+import type { OoxmlNode } from '../core'
 import { namespaces } from '../namespaces'
 import { withAttr, withAttrs } from '../utils'
 
@@ -11,7 +11,7 @@ export interface Transition {
   }
 }
 
-export function parseTransition(node: OOXMLNode | undefined): Transition | undefined {
+export function parseTransition(node: OoxmlNode | undefined): Transition | undefined {
   if (!node)
     return undefined
   const choice = node.find('mc:Choice')

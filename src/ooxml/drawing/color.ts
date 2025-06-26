@@ -1,4 +1,4 @@
-import type { OOXMLNode } from '../core'
+import type { OoxmlNode } from '../core'
 import type { SlideMaster } from '../presentation'
 import type { Theme } from './theme'
 import { normalizeColor } from 'modern-idoc'
@@ -185,7 +185,7 @@ const tags = [
 
 export const colorXPath = `*[(${tags.map(v => `self::${v}`).join(' or ')})]`
 
-function parseHex6Color(node: OOXMLNode, ctx?: Record<string, any>): string {
+function parseHex6Color(node: OoxmlNode, ctx?: Record<string, any>): string {
   switch (node.name) {
     case 'a:hslClr':
       return toHex(hslToRgb({
@@ -226,7 +226,7 @@ function parseHex6Color(node: OOXMLNode, ctx?: Record<string, any>): string {
   }
 }
 
-export function parseColor(node?: OOXMLNode, ctx?: Record<string, any>): { color: string } | undefined {
+export function parseColor(node?: OoxmlNode, ctx?: Record<string, any>): { color: string } | undefined {
   if (node && !tags.includes(node?.name)) {
     node = node.find(colorXPath)
   }

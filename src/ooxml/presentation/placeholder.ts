@@ -1,13 +1,13 @@
-import type { OOXMLNode } from '../core'
+import type { OoxmlNode } from '../core'
 
 export interface Placeholder {
   type?: string
   index?: string
-  node?: OOXMLNode
+  node?: OoxmlNode
 }
 
 // p:ph
-export function parsePlaceholder(ph?: OOXMLNode, ctx?: any): Placeholder | undefined {
+export function parsePlaceholder(ph?: OoxmlNode, ctx?: any): Placeholder | undefined {
   if (ph && ph.name !== 'p:ph') {
     ph = ph.find('//p:nvPr/p:ph')
   }
@@ -18,7 +18,7 @@ export function parsePlaceholder(ph?: OOXMLNode, ctx?: any): Placeholder | undef
   const index = ph?.attr('@idx')
   const hasPhIdx = index !== undefined
   const type = ph?.attr('@type') ?? (hasPhIdx ? 'body' : undefined)
-  let node: OOXMLNode | undefined
+  let node: OoxmlNode | undefined
 
   if (type) {
     const required = [`@type="${type}"`, hasPhIdx && `@idx="${index}"`]
