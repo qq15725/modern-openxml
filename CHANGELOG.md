@@ -1,3 +1,18 @@
+# [1.3.0](https://github.com/qq15725/modern-openxml/compare/v1.2.3...v1.3.0) (2025-06-26)
+
+
+### Bug Fixes
+
+* build ([2d692be](https://github.com/qq15725/modern-openxml/commit/2d692befdda0fb018b5d524c0d50b04a3854bd3a))
+* build ([8702dd8](https://github.com/qq15725/modern-openxml/commit/8702dd8d1e040df8af97d4e7bd5ddc5c1f237e1e))
+
+
+### Features
+
+* rename xxxSVG to xxxSvg and xxxPPTX to xxxPptx etc ([cb6a4f6](https://github.com/qq15725/modern-openxml/commit/cb6a4f6f9beb5d16bfc0f80705c5e1205e6fc451))
+
+
+
 ## [1.2.3](https://github.com/qq15725/modern-openxml/compare/v1.2.2...v1.2.3) (2025-06-25)
 
 
