@@ -1,7 +1,7 @@
 import type { LineEndSize, NormalizedFill, NormalizedGradientFill, NormalizedImageFill } from 'modern-idoc'
 import type { NormalizedPptx, Slide, SlideElement, SlideLayout, SlideMaster } from '../ooxml'
 import type { XmlNode } from '../renderers'
-import { isNone } from 'modern-idoc'
+import { isNone, parseColor } from 'modern-idoc'
 import { measureText } from 'modern-text'
 import { OoxmlValue } from '../ooxml'
 import { XmlRenderer } from '../renderers'
@@ -93,15 +93,29 @@ export class IdocToSvgStringConverter {
     width: number
     height: number
     prefix: string
+    rotate?: number
   }): string {
-    const { prefix, defs, width, height } = ctx
+    // TODO tile
+    const { rotateWithShape, image, cropRect, stretchRect, opacity = 1 } = fill
+    const { prefix, defs, rotate } = ctx
     const id = `${prefix}-image-${this.genUUID()}`
 
-    // TODO tile
-    // TODO stretch
-    const { image, cropRect, opacity = 1 } = fill
+    let { width, height } = ctx
+    const rawWidth = width
+    const rawHeight = height
 
-    const cropRectAttrs: Record<string, any> = {}
+    if (!rotateWithShape && rotate !== undefined) {
+      const rad = (-rotate * Math.PI) / 180
+      const sin = Math.sin(rad)
+      const cos = Math.cos(rad)
+      width = (cos * rawWidth) + (sin * rawHeight)
+      height = (sin * rawWidth) + (cos * rawHeight)
+    }
+
+    const cropRectAttrs: Record<string, any> = {
+      'style': { 'transform-box': 'fill-box' },
+      'transform-origin': 'center',
+    }
 
     if (cropRect) {
       const { left = 0, top = 0, bottom = 0, right = 0 } = cropRect
@@ -112,9 +126,26 @@ export class IdocToSvgStringConverter {
       cropRectAttrs['src-rect'] = JSON.stringify(cropRect).replace(/"/g, '\'')
       cropRectAttrs.transform = [
         `translate(${tx},${ty})`,
-        `translate(${width / 2},${height / 2})`,
         `scale(${srcWidth / width}, ${srcHeight / height})`,
-        `translate(${-width / 2},${-height / 2})`,
+      ].join(' ')
+    }
+
+    const stretchRectAttrs: Record<string, any> = {
+      'style': { 'transform-box': 'fill-box' },
+      'transform-origin': 'left top',
+    }
+
+    if (stretchRect) {
+      // TODO
+      const { left = 0, top = 0, bottom = 0, right = 0 } = stretchRect
+      const sx = 1 - right - left
+      const sy = 1 - top - bottom
+      const tx = left * width
+      const ty = top * height
+      stretchRectAttrs['stretch-rect'] = JSON.stringify(stretchRect).replace(/"/g, '\'')
+      stretchRectAttrs.transform = [
+        `scale(${sx}, ${sy})`,
+        `translate(${tx},${ty})`,
       ].join(' ')
     }
 
@@ -125,11 +156,29 @@ export class IdocToSvgStringConverter {
       children: [
         {
           tag: 'g',
-          attrs: { 'data-title': 'cropRect', ...cropRectAttrs },
+          attrs: {
+            'style': { 'transform-box': 'fill-box' },
+            'transform-origin': 'center',
+            'transform': !rotateWithShape && rotate !== undefined
+              ? `rotate(${-rotate})`
+              : undefined,
+          },
           children: [
             {
-              tag: 'image',
-              attrs: { href: image, width, height, opacity, preserveAspectRatio: 'none' },
+              tag: 'g',
+              attrs: { 'data-title': 'cropRect', ...cropRectAttrs },
+              children: [
+                {
+                  tag: 'g',
+                  attrs: { 'data-title': 'stretchRect', ...stretchRectAttrs },
+                  children: [
+                    {
+                      tag: 'image',
+                      attrs: { href: image, width, height, opacity, preserveAspectRatio: 'none' },
+                    },
+                  ],
+                },
+              ],
             },
           ],
         },
@@ -145,13 +194,14 @@ export class IdocToSvgStringConverter {
     height: number
     defs: XmlNode
     fillMap: Map<string, string>
+    rotate?: number
   }): string | undefined {
-    const { width, height, defs, prefix, fillMap } = ctx
+    const { width, height, defs, prefix, fillMap, rotate } = ctx
     if (fill.linearGradient || fill.radialGradient) {
       return this.parseGradientFill(fill as any, { defs, prefix, fillMap })
     }
     else if (fill.image) {
-      return this.parseImageFill(fill as any, { defs, prefix, width, height })
+      return this.parseImageFill(fill as any, { defs, prefix, width, height, rotate })
     }
     else if (fill.color) {
       return fill.color
@@ -168,10 +218,11 @@ export class IdocToSvgStringConverter {
     uuid: number
     fillMap: Map<string, string>
     shapePaths?: XmlNode[]
+    rotate?: number
   }): XmlNode {
-    const { key, attrs = {}, width, height, defs, uuid, fillMap, shapePaths } = ctx
+    const { key, attrs = {}, width, height, defs, uuid, fillMap, shapePaths, rotate } = ctx
 
-    attrs.fill = this._parseFill(fill, { defs, prefix: `${uuid}-${key}`, fillMap, width, height })
+    attrs.fill = this._parseFill(fill, { defs, prefix: `${uuid}-${key}`, fillMap, width, height, rotate })
 
     if (shapePaths) {
       return {
@@ -328,14 +379,10 @@ export class IdocToSvgStringConverter {
 
     const shapeTransform: string[] = []
     if (scaleX !== 1 || scaleY !== 1 || rotate !== 0) {
-      const cx = width / 2
-      const cy = height / 2
-      shapeTransform.push(`translate(${cx}, ${cy})`)
       if (rotate !== 0) {
         shapeTransform.push(`rotate(${rotate})`)
       }
       shapeTransform.push(`scale(${scaleX}, ${scaleY})`)
-      shapeTransform.push(`translate(${-cx}, ${-cy})`)
     }
 
     const defs = {
@@ -345,7 +392,13 @@ export class IdocToSvgStringConverter {
 
     const shapeContainer = {
       tag: 'g',
-      attrs: { 'data-title': 'shape', 'transform': shapeTransform.join(' '), visibility },
+      attrs: {
+        'data-title': 'shape',
+        'style': { 'transform-box': 'fill-box' },
+        'transform-origin': 'center',
+        'transform': shapeTransform.join(' '),
+        visibility,
+      },
       children: [] as XmlNode[],
     }
 
@@ -388,6 +441,7 @@ export class IdocToSvgStringConverter {
         defs,
         uuid,
         fillMap,
+        rotate,
       })
     }
 
@@ -438,6 +492,7 @@ export class IdocToSvgStringConverter {
         defs,
         uuid,
         fillMap,
+        rotate,
       }))
     }
 
@@ -467,7 +522,7 @@ export class IdocToSvgStringConverter {
         scaleY = 1,
         blurRadius = 0,
       } = outerShadow
-      const [r, g, b, a] = String(color).replace('rgba(', '').replace(')', '').split(',').map(v => Number(v))
+      const { r, g, b, a } = parseColor(color).toRgb()
       const filter = {
         x1: 0 - blurRadius,
         y1: 0 - blurRadius,
@@ -526,6 +581,7 @@ export class IdocToSvgStringConverter {
         uuid,
         fillMap,
         shapePaths,
+        rotate,
       }))
     }
 
@@ -588,7 +644,14 @@ export class IdocToSvgStringConverter {
                   ? isNone(rStyle.color)
                     ? undefined
                     : rStyle.color
-                  : this._parseFill(rStyle.fill, { defs, prefix: `${uuid}-text`, fillMap, width, height }),
+                  : this._parseFill(rStyle.fill, {
+                      defs,
+                      prefix: `${uuid}-text`,
+                      fillMap,
+                      width,
+                      height,
+                      rotate,
+                    }),
                 'font-size': rStyle.fontSize,
                 'font-family': rStyle.fontFamily,
                 'letter-spacing': rStyle.letterSpacing,
@@ -618,20 +681,14 @@ export class IdocToSvgStringConverter {
       })
 
       if (textNodes.length) {
-        const textTransform: string[] = []
-        if (rotate !== 0) {
-          const cx = width / 2
-          const cy = height / 2
-          textTransform.push(`translate(${cx}, ${cy})`)
-          if (rotate !== 0) {
-            textTransform.push(`rotate(${rotate})`)
-          }
-          textTransform.push(`translate(${-cx}, ${-cy})`)
-        }
-
         container.children!.push({
           tag: 'g',
-          attrs: { 'data-title': 'text', 'transform': textTransform.join(' ') },
+          attrs: {
+            'data-title': 'text',
+            'style': { 'transform-box': 'fill-box' },
+            'transform-origin': 'center',
+            'transform': rotate !== 0 ? `rotate(${rotate})` : undefined,
+          },
           children: textNodes,
         })
       }
