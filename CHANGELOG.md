@@ -1,3 +1,12 @@
+## [1.3.2](https://github.com/qq15725/modern-openxml/compare/v1.3.1...v1.3.2) (2025-06-28)
+
+
+### Bug Fixes
+
+* svg render ([52a7d09](https://github.com/qq15725/modern-openxml/commit/52a7d09a244538adccc7f5122c8530959619de2d))
+
+
+
 ## [1.3.1](https://github.com/qq15725/modern-openxml/compare/v1.3.0...v1.3.1) (2025-06-28)
 
 
