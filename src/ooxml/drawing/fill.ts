@@ -160,7 +160,10 @@ export function stringifyFill(fill?: NormalizedFill, isPic = false): string | un
     const tagName = isPic ? 'p:blipFill' : 'a:blipFill'
     const url = fill.image
       ?? fill.image
-    return `<${tagName}>
+    return `<${tagName}${withAttrs([
+      withAttr('dpi', OoxmlValue.encode(fill.dpi, 'number')),
+      withAttr('rotWithShape', OoxmlValue.encode(fill.rotateWithShape, 'boolean')),
+    ])}>
   <a:blip${withAttrs([withAttr('r:embed', url)])}>
     ${withIndents([
       fill.opacity !== undefined
