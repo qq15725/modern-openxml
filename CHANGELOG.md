@@ -1,3 +1,12 @@
+## [1.3.1](https://github.com/qq15725/modern-openxml/compare/v1.3.0...v1.3.1) (2025-06-28)
+
+
+### Bug Fixes
+
+* stringifyFill ([a730bf4](https://github.com/qq15725/modern-openxml/commit/a730bf45485a71b8e637d8cb5a55709b1fd91f60))
+
+
+
 # [1.3.0](https://github.com/qq15725/modern-openxml/compare/v1.2.3...v1.3.0) (2025-06-26)
 
 
