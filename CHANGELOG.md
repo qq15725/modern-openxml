@@ -1,3 +1,13 @@
+# [1.4.0](https://github.com/qq15725/modern-openxml/compare/v1.3.2...v1.4.0) (2025-07-08)
+
+
+### Features
+
+* split svg feature to new pkg ([a7ee784](https://github.com/qq15725/modern-openxml/commit/a7ee784c69a5145f90233a9d6b3b3dc04c918ec4))
+* up deps ([b1906c8](https://github.com/qq15725/modern-openxml/commit/b1906c8e49650bed31d505369e42c90d45984ea0))
+
+
+
 ## [1.3.2](https://github.com/qq15725/modern-openxml/compare/v1.3.1...v1.3.2) (2025-06-28)
 
 
