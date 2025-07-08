@@ -11,18 +11,12 @@ importers:
       fflate:
         specifier: ^0.8.2
         version: 0.8.2
-      modern-font:
-        specifier: ^0.4.1
-        version: 0.4.1
       modern-idoc:
-        specifier: ^0.8.2
-        version: 0.8.2
+        specifier: ^0.8.4
+        version: 0.8.4
       modern-path2d:
         specifier: ^1.4.1
         version: 1.4.1
-      modern-text:
-        specifier: ^1.6.1
-        version: 1.6.1
     devDependencies:
       '@antfu/eslint-config':
         specifier: ^4.16.2
@@ -42,6 +36,9 @@ importers:
       lint-staged:
         specifier: ^16.1.2
         version: 16.1.2
+      modern-idoc-svg:
+        specifier: ^0.0.3
+        version: 0.0.3
       simple-git-hooks:
         specifier: ^2.13.0
         version: 2.13.0
@@ -1880,8 +1877,11 @@ packages:
   modern-font@0.4.1:
     resolution: {integrity: sha512-yaq7zIRxNHHJRzEUnrRKFZJGsBSi1dYlXkLZ1n2nk1B/aQKm8JrjMtwGM7aUAicc/CQOmHh890KNqN7FtS7Pog==}
 
-  modern-idoc@0.8.2:
-    resolution: {integrity: sha512-VNXMSzMi2ErPKIIhP15QKPNTeKPBJYJgsP6V2qEQ3dBrsoC88vsyyGBcIFoRSiV1Me1haXLZabrGY9uQLv9i8g==}
+  modern-idoc-svg@0.0.3:
+    resolution: {integrity: sha512-wvkYIiy4evzxLFmZTQEp+Eokqy4s0IrxXvlFwzKxWyRLheS4vc75aflX64CpKZJoqEmBY+DM8M1tvsV4gUKFmA==}
+
+  modern-idoc@0.8.4:
+    resolution: {integrity: sha512-DhH19hfGxtVGR1swxMRgHyk321luVcxiAa2FJP/kG0s+hWjrVuRnNwUr69nYc69dsmrFG+VggD1xiQJCQ2dLOQ==}
 
   modern-path2d@1.4.1:
     resolution: {integrity: sha512-6T1n2PnRArVvyL4lW21JcZqqLYTzsMcc7NDbj6vpDpwcKogQfBjP6Nu4cyIOSFtNbg+a445XgyQDhw8CXsRWVg==}
@@ -4686,7 +4686,12 @@ snapshots:
     dependencies:
       fflate: 0.8.2
 
-  modern-idoc@0.8.2:
+  modern-idoc-svg@0.0.3:
+    dependencies:
+      modern-idoc: 0.8.4
+      modern-text: 1.6.1
+
+  modern-idoc@0.8.4:
     dependencies:
       colord: 2.9.3
       nanoid: 5.1.5
@@ -4699,7 +4704,7 @@ snapshots:
     dependencies:
       diff: 8.0.2
       modern-font: 0.4.1
-      modern-idoc: 0.8.2
+      modern-idoc: 0.8.4
       modern-path2d: 1.4.1
 
   ms@2.1.3: {}

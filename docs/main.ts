@@ -1,6 +1,21 @@
+import { idocToSvg } from 'modern-idoc-svg'
 import presetShapeDefinitions from '../assets/presetShapeDefinitions'
 import presetTextWarpDefinitions from '../assets/presetTextWarpDefinitions'
-import { idocToPptx, parsePresetShapeDefinitions, parsePresetTextWarpDefinitions, pptxToIdoc, pptxToSvg, xmlToDom } from '../src'
+import {
+  idocToPptx,
+  parsePresetShapeDefinitions,
+  parsePresetTextWarpDefinitions,
+  pptxToIdoc,
+} from '../src'
+
+function xmlToDom<T = Element>(xml: string): T {
+  const doc = new DOMParser().parseFromString(xml, 'application/xml') as XMLDocument
+  const error = doc.querySelector('parsererror')
+  if (error) {
+    throw new Error(`${error.textContent ?? 'parser error'}\n${xml}`)
+  }
+  return doc.documentElement as T
+}
 
 document.querySelector<HTMLButtonElement>('#Decode')!.onclick = async () => {
   testPPTXToSVG(await openFileDialog())
@@ -52,7 +67,9 @@ function openFileDialog(): Promise<Uint8Array> {
 
 async function testPPTXToSVG(source: Uint8Array): Promise<void> {
   console.warn(await pptxToIdoc(source, { presetShapeDefinitions }))
-  const svg = await pptxToSvg(source, { presetShapeDefinitions })
+  const svg = idocToSvg(
+    await pptxToIdoc(source, { presetShapeDefinitions }),
+  )
   console.warn(svg)
   document.body.append(svg)
 }

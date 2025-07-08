@@ -61,10 +61,8 @@
   },
   "dependencies": {
     "fflate": "^0.8.2",
-    "modern-font": "^0.4.1",
-    "modern-idoc": "^0.8.2",
-    "modern-path2d": "^1.4.1",
-    "modern-text": "^1.6.1"
+    "modern-idoc": "^0.8.4",
+    "modern-path2d": "^1.4.1"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^4.16.2",
@@ -73,6 +71,7 @@
     "conventional-changelog-cli": "^5.0.0",
     "eslint": "^9.30.1",
     "lint-staged": "^16.1.2",
+    "modern-idoc-svg": "^0.0.3",
     "simple-git-hooks": "^2.13.0",
     "typescript": "^5.8.3",
     "unbuild": "^3.5.0",
