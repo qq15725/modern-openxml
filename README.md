@@ -21,7 +21,7 @@
 ## 📦 Install
 
 ```
-npm i modern-idoc-svg
+npm i modern-openxml
 ```
 
 ## Methods
@@ -52,6 +52,8 @@ fetch('./example.pptx')
 ```
 
 ## PPTX to SVG
+
+Install IDoc to SVG renderer [modern-idoc-svg](https://github.com/qq15725/modern-idoc-svg)
 
 ```
 npm i modern-idoc-svg
