@@ -37,8 +37,8 @@ importers:
         specifier: ^16.1.2
         version: 16.1.2
       modern-idoc-svg:
-        specifier: ^0.0.3
-        version: 0.0.3
+        specifier: ^0.0.4
+        version: 0.0.4
       simple-git-hooks:
         specifier: ^2.13.0
         version: 2.13.0
@@ -1877,8 +1877,8 @@ packages:
   modern-font@0.4.1:
     resolution: {integrity: sha512-yaq7zIRxNHHJRzEUnrRKFZJGsBSi1dYlXkLZ1n2nk1B/aQKm8JrjMtwGM7aUAicc/CQOmHh890KNqN7FtS7Pog==}
 
-  modern-idoc-svg@0.0.3:
-    resolution: {integrity: sha512-wvkYIiy4evzxLFmZTQEp+Eokqy4s0IrxXvlFwzKxWyRLheS4vc75aflX64CpKZJoqEmBY+DM8M1tvsV4gUKFmA==}
+  modern-idoc-svg@0.0.4:
+    resolution: {integrity: sha512-JXv11kSYZEPeKDLE5n2sIpyvI+bp5CvkHHQnf/P6DoUZ6Jz8Bdhy6ySDiVg87AOjkgXEVB0CIfe59qYT3pgoOw==}
 
   modern-idoc@0.8.4:
     resolution: {integrity: sha512-DhH19hfGxtVGR1swxMRgHyk321luVcxiAa2FJP/kG0s+hWjrVuRnNwUr69nYc69dsmrFG+VggD1xiQJCQ2dLOQ==}
@@ -4686,7 +4686,7 @@ snapshots:
     dependencies:
       fflate: 0.8.2
 
-  modern-idoc-svg@0.0.3:
+  modern-idoc-svg@0.0.4:
     dependencies:
       modern-idoc: 0.8.4
       modern-text: 1.6.1

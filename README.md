@@ -53,7 +53,7 @@ fetch('./example.pptx')
 
 ## PPTX to SVG
 
-Install IDoc to SVG renderer [modern-idoc-svg](https://github.com/qq15725/modern-idoc-svg)
+Needs [modern-idoc-svg](https://github.com/qq15725/modern-idoc-svg)
 
 ```
 npm i modern-idoc-svg
