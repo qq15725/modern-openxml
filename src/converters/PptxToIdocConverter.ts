@@ -13,7 +13,7 @@ import type {
   SlideMaster,
 } from '../ooxml'
 import { unzipSync } from 'fflate'
-import { isGradient } from 'modern-idoc'
+import { idGenerator, isGradient } from 'modern-idoc'
 import {
   clearUndef,
   namespaces,
@@ -157,6 +157,7 @@ export class PptxToIdocConverter {
     )
 
     const pptx: NormalizedPptx = {
+      id: idGenerator(),
       style: {
         width: presentation.width,
         height: presentation.height,
