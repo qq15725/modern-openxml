@@ -1,6 +1,7 @@
 import type { NormalizedElement, NormalizedStyle } from 'modern-idoc'
 import type { OoxmlNode, OOXMLQueryType } from '../core'
 import type { NonVisualDrawingProperties } from './nonVisualDrawingProperties'
+import { idGenerator } from 'modern-idoc'
 import { parseBlipFill, stringifyFill } from '../drawing'
 import { withIndents } from '../utils'
 import { parseNonVisualDrawingProperties, stringifyNonVisualDrawingProperties } from './nonVisualDrawingProperties'
@@ -8,7 +9,7 @@ import { parseNonVisualProperties, stringifyNonVisualProperties } from './nonVis
 import { parseShapeProperties, stringifyShapeProperties } from './shapeProperties'
 
 export type PictureMeta = NonVisualDrawingProperties['meta'] & {
-  type: 'picture'
+  inPptIs: 'Picture'
   placeholderType?: string
   placeholderIndex?: string
 }
@@ -38,6 +39,7 @@ export function parsePicture(node?: OoxmlNode, ctx?: any): Picture | undefined {
   }) ?? {}
 
   return {
+    id: idGenerator(),
     ...nvPr,
     ...cNvPr,
     ...spPr,
@@ -51,7 +53,7 @@ export function parsePicture(node?: OoxmlNode, ctx?: any): Picture | undefined {
     },
     meta: {
       ...cNvPr?.meta,
-      type: 'picture',
+      inPptIs: 'Picture',
       placeholderType: placeholder?.type,
       placeholderIndex: placeholder?.index,
     },

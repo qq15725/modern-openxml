@@ -20,12 +20,12 @@ export interface Theme {
   effectStyleList?: NormalizedEffect[]
   backgroundFillStyleList?: NormalizedFill[]
   meta: {
-    id: string
+    pptPath: string
   }
 }
 
 // a:theme
-export function parseTheme(theme: OoxmlNode, id: string): Theme {
+export function parseTheme(theme: OoxmlNode, pptPath: string): Theme {
   const fmtScheme = theme.find('a:themeElements/a:fmtScheme')
 
   return {
@@ -38,7 +38,7 @@ export function parseTheme(theme: OoxmlNode, id: string): Theme {
     effectStyleList: fmtScheme?.get('a:effectStyleLst/*').map(node => parseEffectList(node)!),
     backgroundFillStyleList: fmtScheme?.get('a:bgFillStyleLst/*').map(node => parseFill(node)!),
     meta: {
-      id,
+      pptPath,
     },
   }
 }

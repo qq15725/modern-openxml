@@ -2,6 +2,7 @@ import type { NormalizedElement } from 'modern-idoc'
 import type { OoxmlNode } from '../core'
 import type { ColorMap } from './colorMap'
 import type { SlideElement } from './slide'
+import { idGenerator } from 'modern-idoc'
 import { parseBackground } from './background'
 import { parseColorMap } from './colorMap'
 import { parseElement } from './slide'
@@ -10,16 +11,18 @@ import { parseTiming } from './timing'
 export interface SlideMaster extends NormalizedElement {
   children: SlideElement[]
   meta: {
-    id: string
-    themeId?: string
+    inPptIs: 'SlideMaster'
+    pptPath: string
+    pptThemePath?: string
     colorMap?: ColorMap
   }
 }
 
-export function parseSlideMaster(slide: OoxmlNode, id: string, ctx: any): SlideMaster {
-  const meta = {
-    id,
-    themeId: ctx.theme.meta.id,
+export function parseSlideMaster(slide: OoxmlNode, pptPath: string, ctx: any): SlideMaster {
+  const meta: any = {
+    inPptIs: 'SlideMaster',
+    pptPath,
+    pptThemePath: ctx.theme.meta.pptPath,
     ...parseTiming(slide.find('p:timing')),
     colorMap: parseColorMap(slide.find('p:clrMap')),
   }
@@ -33,6 +36,7 @@ export function parseSlideMaster(slide: OoxmlNode, id: string, ctx: any): SlideM
   }
 
   return {
+    id: idGenerator(),
     style: {
       width: ctx.presentation.width,
       height: ctx.presentation.height,

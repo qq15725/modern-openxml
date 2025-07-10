@@ -1,6 +1,7 @@
 import type { NormalizedElement, NormalizedStyle } from 'modern-idoc'
 import type { OoxmlNode, OOXMLQueryType } from '../core'
 import type { NonVisualDrawingProperties } from './nonVisualDrawingProperties'
+import { idGenerator } from 'modern-idoc'
 import {
   withAttr,
   withAttrs,
@@ -12,7 +13,7 @@ import { parseShapeProperties, stringifyShapeProperties } from './shapePropertie
 import { parseTextBody, stringifyTextBody } from './textBody'
 
 export type ShapeMeta = NonVisualDrawingProperties['meta'] & {
-  type: 'shape'
+  inPptIs: 'Shape'
   placeholderType?: string
   placeholderIndex?: string
 }
@@ -46,6 +47,7 @@ export function parseShape(node?: OoxmlNode, ctx?: any): Shape | undefined {
   })
 
   return {
+    id: idGenerator(),
     ...nvPr,
     ...cNvPr,
     ...spPr,
@@ -59,7 +61,7 @@ export function parseShape(node?: OoxmlNode, ctx?: any): Shape | undefined {
       : undefined,
     meta: {
       ...cNvPr?.meta,
-      type: 'shape',
+      inPptIs: 'Shape',
       placeholderType: placeholder?.type,
       placeholderIndex: placeholder?.index,
     },

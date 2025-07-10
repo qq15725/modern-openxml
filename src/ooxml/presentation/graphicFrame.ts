@@ -3,13 +3,14 @@ import type { OoxmlNode } from '../core'
 import type { GroupShape } from './groupShape'
 import type { NonVisualDrawingProperties } from './nonVisualDrawingProperties'
 import type { SlideElement } from './slide'
+import { idGenerator } from 'modern-idoc'
 import { parseNonVisualDrawingProperties } from './nonVisualDrawingProperties'
 import { parseNonVisualProperties } from './nonVisualProperties'
 import { parseElement } from './slide'
 import { parseTransform2d } from './transform2d'
 
 export type GraphicFrameMeta = NonVisualDrawingProperties['meta'] & {
-  type: 'graphicFrame'
+  inPptIs: 'GraphicFrame'
   placeholderType?: string
   placeholderIndex?: string
 }
@@ -48,6 +49,7 @@ export function parseGraphicFrame(node?: OoxmlNode, ctx?: any): GraphicFrame | u
   }
 
   return {
+    id: idGenerator(),
     ...nvPr,
     ...cNvPr,
     style: {
@@ -60,7 +62,7 @@ export function parseGraphicFrame(node?: OoxmlNode, ctx?: any): GraphicFrame | u
       .filter(Boolean) as GroupShape['children'] ?? [],
     meta: {
       ...cNvPr?.meta,
-      type: 'graphicFrame',
+      inPptIs: 'GraphicFrame',
       placeholderType: placeholder?.type,
       placeholderIndex: placeholder?.index,
     },

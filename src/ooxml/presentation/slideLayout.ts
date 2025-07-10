@@ -2,6 +2,7 @@ import type { NormalizedElement } from 'modern-idoc'
 import type { OoxmlNode } from '../core'
 import type { ColorMap } from './colorMap'
 import type { SlideElement } from './slide'
+import { idGenerator } from 'modern-idoc'
 import { parseBackground } from './background'
 import { parseColorMap } from './colorMap'
 import { parseElement } from './slide'
@@ -10,15 +11,17 @@ import { parseTiming } from './timing'
 export interface SlideLayout extends NormalizedElement {
   children: SlideElement[]
   meta: {
-    id: string
-    masterId: string
-    themeId: string
+    inPptIs: 'SlideLayout'
+    pptPath: string
+    pptMasterPath: string
+    pptThemePath: string
     colorMap?: ColorMap
   }
 }
 
-export function parseSlideLayout(slide: OoxmlNode, id: string, ctx: any): SlideLayout {
+export function parseSlideLayout(slide: OoxmlNode, path: string, ctx: any): SlideLayout {
   return {
+    id: idGenerator(),
     style: {
       width: ctx.presentation.width,
       height: ctx.presentation.height,
@@ -29,9 +32,10 @@ export function parseSlideLayout(slide: OoxmlNode, id: string, ctx: any): SlideL
       .map(item => parseElement(item, ctx))
       .filter(Boolean) as SlideElement[],
     meta: {
-      id,
-      masterId: ctx.master.meta.id,
-      themeId: ctx.theme.meta.id,
+      inPptIs: 'SlideLayout',
+      pptPath: path,
+      pptMasterPath: ctx.master.meta.pptPath,
+      pptThemePath: ctx.theme.meta.pptPath,
       colorMap: parseColorMap(slide.find('p:clrMap')),
       ...parseTiming(slide.find('p:timing')),
     },

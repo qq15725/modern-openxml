@@ -1,12 +1,13 @@
 import type { NormalizedElement, NormalizedStyle } from 'modern-idoc'
 import type { OoxmlNode, OOXMLQueryType } from '../core'
 import type { NonVisualDrawingProperties } from './nonVisualDrawingProperties'
+import { idGenerator } from 'modern-idoc'
 import { parseNonVisualDrawingProperties } from './nonVisualDrawingProperties'
 import { parseNonVisualProperties } from './nonVisualProperties'
 import { parseShapeProperties } from './shapeProperties'
 
 export type ConnectionShapeMeta = NonVisualDrawingProperties['meta'] & {
-  type: 'connectionShape'
+  inPptIs: 'ConnectionShape'
   placeholderType?: string
   placeholderIndex?: string
 }
@@ -33,6 +34,7 @@ export function parseConnectionShape(node?: OoxmlNode, ctx?: any): ConnectionSha
     query: (xpath: string, type?: OOXMLQueryType) => query(`p:spPr/${xpath}`, type),
   }) ?? {}
   return {
+    id: idGenerator(),
     ...nvPr,
     ...cNvPr,
     ...spPr,
@@ -42,7 +44,7 @@ export function parseConnectionShape(node?: OoxmlNode, ctx?: any): ConnectionSha
     },
     meta: {
       ...cNvPr?.meta,
-      type: 'connectionShape',
+      inPptIs: 'ConnectionShape',
       placeholderType: placeholder?.type,
       placeholderIndex: placeholder?.index,
     },

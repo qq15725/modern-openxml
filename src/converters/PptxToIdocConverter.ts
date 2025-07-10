@@ -265,15 +265,15 @@ export class PptxToIdocConverter {
       const layoutElements = layout?.children.filter(v => !v.meta.placeholderType && !v.meta.placeholderIndex) ?? []
       slide.children = masterElements.concat(layoutElements).concat(slide.children)
 
-      if (pptx.meta.slideLayouts.findIndex(slide => slide.meta.id === layout.meta.id) === -1) {
+      if (pptx.meta.slideLayouts.findIndex(slide => slide.meta.pptPath === layout.meta.pptPath) === -1) {
         pptx.meta.slideLayouts.push(layout)
       }
 
-      if (pptx.meta.slideMasters.findIndex(slide => slide.meta.id === master.meta.id) === -1) {
+      if (pptx.meta.slideMasters.findIndex(slide => slide.meta.pptPath === master.meta.pptPath) === -1) {
         pptx.meta.slideMasters.push(master)
       }
 
-      if (theme && pptx.meta.themes.findIndex(_theme => _theme.meta.id === theme.meta.id) === -1) {
+      if (theme && pptx.meta.themes.findIndex(_theme => _theme.meta.pptPath === theme.meta.pptPath) === -1) {
         pptx.meta.themes.push(theme)
       }
 

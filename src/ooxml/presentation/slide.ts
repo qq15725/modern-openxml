@@ -7,6 +7,7 @@ import type { Picture } from './picture'
 import type { Shape } from './shape'
 import type { Timing } from './timing'
 import type { Transition } from './transition'
+import { idGenerator } from 'modern-idoc'
 import { withIndents } from '../utils'
 import { parseBackground, stringifyBackground } from './background'
 import { parseConnectionShape } from './connectionShape'
@@ -25,10 +26,11 @@ export type SlideElement
     | GraphicFrame
 
 export interface SlideMeta {
-  id: string
-  layoutId: string
-  masterId: string
-  themeId: string
+  inPptIs: 'Slide'
+  pptPath: string
+  pptLayoutPath: string
+  pptMasterPath: string
+  pptThemePath: string
 }
 
 export interface Slide extends Transition, Timing, NormalizedElement {
@@ -54,8 +56,9 @@ export function parseElement(node: OoxmlNode, ctx: any): SlideElement | undefine
   return undefined
 }
 
-export function parseSlide(slide: OoxmlNode, id: string, ctx: any): Slide {
+export function parseSlide(slide: OoxmlNode, path: string, ctx: any): Slide {
   return {
+    id: idGenerator(),
     ...parseTiming(slide.find('p:timing')),
     ...parseTransition(slide.find('mc:AlternateContent')),
     style: {
@@ -68,24 +71,25 @@ export function parseSlide(slide: OoxmlNode, id: string, ctx: any): Slide {
       .map(node => parseElement(node, ctx))
       .filter(Boolean) as SlideElement[],
     meta: {
-      id,
-      layoutId: ctx.layout.meta.id,
-      masterId: ctx.master.meta.id,
-      themeId: ctx.theme.meta.id,
+      inPptIs: 'Slide',
+      pptPath: path,
+      pptLayoutPath: ctx.layout.meta.pptPath,
+      pptMasterPath: ctx.master.meta.pptPath,
+      pptThemePath: ctx.theme.meta.pptPath,
     },
   }
 }
 
 function stringifyElement(node: SlideElement): string | undefined {
-  switch (node.meta.type) {
-    case 'shape':
+  switch (node.meta.inPptIs) {
+    case 'Shape':
       return stringifyShape(node as Shape)
-    case 'picture':
+    case 'Picture':
       return stringifyPicture(node as Picture)
-    case 'groupShape':
+    case 'GroupShape':
       return stringifyGroupShape(node as GroupShape, stringifyElement)
-    case 'connectionShape':
-    case 'graphicFrame':
+    case 'ConnectionShape':
+    case 'GraphicFrame':
       break
   }
   return undefined

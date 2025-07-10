@@ -2,6 +2,7 @@ import type { NormalizedElement, NormalizedStyle } from 'modern-idoc'
 import type { OoxmlNode, OOXMLQueryType } from '../core'
 import type { NonVisualDrawingProperties } from './nonVisualDrawingProperties'
 import type { SlideElement } from './slide'
+import { idGenerator } from 'modern-idoc'
 import { withIndents } from '../utils'
 import {
   parseNonVisualDrawingProperties,
@@ -12,7 +13,7 @@ import { parseShapeProperties } from './shapeProperties'
 import { stringifyTransform2d } from './transform2d'
 
 export type GroupShapeMeta = NonVisualDrawingProperties['meta'] & {
-  type: 'groupShape'
+  inPptIs: 'GroupShape'
   placeholderType?: string
   placeholderIndex?: string
 }
@@ -38,6 +39,7 @@ export function parseGroupShape(node: OoxmlNode, ctx: any, parseElement: any): G
   }) ?? {}
 
   const groupShape: GroupShape = {
+    id: idGenerator(),
     ...nvPr,
     ...cNvPr,
     ...grpSpPr,
@@ -48,7 +50,7 @@ export function parseGroupShape(node: OoxmlNode, ctx: any, parseElement: any): G
     children: [],
     meta: {
       ...cNvPr?.meta,
-      type: 'groupShape',
+      inPptIs: 'GroupShape',
       placeholderType: placeholder?.type,
       placeholderIndex: placeholder?.index,
     },
