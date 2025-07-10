@@ -1,3 +1,12 @@
+# [1.5.0](https://github.com/qq15725/modern-openxml/compare/v1.4.0...v1.5.0) (2025-07-10)
+
+
+### Features
+
+* update meta inPptIs ([2a5fb91](https://github.com/qq15725/modern-openxml/commit/2a5fb9165cffcf28e3f9b5e52fa52a93258fd3e4))
+
+
+
 # [1.4.0](https://github.com/qq15725/modern-openxml/compare/v1.3.2...v1.4.0) (2025-07-08)
 
 
