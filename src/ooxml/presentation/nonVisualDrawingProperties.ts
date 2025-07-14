@@ -11,7 +11,7 @@ export interface NonVisualDrawingPropertiesMeta {
 export interface NonVisualDrawingProperties {
   name?: string
   meta: NonVisualDrawingPropertiesMeta
-  style: Partial<NormalizedStyle>
+  style: NormalizedStyle
 }
 
 export function parseNonVisualDrawingProperties(cNvPr?: OoxmlNode): NonVisualDrawingProperties | undefined {

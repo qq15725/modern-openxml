@@ -19,7 +19,7 @@ export type ShapeMeta = NonVisualDrawingProperties['meta'] & {
 }
 
 export interface Shape extends NormalizedElement {
-  style: Partial<NormalizedStyle>
+  style: NormalizedStyle
   meta: ShapeMeta
 }
 

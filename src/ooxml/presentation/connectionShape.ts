@@ -13,7 +13,7 @@ export type ConnectionShapeMeta = NonVisualDrawingProperties['meta'] & {
 }
 
 export interface ConnectionShape extends NormalizedElement {
-  style: Partial<NormalizedStyle>
+  style: NormalizedStyle
   meta: ConnectionShapeMeta
 }
 

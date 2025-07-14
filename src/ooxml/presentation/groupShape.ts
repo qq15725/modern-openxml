@@ -19,7 +19,7 @@ export type GroupShapeMeta = NonVisualDrawingProperties['meta'] & {
 }
 
 export interface GroupShape extends NormalizedElement {
-  style: Partial<NormalizedStyle>
+  style: NormalizedStyle
   children: SlideElement[]
   meta: GroupShapeMeta
 }

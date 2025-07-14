@@ -1,6 +1,6 @@
 import type {
-  FragmentObject,
   NormalizedColorFill,
+  NormalizedFragment,
   NormalizedStyle,
   NormalizedText,
   TextAlign,
@@ -16,7 +16,7 @@ import { fillXPath, parseFill, parseOutline, stringifyFill } from '../drawing'
 import { BiMap, withAttr, withAttrs, withIndents } from '../utils'
 
 export interface TextBody {
-  style: Partial<NormalizedStyle>
+  style: NormalizedStyle
   text?: NormalizedText
 }
 
@@ -172,7 +172,7 @@ export function parseTextBody(txBody?: OoxmlNode, ctx?: Record<string, any>): Te
             return undefined
         }
       })
-      .filter(Boolean) as FragmentObject[]
+      .filter(Boolean) as NormalizedFragment[]
 
     return {
       marginLeft: queryPPr('@marL', 'emu'),
@@ -220,6 +220,9 @@ export function parseTextBody(txBody?: OoxmlNode, ctx?: Record<string, any>): Te
   }
 }
 
+const isUserFont = (name?: string): name is string => !!name && !name.startsWith('+')
+const fixTypeface = (name: string): string => name.replace(/"/g, '')
+
 export function stringifyTextBody(txBody?: TextBody): string | undefined {
   if (!txBody)
     return undefined
@@ -228,23 +231,28 @@ export function stringifyTextBody(txBody?: TextBody): string | undefined {
 
   const hasP = !!text?.content.length
   const pList = text?.content.map((p) => {
-    const rList = p.fragments.map((f) => {
-      const { fontFamily } = f
-      const isUserFont = (name?: string): name is string => !!name && !name.startsWith('+')
-      const fixTypeface = (name: string): string => name.replace(/"/g, '')
+    const { fragments, fill: pFill, outline: pOutline, ...pStyle } = p
+    // @ts-expect-error ignore
+    const getPStyle = (key: string): any => pStyle[key] ?? style[key]
+
+    const rList = fragments.map((f) => {
+      const { content, fill: fFill, outline: fOutline, ...fStyle } = f
+      // @ts-expect-error ignore
+      const getFStyle = (key: string): any => fStyle[key] ?? getPStyle(key)
+
       const rPr = `<a:rPr${withAttrs([
-        (f.fontWeight === 700 || f.fontWeight === 'bold') && withAttr('b', '1'),
-        f.fontStyle === 'italic' && withAttr('i', '1'),
-        f.textDecoration === 'underline' && withAttr('u', 'sng'),
-        withAttr('sz', OoxmlValue.encode(f.fontSize, 'fontSize')),
-        withAttr('spc', OoxmlValue.encode(f.letterSpacing, 'fontSize')),
+        (getFStyle('fontWeight') === 700 || getFStyle('fontWeight') === 'bold') && withAttr('b', '1'),
+        getFStyle('fontStyle') === 'italic' && withAttr('i', '1'),
+        getFStyle('textDecoration') === 'underline' && withAttr('u', 'sng'),
+        withAttr('sz', OoxmlValue.encode(getFStyle('fontSize'), 'fontSize')),
+        withAttr('spc', OoxmlValue.encode(getFStyle('letterSpacing'), 'fontSize')),
       ])}>
   ${withIndents([
     stringifyFill(
-      f.fill
-      ?? (f.color ? { color: f.color } : undefined),
+      fFill
+      ?? (getFStyle('color') ? { color: getFStyle('color') } : undefined),
     ),
-    isUserFont(fontFamily) && `<a:latin typeface="${fixTypeface(fontFamily)}" />`,
+    isUserFont(getFStyle('fontFamily')) && `<a:latin typeface="${fixTypeface(getFStyle('fontFamily'))}" />`,
     // isUserFont(fontEastasian) && `<a:ea typeface="${fixTypeface(fontEastasian)}" />`,
     // isUserFont(fontSymbol) && `<a:sym typeface="${fixTypeface(fontSymbol)}" />`,
     // isUserFont(fontComplexScript) && `<a:cs typeface="${fixTypeface(fontComplexScript)}" />`,
@@ -266,17 +274,17 @@ export function stringifyTextBody(txBody?: TextBody): string | undefined {
 
     const children: string[] = []
 
-    if ((p as any).lineHeight) {
+    if (getPStyle('lineHeight')) {
       children.push(`<a:lnSpc>
-  <a:spcPct val="${OoxmlValue.encode((p as any).lineHeight, 'ST_TextSpacingPercentOrPercentString')}" />
+  <a:spcPct val="${OoxmlValue.encode(getPStyle('lineHeight'), 'ST_TextSpacingPercentOrPercentString')}" />
 </a:lnSpc>`)
     }
 
     const pPrAttrs = [
-      !!p.marginLeft && withAttr('marL', OoxmlValue.encode(p.marginLeft, 'emu')),
-      !!p.marginRight && withAttr('marR', OoxmlValue.encode(p.marginRight, 'emu')),
-      !!p.textIndent && withAttr('indent', OoxmlValue.encode(p.textIndent, 'emu')),
-      !!p.textAlign && withAttr('algn', textAlignMap.getKey(p.textAlign)),
+      !!pStyle.marginLeft && withAttr('marL', OoxmlValue.encode(pStyle.marginLeft, 'emu')),
+      !!pStyle.marginRight && withAttr('marR', OoxmlValue.encode(pStyle.marginRight, 'emu')),
+      !!getPStyle('textIndent') && withAttr('indent', OoxmlValue.encode(getPStyle('textIndent'), 'emu')),
+      !!getPStyle('textAlign') && withAttr('algn', textAlignMap.getKey(getPStyle('textAlign'))),
       // withAttr('fontAlgn', p.fontAlign),
       // withAttr('rtl', p.rightToLeft),
     ]

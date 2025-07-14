@@ -16,7 +16,7 @@ export type GraphicFrameMeta = NonVisualDrawingProperties['meta'] & {
 }
 
 export interface GraphicFrame extends NormalizedElement {
-  style: Partial<NormalizedStyle>
+  style: NormalizedStyle
   meta: GraphicFrameMeta
   children: SlideElement[]
 }

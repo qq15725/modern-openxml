@@ -15,7 +15,7 @@ export type PictureMeta = NonVisualDrawingProperties['meta'] & {
 }
 
 export interface Picture extends NormalizedElement {
-  style: Partial<NormalizedStyle>
+  style: NormalizedStyle
   meta: PictureMeta
 }
 
