@@ -236,7 +236,7 @@ export function stringifyTextBody(txBody?: TextBody): string | undefined {
   const outline = text?.outline
   const hasP = text?.enabled !== false && !!text?.content?.length
 
-  const pList = text?.content.map((p) => {
+  const pList = text?.content?.map((p) => {
     const { fragments, fill: pFill, outline: pOutline, ...pStyle } = p
     // @ts-expect-error ignore
     const getPStyle = (key: string): any => pStyle[key] ?? style[key]
