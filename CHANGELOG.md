@@ -1,3 +1,17 @@
+## [1.5.1](https://github.com/qq15725/modern-openxml/compare/v1.5.0...v1.5.1) (2025-07-14)
+
+
+### Bug Fixes
+
+* stringifyTextBody ([69eaccf](https://github.com/qq15725/modern-openxml/commit/69eaccf870f2901b89ed65485fc72fd536dd6162))
+
+
+### Features
+
+* up deps ([4d57781](https://github.com/qq15725/modern-openxml/commit/4d57781636a22632164cba99f6810bb407362616))
+
+
+
 # [1.5.0](https://github.com/qq15725/modern-openxml/compare/v1.4.0...v1.5.0) (2025-07-10)
 
 
