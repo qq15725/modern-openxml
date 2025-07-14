@@ -77,7 +77,7 @@ export function stringifyShape(sp: Shape): string {
   <p:nvSpPr>
     ${withIndents(cNvPr, 2)}
     <p:cNvSpPr${withAttrs([
-      !!sp.text?.content.length && withAttr('txBox', '1'),
+      !!sp.text?.content?.length && withAttr('txBox', '1'),
     ].filter(Boolean) as string[])}/>
     <p:nvPr/>
   </p:nvSpPr>
