@@ -23,6 +23,32 @@ import {
   withXmlHeader,
 } from '../ooxml'
 
+function parseSvg(dataURI: string): string {
+  let xml
+  if (dataURI.includes(';base64,')) {
+    xml = atob(dataURI.split(',')[1])
+  }
+  else {
+    // ;charset=utf-8,
+    xml = decodeURIComponent(dataURI.split(',')[1])
+  }
+  const svg = new DOMParser().parseFromString(xml, 'image/svg+xml').documentElement
+  const width = svg.getAttribute('width')
+  const height = svg.getAttribute('height')
+  const isValidWidth = width && /^[\d.]+$/.test(width)
+  const isValidHeight = height && /^[\d.]+$/.test(height)
+  if (!isValidWidth || !isValidHeight) {
+    const viewBox = svg.getAttribute('viewBox')?.split(' ').map(v => Number(v))
+    if (!isValidWidth) {
+      svg.setAttribute('width', String(viewBox ? viewBox[2] - viewBox[0] : 512))
+    }
+    if (!isValidHeight) {
+      svg.setAttribute('height', String(viewBox ? viewBox[3] - viewBox[1] : 512))
+    }
+  }
+  return svg.outerHTML
+}
+
 export class IdocToPptxConverter {
   async encode(pptx: Pptx): Promise<Uint8Array> {
     const _pptx = { ...pptx } as NormalizedPptx
@@ -37,7 +63,11 @@ export class IdocToPptxConverter {
 
       let uin8Array: Uint8Array
       if (typeof src === 'string') {
-        if (src.startsWith('data:')) {
+        if (src.startsWith('data:image/svg+xml;')) {
+          fileExt = 'svg'
+          uin8Array = new TextEncoder().encode(parseSvg(src))
+        }
+        else if (src.startsWith('data:')) {
           if (src.includes(';base64,')) {
             const binaryString = atob(src.split(',')?.[1] ?? '')
             const length = binaryString.length
@@ -170,7 +200,7 @@ export class IdocToPptxConverter {
     ]))
 
     // docProps
-    add('docProps/core.xml', stringifyCoreProperties(_pptx.meta))
+    add('docProps/core.xml', stringifyCoreProperties(_pptx.meta ?? {}))
     add('docProps/app.xml', stringifyProperties(slides.length))
 
     // rels

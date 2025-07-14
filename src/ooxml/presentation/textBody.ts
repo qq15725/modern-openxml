@@ -12,7 +12,7 @@ import type {
 } from 'modern-idoc'
 import type { OoxmlNode, OOXMLQueryType } from '../core'
 import { OoxmlValue } from '../core'
-import { fillXPath, parseFill, parseOutline, stringifyFill } from '../drawing'
+import { fillXPath, parseFill, parseOutline, stringifyFill, stringifyOutline } from '../drawing'
 import { BiMap, withAttr, withAttrs, withIndents } from '../utils'
 
 export interface TextBody {
@@ -227,9 +227,15 @@ export function stringifyTextBody(txBody?: TextBody): string | undefined {
   if (!txBody)
     return undefined
 
-  const { text, style = {} } = txBody
+  const {
+    text,
+    style = {},
+  } = txBody
 
-  const hasP = !!text?.content.length
+  const fill = text?.fill
+  const outline = text?.outline
+  const hasP = text?.enabled !== false && !!text?.content?.length
+
   const pList = text?.content.map((p) => {
     const { fragments, fill: pFill, outline: pOutline, ...pStyle } = p
     // @ts-expect-error ignore
@@ -249,9 +255,10 @@ export function stringifyTextBody(txBody?: TextBody): string | undefined {
       ])}>
   ${withIndents([
     stringifyFill(
-      fFill
+      fFill ?? pFill ?? fill
       ?? (getFStyle('color') ? { color: getFStyle('color') } : undefined),
     ),
+    stringifyOutline(fOutline ?? pOutline ?? outline),
     isUserFont(getFStyle('fontFamily')) && `<a:latin typeface="${fixTypeface(getFStyle('fontFamily'))}" />`,
     // isUserFont(fontEastasian) && `<a:ea typeface="${fixTypeface(fontEastasian)}" />`,
     // isUserFont(fontSymbol) && `<a:sym typeface="${fixTypeface(fontSymbol)}" />`,
