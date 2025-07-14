@@ -1,3 +1,12 @@
+## [1.5.4](https://github.com/qq15725/modern-openxml/compare/v1.5.3...v1.5.4) (2025-07-14)
+
+
+### Bug Fixes
+
+* textBody ([8c1f012](https://github.com/qq15725/modern-openxml/commit/8c1f012fa2c4750d89afead2b3da5b443cb08fee))
+
+
+
 ## [1.5.3](https://github.com/qq15725/modern-openxml/compare/v1.5.2...v1.5.3) (2025-07-14)
 
 
