@@ -1,3 +1,12 @@
+## [1.5.5](https://github.com/qq15725/modern-openxml/compare/v1.5.4...v1.5.5) (2025-07-30)
+
+
+### Features
+
+* outline lineCap lineJoin ([2ed35b7](https://github.com/qq15725/modern-openxml/commit/2ed35b7e7c3d02a0b3868d50d46b46d6dab5122d))
+
+
+
 ## [1.5.4](https://github.com/qq15725/modern-openxml/compare/v1.5.3...v1.5.4) (2025-07-14)
 
 
