@@ -1,7 +1,7 @@
-import type { LineEndSize, LineEndType, NormalizedOutline } from 'modern-idoc'
+import type { LineCap, LineEndSize, LineEndType, LineJoin, NormalizedOutline } from 'modern-idoc'
 import type { OoxmlNode } from '../core'
 import { OoxmlValue } from '../core'
-import { withAttr, withAttrs, withIndents } from '../utils'
+import { BiMap, withAttr, withAttrs, withIndents } from '../utils'
 import { fillXPath, parseFill, stringifySolidFill } from './fill'
 
 export type PrstDashType
@@ -13,6 +13,12 @@ export type PrstDashType
     | 'lgDash'
     | 'lgDashDot'
     | 'lgDashDotDot'
+
+const lineCapMap = new BiMap<any, LineCap>({
+  flat: 'butt', // default
+  rnd: 'round',
+  sq: 'square',
+})
 
 // a:ln
 //
@@ -34,6 +40,14 @@ export function parseOutline(node?: OoxmlNode, ctx?: any): NormalizedOutline | u
   const _headEnd = node.find('a:headEnd')
   const _tailEnd = node.find('a:tailEnd')
 
+  let lineJoin: LineJoin = 'miter'
+  if (node.find('a:round')) {
+    lineJoin = 'round'
+  }
+  else if (node.find('a:bevel')) {
+    lineJoin = 'bevel'
+  }
+
   function toWH(val?: 'sm' | 'med' | 'lg'): LineEndSize | undefined {
     return val === 'med' ? 'md' : val
   }
@@ -43,6 +57,8 @@ export function parseOutline(node?: OoxmlNode, ctx?: any): NormalizedOutline | u
       ? prstDash !== 'solid' ? 'dashed' : 'solid'
       : undefined,
     width: node.attr<number>('@w', 'ST_LineWidth'),
+    lineCap: lineCapMap.getValue(node.attr('@cap', 'string')) ?? 'butt',
+    lineJoin,
     color: parseFill(query(fillXPath), ctx)?.color,
     headEnd: _headEnd
       ? {
@@ -104,8 +120,10 @@ export function stringifyOutline(ln?: NormalizedOutline): string | undefined {
 
   return `<a:ln${withAttrs([
     ln.width !== undefined && withAttr('w', OoxmlValue.encode(ln.width, 'ST_LineWidth')),
+    ln.lineCap !== undefined && ln.lineCap !== 'butt' && withAttr('cap', lineCapMap.getKey(ln.lineCap)),
   ])}>
     ${withIndents([
+      ln.lineJoin !== undefined && ln.lineJoin !== 'miter' && `<a:${ln.lineJoin}/>`,
       ln.color !== undefined && stringifySolidFill(String(ln.color)),
       ln.color === undefined && '<a:noFill/>',
     ])}
