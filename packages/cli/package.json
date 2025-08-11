@@ -24,7 +24,7 @@
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "bin": {
-    "cli": "./bin/index.mjs"
+    "openxml": "./bin/index.mjs"
   },
   "files": [
     "bin",
