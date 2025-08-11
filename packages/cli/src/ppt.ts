@@ -18,7 +18,7 @@ export async function runPptCommand(filepath: string, options: any): Promise<voi
     upload = false,
   } = options
 
-  if (output === dirname(output)) {
+  if (!output.endsWith('.json')) {
     output = join(output, 'doc.json')
   }
 
