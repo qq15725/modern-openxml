@@ -1,0 +1,61 @@
+{
+  "name": "@modern-openxml/cli",
+  "type": "module",
+  "version": "1.5.5",
+  "description": "Cli for modern-openxml",
+  "author": "wxm",
+  "license": "MIT",
+  "homepage": "https://github.com/qq15725/modern-openxml",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/qq15725/modern-openxml.git"
+  },
+  "bugs": {
+    "url": "https://github.com/qq15725/modern-openxml/issues"
+  },
+  "keywords": [],
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "cli": "./bin/index.mjs"
+  },
+  "files": [
+    "bin",
+    "dist"
+  ],
+  "engines": {
+    "node": ">=14.18.1"
+  },
+  "scripts": {
+    "build": "unbuild",
+    "lint": "eslint src",
+    "stub": "unbuild --stub",
+    "start": "esno src/index.ts",
+    "cli": "node ./bin/index.mjs",
+    "test": "vitest",
+    "typecheck": "tsc --noEmit",
+    "prepare": "simple-git-hooks"
+  },
+  "dependencies": {
+    "cac": "^6.7.14",
+    "consola": "^3.4.0",
+    "jsdom": "^26.1.0",
+    "modern-openxml": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/jsdom": "^21.1.7"
+  },
+  "simple-git-hooks": {
+    "pre-commit": "pnpm lint-staged"
+  },
+  "lint-staged": {
+    "*": "eslint src --fix"
+  }
+}
