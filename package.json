@@ -1,87 +1,32 @@
 {
-  "name": "modern-openxml",
+  "name": "modern-openxml-monorepo",
   "type": "module",
+  "private": true,
   "version": "1.5.5",
   "packageManager": "pnpm@9.15.1",
-  "description": "OpenXML for JavaScript",
-  "author": "wxm",
-  "license": "MIT",
-  "homepage": "https://github.com/qq15725/modern-openxml",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/qq15725/modern-openxml.git"
-  },
-  "bugs": {
-    "url": "https://github.com/qq15725/modern-openxml/issues"
-  },
-  "keywords": [
-    "OpenXML",
-    "typescript",
-    "OPC",
-    "pptx",
-    "xlsx",
-    "docx"
-  ],
-  "sideEffects": false,
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.cjs"
-    },
-    "./presetShapeDefinitions": "./assets/presetShapeDefinitions.js",
-    "./presetTextWarpDefinitions": "./assets/presetTextWarpDefinitions.js"
-  },
-  "main": "./dist/index.mjs",
-  "module": "./dist/index.mjs",
-  "types": "./dist/index.d.ts",
-  "browser": "./dist/index.js",
-  "typesVersions": {
-    "*": {
-      "*": [
-        "./dist/*",
-        "./dist/index.d.ts"
-      ]
-    }
-  },
-  "files": [
-    "assets",
-    "dist"
-  ],
   "scripts": {
-    "build": "vite build && unbuild",
+    "build": "pnpm -r build",
+    "test": "pnpm -r test",
+    "lint": "pnpm -r lint",
+    "cli": "pnpm -F @modern-openxml/cli cli",
+    "stub": "pnpm -F @modern-openxml/cli stub",
     "dev": "vite docs",
-    "lint": "eslint src",
+    "publish": "pnpm -r publish --no-git-checks --access public",
     "version": "conventional-changelog -p angular -i CHANGELOG.md -s && git add CHANGELOG.md",
-    "release": "bumpp package.json --commit \"release: v%s\" --push --all --tag",
-    "start": "esno src/index.ts",
-    "test": "vitest",
-    "typecheck": "tsc --noEmit",
-    "prepare": "simple-git-hooks"
-  },
-  "dependencies": {
-    "fflate": "^0.8.2",
-    "modern-idoc": "^0.8.7",
-    "modern-path2d": "^1.4.8"
+    "release": "bumpp package.json packages/*/package.json --commit \"release: v%s\" --push --all --tag"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^5.0.0",
-    "@types/node": "^24.1.0",
-    "bumpp": "^10.2.1",
+    "@antfu/eslint-config": "^5.2.0",
+    "@types/node": "^24.2.1",
+    "bumpp": "^10.2.2",
     "conventional-changelog-cli": "^5.0.0",
-    "eslint": "^9.32.0",
-    "lint-staged": "^16.1.2",
+    "eslint": "^9.33.0",
+    "lint-staged": "^16.1.5",
     "modern-idoc-svg": "^0.0.6",
-    "simple-git-hooks": "^2.13.0",
-    "typescript": "^5.8.3",
+    "simple-git-hooks": "^2.13.1",
+    "typescript": "^5.9.2",
     "unbuild": "^3.6.0",
-    "vite": "^7.0.6",
+    "vite": "^7.1.1",
     "vitest": "^3.2.4"
-  },
-  "simple-git-hooks": {
-    "pre-commit": "pnpm lint-staged"
-  },
-  "lint-staged": {
-    "*": "eslint --fix"
   }
 }

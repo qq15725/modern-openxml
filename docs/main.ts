@@ -1,12 +1,12 @@
 import { idocToSvg } from 'modern-idoc-svg'
-import presetShapeDefinitions from '../assets/presetShapeDefinitions'
-import presetTextWarpDefinitions from '../assets/presetTextWarpDefinitions'
 import {
   idocToPptx,
   parsePresetShapeDefinitions,
   parsePresetTextWarpDefinitions,
   pptxToIdoc,
-} from '../src'
+} from 'modern-openxml'
+import presetShapeDefinitions from 'modern-openxml/presetShapeDefinitions'
+import presetTextWarpDefinitions from 'modern-openxml/presetTextWarpDefinitions'
 
 function xmlToDom<T = Element>(xml: string): T {
   const doc = new DOMParser().parseFromString(xml, 'application/xml') as XMLDocument
