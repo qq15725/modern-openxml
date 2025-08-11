@@ -1,6 +1,5 @@
 {
   "name": "modern-openxml-monorepo",
-  "type": "module",
   "private": true,
   "version": "1.6.0",
   "packageManager": "pnpm@9.15.1",
