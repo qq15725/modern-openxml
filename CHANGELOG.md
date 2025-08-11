@@ -1,3 +1,14 @@
+# [1.6.0](https://github.com/qq15725/modern-openxml/compare/v1.5.5...v1.6.0) (2025-08-11)
+
+
+### Features
+
+* cli ([ed3e761](https://github.com/qq15725/modern-openxml/commit/ed3e761e5bb77b59ce3d0e6a399100dd19457aea))
+* cli ([b3d3743](https://github.com/qq15725/modern-openxml/commit/b3d37438524368de01b31696f67d905dbbbbe681))
+* cli ppt command ([438b479](https://github.com/qq15725/modern-openxml/commit/438b4799ba7fecda6c7494821b6d05f9f2ed0a13))
+
+
+
 ## [1.5.5](https://github.com/qq15725/modern-openxml/compare/v1.5.4...v1.5.5) (2025-07-30)
 
 
