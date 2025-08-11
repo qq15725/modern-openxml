@@ -1,3 +1,12 @@
+## [1.6.1](https://github.com/qq15725/modern-openxml/compare/v1.6.0...v1.6.1) (2025-08-11)
+
+
+### Bug Fixes
+
+* cli ([0b72b9d](https://github.com/qq15725/modern-openxml/commit/0b72b9d6682a6c16ef0e2d59290746c3b15f24de))
+
+
+
 # [1.6.0](https://github.com/qq15725/modern-openxml/compare/v1.5.5...v1.6.0) (2025-08-11)
 
 
