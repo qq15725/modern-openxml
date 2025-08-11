@@ -2,7 +2,7 @@
   "name": "@modern-openxml/cli",
   "type": "module",
   "version": "1.6.1",
-  "description": "Cli for modern-openxml",
+  "description": "CLI for modern-openxml",
   "author": "wxm",
   "license": "MIT",
   "homepage": "https://github.com/qq15725/modern-openxml",

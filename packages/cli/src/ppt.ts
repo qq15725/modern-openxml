@@ -24,6 +24,10 @@ export async function runPptCommand(filepath: string, options: any): Promise<voi
 
   const outputDir = dirname(output)
 
+  if (!existsSync(outputDir)) {
+    mkdirSync(outputDir, { recursive: true })
+  }
+
   if (filepath.endsWith('.pptx')) {
     const idoc = await pptxToIdoc(
       readFileSync(filepath).buffer,
