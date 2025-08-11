@@ -111,9 +111,9 @@ export class OoxmlNode {
           value = this.evaluate(
             xpath,
             2, // XPathResult.STRING_TYPE
-          ).stringValue || undefined
+          ).stringValue
         }
-        return OoxmlValue.decode(value, type as OoxmlValueType)
+        return OoxmlValue.decode(value || undefined, type as OoxmlValueType)
       }
     }
   }

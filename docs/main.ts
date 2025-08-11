@@ -76,7 +76,7 @@ async function testPPTXToSVG(source: Uint8Array): Promise<void> {
 
 async function testPPTXReEncode(source: Uint8Array): Promise<void> {
   const doc = await pptxToIdoc(source, { presetShapeDefinitions })
-  const blob = new Blob([await idocToPptx(doc)], { type: 'application/vnd.openxmlformats-officedocument.presentationml.presentation' })
+  const blob = new Blob([(await idocToPptx(doc)) as any], { type: 'application/vnd.openxmlformats-officedocument.presentationml.presentation' })
   downloadBlob(blob, 'output.pptx')
 }
 
