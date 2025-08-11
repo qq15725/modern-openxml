@@ -1,3 +1,12 @@
+## [1.6.3](https://github.com/qq15725/modern-openxml/compare/v1.6.2...v1.6.3) (2025-08-11)
+
+
+### Bug Fixes
+
+* parse attr ([9846344](https://github.com/qq15725/modern-openxml/commit/9846344599aa55e8a1ca291fc5f0889055511dd7))
+
+
+
 ## [1.6.2](https://github.com/qq15725/modern-openxml/compare/v1.6.1...v1.6.2) (2025-08-11)
 
 
