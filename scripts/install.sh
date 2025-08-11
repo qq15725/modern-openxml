@@ -46,7 +46,7 @@ fi
 
 # 安装依赖
 cd "$VERSION_DIR"
-pnpm i
+npm i
 
 # 设置执行权限
 chmod +x "$VERSION_DIR/bin/index.mjs"
