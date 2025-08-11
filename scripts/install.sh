@@ -45,6 +45,7 @@ if [ $? -ne 0 ]; then
 fi
 
 # 安装依赖
+echo "安装依赖"
 cd "$VERSION_DIR"
 npm i
 
