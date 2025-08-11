@@ -16,7 +16,6 @@ import { unzipSync } from 'fflate'
 import { idGenerator, isGradient } from 'modern-idoc'
 import {
   clearUndef,
-  namespaces,
   OoxmlNode,
   parseCoreProperties,
   parsePresentation,
@@ -117,41 +116,47 @@ export class PptxToIdocConverter {
     return uint8Array
   }
 
+  protected _createNode(xml?: string): OoxmlNode {
+    return OoxmlNode.fromXML(xml)
+  }
+
+  protected _readNode(path?: string): OoxmlNode {
+    return this._createNode(this._readFile(path, 'text'))
+  }
+
+  protected _getRelsPath(path = ''): string {
+    const paths = path.split('/')
+    const name = paths.pop()
+    return pathJoin(...paths, '_rels', `${name}.rels`)
+  }
+
   async decode(source: PptxSource, options: PptxDecodeOptions = {}): Promise<NormalizedPptx> {
     this.unzipped = unzipSync(await this._resolveSource(source))
 
-    const createNode = (xml?: string): OoxmlNode => OoxmlNode.fromXML(xml, namespaces)
-    const readNode = (path?: string): OoxmlNode => createNode(this._readFile(path, 'text'))
-    const getRelsPath = (path = ''): string => {
-      const paths = path.split('/')
-      const name = paths.pop()
-      return pathJoin(...paths, '_rels', `${name}.rels`)
-    }
-
     const presetShapeDefinitions = options.presetShapeDefinitions
-      ? createNode(options.presetShapeDefinitions)
+      ? this._createNode(options.presetShapeDefinitions)
       : undefined
 
     // [Content_Types].xml
-    const contentTypes = parseTypes(readNode('[Content_Types].xml')!)
+    const contentTypes = parseTypes(this._readNode('[Content_Types].xml')!)
 
     // docProps/core
-    const coreProperties = parseCoreProperties(readNode('docProps/core.xml')!)
+    const coreProperties = parseCoreProperties(this._readNode('docProps/core.xml')!)
 
     // _rels/.rels
-    const relsPath = getRelsPath()
-    const relsNode = readNode(relsPath)!
+    const relsPath = this._getRelsPath()
+    const relsNode = this._readNode(relsPath)!
     const rels = parseRelationships(relsNode, relsPath, contentTypes)
 
     // ppt/presentation.xml
     const presentationPath = rels.find(v => v.type === 'presentation')?.path
-    const presentationNode = readNode(presentationPath)!
+    const presentationNode = this._readNode(presentationPath)!
     const presentation = parsePresentation(presentationNode)!
 
     // ppt/_rels/presentation.xml.rels
-    const presentationRelsPath = getRelsPath(presentationPath)
+    const presentationRelsPath = this._getRelsPath(presentationPath)
     const presentationRels = parseRelationships(
-      readNode(presentationRelsPath)!,
+      this._readNode(presentationRelsPath)!,
       presentationRelsPath,
       contentTypes,
     )
@@ -182,36 +187,36 @@ export class PptxToIdocConverter {
       const slidePath = presentationRels.find(v => v.id === slideId)!.path
 
       // ppt/slides/_rels/slideX.xml.rels
-      const slideRelsPath = getRelsPath(slidePath)
-      const slideRels = parseRelationships(readNode(slideRelsPath)!, slideRelsPath, contentTypes)
+      const slideRelsPath = this._getRelsPath(slidePath)
+      const slideRels = parseRelationships(this._readNode(slideRelsPath)!, slideRelsPath, contentTypes)
 
       // ppt/slideLayouts/_rels/slideX.xml.rels
       const layoutPath = slideRels.find(v => v.type === 'slideLayout')!.path
-      const layoutRelsPath = getRelsPath(layoutPath)
-      const layoutRels = parseRelationships(readNode(layoutRelsPath)!, layoutRelsPath, contentTypes)
+      const layoutRelsPath = this._getRelsPath(layoutPath)
+      const layoutRels = parseRelationships(this._readNode(layoutRelsPath)!, layoutRelsPath, contentTypes)
 
       // ppt/slideMasters/_rels/slideX.xml.rels
       const masterPath = layoutRels.find(v => v.type === 'slideMaster')!.path
-      const masterRelsPath = getRelsPath(masterPath)
-      const masterRels = parseRelationships(readNode(masterRelsPath)!, masterRelsPath, contentTypes)
+      const masterRelsPath = this._getRelsPath(masterPath)
+      const masterRels = parseRelationships(this._readNode(masterRelsPath)!, masterRelsPath, contentTypes)
 
       // ppt/theme/themeX.xml
       const themePath = masterRels.find(v => v.type === 'theme')?.path
 
-      const themeNode = readNode(themePath)
-      const layoutNode = readNode(layoutPath)!
-      const masterNode = readNode(masterPath)!
-      const slideNode = readNode(slidePath)!
+      const themeNode = this._readNode(themePath)
+      const layoutNode = this._readNode(layoutPath)!
+      const masterNode = this._readNode(masterPath)!
+      const slideNode = this._readNode(slidePath)!
 
       const drawingRels = await Promise.all(
         slideRels
           .filter(v => v.type === 'diagramDrawing')
           .map(async (rel) => {
-            const relsPath = getRelsPath(rel.path)
-            const rels = parseRelationships(readNode(relsPath), relsPath, contentTypes)
+            const relsPath = this._getRelsPath(rel.path)
+            const rels = parseRelationships(this._readNode(relsPath), relsPath, contentTypes)
             return {
               ...rel,
-              node: readNode(rel.path)!,
+              node: this._readNode(rel.path)!,
               rels,
             }
           }),
@@ -220,11 +225,11 @@ export class PptxToIdocConverter {
         slideRels
           .filter(v => v.type === 'diagramData')
           .map(async (rel) => {
-            const relsPath = getRelsPath(rel.path)
-            const rels = parseRelationships(readNode(relsPath), relsPath, contentTypes)
+            const relsPath = this._getRelsPath(rel.path)
+            const rels = parseRelationships(this._readNode(relsPath), relsPath, contentTypes)
             return {
               ...rel,
-              node: readNode(rel.path)!,
+              node: this._readNode(rel.path)!,
               rels,
             }
           }),
@@ -331,8 +336,8 @@ export class PptxToIdocConverter {
     '.mkv': 'video/x-matroska',
   }
 
-  getMimeType(filePath: string): string | undefined {
-    return PptxToIdocConverter.mimeTypes[filePath.substring(filePath.lastIndexOf('.')).toLowerCase()] || undefined
+  static getMimeType(filePath: string): string | undefined {
+    return this.mimeTypes[filePath.substring(filePath.lastIndexOf('.')).toLowerCase()] || undefined
   }
 
   async upload(options: PptxUploadOptions = {}, pptx = this.pptx): Promise<NormalizedPptx> {
@@ -343,7 +348,7 @@ export class PptxToIdocConverter {
     const {
       progress,
       upload = (input, fill) => {
-        return `data:${this.getMimeType(fill.image) ?? 'image/png'};base64,${input}`
+        return `data:${PptxToIdocConverter.getMimeType(fill.image) ?? 'image/png'};base64,${input}`
       },
     } = options
 

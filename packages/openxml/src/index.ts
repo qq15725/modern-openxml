@@ -1,4 +1,5 @@
 export * from './converters'
+export * from './global'
 export * from './methods'
 export * from './ooxml'
 export * from './renderers'

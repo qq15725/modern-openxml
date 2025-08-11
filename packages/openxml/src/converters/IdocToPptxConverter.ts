@@ -6,6 +6,7 @@ import type {
   SlideElement,
 } from '../ooxml'
 import { zipSync } from 'fflate'
+import { parseDomFromString } from '../global'
 import {
   compressXml,
   stringifyCoreProperties,
@@ -32,7 +33,7 @@ function parseSvg(dataURI: string): string {
     // ;charset=utf-8,
     xml = decodeURIComponent(dataURI.split(',')[1])
   }
-  const svg = new DOMParser().parseFromString(xml, 'image/svg+xml').documentElement
+  const svg = parseDomFromString(xml, 'image/svg+xml').documentElement
   const width = svg.getAttribute('width')
   const height = svg.getAttribute('height')
   const isValidWidth = width && /^[\d.]+$/.test(width)

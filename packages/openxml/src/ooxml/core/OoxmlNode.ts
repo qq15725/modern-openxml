@@ -1,4 +1,5 @@
 import type { OoxmlValueType } from './OoxmlValue'
+import { parseDomFromString } from '../../global'
 import { namespaces } from '../namespaces'
 import { OoxmlValue } from './OoxmlValue'
 
@@ -43,12 +44,15 @@ export class OoxmlNode {
     this.query = this.query.bind(this)
   }
 
-  static fromXML(xml = '', userNamespaces: Record<string, any> = namespaces): OoxmlNode {
+  static fromXML(
+    xml = '',
+    userNamespaces: Record<string, any> = namespaces,
+  ): OoxmlNode {
     xml = xml.replace(/xmlns=".*?"/g, '')
     for (const key in fixtures) {
       xml = xml.replace(new RegExp(key, 'gi'), (fixtures as any)[key] as string)
     }
-    const doc = new DOMParser().parseFromString(xml, 'text/xml')
+    const doc = parseDomFromString(xml, 'text/xml')
     const namespaces: Record<string, string> = {}
     for (const [, key, value] of xml.matchAll(/xmlns:(\w)="(.+?)"/g)) {
       namespaces[key] = value
@@ -63,7 +67,10 @@ export class OoxmlNode {
     return this.dom as T
   }
 
-  evaluate(xpath: string, type: number = XPathResult.ANY_TYPE): XPathResult {
+  evaluate(
+    xpath: string,
+    type: number = 0, // XPathResult.ANY_TYPE
+  ): XPathResult {
     return this.doc.evaluate(
       xpath,
       this.dom,
@@ -76,11 +83,17 @@ export class OoxmlNode {
   query(xpath: string, type: OOXMLQueryType = 'node'): any {
     switch (type) {
       case 'node': {
-        const result = this.evaluate(xpath, XPathResult.FIRST_ORDERED_NODE_TYPE).singleNodeValue
+        const result = this.evaluate(
+          xpath,
+          9, // XPathResult.FIRST_ORDERED_NODE_TYPE
+        ).singleNodeValue
         return result ? new OoxmlNode(result, this.namespaces) : undefined
       }
       case 'nodes': {
-        const result = this.evaluate(xpath, XPathResult.ORDERED_NODE_ITERATOR_TYPE)
+        const result = this.evaluate(
+          xpath,
+          5, // XPathResult.ORDERED_NODE_ITERATOR_TYPE
+        )
         const value = []
         let node
         // eslint-disable-next-line no-cond-assign
@@ -90,10 +103,17 @@ export class OoxmlNode {
         return value
       }
       default: {
-        return OoxmlValue.decode(
-          this.evaluate(xpath, XPathResult.STRING_TYPE).stringValue || undefined,
-          type as OoxmlValueType,
-        )
+        let value
+        if (xpath[0] === '@' && 'getAttribute' in this.dom) {
+          value = (this.dom as Element).getAttribute(xpath.substring(1))
+        }
+        else {
+          value = this.evaluate(
+            xpath,
+            2, // XPathResult.STRING_TYPE
+          ).stringValue || undefined
+        }
+        return OoxmlValue.decode(value, type as OoxmlValueType)
       }
     }
   }
