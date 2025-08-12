@@ -28,6 +28,7 @@
       "import": "./dist/index.mjs",
       "require": "./dist/index.cjs"
     },
+    "./*": "./*",
     "./presetShapeDefinitions": "./assets/presetShapeDefinitions.js",
     "./presetTextWarpDefinitions": "./assets/presetTextWarpDefinitions.js"
   },
