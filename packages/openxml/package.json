@@ -60,7 +60,7 @@
   "dependencies": {
     "fflate": "^0.8.2",
     "modern-idoc": "^0.8.9",
-    "modern-path2d": "^1.4.8"
+    "modern-path2d": "^1.4.9"
   },
   "simple-git-hooks": {
     "pre-commit": "pnpm lint-staged"

@@ -146,7 +146,7 @@ export function parseGradientFill(gradFill?: OoxmlNode, ctx?: any): NormalizedGr
   // const scaled = gradFill.attr('a:lin/@scaled')
   return {
     linearGradient: {
-      angle: ((gradFill.attr<number>('a:lin/@ang', 'positiveFixedAngle') ?? 0) + 90) % 360,
+      angle: gradFill.attr<number>('a:lin/@ang', 'positiveFixedAngle') ?? 0,
       stops,
     },
   }
@@ -208,9 +208,7 @@ export function stringifyGradientFill(fill: NormalizedGradientFill): string | un
 
   if (linearGradient) {
     const { angle, stops } = linearGradient
-    let degree = angle
-    degree = degree ? (degree + 270) % 360 : degree
-    const ang = OoxmlValue.encode(degree, 'positiveFixedAngle')
+    const ang = OoxmlValue.encode((angle + 360) % 360, 'positiveFixedAngle')
     const gs = stops.map((stop) => {
       const { offset, color } = stop
       return `<a:gs pos="${offset * 100000}">
