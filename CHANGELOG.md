@@ -1,3 +1,17 @@
+# [1.7.0](https://github.com/qq15725/modern-openxml/compare/v1.6.4...v1.7.0) (2025-08-25)
+
+
+### Bug Fixes
+
+* linearGradient angle ([5bea258](https://github.com/qq15725/modern-openxml/commit/5bea258d560ccc1827177adaf89250ccdb1c4ef9))
+
+
+### Features
+
+* up deps ([7a7b1c3](https://github.com/qq15725/modern-openxml/commit/7a7b1c30bac89e16f81168ca63b0e4a9accb72dd))
+
+
+
 ## [1.6.4](https://github.com/qq15725/modern-openxml/compare/v1.6.3...v1.6.4) (2025-08-12)
 
 
