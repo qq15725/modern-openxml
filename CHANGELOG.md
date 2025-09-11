@@ -1,3 +1,17 @@
+# [1.8.0](https://github.com/qq15725/modern-openxml/compare/v1.7.0...v1.8.0) (2025-09-11)
+
+
+### Bug Fixes
+
+* slideWidth / slideHeight ([5dc417a](https://github.com/qq15725/modern-openxml/commit/5dc417a69428c4927c2c39ebcad6a0c16fbb7235))
+
+
+### Features
+
+* up deps ([b1a6c6b](https://github.com/qq15725/modern-openxml/commit/b1a6c6b409a01882501f6a6148eb1819dcfb7303))
+
+
+
 # [1.7.0](https://github.com/qq15725/modern-openxml/compare/v1.6.4...v1.7.0) (2025-08-25)
 
 
