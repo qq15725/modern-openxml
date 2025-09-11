@@ -164,8 +164,8 @@ export class PptxToIdocConverter {
     const pptx: NormalizedPptx = {
       id: idGenerator(),
       style: {
-        width: presentation.width,
-        height: presentation.height,
+        width: presentation.slideWidth,
+        height: presentation.slideHeight * presentation.slides.length,
       },
       children: [],
       meta: {
@@ -182,6 +182,7 @@ export class PptxToIdocConverter {
     }
 
     // ppt/slides/slideX.xml
+    let i = 0
     for (const _slide of presentation.slides) {
       const slideId = _slide.rId
       const slidePath = presentationRels.find(v => v.id === slideId)!.path
@@ -284,10 +285,14 @@ export class PptxToIdocConverter {
 
       pptx.meta.slides.push(slide)
 
+      ;(slide.style as any).top += i * presentation.slideHeight
+
       pptx.children.push({
         ...slide,
         background: slide.background ?? layout?.background ?? master?.background,
       })
+
+      i++
     }
 
     this.pptx = clearUndef(pptx)

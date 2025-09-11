@@ -23,8 +23,8 @@ export function parseSlideLayout(slide: OoxmlNode, path: string, ctx: any): Slid
   return {
     id: idGenerator(),
     style: {
-      width: ctx.presentation.width,
-      height: ctx.presentation.height,
+      width: ctx.presentation.slideWidth,
+      height: ctx.presentation.slideHeight,
     },
     background: parseBackground(slide.find('p:cSld/p:bg'), ctx),
     children: slide

@@ -38,8 +38,8 @@ export function parseSlideMaster(slide: OoxmlNode, pptPath: string, ctx: any): S
   return {
     id: idGenerator(),
     style: {
-      width: ctx.presentation.width,
-      height: ctx.presentation.height,
+      width: ctx.presentation.slideWidth,
+      height: ctx.presentation.slideHeight,
     },
     background: parseBackground(slide.find('p:cSld/p:bg'), newCtx),
     children: slide

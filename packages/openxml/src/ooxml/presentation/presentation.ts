@@ -4,8 +4,8 @@ import { OoxmlValue } from '../core'
 import { withAttr, withAttrs, withIndents } from '../utils'
 
 export interface Presentation {
-  width: number
-  height: number
+  slideWidth: number
+  slideHeight: number
   slides: { id: string, rId: string }[]
   slideMasters: { id: string, rId: string }[]
 }
@@ -15,8 +15,8 @@ export function parsePresentation(node?: OoxmlNode): Presentation | undefined {
     return undefined
 
   return {
-    width: node.attr('p:sldSz/@cx', 'emu')!,
-    height: node.attr('p:sldSz/@cy', 'emu')!,
+    slideWidth: node.attr('p:sldSz/@cx', 'emu')!,
+    slideHeight: node.attr('p:sldSz/@cy', 'emu')!,
     slides: node.get('p:sldIdLst//p:sldId').map((v) => {
       return {
         id: v.attr('@id')!,
@@ -32,13 +32,16 @@ export function parsePresentation(node?: OoxmlNode): Presentation | undefined {
   }
 }
 
-export function stringifyPresentation(props: NormalizedPptx, slides: string[], slideMasters: string[]): string {
+export function stringifyPresentation(pptx: NormalizedPptx, slides: string[], slideMasters: string[]): string {
   const slideIds = slides.map((id, i) => {
     return `<p:sldId id="${256 + i}" r:id="${id}"/>`
   })
   const slideMasterIds = slideMasters.map((id, i) => {
     return `<p:sldMasterId id="${2147483659 + i}" r:id="${id}"/>`
   })
+
+  const slideWidth = pptx.children.reduce((width, slide) => Math.max(Number(slide.style?.width ?? 0), width), 0) || pptx.style.width
+  const slideHeight = pptx.children.reduce((height, slide) => Math.max(Number(slide.style?.height ?? 0), height), 0) || pptx.style.height
 
   return `<p:presentation
   xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"
@@ -51,7 +54,10 @@ export function stringifyPresentation(props: NormalizedPptx, slides: string[], s
   <p:sldIdLst>
     ${withIndents(slideIds, 2)}
   </p:sldIdLst>
-  <p:sldSz${withAttrs([withAttr('cx', OoxmlValue.encode(props.style.width, 'emu')), withAttr('cy', OoxmlValue.encode(props.style.height, 'emu'))])}/>
+  <p:sldSz${withAttrs([
+    withAttr('cx', OoxmlValue.encode(slideWidth, 'emu')),
+    withAttr('cy', OoxmlValue.encode(slideHeight, 'emu')),
+  ])}/>
   <p:notesSz cx="5143500" cy="9144000"/>
   <p:defaultTextStyle>
     <a:lvl1pPr marL="0" algn="l" defTabSz="914400" rtl="0" eaLnBrk="1" latinLnBrk="0" hangingPunct="1">

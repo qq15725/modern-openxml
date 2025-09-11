@@ -62,8 +62,8 @@ export function parseSlide(slide: OoxmlNode, path: string, ctx: any): Slide {
     ...parseTiming(slide.find('p:timing')),
     ...parseTransition(slide.find('mc:AlternateContent')),
     style: {
-      width: ctx.presentation.width,
-      height: ctx.presentation.height,
+      width: ctx.presentation.slideWidth,
+      height: ctx.presentation.slideHeight,
     },
     background: parseBackground(slide.find('p:cSld/p:bg'), ctx),
     children: slide
