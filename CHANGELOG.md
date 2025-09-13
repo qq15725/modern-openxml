@@ -1,3 +1,7 @@
+## [1.8.1](https://github.com/qq15725/modern-openxml/compare/v1.8.0...v1.8.1) (2025-09-13)
+
+
+
 # [1.8.0](https://github.com/qq15725/modern-openxml/compare/v1.7.0...v1.8.0) (2025-09-11)
 
 
