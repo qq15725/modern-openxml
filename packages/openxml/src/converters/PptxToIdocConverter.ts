@@ -285,7 +285,7 @@ export class PptxToIdocConverter {
 
       pptx.meta.slides.push(slide)
 
-      ;(slide.style as any).top += i * presentation.slideHeight
+      ;(slide.style as any).top = i * presentation.slideHeight
 
       pptx.children.push({
         ...slide,
