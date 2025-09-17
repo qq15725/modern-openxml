@@ -2,7 +2,7 @@
   "name": "modern-openxml-monorepo",
   "type": "module",
   "private": true,
-  "version": "1.8.1",
+  "version": "1.8.2",
   "packageManager": "pnpm@9.15.1",
   "scripts": {
     "build": "pnpm -r build",
