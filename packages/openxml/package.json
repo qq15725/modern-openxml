@@ -28,8 +28,16 @@
       "import": "./dist/index.mjs",
       "require": "./dist/index.cjs"
     },
-    "./presetShapeDefinitions": "./assets/presetShapeDefinitions.js",
-    "./presetTextWarpDefinitions": "./assets/presetTextWarpDefinitions.js",
+    "./presetShapeDefinitions": {
+      "types": "./assets/presetShapeDefinitions.d.ts",
+      "import": "./assets/presetShapeDefinitions.js",
+      "default": "./assets/presetShapeDefinitions.js"
+    },
+    "./presetTextWarpDefinitions": {
+      "types": "./assets/presetTextWarpDefinitions.d.ts",
+      "import": "./assets/presetTextWarpDefinitions.js",
+      "default": "./assets/presetTextWarpDefinitions.js"
+    },
     "./*.mjs": "./*.js",
     "./*": "./*"
   },
