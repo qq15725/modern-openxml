@@ -1,3 +1,13 @@
+## [1.8.3](https://github.com/qq15725/modern-openxml/compare/v1.8.2...v1.8.3) (2025-09-28)
+
+
+### Bug Fixes
+
+* exports for package.json ([bb5f6df](https://github.com/qq15725/modern-openxml/commit/bb5f6df198a130c0807cc4482fa3d1c5f0ff6562))
+* typesVersions for package.json ([0ba1eeb](https://github.com/qq15725/modern-openxml/commit/0ba1eeba4a8a3132837078b1fdedc778af83aa2b))
+
+
+
 ## [1.8.2](https://github.com/qq15725/modern-openxml/compare/v1.8.1...v1.8.2) (2025-09-17)
 
 
