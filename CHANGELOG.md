@@ -1,3 +1,12 @@
+# [1.9.0](https://github.com/qq15725/modern-openxml/compare/v1.8.3...v1.9.0) (2025-10-09)
+
+
+### Features
+
+* up deps ([826b7f9](https://github.com/qq15725/modern-openxml/commit/826b7f9eb1d762f6e2e2bc802966d8b7969b6274))
+
+
+
 ## [1.8.3](https://github.com/qq15725/modern-openxml/compare/v1.8.2...v1.8.3) (2025-09-28)
 
 

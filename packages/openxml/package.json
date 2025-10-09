@@ -1,7 +1,7 @@
 {
   "name": "modern-openxml",
   "type": "module",
-  "version": "1.8.3",
+  "version": "1.9.0",
   "description": "OpenXML for JavaScript",
   "author": "wxm",
   "license": "MIT",
