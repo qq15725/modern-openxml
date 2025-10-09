@@ -3,7 +3,7 @@
   "type": "module",
   "private": true,
   "version": "1.8.3",
-  "packageManager": "pnpm@9.15.1",
+  "packageManager": "pnpm@10.18.1",
   "scripts": {
     "build": "pnpm -r build",
     "test": "pnpm -r test",
@@ -17,16 +17,16 @@
   },
   "devDependencies": {
     "@antfu/eslint-config": "^5.4.1",
-    "@types/node": "^24.5.2",
-    "bumpp": "^10.2.3",
+    "@types/node": "^24.7.0",
+    "bumpp": "^10.3.1",
     "conventional-changelog-cli": "^5.0.0",
-    "eslint": "^9.36.0",
-    "lint-staged": "^16.2.2",
+    "eslint": "^9.37.0",
+    "lint-staged": "^16.2.3",
     "modern-idoc-svg": "^0.0.6",
     "simple-git-hooks": "^2.13.1",
-    "typescript": "^5.9.2",
+    "typescript": "^5.9.3",
     "unbuild": "^3.6.1",
-    "vite": "^7.1.7",
+    "vite": "^7.1.9",
     "vitest": "^3.2.4"
   }
 }

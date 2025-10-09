@@ -69,7 +69,7 @@
   },
   "dependencies": {
     "fflate": "^0.8.2",
-    "modern-idoc": "^0.9.11",
+    "modern-idoc": "^0.10.1",
     "modern-path2d": "^1.4.10"
   },
   "simple-git-hooks": {
