@@ -45,12 +45,6 @@ importers:
         specifier: ^4.0.6
         version: 4.0.6(@types/debug@4.1.12)(@types/node@24.10.0)(happy-dom@18.0.1)(jiti@2.6.1)(jsdom@27.1.0)(yaml@2.8.1)
 
-  docs:
-    dependencies:
-      modern-openxml:
-        specifier: workspace:*
-        version: link:../packages/openxml
-
   packages/cli:
     dependencies:
       cac:
@@ -81,6 +75,12 @@ importers:
       modern-path2d:
         specifier: ^1.4.11
         version: 1.4.11
+
+  playground:
+    dependencies:
+      modern-openxml:
+        specifier: workspace:*
+        version: link:../packages/openxml
 
 packages:
 

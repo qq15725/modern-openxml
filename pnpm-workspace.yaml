@@ -1,5 +1,3 @@
 packages:
   - playground
-  - docs
   - packages/*
-  - examples/*
