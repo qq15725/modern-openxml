@@ -60,7 +60,7 @@ npm i modern-idoc-svg
 ```
 
 ```ts
-import { dcoToSvg } from 'modern-idoc-svg'
+import { docToSvg } from 'modern-idoc-svg'
 import { pptxToDoc } from 'modern-openxml'
 import presetShapeDefinitions from 'modern-openxml/presetShapeDefinitions'
 
@@ -68,7 +68,7 @@ fetch('./example.pptx')
   .then(rep => rep.arrayBuffer())
   .then(async (buffer) => {
     const pptx = await pptxToDoc(new Uint8Array(buffer), { presetShapeDefinitions })
-    const pptxSvg = dcoToSvg(pptx)
+    const pptxSvg = docToSvg(pptx)
     console.log(pptxSvg)
     document.body.appendChild(pptxSvg)
   })
