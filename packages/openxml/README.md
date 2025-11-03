@@ -26,8 +26,8 @@ npm i modern-openxml
 
 ## Methods
 
-- [pptxToIdoc](src/methods/pptxToIdoc.ts)
-- [idocToPptx](src/methods/idocToPptx.ts)
+- [pptxToDoc](src/methods/pptxToDoc.ts)
+- [docToPptx](src/methods/docToPptx.ts)
 
 preset shape definitions
 
@@ -40,13 +40,13 @@ preset text warp definitions
 ## PPTX to IDoc
 
 ```ts
-import { pptxToIdoc } from 'modern-openxml'
+import { pptxToDoc } from 'modern-openxml'
 import presetShapeDefinitions from 'modern-openxml/presetShapeDefinitions'
 
 fetch('./example.pptx')
   .then(rep => rep.arrayBuffer())
   .then(async (buffer) => {
-    const pptx = await pptxToIdoc(new Uint8Array(buffer), { presetShapeDefinitions })
+    const pptx = await pptxToDoc(new Uint8Array(buffer), { presetShapeDefinitions })
     console.log(pptx)
   })
 ```
@@ -60,15 +60,15 @@ npm i modern-idoc-svg
 ```
 
 ```ts
-import { idcoToSvg } from 'modern-idoc-svg'
-import { pptxToIdoc } from 'modern-openxml'
+import { dcoToSvg } from 'modern-idoc-svg'
+import { pptxToDoc } from 'modern-openxml'
 import presetShapeDefinitions from 'modern-openxml/presetShapeDefinitions'
 
 fetch('./example.pptx')
   .then(rep => rep.arrayBuffer())
   .then(async (buffer) => {
-    const pptx = await pptxToIdoc(new Uint8Array(buffer), { presetShapeDefinitions })
-    const pptxSvg = idcoToSvg(pptx)
+    const pptx = await pptxToDoc(new Uint8Array(buffer), { presetShapeDefinitions })
+    const pptxSvg = dcoToSvg(pptx)
     console.log(pptxSvg)
     document.body.appendChild(pptxSvg)
   })

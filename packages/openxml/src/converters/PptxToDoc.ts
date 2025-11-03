@@ -45,7 +45,7 @@ function isNodeReadableStream(obj: any): obj is NodeJS.ReadableStream {
   return obj && typeof obj.read === 'function' && typeof obj.on === 'function'
 }
 
-export class PptxToIdocConverter {
+export class PptxToDoc {
   unzipped?: Unzipped
   pptx?: NormalizedPptx
 
@@ -353,7 +353,7 @@ export class PptxToIdocConverter {
     const {
       progress,
       upload = (input, fill) => {
-        return `data:${PptxToIdocConverter.getMimeType(fill.image) ?? 'image/png'};base64,${input}`
+        return `data:${PptxToDoc.getMimeType(fill.image) ?? 'image/png'};base64,${input}`
       },
     } = options
 

@@ -50,7 +50,7 @@ function parseSvg(dataURI: string): string {
   return svg.outerHTML
 }
 
-export class IdocToPptxConverter {
+export class DocToPptx {
   async encode(pptx: Pptx): Promise<Uint8Array> {
     const _pptx = { ...pptx } as NormalizedPptx
 

@@ -2,7 +2,7 @@ import { Buffer } from 'node:buffer'
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { JSDOM } from 'jsdom'
-import { pptxToIdoc, useCustomDomParser } from 'modern-openxml'
+import { pptxToDoc, useCustomDomParser } from 'modern-openxml'
 
 const parser1 = new new JSDOM().window.DOMParser()
 
@@ -29,7 +29,7 @@ export async function runPptCommand(filepath: string, options: any): Promise<voi
   }
 
   if (filepath.endsWith('.pptx')) {
-    const idoc = await pptxToIdoc(
+    const idoc = await pptxToDoc(
       readFileSync(filepath).buffer,
       {
         upload: (input, fill) => {

@@ -1,4 +1,4 @@
-export * from './idocToPptx'
+export * from './docToPptx'
 export * from './parsePresetShapeDefinitions'
 export * from './parsePresetTextWarpDefinitions'
-export * from './pptxToIdoc'
+export * from './pptxToDoc'

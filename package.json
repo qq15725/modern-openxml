@@ -10,23 +10,23 @@
     "lint": "pnpm -r lint",
     "cli": "pnpm -F @modern-openxml/cli cli",
     "stub": "pnpm -F @modern-openxml/cli stub",
-    "dev": "vite docs",
+    "dev": "vite playground",
     "publish": "pnpm -r publish --no-git-checks --access public",
     "version": "conventional-changelog -p angular -i CHANGELOG.md -s && git add CHANGELOG.md",
     "release": "bumpp package.json packages/*/package.json --commit \"release: v%s\" --push --all --tag"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^5.4.1",
-    "@types/node": "^24.7.0",
+    "@antfu/eslint-config": "^6.2.0",
+    "@types/node": "^24.10.0",
     "bumpp": "^10.3.1",
     "conventional-changelog-cli": "^5.0.0",
-    "eslint": "^9.37.0",
-    "lint-staged": "^16.2.3",
-    "modern-idoc-svg": "^0.0.6",
+    "eslint": "^9.39.0",
+    "lint-staged": "^16.2.6",
+    "modern-idoc-svg": "^0.1.0",
     "simple-git-hooks": "^2.13.1",
     "typescript": "^5.9.3",
     "unbuild": "^3.6.1",
-    "vite": "^7.1.9",
-    "vitest": "^3.2.4"
+    "vite": "^7.1.12",
+    "vitest": "^4.0.6"
   }
 }

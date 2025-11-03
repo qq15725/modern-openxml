@@ -1,2 +1,2 @@
-export * from './IdocToPptxConverter'
-export * from './PptxToIdocConverter'
+export * from './DocToPptx'
+export * from './PptxToDoc'
