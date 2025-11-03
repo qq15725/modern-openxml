@@ -1,3 +1,12 @@
+# [1.10.0](https://github.com/qq15725/modern-openxml/compare/v1.9.0...v1.10.0) (2025-11-03)
+
+
+### Features
+
+* rename idocToPptx to docToPptx ([01257f3](https://github.com/qq15725/modern-openxml/commit/01257f33d595cbc243c2df70ce6fa37351fa854d))
+
+
+
 # [1.9.0](https://github.com/qq15725/modern-openxml/compare/v1.8.3...v1.9.0) (2025-10-09)
 
 
