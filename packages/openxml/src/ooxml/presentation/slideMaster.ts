@@ -11,6 +11,7 @@ import { parseTiming } from './timing'
 export interface SlideMaster extends NormalizedElement {
   children: SlideElement[]
   meta: {
+    inCanvasIs: 'Element2D'
     inPptIs: 'SlideMaster'
     pptPath: string
     pptThemePath?: string
@@ -20,6 +21,7 @@ export interface SlideMaster extends NormalizedElement {
 
 export function parseSlideMaster(slide: OoxmlNode, pptPath: string, ctx: any): SlideMaster {
   const meta: any = {
+    inCanvasIs: 'Element2D',
     inPptIs: 'SlideMaster',
     pptPath,
     pptThemePath: ctx.theme.meta.pptPath,

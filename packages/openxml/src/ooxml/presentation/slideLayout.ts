@@ -11,6 +11,7 @@ import { parseTiming } from './timing'
 export interface SlideLayout extends NormalizedElement {
   children: SlideElement[]
   meta: {
+    inCanvasIs: 'Element2D'
     inPptIs: 'SlideLayout'
     pptPath: string
     pptMasterPath: string
@@ -32,6 +33,7 @@ export function parseSlideLayout(slide: OoxmlNode, path: string, ctx: any): Slid
       .map(item => parseElement(item, ctx))
       .filter(Boolean) as SlideElement[],
     meta: {
+      inCanvasIs: 'Element2D',
       inPptIs: 'SlideLayout',
       pptPath: path,
       pptMasterPath: ctx.master.meta.pptPath,

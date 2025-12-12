@@ -13,6 +13,7 @@ import { parseShapeProperties, stringifyShapeProperties } from './shapePropertie
 import { parseTextBody, stringifyTextBody } from './textBody'
 
 export type ShapeMeta = NonVisualDrawingProperties['meta'] & {
+  inCanvasIs: 'Element2D'
   inPptIs: 'Shape'
   placeholderType?: string
   placeholderIndex?: string
@@ -61,6 +62,7 @@ export function parseShape(node?: OoxmlNode, ctx?: any): Shape | undefined {
       : undefined,
     meta: {
       ...cNvPr?.meta,
+      inCanvasIs: 'Element2D',
       inPptIs: 'Shape',
       placeholderType: placeholder?.type,
       placeholderIndex: placeholder?.index,

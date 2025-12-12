@@ -26,6 +26,7 @@ export type SlideElement
     | GraphicFrame
 
 export interface SlideMeta {
+  inCanvasIs: 'Element2D'
   inPptIs: 'Slide'
   pptPath: string
   pptLayoutPath: string
@@ -71,6 +72,7 @@ export function parseSlide(slide: OoxmlNode, path: string, ctx: any): Slide {
       .map(node => parseElement(node, ctx))
       .filter(Boolean) as SlideElement[],
     meta: {
+      inCanvasIs: 'Element2D',
       inPptIs: 'Slide',
       pptPath: path,
       pptLayoutPath: ctx.layout.meta.pptPath,

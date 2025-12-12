@@ -13,6 +13,7 @@ import { parseShapeProperties } from './shapeProperties'
 import { stringifyTransform2d } from './transform2d'
 
 export type GroupShapeMeta = NonVisualDrawingProperties['meta'] & {
+  inCanvasIs: 'Element2D'
   inPptIs: 'GroupShape'
   placeholderType?: string
   placeholderIndex?: string
@@ -50,6 +51,7 @@ export function parseGroupShape(node: OoxmlNode, ctx: any, parseElement: any): G
     children: [],
     meta: {
       ...cNvPr?.meta,
+      inCanvasIs: 'Element2D',
       inPptIs: 'GroupShape',
       placeholderType: placeholder?.type,
       placeholderIndex: placeholder?.index,

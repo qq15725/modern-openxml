@@ -9,6 +9,7 @@ import { parseNonVisualProperties, stringifyNonVisualProperties } from './nonVis
 import { parseShapeProperties, stringifyShapeProperties } from './shapeProperties'
 
 export type PictureMeta = NonVisualDrawingProperties['meta'] & {
+  inCanvasIs: 'Element2D'
   inPptIs: 'Picture'
   placeholderType?: string
   placeholderIndex?: string
@@ -53,6 +54,7 @@ export function parsePicture(node?: OoxmlNode, ctx?: any): Picture | undefined {
     },
     meta: {
       ...cNvPr?.meta,
+      inCanvasIs: 'Element2D',
       inPptIs: 'Picture',
       placeholderType: placeholder?.type,
       placeholderIndex: placeholder?.index,

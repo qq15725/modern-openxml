@@ -10,6 +10,7 @@ import { parseElement } from './slide'
 import { parseTransform2d } from './transform2d'
 
 export type GraphicFrameMeta = NonVisualDrawingProperties['meta'] & {
+  inCanvasIs: 'Element2D'
   inPptIs: 'GraphicFrame'
   placeholderType?: string
   placeholderIndex?: string
@@ -62,6 +63,7 @@ export function parseGraphicFrame(node?: OoxmlNode, ctx?: any): GraphicFrame | u
       .filter(Boolean) as GroupShape['children'] ?? [],
     meta: {
       ...cNvPr?.meta,
+      inCanvasIs: 'Element2D',
       inPptIs: 'GraphicFrame',
       placeholderType: placeholder?.type,
       placeholderIndex: placeholder?.index,

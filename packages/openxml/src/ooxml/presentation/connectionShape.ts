@@ -7,6 +7,7 @@ import { parseNonVisualProperties } from './nonVisualProperties'
 import { parseShapeProperties } from './shapeProperties'
 
 export type ConnectionShapeMeta = NonVisualDrawingProperties['meta'] & {
+  inCanvasIs: 'Element2D'
   inPptIs: 'ConnectionShape'
   placeholderType?: string
   placeholderIndex?: string
@@ -44,6 +45,7 @@ export function parseConnectionShape(node?: OoxmlNode, ctx?: any): ConnectionSha
     },
     meta: {
       ...cNvPr?.meta,
+      inCanvasIs: 'Element2D',
       inPptIs: 'ConnectionShape',
       placeholderType: placeholder?.type,
       placeholderIndex: placeholder?.index,
