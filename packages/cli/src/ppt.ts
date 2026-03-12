@@ -2,7 +2,7 @@ import { Buffer } from 'node:buffer'
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { JSDOM } from 'jsdom'
-import { pptxToDoc, useCustomDomParser } from 'modern-openxml'
+import { docToPptx, pptxToDoc, useCustomDomParser } from 'modern-openxml'
 
 const parser1 = new new JSDOM().window.DOMParser()
 
@@ -17,10 +17,6 @@ export async function runPptCommand(filepath: string, options: any): Promise<voi
     output = join(dirname(filepath), 'doc.json'),
     upload = false,
   } = options
-
-  if (!output.endsWith('.json')) {
-    output = join(output, 'doc.json')
-  }
 
   const outputDir = dirname(output)
 
@@ -47,11 +43,20 @@ export async function runPptCommand(filepath: string, options: any): Promise<voi
       },
     )
 
+    if (!output.endsWith('.json')) {
+      output = join(output, 'output.json')
+    }
+
     writeFileSync(output, JSON.stringify(idoc))
   }
   else if (filepath.endsWith('.json')) {
-    // idoc to pptx
-    // TODO
+    if (!output.endsWith('.pptx')) {
+      output = join(output, 'output.pptx')
+    }
+
+    writeFileSync(output, await docToPptx(
+      JSON.parse(readFileSync(filepath, 'utf8')),
+    ))
   }
   else {
     throw new Error('Only supported .pptx .json file')

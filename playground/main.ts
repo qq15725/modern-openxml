@@ -1,9 +1,9 @@
-import { idocToSvg } from 'modern-idoc-svg'
+import { docToSvg } from 'modern-idoc-svg'
 import {
-  idocToPptx,
+  docToPptx,
   parsePresetShapeDefinitions,
   parsePresetTextWarpDefinitions,
-  pptxToIdoc,
+  pptxToDoc,
 } from 'modern-openxml'
 import presetShapeDefinitions from 'modern-openxml/presetShapeDefinitions'
 import presetTextWarpDefinitions from 'modern-openxml/presetTextWarpDefinitions'
@@ -66,17 +66,17 @@ function openFileDialog(): Promise<Uint8Array> {
 }
 
 async function testPPTXToSVG(source: Uint8Array): Promise<void> {
-  console.warn(await pptxToIdoc(source, { presetShapeDefinitions }))
-  const svg = idocToSvg(
-    await pptxToIdoc(source, { presetShapeDefinitions }),
+  console.warn(await pptxToDoc(source, { presetShapeDefinitions }))
+  const svg = await docToSvg(
+    await pptxToDoc(source, { presetShapeDefinitions }),
   )
   console.warn(svg)
   document.body.append(svg)
 }
 
 async function testPPTXReEncode(source: Uint8Array): Promise<void> {
-  const doc = await pptxToIdoc(source, { presetShapeDefinitions })
-  const blob = new Blob([(await idocToPptx(doc)) as any], { type: 'application/vnd.openxmlformats-officedocument.presentationml.presentation' })
+  const doc = await pptxToDoc(source, { presetShapeDefinitions })
+  const blob = new Blob([(await docToPptx(doc)) as any], { type: 'application/vnd.openxmlformats-officedocument.presentationml.presentation' })
   downloadBlob(blob, 'output.pptx')
 }
 
