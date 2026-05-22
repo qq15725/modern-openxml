@@ -12,6 +12,9 @@ const RELATIONSHIP_TYPES = {
   workbook: 'officeDocument',
   worksheets: 'worksheet',
   xlsxStyles: 'styles',
+  // WordprocessingML(docx)
+  document: 'officeDocument',
+  docxStyles: 'styles',
 }
 
 export type Relationships = ({

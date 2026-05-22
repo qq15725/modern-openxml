@@ -21,6 +21,14 @@ const CONTENT_TYPES = [
   [/workbook\.xml$/, 'workbook', null],
   [/sheet\d+\.xml$/, 'worksheets', null],
   [/sharedStrings\.xml$/, 'sharedStrings', null],
+
+  // WordprocessingML(docx)
+  [/word\/document\.xml$/, 'document', null],
+
+  // styles.xml:用完整路径区分 xlsx / docx 的内容类型(stringifyTypes 传完整路径);
+  // 末尾再加一条相对路径兜底,供 stringifyRelationships 用(两者关系类型都是 styles)。
+  [/xl\/styles\.xml$/, 'xlsxStyles', null],
+  [/word\/styles\.xml$/, 'docxStyles', null],
   [/styles\.xml$/, 'xlsxStyles', null],
 
   [/\.rels$/, 'relationship', 'rels'],

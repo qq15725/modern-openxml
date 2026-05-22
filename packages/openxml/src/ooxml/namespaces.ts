@@ -1,8 +1,11 @@
+export const RELATIONSHIP_NS = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships'
+
 export const namespaces = {
   asvg: 'http://schemas.microsoft.com/office/drawing/2016/SVG/main',
   p: 'http://schemas.openxmlformats.org/presentationml/2006/main',
   r: 'http://schemas.openxmlformats.org/officeDocument/2006/relationships',
   a: 'http://schemas.openxmlformats.org/drawingml/2006/main',
+  w: 'http://schemas.openxmlformats.org/wordprocessingml/2006/main',
   a14: 'http://schemas.microsoft.com/office/drawing/2010/main',
   dgm: 'http://schemas.openxmlformats.org/drawingml/2006/diagram',
   dsp: 'http://schemas.microsoft.com/office/drawing/2008/diagram',

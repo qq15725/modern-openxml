@@ -1,5 +1,6 @@
 import type { OoxmlNode } from '../core'
-import { escapeXml, SPREADSHEET_NS } from './util'
+import { escapeXml } from '../utils'
+import { SPREADSHEET_NS } from './util'
 
 // xl/sharedStrings.xml
 //

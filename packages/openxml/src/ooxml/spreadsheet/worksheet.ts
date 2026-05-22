@@ -1,8 +1,10 @@
 import type { OoxmlNode } from '../core'
 import type { SharedStrings } from './sharedStrings'
 import type { Cell, Row, Worksheet } from './types'
+import { RELATIONSHIP_NS } from '../namespaces'
+import { escapeXml } from '../utils'
 import { parseCellRef, toCellRef } from './cellRef'
-import { escapeXml, RELATIONSHIP_NS, SPREADSHEET_NS } from './util'
+import { SPREADSHEET_NS } from './util'
 
 // xl/worksheets/sheetN.xml
 //

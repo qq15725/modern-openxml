@@ -38,3 +38,17 @@ export function withIndents(str: string | (string | boolean | undefined)[] | und
 export function withChildren(tagName: string, content?: string | null): string {
   return content ? `<${tagName}>${content}</${tagName}>` : ''
 }
+
+/**
+ * 转义 XML 文本内容中的特殊字符。
+ *
+ * 注意:转义 `"` 为 `&quot;` 还能让 compressXml 折叠属性空格的正则失效,
+ * 从而避免文本中形如 `a="b"` 的内容被破坏。
+ */
+export function escapeXml(value: string): string {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+}

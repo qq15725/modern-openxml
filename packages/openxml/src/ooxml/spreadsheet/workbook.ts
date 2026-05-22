@@ -1,5 +1,7 @@
 import type { OoxmlNode } from '../core'
-import { escapeXml, RELATIONSHIP_NS, SPREADSHEET_NS } from './util'
+import { RELATIONSHIP_NS } from '../namespaces'
+import { escapeXml } from '../utils'
+import { SPREADSHEET_NS } from './util'
 
 // xl/workbook.xml
 //
