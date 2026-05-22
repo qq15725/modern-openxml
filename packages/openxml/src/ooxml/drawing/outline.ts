@@ -53,6 +53,7 @@ export function parseOutline(node?: OoxmlNode, ctx?: any): NormalizedOutline | u
   }
 
   return {
+    enabled: true,
     style: prstDash
       ? prstDash !== 'solid' ? 'dashed' : 'solid'
       : undefined,

@@ -215,6 +215,7 @@ export function parseTextBody(txBody?: OoxmlNode, ctx?: Record<string, any>): Te
       verticalAlign: verticalAlignMap.getValue(query('a:bodyPr/@anchor', 'string')),
     },
     text: {
+      enabled: true,
       content,
     },
   }
@@ -256,7 +257,7 @@ export function stringifyTextBody(txBody?: TextBody): string | undefined {
   ${withIndents([
     stringifyFill(
       fFill ?? pFill ?? fill
-      ?? (getFStyle('color') ? { color: getFStyle('color') } : undefined),
+      ?? (getFStyle('color') ? { color: getFStyle('color'), enabled: true } : undefined),
     ),
     stringifyOutline(fOutline ?? pOutline ?? outline),
     isUserFont(getFStyle('fontFamily')) && `<a:latin typeface="${fixTypeface(getFStyle('fontFamily'))}" />`,

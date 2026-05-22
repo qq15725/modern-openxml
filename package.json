@@ -16,17 +16,17 @@
     "release": "bumpp package.json packages/*/package.json --commit \"release: v%s\" --push --all --tag"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^6.6.1",
-    "@types/node": "^25.0.1",
-    "bumpp": "^10.3.2",
+    "@antfu/eslint-config": "^9.0.0",
+    "@types/node": "^25.9.1",
+    "bumpp": "^11.1.0",
     "conventional-changelog-cli": "^5.0.0",
-    "eslint": "^9.39.1",
-    "lint-staged": "^16.2.7",
+    "eslint": "^10.4.0",
+    "lint-staged": "^17.0.5",
     "modern-idoc-svg": "^0.2.0",
     "simple-git-hooks": "^2.13.1",
-    "typescript": "^5.9.3",
+    "typescript": "^6.0.3",
     "unbuild": "^3.6.1",
-    "vite": "^7.2.7",
-    "vitest": "^4.0.15"
+    "vite": "^8.0.14",
+    "vitest": "^4.1.7"
   }
 }

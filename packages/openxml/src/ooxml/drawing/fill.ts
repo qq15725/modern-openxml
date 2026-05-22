@@ -32,14 +32,18 @@ export function parseFill(fill?: OoxmlNode, ctx?: Record<string, any>): Normaliz
   switch (fill.name) {
     case 'a:blipFill':
     case 'p:blipFill': {
-      return parseBlipFill(fill, ctx)
+      const blip = parseBlipFill(fill, ctx)
+      return blip ? { ...blip, enabled: true } : undefined
     }
     case 'a:solidFill':
       return {
         ...parseColor(fill, ctx)!,
+        enabled: true,
       }
-    case 'a:gradFill':
-      return parseGradientFill(fill, ctx)
+    case 'a:gradFill': {
+      const grad = parseGradientFill(fill, ctx)
+      return grad ? { ...grad, enabled: true } : undefined
+    }
     case 'a:grpFill':
       return ctx?.parents?.length
         ? ctx.parents[ctx.parents.length - 1]?.fill

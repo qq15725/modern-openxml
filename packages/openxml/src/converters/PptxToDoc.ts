@@ -380,7 +380,7 @@ export class PptxToDoc {
       return output
     }
 
-    function needsUpload(value?: NormalizedFill): value is NormalizedImageFill {
+    function needsUpload(value?: NormalizedFill): value is NormalizedFill & NormalizedImageFill {
       return Boolean(value?.image) && !isGradient(value!.image!)
     }
 

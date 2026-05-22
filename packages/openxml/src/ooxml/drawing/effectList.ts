@@ -1,56 +1,27 @@
-import type {
-  NormalizedEffect,
-  NormalizedInnerShadow,
-  NormalizedOuterShadow,
-  NormalizedSoftEdge,
-} from 'modern-idoc'
+import type { NormalizedEffect, NormalizedShadow } from 'modern-idoc'
 import type { OoxmlNode } from '../core'
 import { parseColor } from './color'
 
-function parseInnerShadow(innerShdw?: OoxmlNode, ctx?: any): NormalizedInnerShadow | undefined {
-  if (!innerShdw)
+// a:outerShdw / a:innerShdw
+//
+// modern-idoc 仅保留单一的 shadow 模型(不再区分 inner/outer/softEdge,
+// 也不再有 scaleX/scaleY/radius),这里把 OOXML 阴影归一化到该模型。
+function parseShadow(shadow?: OoxmlNode, ctx?: any): NormalizedShadow | undefined {
+  if (!shadow)
     return undefined
-  const color = parseColor(innerShdw, ctx)
+  const color = parseColor(shadow, ctx)?.color
   if (!color)
     return undefined
-  const blurRadius = innerShdw.attr<number>('@blurRad', 'ST_PositiveCoordinate') ?? 0
-  const dir = innerShdw.attr<number>('@dir', 'ST_PositiveFixedAngle') ?? 0
-  const dist = innerShdw.attr<number>('@dist', 'ST_PositiveCoordinate') ?? 0
+  const blur = shadow.attr<number>('@blurRad', 'ST_PositiveCoordinate') ?? 0
+  const dir = shadow.attr<number>('@dir', 'ST_PositiveFixedAngle') ?? 0
+  const dist = shadow.attr<number>('@dist', 'ST_PositiveCoordinate') ?? 0
   const radian = ((dir + 90) / 180) * Math.PI
   return {
-    ...color,
+    enabled: true,
+    color,
     offsetX: dist * Math.sin(radian),
     offsetY: dist * -Math.cos(radian),
-    blurRadius,
-  }
-}
-
-// TODO
-// @prop('@algn', 'ST_RectAlignment') declare algn?: number
-// @prop('@kx', 'ST_FixedAngle') declare kx?: number
-// @prop('@ky', 'ST_FixedAngle') declare ky?: number
-// @prop('@rotWithShape', 'boolean') declare rotWithShape?: boolean
-function parseOuterShadow(outerShdw?: OoxmlNode, ctx?: any): NormalizedOuterShadow | undefined {
-  const base = parseInnerShadow(outerShdw, ctx)
-  if (!base) {
-    return undefined
-  }
-  const scaleX = outerShdw!.attr<number>('@sx', 'ST_Percentage') ?? 1
-  const scaleY = outerShdw!.attr<number>('@sy', 'ST_Percentage') ?? 1
-  return {
-    ...base,
-    scaleX,
-    scaleY,
-  }
-}
-
-function parseSoftEdge(softEdge?: OoxmlNode): NormalizedSoftEdge | undefined {
-  if (!softEdge) {
-    return undefined
-  }
-
-  return {
-    radius: softEdge.attr<number>('@rad', 'ST_PositiveCoordinate') ?? 0,
+    blur,
   }
 }
 
@@ -59,9 +30,8 @@ export function parseEffectList(effectLst?: OoxmlNode, ctx?: any): NormalizedEff
   if (!effectLst)
     return undefined
 
-  return {
-    innerShadow: parseInnerShadow(effectLst.find('a:innerShdw'), ctx),
-    outerShadow: parseOuterShadow(effectLst.find('a:outerShdw'), ctx),
-    softEdge: parseSoftEdge(effectLst.find('a:softEdge')),
-  }
+  const shadow = parseShadow(effectLst.find('a:outerShdw'), ctx)
+    ?? parseShadow(effectLst.find('a:innerShdw'), ctx)
+
+  return { shadow }
 }

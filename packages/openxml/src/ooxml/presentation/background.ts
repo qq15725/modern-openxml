@@ -19,6 +19,7 @@ export function parseBackground(bg?: OoxmlNode, ctx?: any): NormalizedBackground
     if (bgFill?.color === 'phClr') {
       return {
         ...parseColor(bgRef, ctx),
+        enabled: true,
         fillWithShape: true,
       }
     }
@@ -27,6 +28,7 @@ export function parseBackground(bg?: OoxmlNode, ctx?: any): NormalizedBackground
   else {
     return {
       ...parseFill(bg.find('p:bgPr'), ctx),
+      enabled: true,
       fillWithShape: true,
     }
   }

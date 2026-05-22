@@ -387,6 +387,7 @@ export function parseGeometry(geom?: OoxmlNode, ctx?: Record<string, any>): Norm
         })
       }
       return {
+        enabled: true,
         preset,
         paths: parsePaths(node?.find('pathLst'), _ctx as any),
       }
@@ -410,6 +411,7 @@ export function parseGeometry(geom?: OoxmlNode, ctx?: Record<string, any>): Norm
         })
       }
       return {
+        enabled: true,
         paths: parsePaths(custGeom.find('a:pathLst'), _ctx as any),
       }
     }

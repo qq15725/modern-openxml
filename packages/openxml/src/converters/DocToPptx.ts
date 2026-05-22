@@ -62,7 +62,7 @@ export class DocToPptx {
     const addMedia = async (file: any, refs: string[], fileName: string, fileExt: string): Promise<void> => {
       const src = file.image
 
-      let uin8Array: Uint8Array
+      let uin8Array: Uint8Array<ArrayBuffer>
       if (typeof src === 'string') {
         if (src.startsWith('data:image/svg+xml;')) {
           fileExt = 'svg'

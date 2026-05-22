@@ -68,9 +68,9 @@
     "prepare": "simple-git-hooks"
   },
   "dependencies": {
-    "fflate": "^0.8.2",
-    "modern-idoc": "^0.10.6",
-    "modern-path2d": "^1.4.15"
+    "fflate": "^0.8.3",
+    "modern-idoc": "^0.11.5",
+    "modern-path2d": "^1.6.0"
   },
   "simple-git-hooks": {
     "pre-commit": "pnpm lint-staged"

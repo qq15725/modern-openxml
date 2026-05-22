@@ -86,8 +86,8 @@ export function parseShapeProperties(spPr?: OoxmlNode, ctx?: any): ShapeProperti
       width: xfrm?.style?.width ?? 0,
       height: xfrm?.style?.height ?? 0,
     }),
-    fill: Object.keys(fill).length > 0 ? fill : undefined,
-    outline: Object.keys(outline).length > 0 ? outline : undefined,
+    fill: Object.keys(fill).length > 0 ? { ...fill, enabled: true } as NormalizedFill : undefined,
+    outline: Object.keys(outline).length > 0 ? { ...outline, enabled: true } as NormalizedOutline : undefined,
     effect: parseEffectList(query('a:effectLst'), ctx),
   }
 }

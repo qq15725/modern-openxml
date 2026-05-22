@@ -50,6 +50,7 @@ export function parsePicture(node?: OoxmlNode, ctx?: any): Picture | undefined {
     },
     foreground: {
       ...parseBlipFill(query('p:blipFill'), ctx),
+      enabled: true,
       fillWithShape: true,
     },
     meta: {
