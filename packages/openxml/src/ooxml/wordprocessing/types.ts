@@ -1,3 +1,5 @@
+import type { NormalizedDocument } from 'modern-idoc'
+
 export interface Run {
   text: string
   bold?: boolean
@@ -21,4 +23,16 @@ export interface Paragraph {
 
 export interface Docx {
   paragraphs: Paragraph[]
+}
+
+// 与 idoc 桥接:NormalizedDocx 是投影到 idoc 的视觉文档,meta 里保留原始
+// Docx 模型用于无损回写(docToDocx)。
+export interface DocxMeta {
+  /** 原始 Docx 模型,docToDocx 据此无损回写 */
+  docx: Docx
+  [key: string]: any
+}
+
+export interface NormalizedDocx extends NormalizedDocument {
+  meta: DocxMeta
 }

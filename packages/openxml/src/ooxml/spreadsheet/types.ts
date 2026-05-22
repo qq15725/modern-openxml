@@ -1,3 +1,5 @@
+import type { NormalizedDocument } from 'modern-idoc'
+
 export type CellValue = string | number | boolean | null
 
 export type CellType = 'string' | 'number' | 'boolean'
@@ -30,4 +32,16 @@ export interface Worksheet {
 
 export interface Workbook {
   sheets: Worksheet[]
+}
+
+// 与 idoc 桥接:NormalizedXlsx 把表格投影成可视元素树,meta 里保留原始
+// Workbook 模型用于无损回写(docToXlsx)。
+export interface XlsxMeta {
+  /** 原始 Workbook 模型,docToXlsx 据此无损回写 */
+  workbook: Workbook
+  [key: string]: any
+}
+
+export interface NormalizedXlsx extends NormalizedDocument {
+  meta: XlsxMeta
 }

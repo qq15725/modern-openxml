@@ -1,5 +1,6 @@
 export * from './cellRef'
 export * from './sharedStrings'
+export * from './toDoc'
 export * from './types'
 export * from './util'
 export * from './workbook'
