@@ -1,4 +1,6 @@
 export * from './docToPptx'
+export * from './jsonToXlsx'
 export * from './parsePresetShapeDefinitions'
 export * from './parsePresetTextWarpDefinitions'
 export * from './pptxToDoc'
+export * from './xlsxToJson'

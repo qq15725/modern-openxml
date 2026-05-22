@@ -1,2 +1,5 @@
 export * from './DocToPptx'
+export * from './JsonToXlsx'
+export * from './OpcReader'
 export * from './PptxToDoc'
+export * from './XlsxToJson'

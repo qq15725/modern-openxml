@@ -8,6 +8,10 @@ const RELATIONSHIP_TYPES = {
   presentation: 'officeDocument',
   app: 'extended-properties',
   core: 'metadata/core-properties',
+  // SpreadsheetML(xlsx)
+  workbook: 'officeDocument',
+  worksheets: 'worksheet',
+  xlsxStyles: 'styles',
 }
 
 export type Relationships = ({

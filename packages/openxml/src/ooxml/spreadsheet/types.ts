@@ -1,0 +1,33 @@
+export type CellValue = string | number | boolean | null
+
+export type CellType = 'string' | 'number' | 'boolean'
+
+export interface Cell {
+  /** A1 风格引用,例如 "A1" */
+  ref: string
+  /** 行号,1-based(对应 OOXML 的 row@r) */
+  row: number
+  /** 列号,0-based 数值列(便于计算,A=0) */
+  col: number
+  /** 单元格值(公式单元格为缓存结果) */
+  value: CellValue
+  /** 值类型 */
+  type: CellType
+  /** 公式文本(不含前导 "="),例如 "SUM(A1:A2)" */
+  formula?: string
+}
+
+export interface Row {
+  /** 行号,1-based */
+  index: number
+  cells: Cell[]
+}
+
+export interface Worksheet {
+  name: string
+  rows: Row[]
+}
+
+export interface Workbook {
+  sheets: Worksheet[]
+}

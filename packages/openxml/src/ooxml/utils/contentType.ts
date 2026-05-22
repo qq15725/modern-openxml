@@ -17,6 +17,12 @@ const CONTENT_TYPES = [
   [/notesMaster\d+\.xml$/, 'notesMaster', null],
   [/presentation\.xml$/, 'presentation', null],
 
+  // SpreadsheetML(xlsx)
+  [/workbook\.xml$/, 'workbook', null],
+  [/sheet\d+\.xml$/, 'worksheets', null],
+  [/sharedStrings\.xml$/, 'sharedStrings', null],
+  [/styles\.xml$/, 'xlsxStyles', null],
+
   [/\.rels$/, 'relationship', 'rels'],
 
   [/\.svg$/i, 'image/svg+xml', 'svg'],
