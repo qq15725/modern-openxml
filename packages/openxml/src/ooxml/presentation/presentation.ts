@@ -32,7 +32,7 @@ export function parsePresentation(node?: OoxmlNode): Presentation | undefined {
   }
 }
 
-export function stringifyPresentation(pptx: NormalizedPptx, slides: string[], slideMasters: string[]): string {
+export function stringifyPresentation(pptx: NormalizedPptx, slides: string[], slideMasters: string[], notesMasterId?: string): string {
   const slideIds = slides.map((id, i) => {
     return `<p:sldId id="${256 + i}" r:id="${id}"/>`
   })
@@ -51,6 +51,9 @@ export function stringifyPresentation(pptx: NormalizedPptx, slides: string[], sl
   <p:sldMasterIdLst>
      ${withIndents(slideMasterIds, 2)}
   </p:sldMasterIdLst>
+  ${notesMasterId
+    ? `<p:notesMasterIdLst><p:notesMasterId r:id="${notesMasterId}"/></p:notesMasterIdLst>`
+    : ''}
   <p:sldIdLst>
     ${withIndents(slideIds, 2)}
   </p:sldIdLst>

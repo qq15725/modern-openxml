@@ -18,6 +18,7 @@ import {
   clearUndef,
   OoxmlNode,
   parseCoreProperties,
+  parseNotesSlide,
   parsePresentation,
   parseRelationships,
   parseSlide,
@@ -266,6 +267,13 @@ export class PptxToDoc {
         drawingRels,
         dataRels,
       })
+
+      // ppt/notesSlides/notesSlideX.xml(演讲者备注)
+      const notesPath = slideRels.find(v => v.type === 'notesSlide')?.path
+      const notes = notesPath ? parseNotesSlide(this._readNode(notesPath)) : undefined
+      if (notes) {
+        slide.meta.notes = notes
+      }
 
       const masterElements = master?.children.filter(v => !v.meta.placeholderType && !v.meta.placeholderIndex) ?? []
       const layoutElements = layout?.children.filter(v => !v.meta.placeholderType && !v.meta.placeholderIndex) ?? []

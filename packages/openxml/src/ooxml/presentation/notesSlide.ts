@@ -1,6 +1,30 @@
-export function stringifyNotesSlide(): string {
-  return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<p:notes xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main">
+import type { OoxmlNode } from '../core'
+import { escapeXml } from '../utils'
+
+// p:notes —— 解析备注正文(body 占位符)的纯文本,按段落以换行拼接
+export function parseNotesSlide(node?: OoxmlNode): string | undefined {
+  if (!node || !node.name) {
+    return undefined
+  }
+  const body = node.find(`p:cSld/p:spTree/p:sp[p:nvSpPr/p:nvPr/p:ph/@type='body']/p:txBody`)
+  if (!body) {
+    return undefined
+  }
+  const text = body.get('.//a:p')
+    .map(p => p.attr('.', 'string') ?? '')
+    .join('\n')
+    .trim()
+  return text || undefined
+}
+
+export function stringifyNotesSlide(notes = ''): string {
+  const paragraphs = notes.split('\n').map((line) => {
+    return line
+      ? `<a:p><a:r><a:rPr lang="zh-CN" altLang="en-US" dirty="0"/><a:t>${escapeXml(line)}</a:t></a:r></a:p>`
+      : `<a:p><a:endParaRPr lang="zh-CN" altLang="en-US"/></a:p>`
+  }).join('')
+
+  return `<p:notes xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main">
   <p:cSld>
     <p:spTree>
       <p:nvGrpSpPr>
@@ -42,17 +66,7 @@ export function stringifyNotesSlide(): string {
         <p:txBody>
           <a:bodyPr/>
           <a:lstStyle/>
-          <a:p>
-            <a:r>
-              <a:rPr kumimoji="1" lang="zh-CN" altLang="en-US"/>
-              <a:t>标题</a:t>
-            </a:r>
-            <a:r>
-              <a:rPr kumimoji="1" lang="zh-CN" altLang="en-US"/>
-              <a:t>备注</a:t>
-            </a:r>
-            <a:endParaRPr kumimoji="1" lang="zh-CN" altLang="en-US"/>
-          </a:p>
+          ${paragraphs || '<a:p><a:endParaRPr lang="zh-CN" altLang="en-US"/></a:p>'}
         </p:txBody>
       </p:sp>
       <p:sp>

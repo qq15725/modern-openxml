@@ -32,6 +32,8 @@ export interface SlideMeta {
   pptLayoutPath: string
   pptMasterPath: string
   pptThemePath: string
+  /** 演讲者备注(纯文本,段落以换行分隔) */
+  notes?: string
 }
 
 export interface Slide extends Transition, Timing, NormalizedElement {

@@ -10,6 +10,8 @@ import { parseDomFromString } from '../global'
 import {
   compressXml,
   stringifyCoreProperties,
+  stringifyNotesMaster,
+  stringifyNotesSlide,
   stringifyPresentation,
   stringifyPresentationProperties,
   stringifyProperties,
@@ -143,6 +145,10 @@ export class DocToPptx {
       }),
     )
 
+    // 是否有演讲者备注(决定是否生成 notesMaster 及其在 presentation 关系中的 rId)
+    const hasNotes = slides.some(({ slide }) => Boolean((slide as Slide).meta?.notes))
+    const notesMasterId = hasNotes ? `rId${slides.length + 2}` : undefined
+
     // presentation
     add(
       'ppt/presentation.xml',
@@ -150,6 +156,7 @@ export class DocToPptx {
         _pptx,
         slides.map((_, i) => `rId${i + 1}`),
         [`rId${slides.length + 1}`],
+        notesMasterId,
       ),
     )
 
@@ -164,12 +171,32 @@ export class DocToPptx {
     const slideXmls = slides.map(({ slide, slideRefs }, index) => {
       const num = index + 1
       add(`ppt/slides/slide${num}.xml`, stringifySlide(slide as any))
+
+      const notes = (slide as Slide).meta?.notes
+      const noteRels: string[] = []
+      if (notes) {
+        add(`ppt/notesSlides/notesSlide${num}.xml`, stringifyNotesSlide(notes))
+        add(`ppt/notesSlides/_rels/notesSlide${num}.xml.rels`, stringifyRelationships([
+          '../notesMasters/notesMaster1.xml',
+        ]))
+        noteRels.push(`../notesSlides/notesSlide${num}.xml`)
+      }
+
       add(`ppt/slides/_rels/slide${num}.xml.rels`, stringifyRelationships([
         ...slideRefs,
         '../slideLayouts/slideLayout1.xml',
+        ...noteRels,
       ]))
       return `slides/slide${num}.xml`
     })
+
+    // notesMaster(任一 slide 有备注时)
+    if (hasNotes) {
+      add('ppt/notesMasters/notesMaster1.xml', stringifyNotesMaster())
+      add('ppt/notesMasters/_rels/notesMaster1.xml.rels', stringifyRelationships([
+        '../theme/theme1.xml',
+      ]))
+    }
 
     // fonts
     // writeFontData(pptx, zip)
@@ -177,6 +204,7 @@ export class DocToPptx {
     add('ppt/_rels/presentation.xml.rels', stringifyRelationships([
       ...slideXmls,
       'slideMasters/slideMaster1.xml',
+      ...(hasNotes ? ['notesMasters/notesMaster1.xml'] : []),
       // ...genFontRels(pptx),
       'theme/theme1.xml',
       'tableStyles.xml',
