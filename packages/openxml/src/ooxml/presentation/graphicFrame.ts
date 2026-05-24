@@ -4,6 +4,7 @@ import type { GroupShape } from './groupShape'
 import type { NonVisualDrawingProperties } from './nonVisualDrawingProperties'
 import type { SlideElement } from './slide'
 import { idGenerator } from 'modern-idoc'
+import { parseFill } from '../drawing'
 import { parseNonVisualDrawingProperties } from './nonVisualDrawingProperties'
 import { parseNonVisualProperties } from './nonVisualProperties'
 import { parseElement } from './slide'
@@ -27,6 +28,73 @@ export interface GraphicFrame extends NormalizedElement {
 //
 // DrawingML 表格:每个网格列都有一个 <a:tc>,被合并掉的格子用 hMerge/vMerge
 // 标记,合并起点用 gridSpan/rowSpan;故列号 = <a:tc> 在行内的索引。
+// a:lnL/a:lnR/a:lnT/a:lnB(与 a:ln 同构,但标签名不同,故不能直接复用 parseOutline)
+// 转成 idoc 的 CSS 边框串
+function lineToBorder(ln: OoxmlNode | undefined, ctx?: any): string | undefined {
+  if (!ln || ln.find('a:noFill')) {
+    return undefined
+  }
+  const width = ln.attr<number>('@w', 'ST_LineWidth')
+  const color = parseFill(ln, ctx)?.color
+  if (width === undefined && !color) {
+    return undefined
+  }
+  const dash = ln.attr('a:prstDash/@val')
+  const style = dash && dash !== 'solid' ? 'dashed' : 'solid'
+  return `${width ?? 1}px ${style} ${color ?? '#000000'}`
+}
+
+function anchorToVerticalAlign(anchor?: string): 'top' | 'middle' | 'bottom' | undefined {
+  if (anchor === 'ctr') {
+    return 'middle'
+  }
+  if (anchor === 'b') {
+    return 'bottom'
+  }
+  if (anchor === 't') {
+    return 'top'
+  }
+  return undefined
+}
+
+function parseCellStyle(tcPr: OoxmlNode | undefined, ctx?: any): { background?: any, style?: NormalizedStyle } {
+  if (!tcPr) {
+    return {}
+  }
+  const result: { background?: any, style?: NormalizedStyle } = {}
+
+  const fill = parseFill(tcPr, ctx)
+  if (fill && (fill.color || fill.image || fill.linearGradient || fill.radialGradient)) {
+    result.background = fill
+  }
+
+  const style: NormalizedStyle = {}
+  const verticalAlign = anchorToVerticalAlign(tcPr.attr('@anchor'))
+  if (verticalAlign) {
+    style.verticalAlign = verticalAlign
+  }
+  const borderLeft = lineToBorder(tcPr.find('a:lnL'), ctx)
+  const borderRight = lineToBorder(tcPr.find('a:lnR'), ctx)
+  const borderTop = lineToBorder(tcPr.find('a:lnT'), ctx)
+  const borderBottom = lineToBorder(tcPr.find('a:lnB'), ctx)
+  if (borderLeft) {
+    style.borderLeft = borderLeft
+  }
+  if (borderRight) {
+    style.borderRight = borderRight
+  }
+  if (borderTop) {
+    style.borderTop = borderTop
+  }
+  if (borderBottom) {
+    style.borderBottom = borderBottom
+  }
+  if (Object.keys(style).length) {
+    result.style = style
+  }
+  return result
+}
+
 function parsePptxTable(tbl: OoxmlNode, ctx?: any): NormalizedTable {
   const columns = tbl.get('a:tblGrid/a:gridCol').map(c => ({
     width: c.attr<number>('@w', 'emu'),
@@ -61,6 +129,13 @@ function parsePptxTable(tbl: OoxmlNode, ctx?: any): NormalizedTable {
       }
       if (rowSpan > 1) {
         cell.rowSpan = rowSpan
+      }
+      const { background, style } = parseCellStyle(tc.find('a:tcPr'), ctx)
+      if (background) {
+        cell.background = background
+      }
+      if (style) {
+        cell.style = style
       }
       cells.push(cell)
     })
