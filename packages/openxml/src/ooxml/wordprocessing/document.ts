@@ -1,5 +1,5 @@
 import type { OoxmlNode } from '../core'
-import type { Block, Paragraph, Run, Table, TableCell, TableRow } from './types'
+import type { Block, Paragraph, Run, Table, TableBorder, TableCell, TableCellBorders, TableRow } from './types'
 import { RELATIONSHIP_NS } from '../namespaces'
 import { escapeXml } from '../utils'
 import { isTable } from './types'
@@ -66,6 +66,8 @@ function parseParagraph(node: OoxmlNode): Paragraph {
   return paragraph
 }
 
+const BORDER_SIDES = ['top', 'left', 'bottom', 'right'] as const
+
 function parseTableCell(node: OoxmlNode): TableCell {
   const cell: TableCell = { paragraphs: node.get('w:p').map(parseParagraph) }
   const colSpan = node.attr<number>('w:tcPr/w:gridSpan/@w:val', 'number')
@@ -75,6 +77,28 @@ function parseTableCell(node: OoxmlNode): TableCell {
   const vMerge = node.find('w:tcPr/w:vMerge')
   if (vMerge) {
     cell.vMerge = vMerge.attr('@w:val') === 'restart' ? 'restart' : 'continue'
+  }
+  const shading = node.attr('w:tcPr/w:shd/@w:fill')
+  if (shading && shading !== 'auto') {
+    cell.shading = shading
+  }
+  const vAlign = node.attr('w:tcPr/w:vAlign/@w:val')
+  if (vAlign === 'top' || vAlign === 'center' || vAlign === 'bottom') {
+    cell.vAlign = vAlign
+  }
+  const borders: TableCellBorders = {}
+  for (const side of BORDER_SIDES) {
+    const b = node.find(`w:tcPr/w:tcBorders/w:${side}`)
+    if (b) {
+      borders[side] = {
+        val: b.attr('@w:val'),
+        size: b.attr<number>('@w:sz', 'number'),
+        color: b.attr('@w:color'),
+      }
+    }
+  }
+  if (Object.keys(borders).length) {
+    cell.borders = borders
   }
   return cell
 }
@@ -146,6 +170,17 @@ function stringifyParagraph(paragraph: Paragraph): string {
   return `<w:p>${pPrXml}${runs}</w:p>`
 }
 
+function stringifyBorder(side: string, border: TableBorder): string {
+  const attrs = [`w:val="${escapeXml(border.val ?? 'single')}"`]
+  if (border.size !== undefined) {
+    attrs.push(`w:sz="${border.size}"`)
+  }
+  if (border.color !== undefined) {
+    attrs.push(`w:color="${escapeXml(border.color)}"`)
+  }
+  return `<w:${side} ${attrs.join(' ')}/>`
+}
+
 function stringifyTableCell(cell: TableCell): string {
   const tcPr: string[] = []
   if (cell.colSpan && cell.colSpan > 1) {
@@ -153,6 +188,21 @@ function stringifyTableCell(cell: TableCell): string {
   }
   if (cell.vMerge) {
     tcPr.push(cell.vMerge === 'restart' ? '<w:vMerge w:val="restart"/>' : '<w:vMerge/>')
+  }
+  if (cell.borders) {
+    const sides = BORDER_SIDES
+      .filter(side => cell.borders![side])
+      .map(side => stringifyBorder(side, cell.borders![side]!))
+      .join('')
+    if (sides) {
+      tcPr.push(`<w:tcBorders>${sides}</w:tcBorders>`)
+    }
+  }
+  if (cell.shading) {
+    tcPr.push(`<w:shd w:val="clear" w:color="auto" w:fill="${escapeXml(cell.shading)}"/>`)
+  }
+  if (cell.vAlign) {
+    tcPr.push(`<w:vAlign w:val="${cell.vAlign}"/>`)
   }
   const tcPrXml = tcPr.length ? `<w:tcPr>${tcPr.join('')}</w:tcPr>` : ''
   // w:tc 至少要有一个 w:p

@@ -1,5 +1,5 @@
-import type { NormalizedElement, NormalizedFragment, NormalizedParagraph, NormalizedTableCell, TextAlign } from 'modern-idoc'
-import type { Docx, NormalizedDocx, Paragraph, ParagraphAlign, Run, Table } from './types'
+import type { NormalizedBackground, NormalizedElement, NormalizedFragment, NormalizedParagraph, NormalizedStyle, NormalizedTableCell, TextAlign } from 'modern-idoc'
+import type { Docx, NormalizedDocx, Paragraph, ParagraphAlign, Run, Table, TableBorder, TableCell } from './types'
 import { idGenerator } from 'modern-idoc'
 import { isTable } from './types'
 
@@ -59,6 +59,57 @@ function paragraphsToElement(paragraphs: Paragraph[]): NormalizedElement {
   }
 }
 
+// w:tcBorders 某边 -> CSS 边框串(sz 为八分之一磅:px = sz/6)
+function borderToCss(border: TableBorder): string | undefined {
+  if (border.val === 'nil' || border.val === 'none') {
+    return undefined
+  }
+  const px = Math.max(1, Math.round((border.size ?? 4) / 6))
+  const style = border.val === 'dashed'
+    ? 'dashed'
+    : border.val === 'dotted'
+      ? 'dotted'
+      : border.val === 'double'
+        ? 'double'
+        : 'solid'
+  const color = border.color && border.color !== 'auto' ? `#${border.color}` : '#000000'
+  return `${px}px ${style} ${color}`
+}
+
+const BORDER_TO_STYLE = {
+  top: 'borderTop',
+  left: 'borderLeft',
+  bottom: 'borderBottom',
+  right: 'borderRight',
+} as const
+
+/** docx 单元格底纹/对齐/边框 -> idoc cell.background / cell.style */
+function cellVisual(cell: TableCell): { background?: NormalizedBackground, style?: NormalizedStyle } {
+  const result: { background?: NormalizedBackground, style?: NormalizedStyle } = {}
+  if (cell.shading) {
+    result.background = { enabled: true, color: `#${cell.shading}` }
+  }
+  const style: NormalizedStyle = {}
+  if (cell.vAlign) {
+    style.verticalAlign = cell.vAlign === 'center' ? 'middle' : cell.vAlign
+  }
+  if (cell.borders) {
+    for (const side of ['top', 'left', 'bottom', 'right'] as const) {
+      const border = cell.borders[side]
+      if (border) {
+        const css = borderToCss(border)
+        if (css) {
+          style[BORDER_TO_STYLE[side]] = css
+        }
+      }
+    }
+  }
+  if (Object.keys(style).length) {
+    result.style = style
+  }
+  return result
+}
+
 /** docx 表格 -> idoc element.table:gridSpan->colSpan,vMerge->rowSpan(跳过 continue) */
 function tableToElement(table: Table): NormalizedElement {
   // 为每个单元格计算其起始网格列(累计 colSpan)
@@ -102,6 +153,13 @@ function tableToElement(table: Table): NormalizedElement {
       }
       if (rowSpan > 1) {
         tableCell.rowSpan = rowSpan
+      }
+      const { background, style } = cellVisual(cell)
+      if (background) {
+        tableCell.background = background
+      }
+      if (style) {
+        tableCell.style = style
       }
       cells.push(tableCell)
     }

@@ -21,12 +21,35 @@ export interface Paragraph {
   align?: ParagraphAlign
 }
 
+/** 单元格边框(w:tcBorders 的某一边),保留 OOXML 原值以便无损回写 */
+export interface TableBorder {
+  /** w:val,如 single/double/dashed/nil */
+  val?: string
+  /** w:sz,八分之一磅 */
+  size?: number
+  /** w:color,RRGGBB(或 auto) */
+  color?: string
+}
+
+export interface TableCellBorders {
+  top?: TableBorder
+  left?: TableBorder
+  bottom?: TableBorder
+  right?: TableBorder
+}
+
 export interface TableCell {
   paragraphs: Paragraph[]
   /** 横向合并列数(w:gridSpan) */
   colSpan?: number
   /** 纵向合并(w:vMerge);restart 为合并起点,continue 为被并入上方 */
   vMerge?: 'restart' | 'continue'
+  /** 底纹填充色(w:shd@fill,RRGGBB) */
+  shading?: string
+  /** 垂直对齐(w:vAlign) */
+  vAlign?: 'top' | 'center' | 'bottom'
+  /** 边框(w:tcBorders) */
+  borders?: TableCellBorders
 }
 
 export interface TableRow {
