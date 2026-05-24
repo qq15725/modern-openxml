@@ -2,9 +2,10 @@ import type { NormalizedElement, NormalizedStyle } from 'modern-idoc'
 import type { OoxmlNode, OOXMLQueryType } from '../core'
 import type { NonVisualDrawingProperties } from './nonVisualDrawingProperties'
 import { idGenerator } from 'modern-idoc'
-import { parseNonVisualDrawingProperties } from './nonVisualDrawingProperties'
+import { withIndents } from '../utils'
+import { parseNonVisualDrawingProperties, stringifyNonVisualDrawingProperties } from './nonVisualDrawingProperties'
 import { parseNonVisualProperties } from './nonVisualProperties'
-import { parseShapeProperties } from './shapeProperties'
+import { parseShapeProperties, stringifyShapeProperties } from './shapeProperties'
 
 export type ConnectionShapeMeta = NonVisualDrawingProperties['meta'] & {
   inCanvasIs: 'Element2D'
@@ -51,4 +52,18 @@ export function parseConnectionShape(node?: OoxmlNode, ctx?: any): ConnectionSha
       placeholderIndex: placeholder?.index,
     },
   }
+}
+
+export function stringifyConnectionShape(sp: ConnectionShape): string {
+  const cNvPr = stringifyNonVisualDrawingProperties(sp)
+  const spPr = stringifyShapeProperties(sp as any)
+
+  return `<p:cxnSp>
+  <p:nvCxnSpPr>
+    ${withIndents(cNvPr, 2)}
+    <p:cNvCxnSpPr/>
+    <p:nvPr/>
+  </p:nvCxnSpPr>
+  ${withIndents(spPr)}
+</p:cxnSp>`
 }

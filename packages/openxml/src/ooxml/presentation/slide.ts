@@ -10,8 +10,8 @@ import type { Transition } from './transition'
 import { idGenerator } from 'modern-idoc'
 import { withIndents } from '../utils'
 import { parseBackground, stringifyBackground } from './background'
-import { parseConnectionShape } from './connectionShape'
-import { parseGraphicFrame } from './graphicFrame'
+import { parseConnectionShape, stringifyConnectionShape } from './connectionShape'
+import { parseGraphicFrame, stringifyGraphicFrame } from './graphicFrame'
 import { parseGroupShape, stringifyGroupShape } from './groupShape'
 import { parsePicture, stringifyPicture } from './picture'
 import { parseShape, stringifyShape } from './shape'
@@ -91,8 +91,9 @@ function stringifyElement(node: SlideElement): string | undefined {
     case 'GroupShape':
       return stringifyGroupShape(node as GroupShape, stringifyElement)
     case 'ConnectionShape':
+      return stringifyConnectionShape(node as ConnectionShape)
     case 'GraphicFrame':
-      break
+      return stringifyGraphicFrame(node as GraphicFrame)
   }
   return undefined
 }
