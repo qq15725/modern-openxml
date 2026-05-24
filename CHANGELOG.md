@@ -1,3 +1,14 @@
+# [1.12.0](https://github.com/qq15725/modern-openxml/compare/v1.11.0...v1.12.0) (2026-05-24)
+
+
+### Features
+
+* **pptx:** decode and encode charts into idoc element.chart ([5ef2120](https://github.com/qq15725/modern-openxml/commit/5ef2120bc006d2adc80cfab50a7ea9cb9f0be2aa))
+* **pptx:** decode and encode speaker notes ([10c1e12](https://github.com/qq15725/modern-openxml/commit/10c1e126886e5c7909696623e6c0a63f1132cddb))
+* **pptx:** encode connection shapes and table graphic frames ([83a0754](https://github.com/qq15725/modern-openxml/commit/83a075465a7c67a9dec3a8243cade5be91f5c096))
+* **pptx:** encode outline dash and head/tail arrow ends ([b707b06](https://github.com/qq15725/modern-openxml/commit/b707b06f23823fc9bf3dcfe2e9fbe7947a7bca58))
+* **pptx:** encode radial gradients and parse pattern fills ([0ec2094](https://github.com/qq15725/modern-openxml/commit/0ec2094e4c077bf5753baaa99b94801d760ee864))
+* **pptx:** map text bullets/numbering to idoc listStyleType ([0d2f022](https://github.com/qq15725/modern-openxml/commit/0d2f022b154d698d9edd12e69f57ac620b3ce048))
 # [1.11.0](https://github.com/qq15725/modern-openxml/compare/v1.10.1...v1.11.0) (2026-05-24)
 
 
