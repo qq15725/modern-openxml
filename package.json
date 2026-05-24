@@ -22,7 +22,7 @@
     "conventional-changelog-cli": "^5.0.0",
     "eslint": "^10.4.0",
     "lint-staged": "^17.0.5",
-    "modern-idoc-svg": "^0.2.0",
+    "modern-idoc-svg": "^0.3.3",
     "simple-git-hooks": "^2.13.1",
     "typescript": "^6.0.3",
     "unbuild": "^3.6.1",

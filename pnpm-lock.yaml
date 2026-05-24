@@ -27,8 +27,8 @@ importers:
         specifier: ^17.0.5
         version: 17.0.5
       modern-idoc-svg:
-        specifier: ^0.2.0
-        version: 0.2.0
+        specifier: ^0.3.3
+        version: 0.3.3
       simple-git-hooks:
         specifier: ^2.13.1
         version: 2.13.1
@@ -2216,14 +2216,11 @@ packages:
   mlly@1.8.2:
     resolution: {integrity: sha512-d+ObxMQFmbt10sretNDytwt85VrbkhhUA/JBGm1MPaWJ65Cl4wOgLaB1NYvJSZ0Ef03MMEU/0xpPMXUIQ29UfA==}
 
-  modern-font@0.5.0:
-    resolution: {integrity: sha512-l8+QwxeOjZ8+k113C32YuH9PlK8+PycQ63//xQMsN2raPhf3PTdr2XYUzGo9FKaTtAfkgYSeHkVornTrqXWtlA==}
+  modern-font@0.6.0:
+    resolution: {integrity: sha512-+ONkM2v9nzULXa0GYFoLzlifjkrTDDABiboku68RbvuEm7jsMhd0hYOFFdiayCe64bcIfdi3TRe7xgTHPof1Tg==}
 
-  modern-idoc-svg@0.2.0:
-    resolution: {integrity: sha512-3QDox0oB+O9PoUaS4pFHwB1xSqxNq/wtfAWVv+dcBm/Qb7MwlAoBsacO124B3outy3sKy4jKiN2DFepSZqUrgw==}
-
-  modern-idoc@0.10.21:
-    resolution: {integrity: sha512-sdN5Qfjxto90VizQV8LujvUVD0d9B4iwom6gkPWKbJLF+QUOaCCet1BycBwrUrutAcZqjvFeRlOO352sa0iQow==}
+  modern-idoc-svg@0.3.3:
+    resolution: {integrity: sha512-DP3GRNBbWJBpMca2uDJr5z5FufZd5Lc17swbQiprORWOJ2h2heorlQEApWYmjT8AN5hihQe5g92UhfF11jSpAA==}
 
   modern-idoc@0.11.8:
     resolution: {integrity: sha512-wOwGx2PCr/FeC1BjgEMf9gW68VfzE3IPlrfuBJnrHiPmE/V9UqtsOTt1+4NaRWJAP1uylWRj//xB2Az+NqsfHQ==}
@@ -2231,8 +2228,8 @@ packages:
   modern-path2d@1.7.0:
     resolution: {integrity: sha512-9BIk0manYEmJRMknVdhumn4Sn7JCR7b2oC4Oc5geAfPFMEaySFXiPbhCrBLLkJ65Ty4WWzwOnvSzslBGeBNeLQ==}
 
-  modern-text@1.12.0:
-    resolution: {integrity: sha512-uglDFf49mQt0Px7XtggNaz6RH9W7dozYRIuQFXkc53Cj8JnNQkmDFkJ7Hxa18tKtjCz4Dhrf5clhbHLcb1danA==}
+  modern-text@2.0.3:
+    resolution: {integrity: sha512-B13Klwhpo3YZHNLeOrb4MQ2n+SNALLmf/GDxxB2nOYC6IBZrznNNHTXbh14/Gazgwbmx0PRs431I5Y+nxGf8bg==}
 
   module-replacements@3.0.0-beta.7:
     resolution: {integrity: sha512-n1F9l3gF1wNh13xmnXS2JU7P9c3DlzCgVEyLKrVN0U37RwrXyYoePMMvYvs/6aUONAxbnscphzESZTCorXFh7Q==}
@@ -2756,11 +2753,11 @@ packages:
     resolution: {integrity: sha512-Bf+ILmBgretUrdJxzXM0SgXLZ3XfiaUuOj/IKQHuTXip+05Xn+uyEYdVg0kYDipTBcLrCVyUzAPz7QmArb0mmw==}
     engines: {node: '>=14.0.0'}
 
-  tldts-core@7.1.0:
-    resolution: {integrity: sha512-Ou+YJ467tR700sk2mZBB1/uFah6LDeH/VKO0N4xfjFOXE0hJkZgiOgXj16gEi1wQ4L6334UTKjxF6gum8ftZzQ==}
+  tldts-core@7.1.2:
+    resolution: {integrity: sha512-26EbERPLf5wkNFKW+7egxArSPN1Nqipe/PIe1nvhpNu8HqQeY2pYdOeQk4sAiADv/e03VzHkLY0PPohKv1JMAQ==}
 
-  tldts@7.1.0:
-    resolution: {integrity: sha512-Y+iRHtDrPOlNH9ZZpqpIogonv7jwSPHIt3Gpe+kRvYJlBaK+QGNXu+xooJY0QEmb62/ERo3GF3zCxRMbMtKEEA==}
+  tldts@7.1.2:
+    resolution: {integrity: sha512-RUX5sQm8bl03ycwQ6nSgJiKw9FZWhA8GBzxX6X1lsG3xKzFIW+lYLLpM30FQbDD6XjTWa/VkF15VxjnAMWYJAQ==}
     hasBin: true
 
   to-valid-identifier@1.0.0:
@@ -5300,19 +5297,14 @@ snapshots:
       pkg-types: 1.3.1
       ufo: 1.6.4
 
-  modern-font@0.5.0:
+  modern-font@0.6.0:
     dependencies:
       fflate: 0.8.3
 
-  modern-idoc-svg@0.2.0:
+  modern-idoc-svg@0.3.3:
     dependencies:
-      modern-idoc: 0.10.21
-      modern-text: 1.12.0
-
-  modern-idoc@0.10.21:
-    dependencies:
-      colord: 2.9.3
-      nanoid: 5.1.11
+      modern-idoc: 0.11.8
+      modern-text: 2.0.3
 
   modern-idoc@0.11.8:
     dependencies:
@@ -5323,10 +5315,10 @@ snapshots:
     dependencies:
       earcut: 3.0.2
 
-  modern-text@1.12.0:
+  modern-text@2.0.3:
     dependencies:
       diff: 9.0.0
-      modern-font: 0.5.0
+      modern-font: 0.6.0
       modern-idoc: 0.11.8
       modern-path2d: 1.7.0
 
@@ -5851,11 +5843,11 @@ snapshots:
 
   tinyrainbow@3.1.0: {}
 
-  tldts-core@7.1.0: {}
+  tldts-core@7.1.2: {}
 
-  tldts@7.1.0:
+  tldts@7.1.2:
     dependencies:
-      tldts-core: 7.1.0
+      tldts-core: 7.1.2
 
   to-valid-identifier@1.0.0:
     dependencies:
@@ -5868,7 +5860,7 @@ snapshots:
 
   tough-cookie@6.0.1:
     dependencies:
-      tldts: 7.1.0
+      tldts: 7.1.2
 
   tr46@6.0.0:
     dependencies:
