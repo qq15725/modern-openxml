@@ -25,8 +25,8 @@ export class DocxToJson extends OpcReader {
 
     // word/document.xml
     const documentPath = rels.find(v => v.type === 'document')?.path
-    const paragraphs = parseDocument(documentPath ? this._readNode(documentPath) : undefined)
+    const blocks = parseDocument(documentPath ? this._readNode(documentPath) : undefined)
 
-    return { paragraphs }
+    return { blocks }
   }
 }

@@ -32,7 +32,7 @@ export class JsonToDocx {
     }
 
     // word/document.xml + 关系
-    add('word/document.xml', stringifyDocument(docx.paragraphs ?? []))
+    add('word/document.xml', stringifyDocument(docx.blocks ?? []))
     add('word/_rels/document.xml.rels', stringifyRelationships(['styles.xml']))
     add('word/styles.xml', MINIMAL_STYLES)
 

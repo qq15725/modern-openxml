@@ -1,7 +1,8 @@
 import type { OoxmlNode } from '../core'
-import type { Paragraph, Run } from './types'
+import type { Block, Paragraph, Run, Table, TableCell, TableRow } from './types'
 import { RELATIONSHIP_NS } from '../namespaces'
 import { escapeXml } from '../utils'
+import { isTable } from './types'
 import { WORD_NS } from './util'
 
 // word/document.xml
@@ -65,11 +66,50 @@ function parseParagraph(node: OoxmlNode): Paragraph {
   return paragraph
 }
 
-export function parseDocument(node?: OoxmlNode): Paragraph[] {
+function parseTableCell(node: OoxmlNode): TableCell {
+  const cell: TableCell = { paragraphs: node.get('w:p').map(parseParagraph) }
+  const colSpan = node.attr<number>('w:tcPr/w:gridSpan/@w:val', 'number')
+  if (colSpan && colSpan > 1) {
+    cell.colSpan = colSpan
+  }
+  const vMerge = node.find('w:tcPr/w:vMerge')
+  if (vMerge) {
+    cell.vMerge = vMerge.attr('@w:val') === 'restart' ? 'restart' : 'continue'
+  }
+  return cell
+}
+
+function parseTableRow(node: OoxmlNode): TableRow {
+  const row: TableRow = { cells: node.get('w:tc').map(parseTableCell) }
+  const height = node.attr<number>('w:trPr/w:trHeight/@w:val', 'number')
+  if (height !== undefined) {
+    row.height = height
+  }
+  return row
+}
+
+function parseTable(node: OoxmlNode): Table {
+  return {
+    columns: node.get('w:tblGrid/w:gridCol').map(g => g.attr<number>('@w:w', 'number') ?? 0),
+    rows: node.get('w:tr').map(parseTableRow),
+  }
+}
+
+export function parseDocument(node?: OoxmlNode): Block[] {
   if (!node) {
     return []
   }
-  return node.get('w:body/w:p').map(parseParagraph)
+  // 按出现顺序遍历正文(段落与表格交错),跳过 w:sectPr 等
+  const blocks: Block[] = []
+  for (const child of node.get('w:body/*')) {
+    if (child.name === 'w:p') {
+      blocks.push(parseParagraph(child))
+    }
+    else if (child.name === 'w:tbl') {
+      blocks.push(parseTable(child))
+    }
+  }
+  return blocks
 }
 
 function stringifyRun(run: Run): string {
@@ -106,8 +146,37 @@ function stringifyParagraph(paragraph: Paragraph): string {
   return `<w:p>${pPrXml}${runs}</w:p>`
 }
 
-export function stringifyDocument(paragraphs: Paragraph[]): string {
-  const body = paragraphs.map(stringifyParagraph).join('')
+function stringifyTableCell(cell: TableCell): string {
+  const tcPr: string[] = []
+  if (cell.colSpan && cell.colSpan > 1) {
+    tcPr.push(`<w:gridSpan w:val="${cell.colSpan}"/>`)
+  }
+  if (cell.vMerge) {
+    tcPr.push(cell.vMerge === 'restart' ? '<w:vMerge w:val="restart"/>' : '<w:vMerge/>')
+  }
+  const tcPrXml = tcPr.length ? `<w:tcPr>${tcPr.join('')}</w:tcPr>` : ''
+  // w:tc 至少要有一个 w:p
+  const paragraphs = cell.paragraphs.length ? cell.paragraphs.map(stringifyParagraph).join('') : '<w:p/>'
+  return `<w:tc>${tcPrXml}${paragraphs}</w:tc>`
+}
+
+function stringifyTableRow(row: TableRow): string {
+  const trPr = row.height !== undefined ? `<w:trPr><w:trHeight w:val="${row.height}"/></w:trPr>` : ''
+  return `<w:tr>${trPr}${row.cells.map(stringifyTableCell).join('')}</w:tr>`
+}
+
+function stringifyTable(table: Table): string {
+  const grid = table.columns.map(w => `<w:gridCol w:w="${w}"/>`).join('')
+  const rows = table.rows.map(stringifyTableRow).join('')
+  return `<w:tbl><w:tblPr><w:tblW w:w="0" w:type="auto"/></w:tblPr><w:tblGrid>${grid}</w:tblGrid>${rows}</w:tbl>`
+}
+
+function stringifyBlock(block: Block): string {
+  return isTable(block) ? stringifyTable(block) : stringifyParagraph(block)
+}
+
+export function stringifyDocument(blocks: Block[]): string {
+  const body = blocks.map(stringifyBlock).join('')
   return `<w:document xmlns:w="${WORD_NS}" xmlns:r="${RELATIONSHIP_NS}">`
     + `<w:body>${body}<w:sectPr><w:pgSz w:w="11906" w:h="16838"/></w:sectPr></w:body>`
     + `</w:document>`
