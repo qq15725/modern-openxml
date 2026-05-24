@@ -13,7 +13,57 @@ import type {
 import type { OoxmlNode, OOXMLQueryType } from '../core'
 import { OoxmlValue } from '../core'
 import { fillXPath, parseFill, parseOutline, stringifyFill, stringifyOutline } from '../drawing'
-import { BiMap, withAttr, withAttrs, withIndents } from '../utils'
+import { BiMap, escapeXml, withAttr, withAttrs, withIndents } from '../utils'
+
+// —— 项目符号 / 列表 ↔ idoc listStyleType ——
+// 解析:a:buAutoNum@type 取基础计数类型(后缀 .)/) 不在 idoc 表达,丢弃)
+function autoNumToListType(type: string): string {
+  if (type.startsWith('alphaUc'))
+    return 'upper-alpha'
+  if (type.startsWith('alphaLc'))
+    return 'lower-alpha'
+  if (type.startsWith('romanUc'))
+    return 'upper-roman'
+  if (type.startsWith('romanLc'))
+    return 'lower-roman'
+  return 'decimal' // arabic*, 及其它默认
+}
+
+// a:buChar@char 常见项目符号 -> idoc;其它字符原样保留(ListStyleType 允许任意字符串)
+function charToListType(char: string): string {
+  if (char === '◦' || char === 'o')
+    return 'circle'
+  if (char === '▪' || char === '§' || char === '')
+    return 'square'
+  if (char === '•')
+    return 'disc'
+  return char
+}
+
+const LIST_TYPE_TO_AUTONUM: Record<string, string> = {
+  'decimal': 'arabicPeriod',
+  'decimal-leading-zero': 'arabicPeriod',
+  'lower-alpha': 'alphaLcPeriod',
+  'upper-alpha': 'alphaUcPeriod',
+  'lower-roman': 'romanLcPeriod',
+  'upper-roman': 'romanUcPeriod',
+}
+const LIST_TYPE_TO_CHAR: Record<string, string> = {
+  disc: '•',
+  circle: '◦',
+  square: '▪',
+}
+
+function stringifyBullet(listType: string): string {
+  if (listType === 'none') {
+    return '<a:buNone/>'
+  }
+  if (LIST_TYPE_TO_AUTONUM[listType]) {
+    return `<a:buAutoNum type="${LIST_TYPE_TO_AUTONUM[listType]}"/>`
+  }
+  const char = LIST_TYPE_TO_CHAR[listType] ?? listType
+  return `<a:buChar char="${escapeXml(char)}"/>`
+}
 
 export interface TextBody {
   style: NormalizedStyle
@@ -174,12 +224,36 @@ export function parseTextBody(txBody?: OoxmlNode, ctx?: Record<string, any>): Te
       })
       .filter(Boolean) as NormalizedFragment[]
 
+    // 项目符号:按继承链找到第一个定义了 buNone/buChar/buAutoNum 的 pPr(逐元素优先)
+    let listStyleType: string | undefined
+    for (const getPPr of pPrList) {
+      const pPr = getPPr()
+      if (!pPr) {
+        continue
+      }
+      if (pPr.find('a:buNone')) {
+        listStyleType = 'none'
+        break
+      }
+      const autoNum = pPr.attr('a:buAutoNum/@type')
+      if (autoNum) {
+        listStyleType = autoNumToListType(autoNum)
+        break
+      }
+      const buChar = pPr.attr('a:buChar/@char')
+      if (buChar) {
+        listStyleType = charToListType(buChar)
+        break
+      }
+    }
+
     return {
       marginLeft: queryPPr('@marL', 'emu'),
       marginRight: queryPPr('@marR', 'emu'),
       textIndent: queryPPr('@indent', 'emu'),
       lineHeight: queryPPr('a:lnSpc/a:spcPct/@val', 'ST_TextSpacingPercentOrPercentString'),
       textAlign: textAlignMap.getValue(queryPPr('@algn', 'string')),
+      listStyleType,
       fragments,
     }
   }) ?? []
@@ -286,6 +360,11 @@ export function stringifyTextBody(txBody?: TextBody): string | undefined {
       children.push(`<a:lnSpc>
   <a:spcPct val="${OoxmlValue.encode(getPStyle('lineHeight'), 'ST_TextSpacingPercentOrPercentString')}" />
 </a:lnSpc>`)
+    }
+
+    const listStyleType = getPStyle('listStyleType')
+    if (listStyleType) {
+      children.push(stringifyBullet(listStyleType))
     }
 
     const pPrAttrs = [
