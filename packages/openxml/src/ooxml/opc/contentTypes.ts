@@ -16,6 +16,7 @@ const CONTENT_TYPES = {
   [`${DOCUMENT}.presentationml.slideLayout+xml`]: 'slideLayout',
   [`${DOCUMENT}.presentationml.slideMaster+xml`]: 'slideMaster',
   [`${DOCUMENT}.presentationml.slide+xml`]: 'slide',
+  [`${DOCUMENT}.drawingml.chart+xml`]: 'chart',
   [`${DOCUMENT}.drawingml.diagramColors+xml`]: 'diagramColors',
   [`${DOCUMENT}.drawingml.diagramData+xml`]: 'diagramData',
   [`${DOCUMENT}.drawingml.diagramLayout+xml`]: 'diagramLayout',

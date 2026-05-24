@@ -9,6 +9,7 @@ import { zipSync } from 'fflate'
 import { parseDomFromString } from '../global'
 import {
   compressXml,
+  stringifyChart,
   stringifyCoreProperties,
   stringifyNotesMaster,
   stringifyNotesSlide,
@@ -125,6 +126,7 @@ export class DocToPptx {
     }
 
     // slides
+    let chartCount = 0
     const slides = await Promise.all(
       (pptx.children ?? [])?.map(async (slide) => {
         const slideRefs: string[] = []
@@ -140,6 +142,19 @@ export class DocToPptx {
           ].filter(Boolean) as T[]
 
         await Promise.all(uploadRefs(slide))
+
+        // 图表:写独立 chartN.xml 部件,并把 rId 记到元素 meta.chartRId(media 之后排号)
+        const collectCharts = (el: Slide | SlideElement): void => {
+          const chart = (el as SlideElement).chart
+          if (chart) {
+            chartCount++
+            add(`ppt/charts/chart${chartCount}.xml`, stringifyChart(chart))
+            slideRefs.push(`../charts/chart${chartCount}.xml`)
+            ;(el as any).meta = { ...(el as any).meta, chartRId: `rId${slideRefs.length}` }
+          }
+          ;(el.children ?? []).forEach(c => collectCharts(c as SlideElement))
+        }
+        collectCharts(slide)
 
         return { slide, slideRefs }
       }),

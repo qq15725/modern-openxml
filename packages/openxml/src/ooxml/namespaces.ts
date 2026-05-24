@@ -5,6 +5,7 @@ export const namespaces = {
   p: 'http://schemas.openxmlformats.org/presentationml/2006/main',
   r: 'http://schemas.openxmlformats.org/officeDocument/2006/relationships',
   a: 'http://schemas.openxmlformats.org/drawingml/2006/main',
+  c: 'http://schemas.openxmlformats.org/drawingml/2006/chart',
   w: 'http://schemas.openxmlformats.org/wordprocessingml/2006/main',
   a14: 'http://schemas.microsoft.com/office/drawing/2010/main',
   dgm: 'http://schemas.openxmlformats.org/drawingml/2006/diagram',

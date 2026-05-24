@@ -1,4 +1,5 @@
 export * from './background'
+export * from './chart'
 export * from './colorMap'
 export * from './connectionShape'
 export * from './graphicFrame'

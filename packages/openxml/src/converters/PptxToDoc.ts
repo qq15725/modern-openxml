@@ -259,6 +259,11 @@ export class PptxToDoc {
         rels: layoutRels,
       })
 
+      // ppt/charts/chartX.xml(图表部件)
+      const chartRels = slideRels
+        .filter(v => v.type === 'chart')
+        .map(rel => ({ ...rel, node: this._readNode(rel.path) }))
+
       const slide = parseSlide(slideNode, slidePath, {
         ...sharedContext,
         layout: { node: layoutNode, ...layout },
@@ -266,6 +271,7 @@ export class PptxToDoc {
         rels: slideRels,
         drawingRels,
         dataRels,
+        chartRels,
       })
 
       // ppt/notesSlides/notesSlideX.xml(演讲者备注)

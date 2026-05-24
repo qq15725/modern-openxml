@@ -6,6 +6,7 @@ const CONTENT_TYPES = [
   [/viewProps\.xml$/, 'viewProps', null],
   [/theme\d+\.xml$/, 'theme', null],
   [/slide\d+\.xml$/, 'slide', null],
+  [/charts\/chart\d+\.xml$/, 'chart', null],
   [/colors\d+\.xml$/, 'diagramColor', null],
   [/data\d+\.xml$/, 'diagramData', null],
   [/layout\d+\.xml$/, 'diagramLayout', null],

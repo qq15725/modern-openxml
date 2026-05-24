@@ -7,6 +7,7 @@ import { idGenerator } from 'modern-idoc'
 import { OoxmlValue } from '../core'
 import { parseFill, stringifySolidFill } from '../drawing'
 import { withAttr, withAttrs, withIndents } from '../utils'
+import { parseChart } from './chart'
 import { parseNonVisualDrawingProperties, stringifyNonVisualDrawingProperties } from './nonVisualDrawingProperties'
 import { parseNonVisualProperties } from './nonVisualProperties'
 import { parseElement } from './slide'
@@ -176,6 +177,33 @@ function parseTableGraphicFrame(node: OoxmlNode, tbl: OoxmlNode, ctx?: any): Gra
   }
 }
 
+function parseChartGraphicFrame(node: OoxmlNode, chartRef: OoxmlNode, ctx?: any): GraphicFrame {
+  const { placeholder, ...nvPr } = parseNonVisualProperties(node.find('p:nvGraphicFramePr/p:nvPr')) ?? {}
+  const cNvPr = parseNonVisualDrawingProperties(node.find('p:nvGraphicFramePr/p:cNvPr'))
+  const xfrm = parseTransform2d(node.find('p:xfrm'))!
+  const chartId = chartRef.attr('@r:id')
+  const chartNode = ctx?.chartRels?.find((r: any) => r.id === chartId)?.node as OoxmlNode | undefined
+
+  return {
+    id: idGenerator(),
+    ...nvPr,
+    ...cNvPr,
+    style: {
+      ...cNvPr?.style,
+      ...xfrm,
+    },
+    chart: parseChart(chartNode, { ...ctx, placeholder }),
+    children: [],
+    meta: {
+      ...cNvPr?.meta,
+      inCanvasIs: 'Element2D',
+      inPptIs: 'GraphicFrame',
+      placeholderType: placeholder?.type,
+      placeholderIndex: placeholder?.index,
+    },
+  }
+}
+
 export function parseGraphicFrame(node?: OoxmlNode, ctx?: any): GraphicFrame | undefined {
   if (!node)
     return undefined
@@ -184,6 +212,12 @@ export function parseGraphicFrame(node?: OoxmlNode, ctx?: any): GraphicFrame | u
   const tbl = node.find('a:graphic/a:graphicData/a:tbl')
   if (tbl) {
     return parseTableGraphicFrame(node, tbl, ctx)
+  }
+
+  // 图表 graphicFrame
+  const chartRef = node.find('a:graphic/a:graphicData/c:chart')
+  if (chartRef) {
+    return parseChartGraphicFrame(node, chartRef, ctx)
   }
 
   const dataId = node.attr('a:graphic/a:graphicData/dgm:relIds/@r:dm')
@@ -311,20 +345,13 @@ function stringifyTable(table: NonNullable<NormalizedElement['table']>): string 
   return `<a:tbl><a:tblPr firstRow="1" bandRow="1"/><a:tblGrid>${gridCols}</a:tblGrid>${rows}</a:tbl>`
 }
 
-export function stringifyGraphicFrame(node: GraphicFrame): string | undefined {
-  // 目前仅支持表格 graphicFrame;diagram/chart 暂不回写
-  if (!node.table) {
-    return undefined
-  }
-  const cNvPr = stringifyNonVisualDrawingProperties(node)
+const CHART_URI = 'http://schemas.openxmlformats.org/drawingml/2006/chart'
+const CHART_NS = 'http://schemas.openxmlformats.org/drawingml/2006/chart'
+const R_NS = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships'
+
+function graphicFrameXfrm(node: GraphicFrame): string {
   const s = node.style ?? {}
-  return `<p:graphicFrame>
-  <p:nvGraphicFramePr>
-    ${withIndents(cNvPr, 2)}
-    <p:cNvGraphicFramePr/>
-    <p:nvPr/>
-  </p:nvGraphicFramePr>
-  <p:xfrm>
+  return `<p:xfrm>
     <a:off${withAttrs([
       withAttr('x', OoxmlValue.encode(Number(s.left ?? 0), 'emu')),
       withAttr('y', OoxmlValue.encode(Number(s.top ?? 0), 'emu')),
@@ -333,7 +360,41 @@ export function stringifyGraphicFrame(node: GraphicFrame): string | undefined {
       withAttr('cx', OoxmlValue.encode(Number(s.width ?? 0), 'emu')),
       withAttr('cy', OoxmlValue.encode(Number(s.height ?? 0), 'emu')),
     ])}/>
-  </p:xfrm>
+  </p:xfrm>`
+}
+
+export function stringifyGraphicFrame(node: GraphicFrame): string | undefined {
+  // 图表(图表本体写成独立部件,这里只引用 rId;rId 由 DocToPptx 在 meta.chartRId 写入)
+  if (node.chart) {
+    const cNvPr = stringifyNonVisualDrawingProperties(node)
+    const rId = (node.meta as any)?.chartRId ?? 'rId1'
+    return `<p:graphicFrame>
+  <p:nvGraphicFramePr>
+    ${withIndents(cNvPr, 2)}
+    <p:cNvGraphicFramePr/>
+    <p:nvPr/>
+  </p:nvGraphicFramePr>
+  ${withIndents(graphicFrameXfrm(node))}
+  <a:graphic>
+    <a:graphicData uri="${CHART_URI}">
+      <c:chart xmlns:c="${CHART_NS}" xmlns:r="${R_NS}" r:id="${rId}"/>
+    </a:graphicData>
+  </a:graphic>
+</p:graphicFrame>`
+  }
+
+  // 表格 graphicFrame;diagram 暂不回写
+  if (!node.table) {
+    return undefined
+  }
+  const cNvPr = stringifyNonVisualDrawingProperties(node)
+  return `<p:graphicFrame>
+  <p:nvGraphicFramePr>
+    ${withIndents(cNvPr, 2)}
+    <p:cNvGraphicFramePr/>
+    <p:nvPr/>
+  </p:nvGraphicFramePr>
+  ${withIndents(graphicFrameXfrm(node))}
   <a:graphic>
     <a:graphicData uri="${TABLE_URI}">
       ${withIndents(stringifyTable(node.table), 3)}
