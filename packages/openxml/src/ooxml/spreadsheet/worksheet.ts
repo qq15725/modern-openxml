@@ -1,6 +1,6 @@
 import type { OoxmlNode } from '../core'
 import type { SharedStrings } from './sharedStrings'
-import type { Cell, Row, Worksheet } from './types'
+import type { Cell, Column, Row, Worksheet } from './types'
 import { RELATIONSHIP_NS } from '../namespaces'
 import { escapeXml } from '../utils'
 import { parseCellRef, toCellRef } from './cellRef'
@@ -75,9 +75,32 @@ export function parseWorksheet(node: OoxmlNode | undefined, name: string, shared
       .get('c')
       .map(c => parseCell(c, sharedStrings))
       .filter((c): c is Cell => Boolean(c))
-    return { index, cells }
+    const row: Row = { index, cells }
+    const height = rowNode.attr<number>('@ht', 'number')
+    if (height !== undefined) {
+      row.height = height
+    }
+    return row
   })
-  return { name, rows }
+
+  const columns: Column[] = node.get('cols/col').map(col => ({
+    min: col.attr<number>('@min', 'number') ?? 1,
+    max: col.attr<number>('@max', 'number') ?? 1,
+    width: col.attr<number>('@width', 'number') ?? 0,
+  }))
+
+  const merges = node.get('mergeCells/mergeCell')
+    .map(m => m.attr('@ref'))
+    .filter((ref): ref is string => Boolean(ref))
+
+  const worksheet: Worksheet = { name, rows }
+  if (columns.length) {
+    worksheet.columns = columns
+  }
+  if (merges.length) {
+    worksheet.merges = merges
+  }
+  return worksheet
 }
 
 function stringifyCell(cell: Cell, sharedStrings: SharedStrings): string {
@@ -120,11 +143,26 @@ function stringifyCell(cell: Cell, sharedStrings: SharedStrings): string {
 }
 
 export function stringifyWorksheet(sheet: Worksheet, sharedStrings: SharedStrings): string {
+  const cols = (sheet.columns ?? [])
+    .map(col => `<col min="${col.min}" max="${col.max}" width="${col.width}" customWidth="1"/>`)
+    .join('')
+  const colsXml = cols ? `<cols>${cols}</cols>` : ''
+
   const rows = sheet.rows
     .map((row) => {
       const cells = row.cells.map(c => stringifyCell(c, sharedStrings)).join('')
-      return `<row r="${row.index}">${cells}</row>`
+      const ht = row.height !== undefined ? ` ht="${row.height}" customHeight="1"` : ''
+      return `<row r="${row.index}"${ht}>${cells}</row>`
     })
     .join('')
-  return `<worksheet xmlns="${SPREADSHEET_NS}" xmlns:r="${RELATIONSHIP_NS}"><sheetData>${rows}</sheetData></worksheet>`
+
+  const merges = sheet.merges ?? []
+  const mergesXml = merges.length
+    ? `<mergeCells count="${merges.length}">${merges.map(ref => `<mergeCell ref="${ref}"/>`).join('')}</mergeCells>`
+    : ''
+
+  // 部件顺序需符合 schema:cols 在 sheetData 之前,mergeCells 在之后
+  return `<worksheet xmlns="${SPREADSHEET_NS}" xmlns:r="${RELATIONSHIP_NS}">`
+    + `${colsXml}<sheetData>${rows}</sheetData>${mergesXml}`
+    + `</worksheet>`
 }

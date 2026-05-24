@@ -23,11 +23,26 @@ export interface Row {
   /** 行号,1-based */
   index: number
   cells: Cell[]
+  /** 行高(磅 / point,OOXML row@ht 原值) */
+  height?: number
+}
+
+/** 列定义(对应 <col min max width>),width 为 OOXML 字符宽度原值 */
+export interface Column {
+  /** 起始列,1-based(含) */
+  min: number
+  /** 结束列,1-based(含) */
+  max: number
+  width: number
 }
 
 export interface Worksheet {
   name: string
   rows: Row[]
+  /** 列宽定义 */
+  columns?: Column[]
+  /** 合并区,A1 风格,例如 "A1:B2" */
+  merges?: string[]
 }
 
 export interface Workbook {
