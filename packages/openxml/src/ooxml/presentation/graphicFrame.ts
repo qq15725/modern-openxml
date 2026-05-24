@@ -1,4 +1,4 @@
-import type { NormalizedElement, NormalizedStyle } from 'modern-idoc'
+import type { NormalizedElement, NormalizedStyle, NormalizedTable, NormalizedTableCell } from 'modern-idoc'
 import type { OoxmlNode } from '../core'
 import type { GroupShape } from './groupShape'
 import type { NonVisualDrawingProperties } from './nonVisualDrawingProperties'
@@ -7,6 +7,7 @@ import { idGenerator } from 'modern-idoc'
 import { parseNonVisualDrawingProperties } from './nonVisualDrawingProperties'
 import { parseNonVisualProperties } from './nonVisualProperties'
 import { parseElement } from './slide'
+import { parseTextBody } from './textBody'
 import { parseTransform2d } from './transform2d'
 
 export type GraphicFrameMeta = NonVisualDrawingProperties['meta'] & {
@@ -22,9 +23,91 @@ export interface GraphicFrame extends NormalizedElement {
   children: SlideElement[]
 }
 
+// a:graphic/a:graphicData/a:tbl
+//
+// DrawingML 表格:每个网格列都有一个 <a:tc>,被合并掉的格子用 hMerge/vMerge
+// 标记,合并起点用 gridSpan/rowSpan;故列号 = <a:tc> 在行内的索引。
+function parsePptxTable(tbl: OoxmlNode, ctx?: any): NormalizedTable {
+  const columns = tbl.get('a:tblGrid/a:gridCol').map(c => ({
+    width: c.attr<number>('@w', 'emu'),
+  }))
+
+  const trList = tbl.get('a:tr')
+  const cells: NormalizedTableCell[] = []
+  trList.forEach((tr, r) => {
+    tr.get('a:tc').forEach((tc, c) => {
+      if (tc.attr<boolean>('@hMerge', 'boolean') || tc.attr<boolean>('@vMerge', 'boolean')) {
+        return // 被合并覆盖的格子
+      }
+      const colSpan = tc.attr<number>('@gridSpan', 'number') ?? 1
+      const rowSpan = tc.attr<number>('@rowSpan', 'number') ?? 1
+      const txBodyNode = tc.find('a:txBody')
+      const txBody = txBodyNode
+        ? parseTextBody(txBodyNode, { ...ctx, query: txBodyNode.query })
+        : undefined
+      const cell: NormalizedTableCell = {
+        row: r,
+        col: c,
+        children: [
+          {
+            id: idGenerator(),
+            style: txBody?.style,
+            text: txBody?.text ?? { enabled: true, content: [] },
+          },
+        ],
+      }
+      if (colSpan > 1) {
+        cell.colSpan = colSpan
+      }
+      if (rowSpan > 1) {
+        cell.rowSpan = rowSpan
+      }
+      cells.push(cell)
+    })
+  })
+
+  return {
+    enabled: true,
+    columns,
+    rows: trList.map(tr => ({ height: tr.attr<number>('@h', 'emu') })),
+    cells,
+  }
+}
+
+function parseTableGraphicFrame(node: OoxmlNode, tbl: OoxmlNode, ctx?: any): GraphicFrame {
+  const { placeholder, ...nvPr } = parseNonVisualProperties(node.find('p:nvGraphicFramePr/p:nvPr')) ?? {}
+  const cNvPr = parseNonVisualDrawingProperties(node.find('p:nvGraphicFramePr/p:cNvPr'))
+  const xfrm = parseTransform2d(node.find('p:xfrm'))!
+
+  return {
+    id: idGenerator(),
+    ...nvPr,
+    ...cNvPr,
+    style: {
+      ...cNvPr?.style,
+      ...xfrm,
+    },
+    table: parsePptxTable(tbl, { ...ctx, placeholder }),
+    children: [],
+    meta: {
+      ...cNvPr?.meta,
+      inCanvasIs: 'Element2D',
+      inPptIs: 'GraphicFrame',
+      placeholderType: placeholder?.type,
+      placeholderIndex: placeholder?.index,
+    },
+  }
+}
+
 export function parseGraphicFrame(node?: OoxmlNode, ctx?: any): GraphicFrame | undefined {
   if (!node)
     return undefined
+
+  // 表格 graphicFrame
+  const tbl = node.find('a:graphic/a:graphicData/a:tbl')
+  if (tbl) {
+    return parseTableGraphicFrame(node, tbl, ctx)
+  }
 
   const dataId = node.attr('a:graphic/a:graphicData/dgm:relIds/@r:dm')
   const dataNode = ctx.dataRels?.find((item: any) => item.id === dataId)?.node as OoxmlNode
