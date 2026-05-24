@@ -115,29 +115,42 @@ export function parseOutline(node?: OoxmlNode, ctx?: any): NormalizedOutline | u
 //     : 'solid'
 // }
 
+// LineEndSize: idoc 用 'md',OOXML 用 'med'(WithNone 可能为 'none'/null)
+function encodeLineEndSize(size?: string | null): string | undefined {
+  if (!size || size === 'none') {
+    return undefined
+  }
+  return size === 'md' ? 'med' : size
+}
+
+function stringifyLineEnd(tag: 'headEnd' | 'tailEnd', end?: { type?: string, width?: any, height?: any }): string | boolean {
+  if (!end?.type) {
+    return false
+  }
+  return `<a:${tag}${withAttrs([
+    withAttr('type', end.type),
+    end.width && withAttr('w', encodeLineEndSize(end.width)),
+    end.height && withAttr('len', encodeLineEndSize(end.height)),
+  ])}/>`
+}
+
 export function stringifyOutline(ln?: NormalizedOutline): string | undefined {
   if (!ln)
     return undefined
 
+  // a:ln 子元素顺序:fill -> prstDash -> join -> headEnd -> tailEnd
   return `<a:ln${withAttrs([
     ln.width !== undefined && withAttr('w', OoxmlValue.encode(ln.width, 'ST_LineWidth')),
     ln.lineCap !== undefined && ln.lineCap !== 'butt' && withAttr('cap', lineCapMap.getKey(ln.lineCap)),
   ])}>
     ${withIndents([
-      ln.lineJoin !== undefined && ln.lineJoin !== 'miter' && `<a:${ln.lineJoin}/>`,
       ln.color !== undefined && stringifySolidFill(String(ln.color)),
       ln.color === undefined && '<a:noFill/>',
+      ln.style === 'dashed' && '<a:prstDash val="dash"/>',
+      ln.style === 'solid' && '<a:prstDash val="solid"/>',
+      ln.lineJoin !== undefined && ln.lineJoin !== 'miter' && `<a:${ln.lineJoin}/>`,
+      stringifyLineEnd('headEnd', ln.headEnd),
+      stringifyLineEnd('tailEnd', ln.tailEnd),
     ])}
 </a:ln>`
-
-// TODO
-//   const prstDash = stringifyBorderPrstDash(ln.borderPrstDash, ln.width)
-//   return `<a:ln${withAttrs([
-//     withAttr('w', OoxmlValue.encode(ln.width, 'ST_LineWidth')),
-//   ])}>
-//     ${ln.width ? withIndents(stringifyColor(ln.color)) : '<a:noFill/>'}
-//     ${prstDash ? `<a:prstDash val="${prstDash}" />` : ''}
-//     <a:headEnd ${withAttrs([withAttr('type', ln.headEnd || LineEndType.NONE)])} />
-//     <a:tailEnd ${withAttrs([withAttr('type', ln.tailEnd || LineEndType.NONE)])} />
-// </a:ln>`
 }
