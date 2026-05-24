@@ -48,9 +48,12 @@ export function parseFill(fill?: OoxmlNode, ctx?: Record<string, any>): Normaliz
       return ctx?.parents?.length
         ? ctx.parents[ctx.parents.length - 1]?.fill
         : undefined
-    case 'a:pattFill':
-      // TODO
-      return undefined
+    case 'a:pattFill': {
+      // idoc 无图案填充,近似为前景色实心填充
+      const color = parseColor(fill.find('a:fgClr'), ctx)?.color
+        ?? parseColor(fill.find('a:bgClr'), ctx)?.color
+      return color ? { color, enabled: true } : undefined
+    }
     case 'a:noFill':
     default:
       return undefined
@@ -207,23 +210,33 @@ export function stringifySolidFill(color: string): string {
 }
 
 export function stringifyGradientFill(fill: NormalizedGradientFill): string | undefined {
-  const { linearGradient } = fill
-  // TODO radialGradient
+  const { linearGradient, radialGradient } = fill
+
+  const stringifyStops = (stops: { offset: number, color: string }[]): string =>
+    withIndents(stops.map((stop) => {
+      return `<a:gs pos="${stop.offset * 100000}">
+    ${withIndents(stringifyColor(stop.color))}
+</a:gs>`
+    }), 2)
 
   if (linearGradient) {
     const { angle, stops } = linearGradient
     const ang = OoxmlValue.encode((angle + 360) % 360, 'positiveFixedAngle')
-    const gs = stops.map((stop) => {
-      const { offset, color } = stop
-      return `<a:gs pos="${offset * 100000}">
-    ${withIndents(stringifyColor(color))}
-</a:gs>`
-    })
     return `<a:gradFill>
   <a:gsLst>
-    ${withIndents(gs, 2)}
+    ${stringifyStops(stops)}
   </a:gsLst>
   <a:lin${withAttrs([withAttr('ang', ang), withAttr('scaled', 0)])}/>
+</a:gradFill>`
+  }
+  else if (radialGradient) {
+    return `<a:gradFill>
+  <a:gsLst>
+    ${stringifyStops(radialGradient.stops)}
+  </a:gsLst>
+  <a:path path="circle">
+    <a:fillToRect l="50000" t="50000" r="50000" b="50000"/>
+  </a:path>
 </a:gradFill>`
   }
   else {
