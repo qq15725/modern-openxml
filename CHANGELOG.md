@@ -1,3 +1,19 @@
+# [1.11.0](https://github.com/qq15725/modern-openxml/compare/v1.10.1...v1.11.0) (2026-05-24)
+
+
+### Features
+
+* add docx (Word) encode/decode ([15720b6](https://github.com/qq15725/modern-openxml/commit/15720b6b324c9c024a7f1b10ee00617c4b2c37fb))
+* add xlsx (Excel) encode/decode ([827bea7](https://github.com/qq15725/modern-openxml/commit/827bea786f67d0f53bbab8afd68262cde24ca6c9))
+* bridge xlsx/docx onto idoc with meta-based lossless round-trip ([7203bca](https://github.com/qq15725/modern-openxml/commit/7203bca553205d252a503db328753cb8c6a0641a))
+* cli encode pptx ([f66298a](https://github.com/qq15725/modern-openxml/commit/f66298ab1e0e2d3ce252f67210ad0a0fb84bf8df))
+* **docx:** map table cell shading/borders/vAlign to cell.background and style ([cf4e3ae](https://github.com/qq15725/modern-openxml/commit/cf4e3ae53b87be0d492205c2cb44a8b6fce89c17))
+* **docx:** parse w:tbl into a block model and map to element.table ([e5bb583](https://github.com/qq15725/modern-openxml/commit/e5bb583977b1e1c91c1891dd6c1598db2cb1f168))
+* map xlsx sheets onto idoc NormalizedTable ([3c00e2f](https://github.com/qq15725/modern-openxml/commit/3c00e2fda26aadb178295295ef7b924f9efc3cc9))
+* **pptx:** map table cell fill/borders/anchor to cell.background and style ([6732d71](https://github.com/qq15725/modern-openxml/commit/6732d71800fabf47b1a4647b7b7a6578c46ff984))
+* **pptx:** parse a:tbl graphic frames into element.table ([2171aad](https://github.com/qq15725/modern-openxml/commit/2171aad14cadf2d07f0723aecb45955bce77ab3d))
+* **xlsx:** parse column widths/row heights/merged cells into the table ([026217c](https://github.com/qq15725/modern-openxml/commit/026217c161ca1b894d611697444d4554377f6875))
+* **xlsx:** parse styles.xml and apply cell styling to the idoc table ([eecb239](https://github.com/qq15725/modern-openxml/commit/eecb239df12bc33975ce886f46f74637ee07e9a4))
 ## [1.10.1](https://github.com/qq15725/modern-openxml/compare/v1.10.0...v1.10.1) (2025-12-12)
 
 
