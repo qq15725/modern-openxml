@@ -70,11 +70,11 @@ importers:
         specifier: ^0.8.3
         version: 0.8.3
       modern-idoc:
-        specifier: ^0.11.5
-        version: 0.11.5
+        specifier: ^0.11.7
+        version: 0.11.7
       modern-path2d:
-        specifier: ^1.6.0
-        version: 1.6.0
+        specifier: ^1.7.0
+        version: 1.7.0
 
   playground:
     dependencies:
@@ -1096,8 +1096,8 @@ packages:
     resolution: {integrity: sha512-BLrgEcRTwX2o6gGxGOCNyMvGSp35YofuYzw9h1IMTRmKqttAZZVU67bdb9Pr2vUHA8+j3i2tJfjO6C6+4myGTA==}
     engines: {node: 18 || 20 || >=22}
 
-  baseline-browser-mapping@2.10.31:
-    resolution: {integrity: sha512-MujYO3eP72uvmSE0i4wltsodRfIpZATP3jvzRNRGGxgzId7aVocVJJV3nf01qnzzKFGxQVC9bpWxl5cjxTr/7Q==}
+  baseline-browser-mapping@2.10.32:
+    resolution: {integrity: sha512-wbPvpyjJPC0zdfdKXxqEL3Ea+bOMD/87X4lftiJkkaBiuG6ALQy1SLmEd7BSmVCuwCQsBrCamgBoLyfFDD1EPg==}
     engines: {node: '>=6.0.0'}
     hasBin: true
 
@@ -1184,6 +1184,10 @@ packages:
 
   comment-parser@1.4.6:
     resolution: {integrity: sha512-ObxuY6vnbWTN6Od72xfwN9DbzC7Y2vv8u1Soi9ahRKL37gb6y1qk6/dgjs+3JWuXJHWvsg3BXIwzd/rkmAwavg==}
+    engines: {node: '>= 12.0.0'}
+
+  comment-parser@1.4.7:
+    resolution: {integrity: sha512-0h+uSNtQGW3D98eQt3jJ8L06Fves8hncB4V/PKdw/Qb8Hnk19VaKuTr55UNRYiSoVa7WwrFls+rh3ux9agmkeQ==}
     engines: {node: '>= 12.0.0'}
 
   commondir@1.0.1:
@@ -1406,8 +1410,8 @@ packages:
     resolution: {integrity: sha512-YGRs8knHhKHVShLkFET/rWAU8kmHbOV5LwN938RHI0pljAJ1Gf6SzXsSmRaEzcXTtOOmVqJ5+WtQPL5uigY50Q==}
     engines: {node: '>=14'}
 
-  enhanced-resolve@5.21.6:
-    resolution: {integrity: sha512-aNnGCvbJ/RIyWo1IuhNdVjnNF+EjH9wpzpNHt+ci/m9He9LJvUN8wrCcXjp9cWsGNAuvSpVFTx/vraAFQ8qGjQ==}
+  enhanced-resolve@5.22.0:
+    resolution: {integrity: sha512-xYcDWrpELkFzz9SpZ3PlI6Eu6eD93Yf0WLDRxikGhWJ3MAir2SNZTIVCVZqZ/NUyx8AdMc2gT9C0gPiw18kG+A==}
     engines: {node: '>=10.13.0'}
 
   entities@4.5.0:
@@ -2221,11 +2225,11 @@ packages:
   modern-idoc@0.10.21:
     resolution: {integrity: sha512-sdN5Qfjxto90VizQV8LujvUVD0d9B4iwom6gkPWKbJLF+QUOaCCet1BycBwrUrutAcZqjvFeRlOO352sa0iQow==}
 
-  modern-idoc@0.11.5:
-    resolution: {integrity: sha512-aa4v6ZSz2eCQE6AVSpIaOZ36v5GugXWZxY8SlKKaafJjawxT2a926Wk5MLiGLY8TAJir/PnAZ25eiBKTFHv7JQ==}
+  modern-idoc@0.11.7:
+    resolution: {integrity: sha512-IZp4tgvcd+KrIYTQTEmjzt2RcBkWCN1kgsku/UiJX5xZjZ5Jgcs9XNOKxO3mwV7SOJ10PVeFwzNJy3Y9ZVhM3w==}
 
-  modern-path2d@1.6.0:
-    resolution: {integrity: sha512-TBSYWQde7hLB1xxihJDmM6gcG9PlHRyPf1in+ho4YPnOHgfRM4SUhKUkkycHobVxrxXP8OlUXyvXgsgLuHNprg==}
+  modern-path2d@1.7.0:
+    resolution: {integrity: sha512-9BIk0manYEmJRMknVdhumn4Sn7JCR7b2oC4Oc5geAfPFMEaySFXiPbhCrBLLkJ65Ty4WWzwOnvSzslBGeBNeLQ==}
 
   modern-text@1.12.0:
     resolution: {integrity: sha512-uglDFf49mQt0Px7XtggNaz6RH9W7dozYRIuQFXkc53Cj8JnNQkmDFkJ7Hxa18tKtjCz4Dhrf5clhbHLcb1danA==}
@@ -2256,8 +2260,8 @@ packages:
   neo-async@2.6.2:
     resolution: {integrity: sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==}
 
-  node-releases@2.0.45:
-    resolution: {integrity: sha512-iIbHXV9eBB2nB0wa7oTsrrXq+qQt+9SIlx9AX3T96YgobtEQfis5n6TJ6vV+3QP8DwdriEAcGhARaFCu37peBg==}
+  node-releases@2.0.46:
+    resolution: {integrity: sha512-GYVXHE2KnrzAfsAjl4uP++evGFCrAU1jta4ubEjIG7YWt/64Gqv66a30yKwWczVjA6j3bM4nBwH7Pk1JmDHaxQ==}
     engines: {node: '>=18'}
 
   normalize-package-data@6.0.2:
@@ -2740,8 +2744,8 @@ packages:
   tinybench@2.9.0:
     resolution: {integrity: sha512-0+DUvqWMValLmha6lr4kD8iAMK1HzV0/aKnCtWb9v9641TnP/MFb7Pc2bxoxQjTXAErryXVgUOfv2YqNllqGeg==}
 
-  tinyexec@1.1.2:
-    resolution: {integrity: sha512-dAqSqE/RabpBKI8+h26GfLq6Vb3JVXs30XYQjdMjaj/c2tS8IYYMbIzP599KtRj7c57/wYApb3QjgRgXmrCukA==}
+  tinyexec@1.2.2:
+    resolution: {integrity: sha512-M/Q0B2cp4K7kynaT/vnED1j8TlLY+Pp7C6Wl2bl/7u/F0mUVwdyOpwomQb8JpYLitHUssAJRmLZdMCGsrx7i+g==}
     engines: {node: '>=18'}
 
   tinyglobby@0.2.16:
@@ -2752,11 +2756,11 @@ packages:
     resolution: {integrity: sha512-Bf+ILmBgretUrdJxzXM0SgXLZ3XfiaUuOj/IKQHuTXip+05Xn+uyEYdVg0kYDipTBcLrCVyUzAPz7QmArb0mmw==}
     engines: {node: '>=14.0.0'}
 
-  tldts-core@7.0.30:
-    resolution: {integrity: sha512-uiHN8PIB1VmWyS98eZYja4xzlYqeFZVjb4OuYlJQnZAuJhMw4PbKQOKgHKhBdJR3FE/t5mUQ1Kd80++B+qhD1Q==}
+  tldts-core@7.1.0:
+    resolution: {integrity: sha512-Ou+YJ467tR700sk2mZBB1/uFah6LDeH/VKO0N4xfjFOXE0hJkZgiOgXj16gEi1wQ4L6334UTKjxF6gum8ftZzQ==}
 
-  tldts@7.0.30:
-    resolution: {integrity: sha512-ELrFxuqsDdHUwoh0XxDbxuLD3Wnz49Z57IFvTtvWy1hJdcMZjXLIuonjilCiWHlT2GbE4Wlv1wKVTzDFnXH1aw==}
+  tldts@7.1.0:
+    resolution: {integrity: sha512-Y+iRHtDrPOlNH9ZZpqpIogonv7jwSPHIt3Gpe+kRvYJlBaK+QGNXu+xooJY0QEmb62/ERo3GF3zCxRMbMtKEEA==}
     hasBin: true
 
   to-valid-identifier@1.0.0:
@@ -3094,7 +3098,7 @@ snapshots:
   '@antfu/install-pkg@1.1.0':
     dependencies:
       package-manager-detector: 1.6.0
-      tinyexec: 1.1.2
+      tinyexec: 1.2.2
 
   '@asamuzakjp/css-color@5.1.11':
     dependencies:
@@ -3919,7 +3923,7 @@ snapshots:
 
   balanced-match@4.0.4: {}
 
-  baseline-browser-mapping@2.10.31: {}
+  baseline-browser-mapping@2.10.32: {}
 
   bidi-js@1.0.3:
     dependencies:
@@ -3933,10 +3937,10 @@ snapshots:
 
   browserslist@4.28.2:
     dependencies:
-      baseline-browser-mapping: 2.10.31
+      baseline-browser-mapping: 2.10.32
       caniuse-lite: 1.0.30001793
       electron-to-chromium: 1.5.361
-      node-releases: 2.0.45
+      node-releases: 2.0.46
       update-browserslist-db: 1.2.3(browserslist@4.28.2)
 
   builtin-modules@5.2.0: {}
@@ -3948,7 +3952,7 @@ snapshots:
       jsonc-parser: 3.3.1
       package-manager-detector: 1.6.0
       semver: 7.8.1
-      tinyexec: 1.1.2
+      tinyexec: 1.2.2
       tinyglobby: 0.2.16
       unconfig: 7.5.0
       yaml: 2.9.0
@@ -4000,6 +4004,8 @@ snapshots:
   comment-parser@1.4.5: {}
 
   comment-parser@1.4.6: {}
+
+  comment-parser@1.4.7: {}
 
   commondir@1.0.1: {}
 
@@ -4246,7 +4252,7 @@ snapshots:
 
   empathic@2.0.1: {}
 
-  enhanced-resolve@5.21.6:
+  enhanced-resolve@5.22.0:
     dependencies:
       graceful-fs: 4.2.11
       tapable: 2.3.3
@@ -4384,7 +4390,7 @@ snapshots:
   eslint-plugin-n@18.0.1(eslint@10.4.0(jiti@2.7.0))(ts-declaration-location@1.0.7(typescript@6.0.3))(typescript@6.0.3):
     dependencies:
       '@eslint-community/eslint-utils': 4.9.1(eslint@10.4.0(jiti@2.7.0))
-      enhanced-resolve: 5.21.6
+      enhanced-resolve: 5.22.0
       eslint: 10.4.0(jiti@2.7.0)
       eslint-plugin-es-x: 7.8.0(eslint@10.4.0(jiti@2.7.0))
       get-tsconfig: 4.14.0
@@ -4422,7 +4428,7 @@ snapshots:
     dependencies:
       '@eslint-community/eslint-utils': 4.9.1(eslint@10.4.0(jiti@2.7.0))
       '@eslint-community/regexpp': 4.12.2
-      comment-parser: 1.4.6
+      comment-parser: 1.4.7
       eslint: 10.4.0(jiti@2.7.0)
       jsdoc-type-pratt-parser: 7.2.0
       refa: 0.12.1
@@ -4874,7 +4880,7 @@ snapshots:
       listr2: 10.2.1
       picomatch: 4.0.4
       string-argv: 0.3.2
-      tinyexec: 1.1.2
+      tinyexec: 1.2.2
     optionalDependencies:
       yaml: 2.9.0
 
@@ -5308,12 +5314,12 @@ snapshots:
       colord: 2.9.3
       nanoid: 5.1.11
 
-  modern-idoc@0.11.5:
+  modern-idoc@0.11.7:
     dependencies:
       colord: 2.9.3
       nanoid: 5.1.11
 
-  modern-path2d@1.6.0:
+  modern-path2d@1.7.0:
     dependencies:
       earcut: 3.0.2
 
@@ -5321,8 +5327,8 @@ snapshots:
     dependencies:
       diff: 9.0.0
       modern-font: 0.5.0
-      modern-idoc: 0.11.5
-      modern-path2d: 1.6.0
+      modern-idoc: 0.11.7
+      modern-path2d: 1.7.0
 
   module-replacements@3.0.0-beta.7: {}
 
@@ -5338,7 +5344,7 @@ snapshots:
 
   neo-async@2.6.2: {}
 
-  node-releases@2.0.45: {}
+  node-releases@2.0.46: {}
 
   normalize-package-data@6.0.2:
     dependencies:
@@ -5836,7 +5842,7 @@ snapshots:
 
   tinybench@2.9.0: {}
 
-  tinyexec@1.1.2: {}
+  tinyexec@1.2.2: {}
 
   tinyglobby@0.2.16:
     dependencies:
@@ -5845,11 +5851,11 @@ snapshots:
 
   tinyrainbow@3.1.0: {}
 
-  tldts-core@7.0.30: {}
+  tldts-core@7.1.0: {}
 
-  tldts@7.0.30:
+  tldts@7.1.0:
     dependencies:
-      tldts-core: 7.0.30
+      tldts-core: 7.1.0
 
   to-valid-identifier@1.0.0:
     dependencies:
@@ -5862,7 +5868,7 @@ snapshots:
 
   tough-cookie@6.0.1:
     dependencies:
-      tldts: 7.0.30
+      tldts: 7.1.0
 
   tr46@6.0.0:
     dependencies:
@@ -6031,7 +6037,7 @@ snapshots:
       picomatch: 4.0.4
       std-env: 4.1.0
       tinybench: 2.9.0
-      tinyexec: 1.1.2
+      tinyexec: 1.2.2
       tinyglobby: 0.2.16
       tinyrainbow: 3.1.0
       vite: 8.0.14(@types/node@25.9.1)(jiti@2.7.0)(yaml@2.9.0)
