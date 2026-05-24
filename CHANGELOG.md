@@ -1,3 +1,4 @@
+## [1.12.1](https://github.com/qq15725/modern-openxml/compare/v1.12.0...v1.12.1) (2026-05-24)
 # [1.12.0](https://github.com/qq15725/modern-openxml/compare/v1.11.0...v1.12.0) (2026-05-24)
 
 
