@@ -68,7 +68,8 @@ function openFileDialog(): Promise<Uint8Array> {
 async function testPPTXToSVG(source: Uint8Array): Promise<void> {
   console.warn(await pptxToDoc(source, { presetShapeDefinitions }))
   const svg = await docToSvg(
-    await pptxToDoc(source, { presetShapeDefinitions }),
+    // modern-idoc-svg 内置较旧的 modern-idoc 类型,与本仓库的版本有偏差,这里放宽
+    await pptxToDoc(source, { presetShapeDefinitions }) as any,
   )
   console.warn(svg)
   document.body.append(svg)
