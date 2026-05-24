@@ -25,6 +25,7 @@ function parseCell(node: OoxmlNode, sharedStrings: string[]): Cell | undefined {
   const { row, col } = parseCellRef(ref)
   const t = node.attr('@t')
   const formula = node.attr('f', 'string')
+  const styleId = node.attr<number>('@s', 'number')
 
   let value: Cell['value'] = null
   let type: Cell['type'] = 'number'
@@ -53,14 +54,17 @@ function parseCell(node: OoxmlNode, sharedStrings: string[]): Cell | undefined {
     type = 'number'
   }
 
-  // 既无值也无公式的空单元格直接跳过
-  if (value === null && formula === undefined) {
+  // 既无值、无公式、也无样式的空单元格直接跳过
+  if (value === null && formula === undefined && styleId === undefined) {
     return undefined
   }
 
   const cell: Cell = { ref, row, col, value, type }
   if (formula !== undefined) {
     cell.formula = formula
+  }
+  if (styleId !== undefined) {
+    cell.styleId = styleId
   }
   return cell
 }
@@ -105,6 +109,7 @@ export function parseWorksheet(node: OoxmlNode | undefined, name: string, shared
 
 function stringifyCell(cell: Cell, sharedStrings: SharedStrings): string {
   const ref = cell.ref || toCellRef(cell.row, cell.col)
+  const styleAttr = cell.styleId !== undefined ? ` s="${cell.styleId}"` : ''
   const parts: string[] = []
   let typeAttr = ''
 
@@ -125,7 +130,8 @@ function stringifyCell(cell: Cell, sharedStrings: SharedStrings): string {
     }
   }
   else if (cell.value === null || cell.value === '') {
-    return ''
+    // 仅有样式的空单元格仍需保留(承载格式)
+    return styleAttr ? `<c r="${ref}"${styleAttr}/>` : ''
   }
   else if (typeof cell.value === 'string') {
     typeAttr = ' t="s"'
@@ -139,7 +145,7 @@ function stringifyCell(cell: Cell, sharedStrings: SharedStrings): string {
     parts.push(`<v>${cell.value}</v>`)
   }
 
-  return `<c r="${ref}"${typeAttr}>${parts.join('')}</c>`
+  return `<c r="${ref}"${styleAttr}${typeAttr}>${parts.join('')}</c>`
 }
 
 export function stringifyWorksheet(sheet: Worksheet, sharedStrings: SharedStrings): string {

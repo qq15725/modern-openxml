@@ -8,6 +8,7 @@ import {
   stringifyCoreProperties,
   stringifyRelationships,
   stringifySharedStrings,
+  stringifyStyles,
   stringifyTypes,
   stringifyWorkbook,
   stringifyWorksheet,
@@ -56,8 +57,8 @@ export class JsonToXlsx {
     // xl/sharedStrings.xml
     add('xl/sharedStrings.xml', stringifySharedStrings(sharedStrings.list))
 
-    // xl/styles.xml
-    add('xl/styles.xml', MINIMAL_STYLES)
+    // xl/styles.xml(有则按 Workbook.styles 回写,否则最小骨架)
+    add('xl/styles.xml', workbook.styles ? stringifyStyles(workbook.styles) : MINIMAL_STYLES)
 
     // xl/workbook.xml + 关系
     add('xl/workbook.xml', stringifyWorkbook(sheets.map(s => s.name)))

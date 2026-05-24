@@ -1,4 +1,5 @@
 import type { NormalizedDocument } from 'modern-idoc'
+import type { Styles } from './styles'
 
 export type CellValue = string | number | boolean | null
 
@@ -17,6 +18,8 @@ export interface Cell {
   type: CellType
   /** 公式文本(不含前导 "="),例如 "SUM(A1:A2)" */
   formula?: string
+  /** 样式索引(c@s -> styles.cellXfs[styleId]) */
+  styleId?: number
 }
 
 export interface Row {
@@ -47,6 +50,8 @@ export interface Worksheet {
 
 export interface Workbook {
   sheets: Worksheet[]
+  /** 样式表(xl/styles.xml) */
+  styles?: Styles
 }
 
 // 与 idoc 桥接:NormalizedXlsx 把表格投影成可视元素树,meta 里保留原始

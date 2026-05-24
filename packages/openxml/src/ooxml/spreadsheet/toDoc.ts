@@ -1,7 +1,9 @@
-import type { NormalizedElement, NormalizedTableCell } from 'modern-idoc'
-import type { NormalizedXlsx, Workbook, Worksheet } from './types'
+import type { NormalizedBackground, NormalizedElement, NormalizedFragment, NormalizedStyle, NormalizedTableCell, TextAlign, VerticalAlign } from 'modern-idoc'
+import type { ResolvedCellStyle, Styles, XlsxBorder, XlsxBorderEdge, XlsxFont } from './styles'
+import type { CellValue, NormalizedXlsx, Workbook, Worksheet } from './types'
 import { idGenerator } from 'modern-idoc'
 import { parseCellRef } from './cellRef'
+import { resolveCellStyle } from './styles'
 
 // 默认列宽/行高(无显式定义时)
 const COL_WIDTH = 64 // px
@@ -12,8 +14,116 @@ const SHEET_GAP = 24
 const colWidthToPx = (width: number): number => Math.round(width * 7)
 const rowHeightToPx = (height: number): number => Math.round((height * 96) / 72)
 
-function cellText(value: string | number | boolean | null): string {
-  return value === null || value === undefined ? '' : String(value)
+// Excel ARGB("FFRRGGBB")-> idoc "#RRGGBB"
+function argbToHex(argb?: string): string | undefined {
+  if (!argb) {
+    return undefined
+  }
+  const rgb = argb.length === 8 ? argb.slice(2) : argb
+  return `#${rgb}`
+}
+
+// Excel 日期序列号(1899-12-30 起)-> YYYY-MM-DD
+function serialToDate(serial: number): string {
+  const date = new Date(Date.UTC(1899, 11, 30) + serial * 86400000)
+  const y = date.getUTCFullYear()
+  const m = String(date.getUTCMonth() + 1).padStart(2, '0')
+  const d = String(date.getUTCDate()).padStart(2, '0')
+  return `${y}-${m}-${d}`
+}
+
+// 按 numFmt 做基础显示格式化(仅日期/百分比,其余原样)
+function formatCellValue(value: CellValue, formatCode?: string): string {
+  if (value === null || value === undefined) {
+    return ''
+  }
+  if (formatCode && typeof value === 'number') {
+    if (formatCode.includes('%')) {
+      const decimals = formatCode.match(/\.(0+)%/)?.[1].length ?? 0
+      return `${(value * 100).toFixed(decimals)}%`
+    }
+    // 含 y/d 视为日期(避免把 m 误判为分钟)
+    if (/y|d/i.test(formatCode) && !formatCode.includes('"')) {
+      return serialToDate(value)
+    }
+  }
+  return String(value)
+}
+
+function applyFont(fragment: NormalizedFragment, font?: XlsxFont): void {
+  if (!font) {
+    return
+  }
+  if (font.bold) {
+    fragment.fontWeight = 700
+  }
+  if (font.italic) {
+    fragment.fontStyle = 'italic'
+  }
+  if (font.underline) {
+    fragment.textDecoration = 'underline'
+  }
+  if (font.size !== undefined) {
+    fragment.fontSize = font.size
+  }
+  const color = argbToHex(font.color)
+  if (color) {
+    fragment.color = color
+  }
+  if (font.name) {
+    fragment.fontFamily = font.name
+  }
+}
+
+const BORDER_WIDTH_PX: Record<string, number> = { hair: 1, thin: 1, medium: 2, thick: 3 }
+function borderEdgeToCss(edge?: XlsxBorderEdge): string | undefined {
+  if (!edge?.style) {
+    return undefined
+  }
+  const px = BORDER_WIDTH_PX[edge.style] ?? 1
+  const lineStyle = /dash/i.test(edge.style) ? 'dashed' : /dot/i.test(edge.style) ? 'dotted' : edge.style === 'double' ? 'double' : 'solid'
+  return `${px}px ${lineStyle} ${argbToHex(edge.color) ?? '#000000'}`
+}
+
+function fillToBackground(fill?: ResolvedCellStyle['fill']): NormalizedBackground | undefined {
+  if (fill?.patternType === 'solid' && fill.fgColor) {
+    return { enabled: true, color: argbToHex(fill.fgColor)! }
+  }
+  return undefined
+}
+
+function cellStyleFrom(resolved?: ResolvedCellStyle): NormalizedStyle | undefined {
+  if (!resolved) {
+    return undefined
+  }
+  const style: NormalizedStyle = {}
+  const al = resolved.alignment
+  if (al?.horizontal && al.horizontal !== 'general') {
+    style.textAlign = al.horizontal as TextAlign
+  }
+  if (al?.vertical) {
+    style.verticalAlign = (al.vertical === 'center' ? 'middle' : al.vertical) as VerticalAlign
+  }
+  const border = resolved.border as XlsxBorder | undefined
+  if (border) {
+    const top = borderEdgeToCss(border.top)
+    const left = borderEdgeToCss(border.left)
+    const right = borderEdgeToCss(border.right)
+    const bottom = borderEdgeToCss(border.bottom)
+    if (top) {
+      style.borderTop = top
+    }
+    if (left) {
+      style.borderLeft = left
+    }
+    if (right) {
+      style.borderRight = right
+    }
+    if (bottom) {
+      style.borderBottom = bottom
+    }
+  }
+  return Object.keys(style).length ? style : undefined
 }
 
 interface MergeInfo {
@@ -61,7 +171,7 @@ function columnWidthPx(sheet: Worksheet, col: number): number {
   return def && def.width ? colWidthToPx(def.width) : COL_WIDTH
 }
 
-function sheetToElement(sheet: Worksheet, top: number): NormalizedElement {
+function sheetToElement(sheet: Worksheet, top: number, styles?: Styles): NormalizedElement {
   const merge = resolveMerges(sheet.merges)
   let maxCol = merge.maxCol
   let maxRow = merge.maxRow
@@ -75,16 +185,16 @@ function sheetToElement(sheet: Worksheet, top: number): NormalizedElement {
       if (merge.covered.has(`${r0},${c.col}`)) {
         continue // 被合并覆盖的格子不输出
       }
+      const resolved = resolveCellStyle(styles, c.styleId)
+      const fragment: NormalizedFragment = { content: formatCellValue(c.value, resolved?.formatCode) }
+      applyFont(fragment, resolved?.font)
       const cell: NormalizedTableCell = {
         row: r0,
         col: c.col,
         children: [
           {
             id: idGenerator(),
-            text: {
-              enabled: true,
-              content: [{ fragments: [{ content: cellText(c.value) }] }],
-            },
+            text: { enabled: true, content: [{ fragments: [fragment] }] },
           },
         ],
       }
@@ -96,6 +206,14 @@ function sheetToElement(sheet: Worksheet, top: number): NormalizedElement {
         if (span.colSpan > 1) {
           cell.colSpan = span.colSpan
         }
+      }
+      const background = fillToBackground(resolved?.fill)
+      if (background) {
+        cell.background = background
+      }
+      const cellStyle = cellStyleFrom(resolved)
+      if (cellStyle) {
+        cell.style = cellStyle
       }
       cells.push(cell)
     }
@@ -131,7 +249,7 @@ export function workbookToDoc(workbook: Workbook): NormalizedXlsx {
   let maxWidth = 0
 
   const children = sheets.map((sheet) => {
-    const element = sheetToElement(sheet, offsetY)
+    const element = sheetToElement(sheet, offsetY, workbook.styles)
     const width = Number(element.style?.width ?? 0)
     const height = Number(element.style?.height ?? 0)
     maxWidth = Math.max(maxWidth, width)

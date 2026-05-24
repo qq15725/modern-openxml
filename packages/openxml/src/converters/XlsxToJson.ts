@@ -3,6 +3,7 @@ import type { OpcSource } from './OpcReader'
 import {
   parseRelationships,
   parseSharedStrings,
+  parseStyles,
   parseTypes,
   parseWorkbook,
   parseWorksheet,
@@ -45,12 +46,16 @@ export class XlsxToJson extends OpcReader {
       ? parseSharedStrings(this._readNode(sharedStringsPath))
       : []
 
+    // xl/styles.xml
+    const stylesPath = workbookRels.find(v => v.type === 'xlsxStyles')?.path
+    const styles = stylesPath ? parseStyles(this._readNode(stylesPath)) : undefined
+
     // xl/worksheets/sheetN.xml
     const sheets = sheetRefs.map((ref) => {
       const path = workbookRels.find(v => v.id === ref.rId)?.path
       return parseWorksheet(path ? this._readNode(path) : undefined, ref.name, sharedStrings)
     })
 
-    return { sheets }
+    return styles ? { sheets, styles } : { sheets }
   }
 }
