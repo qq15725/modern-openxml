@@ -1,4 +1,5 @@
 export * from './cellRef'
+export * from './fromDoc'
 export * from './sharedStrings'
 export * from './styles'
 export * from './toDoc'

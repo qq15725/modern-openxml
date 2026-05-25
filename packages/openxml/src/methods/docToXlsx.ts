@@ -1,14 +1,14 @@
-import type { NormalizedXlsx } from '../ooxml'
+import type { NormalizedDocument } from 'modern-idoc'
+import { idocToWorkbookModel } from '../ooxml'
 import { jsonToXlsx } from './jsonToXlsx'
 
 /**
- * 把 idoc 文档(NormalizedXlsx)编码回 xlsx。无损往返依赖 meta.workbook
- * (由 xlsxToDoc 写入);若缺失则抛错(idoc 的可视投影不足以无损重建网格)。
+ * 把 idoc 文档编码回 xlsx。优先用 meta.workbook(由 xlsxToDoc 写入)无损回写;
+ * 若缺失则像 docToPptx 那样从 idoc 模型重建网格导出(有损:丢失公式/数字格式/样式,
+ * 但保留单元格值、网格几何与合并)。
  */
-export async function docToXlsx(doc: NormalizedXlsx): Promise<Uint8Array> {
-  const workbook = doc.meta?.workbook
-  if (!workbook) {
-    throw new Error('docToXlsx requires meta.workbook (produced by xlsxToDoc) for lossless encoding')
-  }
+export async function docToXlsx(doc: NormalizedDocument): Promise<Uint8Array> {
+  const workbook = (doc.meta as { workbook?: Parameters<typeof jsonToXlsx>[0] } | undefined)?.workbook
+    ?? idocToWorkbookModel(doc)
   return await jsonToXlsx(workbook)
 }

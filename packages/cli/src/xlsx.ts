@@ -1,7 +1,7 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { JSDOM } from 'jsdom'
-import { jsonToXlsx, useCustomDomParser, xlsxToJson } from 'modern-openxml'
+import { docToXlsx, useCustomDomParser, xlsxToDoc } from 'modern-openxml'
 
 const parser1 = new new JSDOM().window.DOMParser()
 
@@ -13,7 +13,7 @@ useCustomDomParser(
 
 export async function runXlsxCommand(filepath: string, options: any): Promise<void> {
   let {
-    output = join(dirname(filepath), 'workbook.json'),
+    output = join(dirname(filepath), 'doc.json'),
   } = options
 
   const outputDir = dirname(output)
@@ -23,20 +23,20 @@ export async function runXlsxCommand(filepath: string, options: any): Promise<vo
   }
 
   if (filepath.endsWith('.xlsx')) {
-    const workbook = await xlsxToJson(readFileSync(filepath))
+    const idoc = await xlsxToDoc(readFileSync(filepath))
 
     if (!output.endsWith('.json')) {
-      output = join(output, 'workbook.json')
+      output = join(output, 'output.json')
     }
 
-    writeFileSync(output, JSON.stringify(workbook))
+    writeFileSync(output, JSON.stringify(idoc))
   }
   else if (filepath.endsWith('.json')) {
     if (!output.endsWith('.xlsx')) {
       output = join(output, 'output.xlsx')
     }
 
-    writeFileSync(output, await jsonToXlsx(
+    writeFileSync(output, await docToXlsx(
       JSON.parse(readFileSync(filepath, 'utf8')),
     ))
   }

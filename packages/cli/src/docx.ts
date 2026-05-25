@@ -1,7 +1,7 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { JSDOM } from 'jsdom'
-import { docxToJson, jsonToDocx, useCustomDomParser } from 'modern-openxml'
+import { docToDocx, docxToDoc, useCustomDomParser } from 'modern-openxml'
 
 const parser1 = new new JSDOM().window.DOMParser()
 
@@ -13,7 +13,7 @@ useCustomDomParser(
 
 export async function runDocxCommand(filepath: string, options: any): Promise<void> {
   let {
-    output = join(dirname(filepath), 'document.json'),
+    output = join(dirname(filepath), 'doc.json'),
   } = options
 
   const outputDir = dirname(output)
@@ -23,20 +23,20 @@ export async function runDocxCommand(filepath: string, options: any): Promise<vo
   }
 
   if (filepath.endsWith('.docx')) {
-    const doc = await docxToJson(readFileSync(filepath))
+    const idoc = await docxToDoc(readFileSync(filepath))
 
     if (!output.endsWith('.json')) {
-      output = join(output, 'document.json')
+      output = join(output, 'output.json')
     }
 
-    writeFileSync(output, JSON.stringify(doc))
+    writeFileSync(output, JSON.stringify(idoc))
   }
   else if (filepath.endsWith('.json')) {
     if (!output.endsWith('.docx')) {
       output = join(output, 'output.docx')
     }
 
-    writeFileSync(output, await jsonToDocx(
+    writeFileSync(output, await docToDocx(
       JSON.parse(readFileSync(filepath, 'utf8')),
     ))
   }
