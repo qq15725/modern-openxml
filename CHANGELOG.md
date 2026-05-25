@@ -1,3 +1,9 @@
+## [1.12.3](https://github.com/qq15725/modern-openxml/compare/v1.12.2...v1.12.3) (2026-05-25)
+
+
+### Features
+
+* auto-fallback docx/xlsx export and unify CLI on the idoc model ([a80455a](https://github.com/qq15725/modern-openxml/commit/a80455af933925198c0c121e288ed3ee0654f5e1))
 ## [1.12.2](https://github.com/qq15725/modern-openxml/compare/v1.12.1...v1.12.2) (2026-05-24)
 ## [1.12.1](https://github.com/qq15725/modern-openxml/compare/v1.12.0...v1.12.1) (2026-05-24)
 # [1.12.0](https://github.com/qq15725/modern-openxml/compare/v1.11.0...v1.12.0) (2026-05-24)
