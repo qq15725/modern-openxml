@@ -1,3 +1,9 @@
+## [1.12.4](https://github.com/qq15725/modern-openxml/compare/v1.12.3...v1.12.4) (2026-06-05)
+
+
+### Features
+
+* map a:blip image adjustments to/from Effect.filter ([e5588b7](https://github.com/qq15725/modern-openxml/commit/e5588b7bf1a48e92cfcce83a17d37faf1d1b6789))
 ## [1.12.3](https://github.com/qq15725/modern-openxml/compare/v1.12.2...v1.12.3) (2026-05-25)
 
 
