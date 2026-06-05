@@ -2,7 +2,7 @@ import type { NormalizedElement, NormalizedStyle } from 'modern-idoc'
 import type { OoxmlNode, OOXMLQueryType } from '../core'
 import type { NonVisualDrawingProperties } from './nonVisualDrawingProperties'
 import { idGenerator } from 'modern-idoc'
-import { parseBlipFill, stringifyFill } from '../drawing'
+import { parseBlipFill, parseBlipFilter, stringifyFill } from '../drawing'
 import { withIndents } from '../utils'
 import { parseNonVisualDrawingProperties, stringifyNonVisualDrawingProperties } from './nonVisualDrawingProperties'
 import { parseNonVisualProperties, stringifyNonVisualProperties } from './nonVisualProperties'
@@ -53,6 +53,8 @@ export function parsePicture(node?: OoxmlNode, ctx?: any): Picture | undefined {
       enabled: true,
       fillWithShape: true,
     },
+    // 整图调色（a:blip 子元素）落到元素级 Effect.filter
+    filter: parseBlipFilter(query('p:blipFill'), ctx),
     meta: {
       ...cNvPr?.meta,
       inCanvasIs: 'Element2D',
@@ -66,7 +68,7 @@ export function parsePicture(node?: OoxmlNode, ctx?: any): Picture | undefined {
 export function stringifyPicture(pic: Picture): string {
   const cNvPr = stringifyNonVisualDrawingProperties(pic)
   const nvPr = stringifyNonVisualProperties(pic as any)
-  const pBlipFill = stringifyFill(pic.foreground, true)
+  const pBlipFill = stringifyFill(pic.foreground, true, pic.filter)
   const spPr = stringifyShapeProperties(pic as any, true)
 
   return `<p:pic>

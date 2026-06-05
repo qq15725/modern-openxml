@@ -1,4 +1,4 @@
-import type { ColorStop, NormalizedFill, NormalizedGradientFill, NormalizedImageFill } from 'modern-idoc'
+import type { ColorStop, NormalizedFill, NormalizedFilter, NormalizedGradientFill, NormalizedImageFill } from 'modern-idoc'
 import type { OoxmlNode } from '../core'
 import { OoxmlValue } from '../core'
 import {
@@ -7,7 +7,7 @@ import {
   withAttrs,
   withIndents,
 } from '../utils'
-import { parseColor, stringifyColor } from './color'
+import { colorXPath, parseColor, stringifyColor } from './color'
 
 const tags = [
   'a:noFill',
@@ -119,6 +119,85 @@ export function parseBlipFill(fill?: OoxmlNode, ctx?: Record<string, any>): Norm
   }
 }
 
+// a:blip 调色子元素 -> modern-idoc Effect.filter（CSS 语义：1=原值 / 0~1）
+export function parseBlipFilter(blipFill?: OoxmlNode, ctx?: Record<string, any>): NormalizedFilter | undefined {
+  const blip = blipFill?.find('a:blip')
+  if (!blip)
+    return undefined
+
+  const lum = blip.find('a:lum')
+  const bright = lum?.attr<number>('@bright', 'ST_Percentage')
+  const contrast = lum?.attr<number>('@contrast', 'ST_Percentage')
+
+  let duotone: [string, string] | undefined
+  const duotoneNode = blip.find('a:duotone')
+  if (duotoneNode) {
+    const colors = duotoneNode
+      .get(colorXPath)
+      .map(node => parseColor(node, ctx)?.color)
+      .filter((v): v is string => Boolean(v))
+    if (colors.length >= 2)
+      duotone = [colors[0], colors[1]]
+  }
+
+  let colorChange: { from: string, to: string } | undefined
+  const clrChange = blip.find('a:clrChange')
+  if (clrChange) {
+    const from = parseColor(clrChange.find('a:clrFrom'), ctx)?.color
+    const to = parseColor(clrChange.find('a:clrTo'), ctx)?.color
+    if (from && to)
+      colorChange = { from, to }
+  }
+
+  const filter = clearUndef({
+    grayscale: blip.find('a:grayscl') ? 1 : undefined,
+    // OOXML bright/contrast 以 0 为原值，CSS 以 1 为原值
+    brightness: bright !== undefined ? 1 + bright : undefined,
+    contrast: contrast !== undefined ? 1 + contrast : undefined,
+    blur: blip.find('a:blur')?.attr<number>('@rad', 'ST_PositiveCoordinate'),
+    biLevel: blip.find('a:biLevel')?.attr<number>('@thresh', 'ST_PositivePercentage'),
+    duotone,
+    colorChange,
+  }) as NormalizedFilter
+
+  return Object.keys(filter).length > 0 ? filter : undefined
+}
+
+// modern-idoc Effect.filter -> a:blip 调色子元素（a:lum 始终输出，保持既有行为）
+function stringifyBlipFilter(filter?: NormalizedFilter): string[] {
+  const out: string[] = []
+  if (filter?.grayscale) {
+    out.push('<a:grayscl/>')
+  }
+  if (filter?.duotone) {
+    out.push(`<a:duotone>
+  ${withIndents(stringifyColor(filter.duotone[0]))}
+  ${withIndents(stringifyColor(filter.duotone[1]))}
+</a:duotone>`)
+  }
+  if (filter?.colorChange) {
+    out.push(`<a:clrChange>
+  <a:clrFrom>
+    ${withIndents(stringifyColor(filter.colorChange.from), 2)}
+  </a:clrFrom>
+  <a:clrTo>
+    ${withIndents(stringifyColor(filter.colorChange.to), 2)}
+  </a:clrTo>
+</a:clrChange>`)
+  }
+  if (filter?.biLevel !== undefined) {
+    out.push(`<a:biLevel thresh="${OoxmlValue.encode(filter.biLevel, 'ST_PositivePercentage')}"/>`)
+  }
+  if (filter?.blur !== undefined) {
+    out.push(`<a:blur rad="${OoxmlValue.encode(filter.blur, 'ST_PositiveCoordinate')}"/>`)
+  }
+  out.push(`<a:lum${withAttrs([
+    filter?.brightness !== undefined && withAttr('bright', OoxmlValue.encode(filter.brightness - 1, 'ST_Percentage')),
+    filter?.contrast !== undefined && withAttr('contrast', OoxmlValue.encode(filter.contrast - 1, 'ST_Percentage')),
+  ])}/>`)
+  return out
+}
+
 export function parseGradientFill(gradFill?: OoxmlNode, ctx?: any): NormalizedGradientFill | undefined {
   if (!gradFill)
     return undefined
@@ -159,14 +238,13 @@ export function parseGradientFill(gradFill?: OoxmlNode, ctx?: any): NormalizedGr
   }
 }
 
-export function stringifyFill(fill?: NormalizedFill, isPic = false): string | undefined {
+export function stringifyFill(fill?: NormalizedFill, isPic = false, filter?: NormalizedFilter): string | undefined {
   if (!fill)
     return undefined
 
   if (Boolean(fill.image) || isPic) {
     const tagName = isPic ? 'p:blipFill' : 'a:blipFill'
     const url = fill.image
-      ?? fill.image
     return `<${tagName}${withAttrs([
       withAttr('dpi', OoxmlValue.encode(fill.dpi, 'number')),
       withAttr('rotWithShape', OoxmlValue.encode(fill.rotateWithShape, 'boolean')),
@@ -175,8 +253,8 @@ export function stringifyFill(fill?: NormalizedFill, isPic = false): string | un
     ${withIndents([
       fill.opacity !== undefined
       && `<a:alphaModFix amt="${OoxmlValue.encode(fill.opacity, 'ST_PositivePercentage')}" />`,
+      ...stringifyBlipFilter(filter),
     ])}
-    <a:lum/>
   </a:blip>
   <a:srcRect${withAttrs([
     !!fill.cropRect?.top && withAttr('t', OoxmlValue.encode(fill.cropRect?.top, 'ST_Percentage')),
