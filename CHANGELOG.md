@@ -1,3 +1,9 @@
+## [1.12.5](https://github.com/qq15725/modern-openxml/compare/v1.12.4...v1.12.5) (2026-06-24)
+
+
+### Features
+
+* up deps ([4710550](https://github.com/qq15725/modern-openxml/commit/471055005b89220d3a883afb76f24958bea00355))
 ## [1.12.4](https://github.com/qq15725/modern-openxml/compare/v1.12.3...v1.12.4) (2026-06-05)
 
 
