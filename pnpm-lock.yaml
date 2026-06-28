@@ -70,8 +70,8 @@ importers:
         specifier: ^0.8.3
         version: 0.8.3
       modern-idoc:
-        specifier: ^0.12.1
-        version: 0.12.1
+        specifier: ^0.12.3
+        version: 0.12.3
       modern-path2d:
         specifier: ^1.8.5
         version: 1.8.5
@@ -2254,6 +2254,9 @@ packages:
   modern-idoc@0.12.1:
     resolution: {integrity: sha512-+QsDJnhvyogjGY4g26tePlsHkpARZF1J+M5ItfnLfKgwVM+zItR7QEXFn554/2UPkYXbkjOPiDH1XL/m2hie7w==}
 
+  modern-idoc@0.12.3:
+    resolution: {integrity: sha512-5DRaW+/zgC1w8r37mrOEQ1lOVTDIGMBSgMQA2KCcrdjLOp4RsxG2yfl61VrXB8s7BPU0dzg2aEEfiUNZLM/NJw==}
+
   modern-path2d@1.8.5:
     resolution: {integrity: sha512-GhBt0+K19+8A8R0veUKqsG1kx233Obnvik5mUbNOKjniF7FaVvUjH76yXheAucB9m42YCXdMj7j00FbC6EF7XQ==}
 
@@ -3757,8 +3760,8 @@ snapshots:
 
   '@typescript-eslint/project-service@8.59.4(typescript@6.0.3)':
     dependencies:
-      '@typescript-eslint/tsconfig-utils': 8.59.4(typescript@6.0.3)
-      '@typescript-eslint/types': 8.59.4
+      '@typescript-eslint/tsconfig-utils': 8.62.0(typescript@6.0.3)
+      '@typescript-eslint/types': 8.62.0
       debug: 4.4.3
       typescript: 6.0.3
     transitivePeerDependencies:
@@ -5397,6 +5400,11 @@ snapshots:
       colord: 2.9.3
       nanoid: 5.1.15
 
+  modern-idoc@0.12.3:
+    dependencies:
+      colord: 2.9.3
+      nanoid: 5.1.15
+
   modern-path2d@1.8.5:
     dependencies:
       earcut: 3.0.2
@@ -5406,7 +5414,7 @@ snapshots:
     dependencies:
       diff: 9.0.0
       modern-font: 0.6.1
-      modern-idoc: 0.12.1
+      modern-idoc: 0.12.3
       modern-path2d: 1.8.5
 
   module-replacements@3.0.0-beta.8: {}

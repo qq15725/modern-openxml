@@ -1,7 +1,7 @@
 {
   "name": "modern-openxml",
   "type": "module",
-  "version": "1.12.5",
+  "version": "1.13.0",
   "description": "OpenXML for JavaScript",
   "author": "wxm",
   "license": "MIT",
@@ -69,7 +69,7 @@
   },
   "dependencies": {
     "fflate": "^0.8.3",
-    "modern-idoc": "^0.12.1",
+    "modern-idoc": "^0.12.3",
     "modern-path2d": "^1.8.5"
   },
   "simple-git-hooks": {

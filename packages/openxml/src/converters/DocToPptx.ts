@@ -1,4 +1,5 @@
 import type { Unzipped } from 'fflate'
+import type { ImagePipeline, PipelineImage } from 'modern-idoc'
 import type {
   NormalizedPptx,
   Pptx,
@@ -53,7 +54,55 @@ function parseSvg(dataURI: string): string {
   return svg.outerHTML
 }
 
+/**
+ * 图片处理管线解析器：给定管线步骤与解码后的图片像素，返回处理后的像素。
+ * 由宿主注入（管线的处理函数为运行时黑盒，本库不持有）。返回 undefined 表示放弃处理、沿用原图。
+ */
+export type ImagePipelineResolver = (
+  imagePipelines: ImagePipeline[],
+  image: PipelineImage,
+) => Promise<PipelineImage | undefined>
+
+export interface DocToPptxOptions {
+  /** 图片处理管线解析器（像素级）；带 imagePipelines 的图片经它烘焙后嵌入。 */
+  imagePipelineResolver?: ImagePipelineResolver
+}
+
 export class DocToPptx {
+  constructor(
+    protected options: DocToPptxOptions = {},
+  ) {}
+
+  /** 把图片地址经管线烘焙成 PNG dataURI（解码像素 → 解析器 → 编码）。 */
+  protected async _bakeImagePipelines(
+    src: string,
+    imagePipelines: ImagePipeline[],
+    resolver: ImagePipelineResolver,
+  ): Promise<string | undefined> {
+    const blob = await fetch(src).then(rep => rep.blob())
+    const bitmap = await createImageBitmap(blob)
+    const w = Math.max(1, bitmap.width)
+    const h = Math.max(1, bitmap.height)
+    const canvas = document.createElement('canvas')
+    canvas.width = w
+    canvas.height = h
+    const ctx = canvas.getContext('2d')
+    if (!ctx)
+      return undefined
+    ctx.drawImage(bitmap, 0, 0)
+    bitmap.close?.()
+    const imageData = ctx.getImageData(0, 0, w, h)
+    const out = await resolver(imagePipelines, { data: imageData.data, width: w, height: h })
+    if (!out)
+      return undefined
+    canvas.width = out.width
+    canvas.height = out.height
+    const outData = ctx.createImageData(out.width, out.height)
+    outData.data.set(out.data)
+    ctx.putImageData(outData, 0, 0)
+    return canvas.toDataURL('image/png')
+  }
+
   async encode(pptx: Pptx): Promise<Uint8Array> {
     const _pptx = { ...pptx } as NormalizedPptx
 
@@ -63,7 +112,17 @@ export class DocToPptx {
     }
     const cache = new Map<any, string>()
     const addMedia = async (file: any, refs: string[], fileName: string, fileExt: string): Promise<void> => {
-      const src = file.image
+      let src = file.image
+
+      // 带图片处理管线时：先经注入的解析器烘焙成 PNG dataURI，后续按 data: 分支嵌入。
+      const resolver = this.options.imagePipelineResolver
+      if (typeof src === 'string' && file.imagePipelines?.length && resolver) {
+        const baked = await this._bakeImagePipelines(src, file.imagePipelines, resolver)
+        if (baked) {
+          src = baked
+          fileExt = 'png'
+        }
+      }
 
       let uin8Array: Uint8Array<ArrayBuffer>
       if (typeof src === 'string') {
